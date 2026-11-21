@@ -1,0 +1,4290 @@
+[
+  {
+    "id": "notes-0000c4b03be7",
+    "source": "- a\n  [^f]: note\n    more\ntail\n\n see[^f]\n"
+  },
+  {
+    "id": "notes-0059ee678b2a",
+    "source": "::: |\na [^1] b\n\n[^1]: see ^[</#h>]\n\n# h\n"
+  },
+  {
+    "id": "notes-005afea544bb",
+    "source": "[^ff]: alpha\n\nSee[^f]\nSee[^f]\n"
+  },
+  {
+    "id": "notes-00a346094747",
+    "source": "[^f]: note\n- a\n- a\nafter[^f]\nafter[^f]\n"
+  },
+  {
+    "id": "notes-00d9f7599590",
+    "source": "[^f]: outer\n\n  [^g]: mid\n\n      [^h]: inner\n\n    [r]: /url\n\n    TAILWORD\nx[^f] [g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-010bc59e85f4",
+    "source": "a [t[^1]] b\n- \n [^1]: n\n"
+  },
+  {
+    "id": "notes-010bcd38eeb0",
+    "source": "x ^[a ^1] c]\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-0113cebde24d",
+    "source": "[^f]:  note\n\n   :  definition\n    > quote\nsee[^f]\n"
+  },
+  {
+    "id": "notes-012ee24c6bb6",
+    "source": "# H\n\n\nody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-0136e15e1ab5",
+    "source": "[^f]: note\ntext\n"
+  },
+  {
+    "id": "notes-020817ca85ae",
+    "source": "[^a]: note\n\n  | a |\n  | - |\n  | b |\n\nsee[^n]\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-020c847341a1",
+    "source": "x[^1]\n\n[^1]: > q\n\n[l](u)\n   ```=latex\n   c\n   ```\n\n  after\n"
+  },
+  {
+    "id": "notes-022c10c56af4",
+    "source": "[^a]: +\n fluh\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-02315b126a0b",
+    "source": "::: |\n- a list\n[^a]: +\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-023bbb032a8f",
+    "source": "- body\n```x\n  [^g]: n\n\n   # h>> \n\nafter\n"
+  },
+  {
+    "id": "notes-02585f55727b",
+    "source": "[^a]: intro\n\n   | a-  |\n   | - |\n   | b |\n\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-02672d78ef4c",
+    "source": "-body\n\n  [^g]: n\n   prose\n> \nafter\n"
+  },
+  {
+    "id": "notes-02920eed3c89",
+    "source": "> \nIntro[^a].\n\n$`x`\n> ::: footnotes\n> :::\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-02f4d7b4d28b",
+    "source": "[^a]: note\n\n  - one\n    - deep\n> \n    end.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-0309a0091d3f",
+    "source": "x[^1]\n\n  more\n[^1]: q\n\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-0324db427868",
+    "source": "- a\n  [^f]: t\n    more\n b\n b\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-03580028daf7",
+    "source": "x[^1]\n\n[^1]: q\n\n{.x}\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-035c8e1f527a",
+    "source": "x[^n]\n\n[^n]: # H\n\n[H][]]\n"
+  },
+  {
+    "id": "notes-03635a2dab56",
+    "source": "  x ^[a [^1] c]\n  \n  [^:::1]: n\n"
+  },
+  {
+    "id": "notes-0422853fffd2",
+    "source": "\n[^a]: note\n\n  - one\n\n  end.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-043266fc5c12",
+    "source": "::: footnotes \"Notes\" [End]\na\n[^z]: zz\n:::\n:::\n\nA[^1].\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-04364af8b047",
+    "source": "See[[^m] and again[^m].\n[^m]: One note, two refs.\n\n\n"
+  },
+  {
+    "id": "notes-043d227aae93",
+    "source": "\n[^a]: +\n flush\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-0487a753d023",
+    "source": "[^a]: +\n- a list\n\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-0495e4e3af7a",
+    "source": "[^a]: +\n- a list\n \nsee[^a]\n"
+  },
+  {
+    "id": "notes-04b8d8ea2d8c",
+    "source": "X[^a].\n\n[^n]: First paragraph of the note.\n\n::: footnotes\nFirst marker.\n:::\n:::\n\n::: footnotes\nSecond marker.\n:::\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-04bb3b6432ba",
+    "source": "> \n[^a b]: note\n"
+  },
+  {
+    "id": "notes-04c0e33eec6b",
+    "source": "[^^a]: +\n  flush\nsee[^a]\n"
+  },
+  {
+    "id": "notes-04e6ac52d99b",
+    "source": "[^a]: note\n  ```\n   code\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-05c27442722f",
+    "source": "[^a]: note\n\tmore\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-05d1c7c195da",
+    "source": "[^f]: outer\n\n       [^g]: mid\n\n[^u]: see [x](#nope)\n\n         TAILWORD\n\nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-06761900ba51",
+    "source": "[^n]: intro\n\n  - item\n\n    > quote\n\n> q\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-06ca72ebcc0f",
+    "source": "+ Intro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-07e442207600",
+    "source": "x[^1]\n\n[^1] q\n   ```js\n   c\n   ```\n   ```\n"
+  },
+  {
+    "id": "notes-0835d131e41b",
+    "source": "[^a]: +\n\n> see[^a]\n"
+  },
+  {
+    "id": "notes-0846455832ec",
+    "source": "\nText[^a].\n>> \n[^a]: note.\n"
+  },
+  {
+    "id": "notes-084a534c5d68",
+    "source": " - a\n  [^f]: t\n    more\ntail\n_u_\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-08b6e5ce3748",
+    "source": "- body\n\n  [^g]: n\n   # h\nafter\n \n"
+  },
+  {
+    "id": "notes-08b7696c5002",
+    "source": "[^a]: note\n\n  # H\n\n  after\n  after\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-08e0bba527ee",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n    :::\n\n\n[r][]\n"
+  },
+  {
+    "id": "notes-0989ea420d71",
+    "source": "[^n]: intro\n\n  :: term\n\n  :---  definition\n     > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-09db2b3a4e46",
+    "source": "[^a]: intro\n  %% c\n  more\n\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-09dc0b1a57c1",
+    "source": ": [^a]: note\n:   ```\n:   code\n\n  ```\n\n  see[^a]\n"
+  },
+  {
+    "id": "notes-0a09cfd488f0",
+    "source": "[^n]: intro\n\n   ::: >\n   > qute\n   :::\n\t\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-0a19ae8cba26",
+    "source": "x[^f]\n[^f]: n\n+\n```\na\n[^z]: zz\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-0af6afd87901",
+    "source": "  [^a]: note\n  \n    # H\n\n  after\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-0b1c78b1539b",
+    "source": "- - a\n[^c]: - para\n [^f]: x\n  \n"
+  },
+  {
+    "id": "notes-0b2efc9b240c",
+    "source": "see[^n]\n\n[^n]: a\n\n    > [r]: /x\n[x][r][d][r]\n"
+  },
+  {
+    "id": "notes-0b3e30e729b2",
+    "source": "Wrapped[^two\nwords].\n \n\n[^two words]: This definition is not referenced.\n\n[^broken\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-0b68c16e5878",
+    "source": "X[^a].\n\n::: footnotes\n[^f]: note\nFirst marker.\n:::\n\n::: footnotes\nSecond marker.\n:::\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-0b7b3f783150",
+    "source": "[^a]: note\n\n  ```=html\n  <b>x</b>\n  \\x\n  ```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-0b851fbe25ae",
+    "source": "a [t[^1]][nope] b [^1] c\n\n\n[^1]:: n\n"
+  },
+  {
+    "id": "notes-0ba5f0e23b36",
+    "source": "[^a]: +\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-0bb4822f2012",
+    "source": "[[^a]: note\n   [r]: /u\n\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-0c1362efbfc9",
+    "source": "x[^n]\n\n::::\n:: a\n: b\n  :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-0c2e9c47e9f3",
+    "source": "- a\n  [^f]: t\n    more\n  b\n\nx[[^n]: body^f]\n"
+  },
+  {
+    "id": "notes-0c47ca284c31",
+    "source": "> %%%\n> %%%\n> [^f]: note\n\nSee [^f].\n"
+  },
+  {
+    "id": "notes-0c74aa839150",
+    "source": "[^n]: # H\n\n[H][]\n[H][]\n"
+  },
+  {
+    "id": "notes-0caac7857ef8",
+    "source": "[^n]: # H\n^ cap\n[H][]\n\n"
+  },
+  {
+    "id": "notes-0cc3509cf41b",
+    "source": "-x\n- x\n  [^g]: b\n   [r]: /url\n\nSee [r][] and [^g].\n"
+  },
+  {
+    "id": "notes-0d3c380f6d04",
+    "source": "[^a]: intro\n\n   | a |\n   | - |\n   | b |\n\n\n   :: term\nsee[^a]\n"
+  },
+  {
+    "id": "notes-0d6e14095a6c",
+    "source": "See[^1].\n\n   [^n]: e\n[^1]: \n\n\n\n    b\n"
+  },
+  {
+    "id": "notes-0da6f9e1e1a8",
+    "source": "x[^f]\n\n[[^f]:\n[^f]:\n"
+  },
+  {
+    "id": "notes-0dce14749293",
+    "source": "See[^1].\n\n[^1]: a\n\n\n    - b\n    - b\n"
+  },
+  {
+    "id": "notes-0e22a4860be2",
+    "source": "Use [^a].\n\n[^a]:\n\n  First\n"
+  },
+  {
+    "id": "notes-0e559bd644b4",
+    "source": "x[^f]\n\n::: note\n[_u_^f]:\n\n"
+  },
+  {
+    "id": "notes-0e96c22954bd",
+    "source": "\n[^a]: intro\n\n{}\n  | a |\n  | - |\n  | b |\n\n  closing line.\n\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-0ee2bb44ea47",
+    "source": "[^n]: intro\n\n   :: term\n   :: term\n   :  definition\n\n      > quote\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-0ee41a217569",
+    "source": "\n   :: term\n   :  definition\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-0efa06004c25",
+    "source": "[^f]: outer\n\n   [^g]: mid\n\n    [^h]: inner\n[^f]: t\n\n  TAILWORD\n [r]: /url\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-0fab1ee9bd1b",
+    "source": "[^a]: q\n\n+\n+\n\nref [^a]\n"
+  },
+  {
+    "id": "notes-0fd00aebf2b6",
+    "source": "[^a]: intro\n%% c\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-0ff7e2a83f7c",
+    "source": "text\n[^f]: note\n\n"
+  },
+  {
+    "id": "notes-102d48b035d5",
+    "source": "[^f]: b\n\n  [^g]: c\n\n   [^n]: note text\n\nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-10585858ac5c",
+    "source": "Use [^a].\n\n[[^a:\n[^a]:\n  First\n"
+  },
+  {
+    "id": "notes-1059c07f0582",
+    "source": "[::: note^a]: +\n - a list\n\nsee[^a]\n. \n"
+  },
+  {
+    "id": "notes-119633cf53bb",
+    "source": "see [^a\tb]\n\n"
+  },
+  {
+    "id": "notes-11dbd0a9e6d5",
+    "source": " a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-11df7ab2c733",
+    "source": "| a | b |\n[^f]:   note\n\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-123a48db871a",
+    "source": "[^a]: +\n```\nsee[^a]\n  morex\n```\n\nsee[[^a]\n"
+  },
+  {
+    "id": "notes-12547255851b",
+    "source": "[^a]: intro\n  :::%%%\n  c\n  %%%\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-1270ecf94544",
+    "source": "[^a]: note\n\n  | a |\n  | - |\n\n  | b |\nsee[^a]\n"
+  },
+  {
+    "id": "notes-12791b6e81ba",
+    "source": "[^a]: note\n\nmore\n: \nsee[^a]\n"
+  },
+  {
+    "id": "notes-129ba452005a",
+    "source": " :: t [^f]: t\n- a\n    more\n  b\n\nx[^f\n"
+  },
+  {
+    "id": "notes-12cef8a29280",
+    "source": "- a\n  [^f]: note\n    more\n1.     more\n1. tail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-136c3899a093",
+    "source": "- body\n\n\n   [^g]: n\n    prose\n\nafter\n"
+  },
+  {
+    "id": "notes-13d19c7f98d0",
+    "source": "- body\n\n  [^g]: n\n   prose\nafter\n"
+  },
+  {
+    "id": "notes-13ec43415066",
+    "source": "::: footnotes \"Notes\" [End]\n:::\n```\n\nA[^1].\nA[^1].\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-141a19fe4d26",
+    "source": "[^a]: intro\n%% c\n  more\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-144f64468536",
+    "source": "- > para\n   >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-1465863b1195",
+    "source": "\n[^a]: note\n   [r]: /u\n\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-1478b554a55f",
+    "source": "[^a]: intro\n  %% c\n   more\n \nsee[^a]\n"
+  },
+  {
+    "id": "notes-147f395fa65a",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\n:::\n\n::: footnotes\nSecond marker.\n:::\n \n[^a]: note\n"
+  },
+  {
+    "id": "notes-14aad980e5d8",
+    "source": " Intro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-14e69ff10c1f",
+    "source": "- \n- a>> \n  [^f]: t\n    more\ntail\n\n: x[^f]\n"
+  },
+  {
+    "id": "notes-153d2ffb72a2",
+    "source": ":: term\n: item\n  [^c]: para\n   ```\n  See[^c]_u_\n"
+  },
+  {
+    "id": "notes-153df5d342fe",
+    "source": "- body\n\n   [^g]: n\n   > z\n\n\nafter\n"
+  },
+  {
+    "id": "notes-15e93aed2752",
+    "source": "x[^n]\n\n- :: c\n\n[^f]: \tnote\n      %% note\n      [^n]: y\n    code\n"
+  },
+  {
+    "id": "notes-15fc13572ad4",
+    "source": "::: footnotes \"Notes\" [End]\n :::\n\nA[^1].\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-1613bb18849d",
+    "source": "a[^1]\n\n[^1]: %% n\n \n   ```=latex\n   \\x\n  ```\n"
+  },
+  {
+    "id": "notes-16386ef1e5a8",
+    "source": "[^a]: note\n\n  | a |\n   | - |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-165df146eedb",
+    "source": "a [t[^1]][r] b\n\n```\n: [r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-167993e522b0",
+    "source": "> [^a]: n\n> +\ntail[^f]\n#tag\npara\n"
+  },
+  {
+    "id": "notes-16b6de928f0d",
+    "source": "[^f]:   note\n  \n  see[^f]\n\n"
+  },
+  {
+    "id": "notes-171bb3d5beb0",
+    "source": "\n[^n]: intro\n\n   ::: >\n   > quote\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-17a701d6cdb8",
+    "source": "[^a]: note\n\n> %%%\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-17d34ab808ac",
+    "source": "[^c]: - para\n[r][] [^p] [^c]\n   # H\n"
+  },
+  {
+    "id": "notes-17eb92eb9667",
+    "source": "[^a]: +\n-  a list\n\nse[^a]\n"
+  },
+  {
+    "id": "notes-180f7ae14868",
+    "source": "see[^f]\n\n[^f]\n[^f]: a\n+     ::: note\n+      [r]: /url\n+     :::\n\n[r][]\n"
+  },
+  {
+    "id": "notes-18127870c9d1",
+    "source": "[x][r]\n :: term\n: item\n: item\n  [^c]: para\n   ```\n\n  See[^c]\n"
+  },
+  {
+    "id": "notes-1823e82ac5b1",
+    "source": "See[^1].\n\n[^1]: a\n\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-188e22f54362",
+    "source": "A note^[see *later*] inline. And a ref[^a].\nA note^[see *later*] inline. And a ref[^a].\n[^a]: reference body.\n"
+  },
+  {
+    "id": "notes-18da33137939",
+    "source": "- a\n    more\n    more\n  [^f]: t\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-18fa6f43565e",
+    "source": "x[^1]\n\n\n        ```js\n        c\n\n-         ```\n"
+  },
+  {
+    "id": "notes-194a088f669b",
+    "source": "- body\n\n  [^g]: n\n    # h\n\n[^1]: %% n\nafter\n\n"
+  },
+  {
+    "id": "notes-19a8dbc807e7",
+    "source": " Note[^fn].\nx[^f] [^g] [t][r]\n\n [^fn]: body.\n"
+  },
+  {
+    "id": "notes-19c00c4cd869",
+    "source": "a [t[^1]][r] b\n\n \t[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-1a57967c30e0",
+    "source": "a[^1]\nSee the note.[^n]\n\n:::\n\n[^1]: ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-1a5daebb74a9",
+    "source": "[^u]: see [x](#nope)\n```x\n\nBody.\n"
+  },
+  {
+    "id": "notes-1a92c76c6408",
+    "source": "x[^1]\n\t\n\t[^1]: a\n\t\n    ```=latex\n    \\x\n    ```\n"
+  },
+  {
+    "id": "notes-1adc1d831921",
+    "source": "x[^f]\n\n[^f]: `` note\n"
+  },
+  {
+    "id": "notes-1adf982701ba",
+    "source": "x[^1]\n[^f]: outer\n\n\n[^1]: > q\n\n   ```js\n[^n]: First paragraph of the note.\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-1b7356e7e029",
+    "source": "[^a]: note\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-1b79aa477bb5",
+    "source": "- a\n- a\n  [^f]: t\n[^f]: a\n     [r]: /url\n[r][]\n"
+  },
+  {
+    "id": "notes-1bbd7067c20a",
+    "source": "[^a]: notte\n\n  | a |\n  | - |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-1bf6b080d598",
+    "source": "  - para\n    [^f]: n\n> ::: footnotes\n> :::\n      more\nx\n"
+  },
+  {
+    "id": "notes-1c4eb13abd9a",
+    "source": "\t Note[^fn].\n\t\n [[^n]: body.\n"
+  },
+  {
+    "id": "notes-1cb7d59ca0c9",
+    "source": "- body\n\n  [^g]: n\n     > z\n  \nafter\n:  d\n"
+  },
+  {
+    "id": "notes-1cfa417d84f3",
+    "source": " [r]: /u\n[^a]: note\n [r]: /u\n\nsee[^a] and [t][r]. \n"
+  },
+  {
+    "id": "notes-1cfdf796ea3b",
+    "source": "[^a]: +\n{}\nsee[^a]\n"
+  },
+  {
+    "id": "notes-1d764f61f030",
+    "source": "::: note\n- para\n  [^f]: n\n```\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-1d9979f8d544",
+    "source": "[^a]: q\n+\n+\n+\n\nref [^a]\n"
+  },
+  {
+    "id": "notes-1deb48dc1ef2",
+    "source": ">  [^a]: n\n> +\n\npara\n"
+  },
+  {
+    "id": "notes-1dfaad4e3411",
+    "source": "x ^[a [^1{.x}] c]\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-1e5daaed66a0",
+    "source": "[^a]: note\n\n\n  | a |\n  | - |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-1f0d75b12342",
+    "source": "a [t[^1]{.x}](/u) c [^1] b\n \n[^1]: n\n"
+  },
+  {
+    "id": "notes-1f10d3e7b877",
+    "source": "[^f]: b\n[^f]: b\n\n  :: t\n  : d\n   [r]: /url\n\n : See [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-1f5e70bd9d6a",
+    "source": "See[^1].\n[^1]: a\n\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-1f9172b14623",
+    "source": ": [^a]: +\n  ```\n  x\n```\n\nsee[^a]\n| a | b |\n"
+  },
+  {
+    "id": "notes-1faef81bce1e",
+    "source": "[^ff]: b\n\n  [^g]: c\n     [^n]: note text\n  \nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-1fafb85edd76",
+    "source": "[^a]: +\n flush\n see[^a]\n\n"
+  },
+  {
+    "id": "notes-1fbf7c2c5de0",
+    "source": "See[^1].\n\n[^1]: a\n\n\n\n\n    b\n"
+  },
+  {
+    "id": "notes-201f7d70c338",
+    "source": "x[^1]\n\n[^1: a\n \n    ```=latex\n    \\x\n    ```\n"
+  },
+  {
+    "id": "notes-204223bfd7f6",
+    "source": "- - bdy\n\n  [^g]: n\n  prose\n"
+  },
+  {
+    "id": "notes-208377efb219",
+    "source": "\nsee[^f]\n"
+  },
+  {
+    "id": "notes-208c02a794cb",
+    "source": "> a [^1] b\n\n[^1]: see [t[^2]][r]\n\n[r]: /u\n\n[^2]: two\n"
+  },
+  {
+    "id": "notes-20961955aeb0",
+    "source": "[^f]: outer\n@user\n\n   [^g]: mid\n  [r]: /url\n\n\nx[^f] [^g] [t][r]\n\n"
+  },
+  {
+    "id": "notes-20f3ce80d81b",
+    "source": "- - body\n\n  [^g]: n\na [t[^1]] b\n\n   prose\n"
+  },
+  {
+    "id": "notes-211f7ecccf2b",
+    "source": "x[^1]\n\n\n[^1]: > q\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-214789b0c4ab",
+    "source": "a [t[^1]{#z}][r] [^1]{#y\n\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-215dee2df856",
+    "source": "[^a]: note\n\n  end.\n   [r]: /u\n   [r]: /u\n\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-218704740565",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n     [r]: /url\n     [r]: /url\n    :::\n\n[r][]\n"
+  },
+  {
+    "id": "notes-218ea4bc5a02",
+    "source": "[^n]: intro\n[^n]: intro\n\n   :: term\n    > quote\n   :  definition\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-219b230a0adf",
+    "source": " body\n\nSee [r][] and [^g].\n  [^g]: n\n   > z\n\nafter\n"
+  },
+  {
+    "id": "notes-21fa4af97c2a",
+    "source": "x[^1]\n\n[^1]: q\n\n1.    ```js\n1.    c\n1.    ```\n"
+  },
+  {
+    "id": "notes-2211fcf96b75",
+    "source": "x[^1]\n\n> \n[^]: > q\n\n   ```=latex\n   c\n   ```\n\n  after\n"
+  },
+  {
+    "id": "notes-222d7ede39aa",
+    "source": "|= a |= b |\na [t[^1]][r] b\n\n[r]: /u\n\n[^1]:  n\n"
+  },
+  {
+    "id": "notes-2243ddb91d28",
+    "source": "[^f]:   note\nsee[^f]\n \n"
+  },
+  {
+    "id": "notes-225887479131",
+    "source": "- b\n\nsee[^n]\n\n[^n]: para\n | a |\ntail\n"
+  },
+  {
+    "id": "notes-225e7a65fdf3",
+    "source": "- - a\n- - a\n [^f]: x\n        ```js\n"
+  },
+  {
+    "id": "notes-226333f8d9bf",
+    "source": "x[^1]\n\n[^1]: > q\n\n   ```=latex\n    c\n   ```\n \n  after\n"
+  },
+  {
+    "id": "notes-226493d96c13",
+    "source": "[^f]: alpha\n :: term\n[d]: u\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-22ceee06d872",
+    "source": "see[^n]\n \n[^n]: para\n  | a |\nttail\n"
+  },
+  {
+    "id": "notes-22cf022a9597",
+    "source": "> +\n> [^a]: n\npara\n\n"
+  },
+  {
+    "id": "notes-239943b8d720",
+    "source": "- -- body\n\n  [^g]: n\n   prose\n"
+  },
+  {
+    "id": "notes-24182c6331da",
+    "source": "x[^1]\n\n[^1]: > q\n\n\n         ```js\n        c\n        ```\n"
+  },
+  {
+    "id": "notes-24548b57f791",
+    "source": "[^n]: intro\n   ::: >\n\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-246d1f499031",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n      one\n  # H\n\n      ~~~\n\n      ~~~\n    *b*  two\n      ~~~\nbelo\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-25718e72534f",
+    "source": "+ \n+ x[^n]\n\n:: c\n  [^n]: y\n"
+  },
+  {
+    "id": "notes-2578c29646e3",
+    "source": "See the note.[^n]\n\n[^n]: First paragraph of the note.\n+\nA second paragraph, joined with +.\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-257d4c7d582c",
+    "source": "See[^1].\n\n[^1]:: a\n\n \n    - b\n"
+  },
+  {
+    "id": "notes-25a039a4eea3",
+    "source": "Intro[^a].\n\n> ::: footnnotes\n> :::\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-26139a50748c",
+    "source": "x[^f]\n\n[^f]: \tnote\n\n"
+  },
+  {
+    "id": "notes-26413e598723",
+    "source": ":: term\n: item\n  [^c]: para\n   ````\n\n  See[^c]\n"
+  },
+  {
+    "id": "notes-265b16dfdc5c",
+    "source": "[^n]: # H\n\n\n\n"
+  },
+  {
+    "id": "notes-266127bb1320",
+    "source": "[^n]: body\n[^a]: note\n[^a]: note\n\n\tmore\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-26c83e5488d8",
+    "source": "  %% c\n  moe\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-26dff8e357ac",
+    "source": "\n[^a]: +\n fllush\n[^f]\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-26ec24160803",
+    "source": "a[^1]\n\n[^1]: ```=html\n <b>x</b>\n  ```\n"
+  },
+  {
+    "id": "notes-26ee7af5dd70",
+    "source": "::: note\n- para\n\n  [^f]: n\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-2767a53f9a2c",
+    "source": "\n[^f]:  note\n[^a]: intro\n\n  | - |\n  | b |\n\n  closing linee.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-2767e64e12c8",
+    "source": "- body\n\n  [^g]: n\n    # h\n\nafter\n"
+  },
+  {
+    "id": "notes-277017d939b0",
+    "source": ":: t\n    [^f]: n\n:  d\ntail\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-27a05026d956",
+    "source": "Wrapped[^two\nwords].\n\n[^two words]: This definition is not referenced.\n\n[^broken\nlabel]: This is *[A]: bnot a definition.\nSee[^f]\n"
+  },
+  {
+    "id": "notes-2830af271814",
+    "source": " - - body\n \n  [^g]: n\n   prose\n"
+  },
+  {
+    "id": "notes-286c4c291bcc",
+    "source": "1. \n[^f]: alpha\n :: term\n :: term\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-286faf6563b8",
+    "source": "- x\n  [^g]: b\n   [r]: /url\n``\nSee [r][] and [^g].\n{\n"
+  },
+  {
+    "id": "notes-2877df2d1adc",
+    "source": "[^a]: +\n flushh\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-28794d0feaa8",
+    "source": "- > para\n\n  > [^f]: n\n  >   - sub\n\n[^f]: \tnote\ntail[^f]\n"
+  },
+  {
+    "id": "notes-288b8beb5548",
+    "source": " </#h>\nx[^f]\n\n[^f]:  note\n[^a b]: note\n"
+  },
+  {
+    "id": "notes-28bf6a7f2978",
+    "source": "  [^f]: t\n    more\ntail\nx[^f]\n\n"
+  },
+  {
+    "id": "notes-28e1b89e3e55",
+    "source": "Intro[^a].\n\n> :: footnotes\n\n> :::\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-2a971c383fed",
+    "source": "[^a]: note\n  ```\n  coode\n  ```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-2ac656022071",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\n  :::\n\n::: footnotes\nSecond marker.\n:::\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-2b075d6496cf",
+    "source": "x ^[a [^1] c]\nx[^f]\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-2b3a748dc741",
+    "source": "[^f]: b\n\n\n[r]: /u\n  [^g]: c\n\nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-2b96a58ac3fe",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n      ~~~\n      ~~~\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-2b9f84222960",
+    "source": "- - a\n"
+  },
+  {
+    "id": "notes-2c1bb5d616ca",
+    "source": "[^a]: note\n   [r]: /u\n\n\nsee[^a] aand [t][r]\n"
+  },
+  {
+    "id": "notes-2c1ed9a0034f",
+    "source": ":: t\n:  d\n [^f]: n\ntail\n</#h>\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-2c751fab0270",
+    "source": "- - body\n\n  [[^g]: n\n   pose\n::: |\n"
+  },
+  {
+    "id": "notes-2ce0a0643b77",
+    "source": "1. [^outer]: intro\n\n     [^inner]: note\n \n     see[^inner]\n\n- see[^outer]\n"
+  },
+  {
+    "id": "notes-2d1ff2048b6c",
+    "source": "x[^1]\n\n[^1]: q\n\n   ```js\n   c\n:  d\n   ```\n"
+  },
+  {
+    "id": "notes-2da4e5126e50",
+    "source": "[^f]: b\n\n  :: t\n  : d\n   [r]: /url\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-2dae778e5acc",
+    "source": "\n[ff]:\n"
+  },
+  {
+    "id": "notes-2e2c3497bc39",
+    "source": "[^a]: +\ntail\n flush\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-2e4eb2b5337e",
+    "source": "[^f]: outer\n\n  \n    [^h]: inner\n\n [r]: /url\n  TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-2e74018b169a",
+    "source": "x[^n]\n    %% note\n\n- :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-2e8724ca9520",
+    "source": "[^a]: +\n\n\n\nseee[^a]\n"
+  },
+  {
+    "id": "notes-2eb1ac022e11",
+    "source": "a [t[^1]][r] b\n\n[r]: /u\n: \n: [^1]~~~: n\n"
+  },
+  {
+    "id": "notes-2ed13f6853be",
+    "source": "[^a]: +\n```\n\n```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-2f0d3d9a5ce2",
+    "source": "Text[^a].\nText[^a].\n\n"
+  },
+  {
+    "id": "notes-2f4f06afee03",
+    "source": "[^u]: see [x](#nope)\nBody.\n\n"
+  },
+  {
+    "id": "notes-2f59435b1a5c",
+    "source": "Wrapped[^two\nwords].\n\n[^two words]: This definition is not referenced.\n \n- a[f]\n  - para\n[^broken\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-2f613b8a4acc",
+    "source": "see [^a\tb]\n\n[^a b]: nte\n"
+  },
+  {
+    "id": "notes-2f721fe66a89",
+    "source": "x[^1]\n\n[^1]: q\n\n   ```js\n  c\n   ```\n"
+  },
+  {
+    "id": "notes-2f8acc43aa84",
+    "source": "x[^1]\n\n[^1]: > q\n\n{\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-2fbdc68a9cde",
+    "source": "- x\n [^g]: b\n   [r]: /url\n\nSee [r][] and [^g].\n"
+  },
+  {
+    "id": "notes-3019c16db211",
+    "source": " X[^a].\n\n::: footnotes\nFirst marker.\n:::\n\n::: footnotes\nSecond marker.\n:::\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-30357517d34e",
+    "source": "^[fn]\n[^a]: x\n- b\n+\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-3046503405aa",
+    "source": "x[^1]\nx[^1]\n\n[^1]: > q\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-306d47ecff9a",
+    "source": "- > para\n  * > [^f]: n\n#tag\n   >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-30ba2fdad434",
+    "source": "x[^1]\n[^1]: note\n\n      ```\n      a\n        \n      b\n      ```\n"
+  },
+  {
+    "id": "notes-30f604f42866",
+    "source": "[^a]: intro\n  %%%\n[^m]: > q\n  c\n  %%%\n more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-3148377c09d6",
+    "source": "See[^1].\n::::\n\n[^1]: a\n[^n]\n\n    - b\n"
+  },
+  {
+    "id": "notes-319416a39cfa",
+    "source": "[^u]:  see [x](#nope)\n\n[r]: /u\n```\nBody.\n"
+  },
+  {
+    "id": "notes-31b6512535a8",
+    "source": "x\n\n```\nsee[^a]\n"
+  },
+  {
+    "id": "notes-31d6ed129598",
+    "source": "*b*\nText[^a].\n\n[^a]: note.\n"
+  },
+  {
+    "id": "notes-320938546421",
+    "source": "\nSee[^m] and again[^m].\n[^n]: body\n[^m]: One note, two refs.\n"
+  },
+  {
+    "id": "notes-321d93180c01",
+    "source": "See[^1].\n\n     [r]: /url\n[^1]: a\n[^1]: a\n\n\n    b\n"
+  },
+  {
+    "id": "notes-3233ca6fde69",
+    "source": "- a\n  [^f]: t\n    more\n\n!. `z`\ntail\nx[^f]\n"
+  },
+  {
+    "id": "notes-3279fbc594eb",
+    "source": "- \n[^f]: note\nafter[^f]\n"
+  },
+  {
+    "id": "notes-32d311a7ca28",
+    "source": "[^n]: intro\n^ cap\n_u_\n   :: term\n   :  definition\n\n    > quote\nsee[^n]\n"
+  },
+  {
+    "id": "notes-32ff051f984f",
+    "source": "[^a]: nte\n [r]: /u\n\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-3350b50a465f",
+    "source": "[^f]: outer\n\n  [^g]: mid\n\n      [^h]: inner\n\n    [r]: /url\n    TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n\n"
+  },
+  {
+    "id": "notes-335114e8a526",
+    "source": "- body\n\n  [^g]: n\n   > z\n\n\n  [r]: /url\nafter\n"
+  },
+  {
+    "id": "notes-3351b49741e5",
+    "source": "See[^1].\n\n[^1]: a\nSee [^n].\n\n\n :: t   b\n"
+  },
+  {
+    "id": "notes-33dbd28288c9",
+    "source": "See the note.[^n]\n   > quote\n\n[^n]: First paragraph of the note.\n+\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-347cabd8829d",
+    "source": "a [^1] b\n\n[^1]: see ^[</#h>]\n\n\n# h\n"
+  },
+  {
+    "id": "notes-349346aaab7a",
+    "source": "See[^1].\n\n[^1]: a\n\n\n      b\n"
+  },
+  {
+    "id": "notes-3534a9739250",
+    "source": "[^a]: note\n\n  ```=html[^n]\n  <b>x</b>\n  ```\n\n:::\nsee[^a]\n"
+  },
+  {
+    "id": "notes-359ca6affe71",
+    "source": "\n[^outer]: intro\ntail\n\n     [^inner]: note\n\n     see[^inner]\n\n"
+  },
+  {
+    "id": "notes-364481b73cef",
+    "source": "- a\nx ^[a [^1] c]\n\n  [^f]: t\n\n[^1]: n\n    more\ntail\nx[^f]\n\n"
+  },
+  {
+    "id": "notes-365ca85250ce",
+    "source": "- \n    more\n  b\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-36720cf67694",
+    "source": "see[^n]\n[^n]: para\n\n  | a |\ntail\n"
+  },
+  {
+    "id": "notes-368079cd7eef",
+    "source": "x[^1]\n\n[^1]: note\n\n      ```\n        \n      b\n      ```\n"
+  },
+  {
+    "id": "notes-3688be9d9165",
+    "source": "x[^f]\n\n[^f]:  note\n\n"
+  },
+  {
+    "id": "notes-36b134e4d755",
+    "source": "[^a]: intro\n\n   | a |\n   | - |\n    | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-3706b27fd131",
+    "source": " - body\n\n```\n  [^g]: n\n   > z\nafter\n\n"
+  },
+  {
+    "id": "notes-37363d5ce1a4",
+    "source": "\n  [^n]: a\n    # h\n| a | b |\n"
+  },
+  {
+    "id": "notes-3746ec4b14c2",
+    "source": "+ x[^1]\n  \n  [^1]: note\n---\n      ```\n      a\n        \n      b\n      ```\n"
+  },
+  {
+    "id": "notes-377e74d12568",
+    "source": "[^a]: note\n  ```\n  code\n  ```\n\nsee[{}^a]\n"
+  },
+  {
+    "id": "notes-37bc7b5b51a1",
+    "source": "see[^n]\n\n[^n]: para\n   # Heading\n>> \n::::\ntail\n"
+  },
+  {
+    "id": "notes-37e54703513f",
+    "source": ":: term\n: item\n  [^c]: para\n    ```\n\n{\n  See[^c]\n"
+  },
+  {
+    "id": "notes-3805133acf28",
+    "source": "a [t[^1]][nope] b [^1] c\n\ntaill\n[^1]: n\n"
+  },
+  {
+    "id": "notes-3840a4c789ee",
+    "source": "\na [t[^1]] b\n[^1]:n\n"
+  },
+  {
+    "id": "notes-384a84ebc714",
+    "source": "- a\n</#h>\n  [^f]: t\n\n\n    more\ntail\n\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-3876300a06d3",
+    "source": "x[^1]\n\n[^1]: a\n\n    ```=latex\n    \\x\n\n\n   :: term\n    ```\n"
+  },
+  {
+    "id": "notes-3908b0692527",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n      ~~~\n\n      ~~~\n      two\n      ~~\t\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-39246328bc34",
+    "source": ":: t\n:  d\n  [^f]: n\ntail\n\nSee[^f]\nSee[^f]\n"
+  },
+  {
+    "id": "notes-393c6cc99d9e",
+    "source": "+ - > para\n+   > [^f]: n\n  >   - sub\n[^u]: see [x](#nope)\n\ntail[^f]\n"
+  },
+  {
+    "id": "notes-3949e40f1c8a",
+    "source": "see[^n]\n\n[^n]: para\n  | a |\ntttail\n"
+  },
+  {
+    "id": "notes-3959f3e2c016",
+    "source": "> [^a]: n\n> +\n> [^a]: n\n\npara\n"
+  },
+  {
+    "id": "notes-3965656b6c7b",
+    "source": "[^a]: note\n\n  - one\n    - deep\n\n  end.\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-39769755f8a3",
+    "source": "x ^[a [^1] c]\n\n[^1]* : n\n"
+  },
+  {
+    "id": "notes-398c886a9e86",
+    "source": "a [^1] b\n  [^g]: n\n\n[^1]: see ^[</#h>]\n\n# h\n"
+  },
+  {
+    "id": "notes-39b37f11bdeb",
+    "source": "[^n]: intro\n\n  - item\n\n    > quote\nse[^n]\n"
+  },
+  {
+    "id": "notes-39d1eedf337b",
+    "source": "  [^f]: t\n[^f]: a\n\n[^1]: ```=html\n     [r]: /url\n[r][]\n"
+  },
+  {
+    "id": "notes-39e93667f371",
+    "source": "x[^a]\n\n[^a]: note\n++\n\npara\npara\n"
+  },
+  {
+    "id": "notes-3a0d3d563f74",
+    "source": "- x\n- x\n  [^g]: b\n   [r]: /url\n\nSee [r][] and [^g].\n"
+  },
+  {
+    "id": "notes-3a94b7910576",
+    "source": "[^f]: outer\n\n[x][r]\n   [^g]: mid\n\n    [^h]: inner\n\n  [r]: /url\n  TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-3af4420bf1c0",
+    "source": "[r][] [^p] [^c]\n[^^c]: -para\n   # H\n   # H\n"
+  },
+  {
+    "id": "notes-3b0e8fe1fdc3",
+    "source": ": item\n:: term\n  [^c]: para\n   ```\n::::\n  See[^c]\n"
+  },
+  {
+    "id": "notes-3b0f40aca816",
+    "source": " [^f]: alpha\n :: term\n\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-3b6939c3bd81",
+    "source": "ee [^a\tb]\n\nx[^f]\n \n[^a b]: note\n"
+  },
+  {
+    "id": "notes-3b9a8b0b7049",
+    "source": "x[^1]\n\n[^1]: q\nText[^a].\n\n   ```js\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-3bc330d1a3be",
+    "source": "[^f]: n\n+\n```\na\n\nb\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-3be8bd48bd9b",
+    "source": "[^a]: note\n  \tmore\n \nsee[^a]\n"
+  },
+  {
+    "id": "notes-3c63065f8cfe",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n[^1]]: n\n"
+  },
+  {
+    "id": "notes-3c73445b148f",
+    "source": "- See[^m] and again[^m].\n  \n[d]: u\n[^m]: One note, two refs.\n"
+  },
+  {
+    "id": "notes-3cbed8589d93",
+    "source": "[^a]: note\n  ```\n  code\n  ```\n\nse[^a]\n"
+  },
+  {
+    "id": "notes-3cd667fe55bb",
+    "source": "x[^nn]\n\n\n:: a\n: b\n  :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-3cfc998f157f",
+    "source": "a[^1]\n\n[^1]: %% n\n  ```=latex\n\n   \\x\n  ```\n"
+  },
+  {
+    "id": "notes-3d448f794d9f",
+    "source": " [^a]: note\n   [r]: /u\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-3d4e65ec9673",
+    "source": "[^f]: alpha\n :: term\n\nSee[^f]\n\n\n"
+  },
+  {
+    "id": "notes-3d87a2bfc84a",
+    "source": "x[^1]\n\n[^1]: > q\n[^1]: > q\n    c\n   ```\n"
+  },
+  {
+    "id": "notes-3da6f87ac956",
+    "source": "x[^1]\n\nsee[^a]\n\n[^1]: note\n\n      ```\n      a\n        \n     b\n      ```\n"
+  },
+  {
+    "id": "notes-3db598a78061",
+    "source": "- > para\n  > [^f]: n\n  > [^f]: n\n  >   - sub\n\ntail[^f]\n"
+  },
+  {
+    "id": "notes-3dc68ed7dbd5",
+    "source": "[^a]: intro\n#tag\n  %% c\n  more\n\nsee[^f]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-3ddc22ae0b32",
+    "source": "x[^a]\nx[^a]\n\n[^a]: note\n++\n\npara\n"
+  },
+  {
+    "id": "notes-3de2a669c4f0",
+    "source": "X[^a].\n \n::: footnotes\nFirst marker.\n:::\n\n::: footnotes\nSecond marker.\n:::\n\n[^]: note\n"
+  },
+  {
+    "id": "notes-3e05a7737eb0",
+    "source": "[^n]: intro\n\n  - item\n    > quote\n\n{.x}\nsee[^n]\n"
+  },
+  {
+    "id": "notes-3e0bb180e0bb",
+    "source": "[^a]: note\n:  d\n\tmore\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-3e48d524f693",
+    "source": "a[^1]\n[^1]: ```=latex\n{#i}\n\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-3eaf18109af0",
+    "source": "- x ^[a [^1]] c]\n- \n- [^1]: n\n"
+  },
+  {
+    "id": "notes-3ed9f16a7016",
+    "source": "[^a]: note\n\tmore\n  \nsee[^a]\n"
+  },
+  {
+    "id": "notes-3efc304fc536",
+    "source": "[^f]: outer\n\n   [^g]: mid\n  [r]: /url\n \nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-3f8d4fdfc40c",
+    "source": " \nx[^f]\n[^f]:  note\n"
+  },
+  {
+    "id": "notes-3f908685858d",
+    "source": "a [t[^1]][nope] b [^1] c\ntext\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-3fd36d9bb95f",
+    "source": "*[A]: b\n> [^a]: n\n> \npara\n"
+  },
+  {
+    "id": "notes-403c0299a536",
+    "source": "x[^^f]\n\n[^f]:\n"
+  },
+  {
+    "id": "notes-4043be37d52c",
+    "source": "[^n]: intro\n  > quote\n    ordinary line\n\n see[^n]\n"
+  },
+  {
+    "id": "notes-408f22720e90",
+    "source": "[^a]: +\nsee[^a\n \n"
+  },
+  {
+    "id": "notes-40fabd404729",
+    "source": "xx[^1]\n\n\n[^1]: > q\n\n   ```js\n   c\n   ```\n    - deep\n\n"
+  },
+  {
+    "id": "notes-41353a717403",
+    "source": "- body\n\n: b\n  [^g]: n\n   prose\n   prose\n\nafter\n"
+  },
+  {
+    "id": "notes-414400566580",
+    "source": "[^f]: outer\n\n       [^g]: mid\n\n         [r]: /url\n         TAILWWORD\n^ cap\n\nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-416d10b57b68",
+    "source": " # H\nBody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-4181e9660c99",
+    "source": "- see[^n]\n %%\n  [^n]: a\n    # h\n"
+  },
+  {
+    "id": "notes-4199589e723a",
+    "source": "a [^1] b\n\n\n[^1]: see ^[</#h>]\n#tag# h\n"
+  },
+  {
+    "id": "notes-41b9bad3ba29",
+    "source": "see[^n]\n\n[^n]: para\n   # Heading\ntail\nBody[^n]\n\n"
+  },
+  {
+    "id": "notes-41d4a272936e",
+    "source": " [^n]: intro\n    ordinary line\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-420d46548b5e",
+    "source": "[^a]: note\n\n  | a |\n   | - |\n-   | b |\n  \nsee[^a]\n"
+  },
+  {
+    "id": "notes-425e819e8134",
+    "source": "[^f]: n\n+\n```\na\n\nb\n^[fn]\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-427c2569d03f",
+    "source": "a [^1] b\n\n[^1]: see [t[^2]][r]\n\n[rr]: /u\n\n[^2]: two\n"
+  },
+  {
+    "id": "notes-42c933832d0d",
+    "source": "[^1]: %% n\nSee[^1].\n\n[^1]: a\n\n\n    b\n"
+  },
+  {
+    "id": "notes-42d2d88f9e90",
+    "source": "x[^a]\n\n[^a]: note\n++\n \npara\n[d]: u\n"
+  },
+  {
+    "id": "notes-42ff8a78afeb",
+    "source": "a[^1]\n[^1]: %% n\n\n\n  ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-43646f8bd523",
+    "source": "x[^1]\n\n[^1]: q\n``\n\n     ```js\n     c\n    ```\n"
+  },
+  {
+    "id": "notes-437d4c81f660",
+    "source": " \n  [^g]: n\n   prose\n"
+  },
+  {
+    "id": "notes-437dd18a7206",
+    "source": "x[^n]\n\n: a\n: b\n  :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-4397f34eb58e",
+    "source": "\ttext\n\t[^f]: note\n"
+  },
+  {
+    "id": "notes-43bcbcec8d4f",
+    "source": "See [^a].\n \n > [^a]: note body\n"
+  },
+  {
+    "id": "notes-43da3f6116a9",
+    "source": "a [^1] b\n\n[^1]: see [t[^2]][r]\n\n[r]: /u\n\n[^2]: t* wo\n"
+  },
+  {
+    "id": "notes-43e0fa3ba60a",
+    "source": "- body\n\n  [^g]: n\n   # h\n\n"
+  },
+  {
+    "id": "notes-44194fb1befb",
+    "source": "[^a]: x\n+\n- b\nSee [^n] and [^f] and [^g].\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-449beb205d6f",
+    "source": "  [^f]: t\n-a\n    more\n  b\n \nx[^f]\n"
+  },
+  {
+    "id": "notes-450a7f0d0f99",
+    "source": "see[^n]\n\n%%%\n[^n]: para\n  | a |\n+ tail\n"
+  },
+  {
+    "id": "notes-4571c830d899",
+    "source": "a [^1] b\n\n[^1]: see [t[^^2]][r]\n\n[r]: /u\n\n[^2]: two\n"
+  },
+  {
+    "id": "notes-45bf0fe154f6",
+    "source": "x[^n]\n\n- :: c\n    %% note\n   [^n]: y\n"
+  },
+  {
+    "id": "notes-461aae1e38b2",
+    "source": "\n  :: t\n  : d\n   [r]: /url\n\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-466d3b913915",
+    "source": "[^n]: intro\n\n   :: term\n   :  definiton\n\n      > quote\n\nsee[^n]\nsee[^n]\n"
+  },
+  {
+    "id": "notes-46b99f883847",
+    "source": "See[^1].\n\n[^1]: a\n\n\n     b\n"
+  },
+  {
+    "id": "notes-46cce9e636a0",
+    "source": "- a\n  [^f]: t\n    more\n>   b\n  \n  x[^f]\n"
+  },
+  {
+    "id": "notes-46e93a57c899",
+    "source": "- see[^n]\n\n  [^n]: a\n    # h\n::: note:  d\n"
+  },
+  {
+    "id": "notes-4709b77f381d",
+    "source": "- body\n\n  [^g]: n\n   prose+ \n\n\t\nafter\n"
+  },
+  {
+    "id": "notes-473df598254c",
+    "source": "Wrapped[^two\nwords].\n[^two words]: This definition is not referenced.\n\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-4771a918f21d",
+    "source": "x ^[a [^1] c]\n\n[^1]: n\n*[A]: b\n"
+  },
+  {
+    "id": "notes-47b0e4dd58bc",
+    "source": "\tSee[^m] and again[^m].\n\t\n[^a]: note.\n"
+  },
+  {
+    "id": "notes-47b84081b8fe",
+    "source": "  [^f]: t\n Note[^fn.\n\n [^fn]: body.\n"
+  },
+  {
+    "id": "notes-47c8931bc0a0",
+    "source": "see[^a] and [t][r]\n\n[r]: /u\n\n"
+  },
+  {
+    "id": "notes-47da77f91f9b",
+    "source": "- [^a]: text\n    [^b]: inner\n     ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n       ~~~\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-47f402872317",
+    "source": "see[^f]\n\n[^f]: head\n\na [t[^1]{#z}][r] [^1]{#y}\n  a\n%%%\n"
+  },
+  {
+    "id": "notes-482db2033cb9",
+    "source": "x[^f]\n\n  [^f]:  note\n"
+  },
+  {
+    "id": "notes-4852f9775360",
+    "source": "[^u]: see [x](#nope)\n\n> Body.\n:::\n"
+  },
+  {
+    "id": "notes-4888cd88375f",
+    "source": "[^a]: notetext\n\n  - one\n    - deep\n\n  end.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-48a60f2dce76",
+    "source": "\n  - - a\n   [^f]: x\n"
+  },
+  {
+    "id": "notes-4951e87f0942",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n     [r]: /url\n    :::\n\n[r][]\n\n"
+  },
+  {
+    "id": "notes-499cdee61630",
+    "source": "x[^1]\n\n[^1]: q\n\n   ```js\n\n[r][]\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-49b40c565d7f",
+    "source": "\n[^1]: %% n\n\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-49bce47e5e55",
+    "source": "[^f]: b\n\n  [^g]: c\n   [^n]: note text\n{#i}\n[^f]:\n\nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-49db200794d8",
+    "source": "[^n]: intro\n[^n]: intro\n# H\n  > quote\n    ordinary line\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-49ff0e19fdbb",
+    "source": "a [t[^1]](/u) b\n\t\n\t[^1]: n\n"
+  },
+  {
+    "id": "notes-4a25f898f2d1",
+    "source": "a [t[^1]{.x}](/u) c [^1] b\n\n`\n[^1]: n\n"
+  },
+  {
+    "id": "notes-4a4e3e7d0259",
+    "source": "[^a]: note\n\n  | a |\n\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-4aa13fb7d1f3",
+    "source": "[^a]: note\n\n    - deeep\n\n  end.\n\n  see[^a]\n"
+  },
+  {
+    "id": "notes-4ab5f513345d",
+    "source": "See[1].\n[d]: u\n\n[^1]: a\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-4ac1082c6e06",
+    "source": "[^n]: intro\n\n  - item\n:  d\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-4ac6d177f276",
+    "source": "x[^1\n\n[^1]: > q\n\n        ```js\n        c\n        ```\n"
+  },
+  {
+    "id": "notes-4ade2c5e773a",
+    "source": "[^outer]: intro\n\n[r][d]\n     [^inner]: note\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-4ae6873e14cd",
+    "source": "\n[^n]: intro\n  > quote\n    ordinary line\n\n```\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-4aeb49b5ad82",
+    "source": "  > quote\n\n[^n]: intro\n    ordinary line\n\nsee[^n]\n\n"
+  },
+  {
+    "id": "notes-4b1d6c41e50e",
+    "source": "[^n]: intro\n[^n]:  body\n\n   ::: >\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-4b1dc73cd941",
+    "source": "x[^f]\n \n[^f]:\n  more\n"
+  },
+  {
+    "id": "notes-4b277f6a351c",
+    "source": "\nSee[^1].\n\n[^1]: a\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-4b31b6c598a3",
+    "source": "[^u]: see [x](#nope)\n`^[fn]``x\n\nBody.\n"
+  },
+  {
+    "id": "notes-4b552aa52e35",
+    "source": "[^a]: intro\n  %% c\n  mmore\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-4be29ed8f232",
+    "source": "x[^n]\n\n$`x`\n- :: c\n\n    %% note\n    [^n]: y\n  more\n"
+  },
+  {
+    "id": "notes-4bfb4dbf9ae2",
+    "source": "a[^1]\n/i/\n\n[^1]: %% n\n\n  ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-4c3a787c4562",
+    "source": "[^n]: intro\n\n  - item\n\n\n    > quote\nsee[^n]\n"
+  },
+  {
+    "id": "notes-4c3ee59f1517",
+    "source": "# H\n\nBody[^n]\n\n\n  [^g]: n\n[^n]: see </#H>\nsee[^n]\n\n"
+  },
+  {
+    "id": "notes-4c972a38291f",
+    "source": "[^a]: note\n\n+ \n  ```=html\n  <b>x</b>\n  ```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-4cc71ba2b5f6",
+    "source": "x[^n]\n\n cap\n:: c\n  [^n]: y\n"
+  },
+  {
+    "id": "notes-4d16a024499a",
+    "source": "[^a]: intro\n\n  | a |\n  | - |\n  | b |\n\n  closing line.\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-4d7ddbe09ae1",
+    "source": "  [^f]: nte\n    more\ntail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-4d8bbde10814",
+    "source": "x[^1]\n\n[^1]: > q\n:::\n\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-4dc51b5608ab",
+    "source": "[^a]: +\n[^n]: a\n +\npara\n> q\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-4dca7be963ad",
+    "source": "[r]][] [^p] [^]\n[^c]: - para\n    # H\n"
+  },
+  {
+    "id": "notes-4e4fdc6ef8c5",
+    "source": "See[^1].\n\n[^1]: a\n \n    - b\n"
+  },
+  {
+    "id": "notes-4e6e600d7252",
+    "source": "::: footnotes \"Notes\" [End]\n:::\n\nA[^1].\n\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-4ea5f71a7b53",
+    "source": "\n x[^f]\n\n[^f]: \tnote\n\n"
+  },
+  {
+    "id": "notes-4ead74fff28e",
+    "source": "[^u]: see [x](#nope)\n\nBod.\n"
+  },
+  {
+    "id": "notes-4eb3c41048ba",
+    "source": ":: t\n:  -- a\n    [^n]: note text\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-4f3571464f16",
+    "source": "::: note\n- para\n  [^f]: n\n*[A]: b\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-4f856fa623f7",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\nFirst marker.\n:::\n\n::: footnotes\nSecond marker.\n:::\n:::\n\n[^a]: note\n[^a]: note\n"
+  },
+  {
+    "id": "notes-4fc28b74be16",
+    "source": "See[^1].\n@user\n[^1]: a\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-4fd306aa1c8f",
+    "source": "- - a\n\t [^f]: x\n"
+  },
+  {
+    "id": "notes-5077fb7849e2",
+    "source": "[^a]: note\n\n   [r]: /u\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-5078f8dc86e9",
+    "source": "[^f]: outer\n\n       [^g]: mid\n\n         [r]: /url\n         TAILWORD\n^ cap\n\nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-507f5854ee9e",
+    "source": "[^f]: alpha\n :: term\n\n: See[^f]\n"
+  },
+  {
+    "id": "notes-508f2048db70",
+    "source": ":: t\n:  - a\n    [^n]: note text\n\nSeee [^n].\n"
+  },
+  {
+    "id": "notes-50dee4b44d0d",
+    "source": ":: term\n: item\n  [^c]: para\n   ```\n\n See[^c]\n"
+  },
+  {
+    "id": "notes-5110b813296c",
+    "source": "\t# H\n\t\nBody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-518412c74890",
+    "source": "[^outer]: intro\n[^m]: - x\ntail\n\n     [^inner]: note\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-51e6ad94d2de",
+    "source": "see[^a] and [t][r]\n\n\n[r]: /u\n\n[^a]: ote\n"
+  },
+  {
+    "id": "notes-51ee8ee75600",
+    "source": "see [^a\tb]\n\n\n\n[^ b]: note\n"
+  },
+  {
+    "id": "notes-524891982ee5",
+    "source": "x[n]\n\n- :: c\n    %% note\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-5267233a0bbe",
+    "source": "[^a]: +\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-527107bd6874",
+    "source": "[^a]: +\n  flush\nsee[^a]\n"
+  },
+  {
+    "id": "notes-527d9c71028b",
+    "source": "[^f]: n\n+\n```\na\n[^z]: zz\nb\n```\n\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-52d061887ee5",
+    "source": "\na[^1]\n[^1]: %% n\n \n ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-5308ab5acfb9",
+    "source": "x[^f]\n\n[^f]:\n[^f]:\n"
+  },
+  {
+    "id": "notes-541e419b507e",
+    "source": "[^a]: intro\n  more\nsee[^a]\n/i/\n"
+  },
+  {
+    "id": "notes-54886bc662c5",
+    "source": "a [t[^1]][nope] b [^1] c\n\n[^1]: n\nsee[^outer]\n[^1]: see ^[</#h>]\n"
+  },
+  {
+    "id": "notes-549a543a65fa",
+    "source": "[^f]: outer\n \n  [^g]: mid\n\n      [^h]: inner\n\n    [:::r]: /url\n    TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-54a5f77a3ced",
+    "source": "x ^[a [^1] c]\n\n[^1]: n:::\n"
+  },
+  {
+    "id": "notes-552dabb4bc10",
+    "source": "> %%%\n> [^f]: note\n> %%%\n\nSee [^f].\n   ```=latex\n   c\n"
+  },
+  {
+    "id": "notes-5540de39d72b",
+    "source": "- \n  [^f]: \tnote\n"
+  },
+  {
+    "id": "notes-55eaa2127637",
+    "source": "a [t[^1text]] b\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-56812b2064c7",
+    "source": "- a\n  [^f]: t\n    more\n    more\n    more\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-568e454ea769",
+    "source": "[^n]: # H\n\n[H][]\n[^m]: > q\n"
+  },
+  {
+    "id": "notes-5692cb2417c8",
+    "source": "[^a]: note\n\n  # H\n \n1.   after\n   \n   see[^a]\n"
+  },
+  {
+    "id": "notes-56a88fdc8da4",
+    "source": "[^a]: note\n ```\n  code\n ```\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-56ad6d948cb2",
+    "source": "[^a]: +\n```\nsee[^a] and [t][r]\nx\n```\n```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-56b79e021ffc",
+    "source": "a [^1] b\n\n[^1]: see [t[^2]][r]\n|= a |= b |\n\n- body\n\n [^fn]: body.\n[r]: /u\n\n[^2]: two\n"
+  },
+  {
+    "id": "notes-56be380156a1",
+    "source": "se::::e[^n]\n\n[^{#i}n]: a\n\n\n    > [r]: /x\n[x][r]\n"
+  },
+  {
+    "id": "notes-56fa96ba8c6b",
+    "source": "[^a]: intro\n\n   | a |\n  more\n   | - |\n   | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-5705823cacf4",
+    "source": "x[^1]\n\n[^1]: note\n\n\n      ```\n      a\n         \n      b\n      ```\n"
+  },
+  {
+    "id": "notes-5737345ad321",
+    "source": " x[^f]\n- \n  \n  [^f]: \tnote\n"
+  },
+  {
+    "id": "notes-57bd1d12d1e4",
+    "source": "[^a]: intro\n[^a]: intro\n  %% c\n\n  more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-580f67461cd9",
+    "source": "# H\n\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-5841312f1468",
+    "source": "See[^1].\n\n- \n[^1]: a\n\n\n    - b\n!`z`\n"
+  },
+  {
+    "id": "notes-58bc47778f88",
+    "source": ":: t\n   [^f]: t\ntail\n\n  [^g]: n\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-58cdc3aa2e62",
+    "source": "See the note.[^n]\n\n[^n]: First paragraph of the note.\n+\n"
+  },
+  {
+    "id": "notes-58d617601f64",
+    "source": "[^a]: intro\n\n\n\n  | a |\n  | - |\n  | b |\n\n  closing line.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-58f68ae269b6",
+    "source": "[^a]: note\n \n - one\n    - deep\n\n  end.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-5938bfe43728",
+    "source": "[^a]: note\n\n  # H\n\n  after\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-596b7222adf1",
+    "source": "- x\n  [^g]: b\n   [r]: /url\n \nSee [r][] and [^g].\n"
+  },
+  {
+    "id": "notes-597672f5db59",
+    "source": "- see[^n]\n\n1.   [^n]: a\n     # h\n"
+  },
+  {
+    "id": "notes-5a01c1d32051",
+    "source": "- a\n  [^f]: t\n    more\n  b\n\n\n+\n"
+  },
+  {
+    "id": "notes-5a1af70a6c40",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\n:%%::\n\n::: footnotes\nText[^a].\n\nSecond marker.\n:::\n[^a]: note\n"
+  },
+  {
+    "id": "notes-5a6971cbd6af",
+    "source": "- a\n  [^f]: note\n\n    more\ntail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-5ad58f3eaad3",
+    "source": "[^f]: n\n+\n```\na\n[r][]\n\nb\n\nsee[^f]\n\n"
+  },
+  {
+    "id": "notes-5aeed13ac4c1",
+    "source": "[^a]: x\n+\n- b\n\nsee[^a]\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-5b3d135a7ca3",
+    "source": "see[^n]\n\n[^n]: a\n\n    > [r]: /x\n [x][r]\n"
+  },
+  {
+    "id": "notes-5b7dd1fba95c",
+    "source": "see[^n]\n  \n[^n]: para\n  | a |\ntail\n"
+  },
+  {
+    "id": "notes-5c5cdf831f5f",
+    "source": "See the note.[^n]\n[^n]: First paragraph of the note.\n\n  %% c\n+\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-5c6e8ae4a6a7",
+    "source": "[^n]: a\n+\t\npara\n > q\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-5c73ec6eae1d",
+    "source": "see[^a] and [t][r]\n\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-5c9876a74974",
+    "source": ":::\n\nA[^1].\n\n[^^1]: n\n"
+  },
+  {
+    "id": "notes-5cbb6a48de06",
+    "source": "see[^n]\n\n\n[^n]: a\n\n    > [r]: /x\n[x][r]\n"
+  },
+  {
+    "id": "notes-5cf44cc8edb0",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n\n[r]: /u\n> [^a]: note body\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-5d02f7e1507b",
+    "source": "x[^1]\nSee[^m] and again[^m].\n\n1. \n[^1]: q\n\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-5d1a631e50dd",
+    "source": "[^a]: +\nsee[^a]\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-5de46152afd8",
+    "source": "\n[^n]: para\ntail\n   # Heading\n   # Heading\n"
+  },
+  {
+    "id": "notes-5deae630e849",
+    "source": "[^a[d]: u]: +\n- a list\n\n\n:  d\nsee[^a]\n"
+  },
+  {
+    "id": "notes-5e911bdcb972",
+    "source": "\n[^a]: note\n\tmore\n\tmore\n\nsee[^a]]\n"
+  },
+  {
+    "id": "notes-5edecfd293a4",
+    "source": "See the ote.[^n]\n \n[^n]: First paragraph of the note.\n+\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-5f490742089a",
+    "source": "x ^[a [^1 c]\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-5f4d604558a4",
+    "source": "a[^1]\n\n[^1]: ```=latex\n\n  \\x\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-5f8d363df96d",
+    "source": "[^outer]: intro\n``\n     [^inner]: note\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-5fbf9806eff2",
+    "source": "[^a]: x\n+\n- \n- \n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-600ce12bdcfa",
+    "source": "[r][d]\na [^1] b\n\n[^1]: see ^[</#h>]\n\n# h\n"
+  },
+  {
+    "id": "notes-607557618950",
+    "source": "- a\n  [^f]: t\n\n    more\ntail\na [t[^1]][r] b\n\n\n  :: c\nx[[^f]\n"
+  },
+  {
+    "id": "notes-609ebcfd2e40",
+    "source": "see[^a] and [t][r]\n[^outer]: intro\n\n     [^inner]: note\n\n      see[^inner]\n \nsee[^outer]\n"
+  },
+  {
+    "id": "notes-60a8788827f8",
+    "source": "[^a]: note\n\nmore\n\nsee[^a]\n*[A]: b\n"
+  },
+  {
+    "id": "notes-60e2be6be225",
+    "source": "[^a]: i:::ntro\n  %%%\n  c\n  %%%\n\n  more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-6100fe78df2e",
+    "source": "[^n]: intro\n \n   ::: >\n   > quote\n  :::\n> \nsee[^n]\n"
+  },
+  {
+    "id": "notes-612bd91795c5",
+    "source": "\n\n[^f]: note\ntext\n"
+  },
+  {
+    "id": "notes-6193d89bbe4d",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n      one\n      ~~~\n[l](u)\n      ~~~\n      two\n      ~~~\n- below\n\n\t[^a] [^b]\n"
+  },
+  {
+    "id": "notes-61a3c454e45a",
+    "source": "x[^1]\n\n\n[^1]: a\n\n    ```=latex\n    \\x\n    ```\n"
+  },
+  {
+    "id": "notes-61d8722fc046",
+    "source": "[^n]: # H\n  \n</#H>\n"
+  },
+  {
+    "id": "notes-61da9c2b9348",
+    "source": "[^11]: n\n"
+  },
+  {
+    "id": "notes-61ddb059119a",
+    "source": "# H\n# H\n\nBody[^n]\nBody[^n]\n\n"
+  },
+  {
+    "id": "notes-61f4df33ea3c",
+    "source": "[^a]: note\n[^a]: note\n\t\tmore\n\t\nsee[^a]\n"
+  },
+  {
+    "id": "notes-620b340c17e1",
+    "source": "x[^n]\n\n- :: c\n     %% note\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-6276c6403ee5",
+    "source": "[^outer]: intro\n\n\n:      [^inner]: note\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-62a792db276d",
+    "source": "[[^n]: intro\n\n   :: term\n   : ^[fn] definition\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-63261404db69",
+    "source": "1. - body\n\n  [^g: n\n   > z\n\n\nafter\n"
+  },
+  {
+    "id": "notes-638fad12a647",
+    "source": "See[^1].\n\nsee[^n]\n\n[^^]: a\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-63eaca2693b6",
+    "source": "[^a]: intro\n\n> :    | a |\n>    | - |\n   | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-640c504a3fcb",
+    "source": "- [^a]: text\n\t\n    [^b]: inner\n      ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n      ~~~\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-641d5a17958d",
+    "source": "[^f]: n\n+\n```\na\n[^z]: zz\nb\n\n```\n- see[^n]\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-6455cd8f1677",
+    "source": "- a\n  [^f]: t\n    more\n    more\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-64efb2fea328",
+    "source": "see [^a\tb]\nsee [^a\tb]\n\n*b*\n[^a b]: note\n"
+  },
+  {
+    "id": "notes-651194ec316c",
+    "source": "- see[^n]\n\n [^n]: a\n    # h\n"
+  },
+  {
+    "id": "notes-651a85fff1c0",
+    "source": "x[^1]\n\n[^1]: > q\n   ```js\n   c\n\t  ```\n"
+  },
+  {
+    "id": "notes-652afa1349e1",
+    "source": "- a\n  [^f]: t\n    more\n\n x[^f]\n"
+  },
+  {
+    "id": "notes-6538fadee76f",
+    "source": "[^a]: intro\n\n   | a |\n   | - |\n\n   | b |\n\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-6553211d411d",
+    "source": "Wrapped[[^two\nwords].\n\n[^two words]: This definition is not referenced.\n[^broken\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-656268e4550e",
+    "source": "see[^a] and [t][r]\n\n[r]: /u\n```x\n```x\n[^a]: note\n"
+  },
+  {
+    "id": "notes-65acc4893135",
+    "source": "x[^n]\n\n- :: c\n    %% note\n    [^n]: y\n   [^n]: y\n"
+  },
+  {
+    "id": "notes-65b88ba93310",
+    "source": "[^n]: intro\n\n   :: term\n   :  definition\n[^1]: a\n\n      > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-65c136075d23",
+    "source": "[^a]: note\n\n  # H\n\n  after\n\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-65eea7f3c2b3",
+    "source": "a [t[^1]] b\na [t[^1]] b\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-661120a09ba7",
+    "source": " :: t\n:  - a\n     [^n]: note text\n\nSee [^n].\n:: t\n"
+  },
+  {
+    "id": "notes-66158f82600f",
+    "source": "x[^n]\n\n: c\n  [^n]: y\nx ^[a [^1] c]\n\n"
+  },
+  {
+    "id": "notes-66bdc9f062f4",
+    "source": "x[^n]\n\n:: a\n: b\n  :: c\n    [^n] y\n"
+  },
+  {
+    "id": "notes-6762e7f47332",
+    "source": "[^a]: note\n[^a]: note\n\n\tmore\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-67901c49fafb",
+    "source": "[^n]: a\n+\npara\n> q\n\nsee[|= a |= b |^n]\n"
+  },
+  {
+    "id": "notes-67cef8082cf6",
+    "source": "See[^1].\n\t\n```x\n[^1]: a\n\n\n\n    b\n"
+  },
+  {
+    "id": "notes-67e89c79b397",
+    "source": "[^u]: see [x](#nope)\n>  \n"
+  },
+  {
+    "id": "notes-67f15a13ecb0",
+    "source": "[^u]: see [x](#nope)\n[^u]: see [x](#nope)\n[^f]: t\nx[^f]\nBody.\n"
+  },
+  {
+    "id": "notes-68347e0e6958",
+    "source": "- body\n\n^[fn]\n\n  [^g]: n\n   prose\n\nafter\n"
+  },
+  {
+    "id": "notes-6870fef73d7f",
+    "source": "\nText[^a].\n\n[^a]: note.\n"
+  },
+  {
+    "id": "notes-68a392706f0d",
+    "source": "[^f]: n\n+\n\n\n```\na\n\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-68b5a5674da9",
+    "source": "[^a]: +\n[^1]: a\n```\nx\nx\n```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-693c43495b48",
+    "source": "\nx[^1]\n[^1]: note\n\n       ```\n      a\n        \n     b\n      ```\n"
+  },
+  {
+    "id": "notes-696d07157379",
+    "source": "[^a]: +\n   flush\n\nref [^a]\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-6979064b6596",
+    "source": "[^a]: note\n [r]: /u\n [r]: /u\n\n"
+  },
+  {
+    "id": "notes-697a44f7cc7b",
+    "source": "a[^1]\n\n[^1]: %% n\n\n  ```=latex\n  \\x\n ```\n:: t\n"
+  },
+  {
+    "id": "notes-69b710fc92c6",
+    "source": "[^f]: alpha\n:: term\n\n"
+  },
+  {
+    "id": "notes-69d5e1b7a292",
+    "source": ": . d\n::: |\n   [^n]: e\n     - a\n"
+  },
+  {
+    "id": "notes-69d9a55d78f0",
+    "source": "x[^1]\n\n\n[^1]: q\n\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-6a0072fa3ccc",
+    "source": "[^n]\n[^f]: n\n+\n```\na\n[^z]: zz\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-6a18cff7a108",
+    "source": ":: t\n:  - a\n\n    [^n]: note text\n\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-6a4a7b950012",
+    "source": "- > para\n- a\n  [^f]: no</#h>te\n    more\ntail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-6a8a0a09c1d2",
+    "source": "x[^n]\n\n\n:: c\n   [^n]: y\n"
+  },
+  {
+    "id": "notes-6ade04089e98",
+    "source": "[^a]: note\n  | a |\n\n\n  | - |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-6ade6661c27a",
+    "source": " [^a]: +\n- a list\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-6aea9f5a4bd6",
+    "source": "[^a]: q\n+\n+\n\n\nref [^a]\n\n"
+  },
+  {
+    "id": "notes-6af32112d860",
+    "source": "a[^1]\n\n[^1]: %% n\n\n\n  ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-6b315a461246",
+    "source": "a [t[^1]{#z}]. [r] [^1]{#y}\n\n\n[^11]: n\n"
+  },
+  {
+    "id": "notes-6b3e18b6e05c",
+    "source": "a [t[^1]][nope] b [^1] c\n\n^ cap[^1]: n\n"
+  },
+  {
+    "id": "notes-6b5f36f43569",
+    "source": "x[^n]\n~~~\n:: a\n\n: b\n  :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-6b7f1afac42b",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n \n[^1]: n\n"
+  },
+  {
+    "id": "notes-6c7b3f36ed6d",
+    "source": "[^a]: intro\n\n  | a |\n  | - |\n  | b |\n  | b |\n\n  closing line.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-6cb65b9c5d36",
+    "source": "[^a]: intro\n  %%%\n  c\n  %%%\n  more\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-6ccbeb8f35ef",
+    "source": "see[^a] and [t][r]\n\n[r]: /u\n\ntext\n[^a]: note\n"
+  },
+  {
+    "id": "notes-6d1c32541262",
+    "source": " a [^1] b\n\n\n[^1]: see ^[</#h>]\n\n# h\n"
+  },
+  {
+    "id": "notes-6d3939cd3ec9",
+    "source": "[^a]: note\n  ```\n  code\n\n $`x` ```\nsee[^a]\n"
+  },
+  {
+    "id": "notes-6d5d33eee659",
+    "source": "[^a]: note\n\tmore\n\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-6d8342063007",
+    "source": "a[^1]\n[^f]: outer\n\n\n1. [^1]: ```=html\n1.   <b>x</b>\n  ```\n"
+  },
+  {
+    "id": "notes-6db864f6ba22",
+    "source": "see[^f]\n\n\n[^f]: head\n  %%%\n  a\n%%%\n%%%\n\n"
+  },
+  {
+    "id": "notes-6db8c2a2120a",
+    "source": ": term\n: item\n  \t[^c]: para\n   ```\n\n  See[^c]\n[^a]: note\n"
+  },
+  {
+    "id": "notes-6df676ac67c1",
+    "source": "See the note.[^n]\n[^f]: t\n\n[^n]: First paragraph of the note.\n+\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-6e2ab4f2f8ae",
+    "source": "\n- a\n  [^f]: t\n\n    more\n  b\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-6e4a20eec8b8",
+    "source": "-  - a\n-  - a\n-  - a\n [^f]: x\n"
+  },
+  {
+    "id": "notes-6e55948cfaaf",
+    "source": "[^a]: note\n   [r]: /u\nsee[^a] and [t][r]\n\n"
+  },
+  {
+    "id": "notes-6e7089a05e64",
+    "source": "[^n]: intro\n\n   :: term\n   :  definition\n1. \n\n      > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-6f268d95d175",
+    "source": "x[^1]\n\n[^1]: > q\n\t   ```js\n\t   c\n   ```\n"
+  },
+  {
+    "id": "notes-6f92598b0d7b",
+    "source": "[^a]: note\n   r]: /u\n\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-6fc668f39967",
+    "source": "[^a]: +\n   flush\n\n\nsee| a | b |[^a]\n"
+  },
+  {
+    "id": "notes-6fd30ed890d0",
+    "source": "x[^1]\n\n[^1]: > q\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-6fef2c1c5027",
+    "source": "[^n]: intro\n\n   ::: >\n   > quote\n   :::\n\n \nsee[^n]\n"
+  },
+  {
+    "id": "notes-70822eb19efc",
+    "source": "x[^n]\n\n:: c\n:: c\n  [^n]: y\n"
+  },
+  {
+    "id": "notes-70b8d0615667",
+    "source": "x[^1]\n\t\n\t[^1]: > q\n\t\n        ```js\n        ```\n"
+  },
+  {
+    "id": "notes-70d4d0df4482",
+    "source": "\ta[^1]\n\t\n\t[^1]: ```=html\n  <b>x</b>\n  ```\n"
+  },
+  {
+    "id": "notes-70f27b651257",
+    "source": "[^a]: note\n  ```\n* \n  code\n  ```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7113085c4105",
+    "source": "[^n]:::: # H\n\n[H][]\n"
+  },
+  {
+    "id": "notes-719d60ba1b6e",
+    "source": "[^f]: b\n\n  :: t\n   : d\n   [r]: /url\n\n\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-71dd1fb4f83e",
+    "source": "[^a]: q\n+\n\n+\nref [^a]\n"
+  },
+  {
+    "id": "notes-726763ebc756",
+    "source": "see[^n]\n\n[^n]: a\n\n\n    > [r]: /x\n[x][r]\n  after\n"
+  },
+  {
+    "id": "notes-72f4cd614219",
+    "source": "\n1. [^f]:   note\nsee[^f]\n"
+  },
+  {
+    "id": "notes-7302c3743050",
+    "source": "[^a]: +\n\n - a list\nsee[^a]\n- see[^n]\n\n"
+  },
+  {
+    "id": "notes-731d9d4410a9",
+    "source": ": \n>>   Body.\n"
+  },
+  {
+    "id": "notes-737a60e9eb95",
+    "source": "a[^1]\n\n: [^1]: %% n\n  \n    ```=latex\n\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-73a2c6ee6bbe",
+    "source": "a [^1] b\n\n\n[^1]: see ^[</#h>]\n\n>> \n h\n"
+  },
+  {
+    "id": "notes-73dcf2afdba0",
+    "source": "see[^^n]\n\n[^n]: para\n\n   # Heading\n   # Heading\ntail\n"
+  },
+  {
+    "id": "notes-740162b3ec87",
+    "source": "-- [^a]: text\n    [^b]: inner\n      ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n      ~~~\nbelow\n\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-7416c361886b",
+    "source": "  x[^1]\n  \n  [^1]: note\n\n      ```\n      a\n        \n       b\n > \n       ```\n"
+  },
+  {
+    "id": "notes-743aacab11db",
+    "source": "# H\n\n1. Body[^n]\n1. \n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-747846d4d54b",
+    "source": "\n  First\n[^a]:\n"
+  },
+  {
+    "id": "notes-74c068477abd",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\n:::\n\nSecond marker.\n::: footnotes\n:::\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-74ce29c2c7df",
+    "source": "^f]: n\n+\n```\n```\na\n\nb\n```\n{}\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-74da5357ceba",
+    "source": "> [^a]: n\n        c\n        ```\n> +\n\nparra\n"
+  },
+  {
+    "id": "notes-7532160dadde",
+    "source": "- body\n\n [^g]: n\n  [^g]: n\n   # h\n\nafter\n"
+  },
+  {
+    "id": "notes-75600952a82c",
+    "source": "[^a]]: intro\n  %%%\n  c\n   %%%\n  more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-75d29c3df9b0",
+    "source": "- - a\n [^f]: x\n   ```\n"
+  },
+  {
+    "id": "notes-75fbdde673e9",
+    "source": "[^m]: > q\n[^a]: note\n   [r]: /u\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-76208578e63e",
+    "source": "[^```a]: note\n\n  # H\n\n  after\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7650961b8f84",
+    "source": "[r][] [^p] [^c]\n   # H\n"
+  },
+  {
+    "id": "notes-76b4eec54aad",
+    "source": "see[^n]\n\n\n    > [r]: /x\n[x][r]\n"
+  },
+  {
+    "id": "notes-76c3b47d9531",
+    "source": "::: note\n- para\n  [^f]: n\n```\ncode\n::::\n:::\n"
+  },
+  {
+    "id": "notes-76db0251540f",
+    "source": "x[^f]\n\n\n[^f]:  note\n"
+  },
+  {
+    "id": "notes-76f1310beac1",
+    "source": ":: term\n: item\n  [^c]: para\n  ```\n\n  See[^c]\n: \n"
+  },
+  {
+    "id": "notes-771e65fb363b",
+    "source": "[^f]: n\n</#h>+\n```\na\n\nb\n```\n\nsee[^f]\n~~~\n"
+  },
+  {
+    "id": "notes-7731d838d2b3",
+    "source": "\n> [r]: /url\n> [^f]: note\n\n See [r][] [^f`].\n"
+  },
+  {
+    "id": "notes-7758bc8d539d",
+    "source": ":: t\n:  - a\n     [^n]: note text\n*[A]: b\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-775b4ff8ef78",
+    "source": "::  t\n:  - a\n    [^n]: note text\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-7847f69043f4",
+    "source": "[^n]: intro\n\n   :  definitioon\n   :: term\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-7848d304e31c",
+    "source": "[^a]: note\n\n [r]: /u\n\nsee[^a] and [t][r]::: note\n"
+  },
+  {
+    "id": "notes-789185263791",
+    "source": "  >   - sub\na [t[^1]{.x}](/u) c [^1] b\n \n1. \n[^1]: n\n"
+  },
+  {
+    "id": "notes-790cb584d946",
+    "source": "x ^[a [^1] c]\n\n\nx[^f]\n[^1]: n\n"
+  },
+  {
+    "id": "notes-7937b26348b6",
+    "source": "- - body\n\n   [^g]: n\n prose\n"
+  },
+  {
+    "id": "notes-793b6c46ddb9",
+    "source": "::: note\n- paara\n  [^f]: n\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-798acbf8b56f",
+    "source": "[^a]: +\n  flush\n  flush\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-79c34eeb0804",
+    "source": "::: note\n- para\n  [^f]: n\n::::\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-7a4f191fff9c",
+    "source": "[^n]: a\n[^n]: a\n+\npara\n> q\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-7a695b797a75",
+    "source": "\n[^n]: intro\n[^f]: outer\n\n   :  definition\n   :: term\n\n      > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-7a9140149677",
+    "source": "\nSee[^1].\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-7aa1513c5cf9",
+    "source": "\tmoe\n[^a]: note\n%%\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7bd7a5c00b89",
+    "source": "[^f]: alpha\n_u_\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-7c340b4fbdd7",
+    "source": " a [t[^1]](/u) b\n\n^1]: n\n"
+  },
+  {
+    "id": "notes-7c759129b086",
+    "source": "[^a]: +%%%\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7caa3829ad1b",
+    "source": "[^a]: note\n\n   ```=html\n   <b>x</b>\n  ```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7cc845ba8745",
+    "source": "Use [^a].\n\t\n\t[^a]:\n  First\n"
+  },
+  {
+    "id": "notes-7d1eea3af3e1",
+    "source": "x[^n]\n\n[^m]: One note, two reefs.\n\n:: c\n  [^n]: y\n"
+  },
+  {
+    "id": "notes-7d20f8312ff4",
+    "source": "- a\n  [^f]: t\n [^f]: a\n     [r]: /url\n[r][]\n"
+  },
+  {
+    "id": "notes-7d45c3145e05",
+    "source": "see[^a]\n::[^f]: t t\n    [^n]: note text\n:  - a\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-7dedb1051d95",
+    "source": "a [t[^1]](/u) b\n\n[^1]: n\n[^1]: n\n  ```\n"
+  },
+  {
+    "id": "notes-7e2ca18e16e0",
+    "source": "x ^[a [^1] c]\n\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-7e4c3fabfd3b",
+    "source": "x[^f\n\n\n[^f]:\n"
+  },
+  {
+    "id": "notes-7e4e14c832b2",
+    "source": "- a\n   [^f]: t\n\n    more\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-7e776c3684df",
+    "source": " [^n]: intro\n\n   :: term\n   :  definition\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-7ea19a9193cb",
+    "source": "See[^m] and again[^m].\n%%\n\n + [^m]: One note, two refs.\n"
+  },
+  {
+    "id": "notes-7ea674cade52",
+    "source": "[^a]: intro\n  %%%\n  c\n %%%\n  more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7eca7c00584c",
+    "source": "[^f]: n\n+\n```\na\n[^z]: zz\nb\n[^1]: see ^[</#h>]\n```\n\nsee[^f]\n[^a]: +\n\n"
+  },
+  {
+    "id": "notes-7ecf5e2bbe14",
+    "source": "[^a]: intro\n+\nmore\n\n"
+  },
+  {
+    "id": "notes-7ef4a1cbcb55",
+    "source": "\nText[^a].\n [^a]: note.\n"
+  },
+  {
+    "id": "notes-7f00a50695f2",
+    "source": "- body\n> \n    [^g]: n\n      prose\n\nafter\n"
+  },
+  {
+    "id": "notes-7f58ca882f86",
+    "source": "[^a]: note\n\n\n  - one\n    - deep\n\n  end.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7f61ab30fba2",
+    "source": "::::\n[^a]: note\n\n  `::: note``=html\n  <b>x</b>\n\n  ```\nsee[^a]\n"
+  },
+  {
+    "id": "notes-7f7afda1f031",
+    "source": "- a list\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-806be050480b",
+    "source": "[^f]: alpha\n  :: term\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-8124ce94f74d",
+    "source": "[^f]: outer\n\n       [^g]: mid\n\n         [r]: /url\n\nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-813c9fc2b6fc",
+    "source": "[^^a]: +\n- a list\n\npara\nsee[^a]\n"
+  },
+  {
+    "id": "notes-81512fd453d3",
+    "source": "[^o%%%uter]: intro\n     [^inner]: note\n\n\n     see[^inner]\n\n1. see[^outer]\n"
+  },
+  {
+    "id": "notes-828cc2cbc362",
+    "source": "\nsee[^n]\n[^n]: a\n\n\n    > [r]: /x\n[x][r]\n"
+  },
+  {
+    "id": "notes-82a325832d00",
+    "source": "[^a]: note\n\tore\nsee[^a]\n"
+  },
+  {
+    "id": "notes-82b36e58eaf3",
+    "source": "a[^1]\n\n\n  ```=latex\n  ```\n  \\x\n"
+  },
+  {
+    "id": "notes-83256923f397",
+    "source": "a [t[^1]] b\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-832a81366832",
+    "source": "Wrapped[^two\nwords].\n\n[^two words]: This definition is not referenced.\n\n\n[^broken\nlabel]: This is not a defiition.\n"
+  },
+  {
+    "id": "notes-8394e9e3db4f",
+    "source": " [^f]: outer\n\n   [^g]: mid\n:   [r]: /uurl\n  \nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-83a2a6927983",
+    "source": "a [t[^1]](/u) b\na [t[^1]](/u) b\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-83f061addad5",
+    "source": " # H\n\n{\nBody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-8412d1989174",
+    "source": "\n x[^n]\n\n:: c\n   [^n]: y\n"
+  },
+  {
+    "id": "notes-852c9bbe4a04",
+    "source": "See[^1].\n\n[^1]: a\n[^n]\n\n\n    b\n"
+  },
+  {
+    "id": "notes-8549c77c53d6",
+    "source": "[^n]: intro\n\n   :: term\n\n   :  definition\n      > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-8615ce4d7b07",
+    "source": "\tmore\n[^a]: note\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-869f6f8ce29c",
+    "source": "[^n]: a\n  code\n+\npara\n> q\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-86dddd99dce6",
+    "source": ":  d\n  [^f]: n\ntail\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-86ea59e81a65",
+    "source": "[^a]: note\n\n  | a |\n+ \n  | - |\n  | b |\n\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-86efbe29dc87",
+    "source": "text\ntext\n[^f]: note\n"
+  },
+  {
+    "id": "notes-870554a83699",
+    "source": "[^a]: +\n- a ls~~~t\n\n  [^g]: n\n   prose\nsee[^a]\n"
+  },
+  {
+    "id": "notes-8780df4770c5",
+    "source": "\n[^f]: b\n  [^g]: c\n   [^n]: note text\n\nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-88011713ff9f",
+    "source": "[^f]: t\na [t[^1]{.x}](/u) c [^1] b\n\n[^1]: n\n---\n"
+  },
+  {
+    "id": "notes-8873574d5f5d",
+    "source": "a [t[^1]][r] b\n\n[r]: /u\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-8898069917f0",
+    "source": "x[^n]\n\n:: a\n: b\n  ::  c\n\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-8946a6aa2b76",
+    "source": "\t\n[^a]: note\n\n  # H\n\n  after\n\nsee^a]\n"
+  },
+  {
+    "id": "notes-8961c33bf652",
+    "source": "\nWrapped[^two\nwords].\n \n[^two words]: This definition is not referenced.\n\n\n[^broken\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-89bd6f7844e3",
+    "source": "- body\n  [^g]: n\n\n\n   > z\n\nafter\n"
+  },
+  {
+    "id": "notes-89c6ee85d5e2",
+    "source": "see[^a] and [t][r]\n\n\n[r]: /u\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-8a08bbfcffd0",
+    "source": "- - a\n [^f]: x\n\n"
+  },
+  {
+    "id": "notes-8a11799e5be4",
+    "source": "- para\n  [^f]: n\n\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-8a1a13d33df4",
+    "source": "\tmore\n[^a]: note\n\nsee[^a]\n    b\n"
+  },
+  {
+    "id": "notes-8a2ec35a6007",
+    "source": "[^a]: note\n\n [r]: /u\n- \n  see[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-8a36ad101832",
+    "source": "[^a]: +\n```\nx\n```\n\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-8a3807ea06d7",
+    "source": "> see[^n]\n> \n> * \n[^n]: para\n   # Heading\ntail\n"
+  },
+  {
+    "id": "notes-8a43d8d2ad78",
+    "source": "[^n]: intro\n\n```\na\n   ::: >\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-8a58134940a0",
+    "source": "[^a]: intro\n[^a]: intro\n\n   | a |\n   | - |\n   | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-8a58290254d3",
+    "source": "x[^1]\n\n[^1]: note\n\n      ```\n      a\n         \n> \n       b\n      ```\n"
+  },
+  {
+    "id": "notes-8a5edf8dbf22",
+    "source": "\n[^a]: note\n\tmore\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-8a6e37d35202",
+    "source": "[^outer]: intro\n     [^inner]: note\n\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-8a7184dac613",
+    "source": "[^n]: intro\n\n   ::: >\n   > quote\n   :::\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-8aec73ec89ad",
+    "source": "See[^1].\n\n[^1]: a\n\n\n\n     b\n"
+  },
+  {
+    "id": "notes-8bdc38997427",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n[^1]: n\n\nafter\n"
+  },
+  {
+    "id": "notes-8c0adf0ed18f",
+    "source": "[^f]: alpha\n :: term\n:::::\n\n1. \nSee[^f]\n"
+  },
+  {
+    "id": "notes-8c477536c210",
+    "source": " [^f]: x\n- - a\n"
+  },
+  {
+    "id": "notes-8c4ee3c72010",
+    "source": "[^a]: +\n flush\n\n see[^a]\n"
+  },
+  {
+    "id": "notes-8c563561e961",
+    "source": "see[^> n]\n\n[^n]: para\n   # Heading\ntail\n"
+  },
+  {
+    "id": "notes-8c5fa0997d8b",
+    "source": "x[^1]\n\n[^1]: > q\n[^1]: > q\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-8c77d97a0ede",
+    "source": "x[^n]\n\t\n:: c\n  [^n]: y\n"
+  },
+  {
+    "id": "notes-8cb2e1c3d13e",
+    "source": " [^f]:   note\n\n\n"
+  },
+  {
+    "id": "notes-8d44d745a632",
+    "source": "see[^f]\n\n    ::: note\n::::\n     [r]: /url\n\n    :::\n[r][]\n"
+  },
+  {
+    "id": "notes-8d8e2d5d1439",
+    "source": "1. [^n]: intro\n1. \n1. > \n  - item\n\n    > qu``ote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-8e892d6a361b",
+    "source": "- a\n  [^f]: t\n    more\n  \n+ tail\n  x[^f]\n"
+  },
+  {
+    "id": "notes-8eef14e3134e",
+    "source": "a [t[^1]](/u) b\n\n\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-8f4c548fe25f",
+    "source": "a [t[^1]][r] b\n@user\n@user\n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-8fa5f19a291f",
+    "source": "[^u]: see [x](#nope)\n\n Body.\n"
+  },
+  {
+    "id": "notes-8fb963e20cbc",
+    "source": "[^n]: # H\n\n:: aa\n: b\n</#H>\n"
+  },
+  {
+    "id": "notes-9022e4c58c93",
+    "source": "::: note\n- para\n  [^f]: n\n```\n::::\ncode\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-908a82ac51ba",
+    "source": "x[^n]\n\n\n[^n]: # H\n\n[H][]\n"
+  },
+  {
+    "id": "notes-90c50c4eefc4",
+    "source": "\nBody[{^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-90e9fc326f2c",
+    "source": ". d\n   [^n]: e\n\n     - a\n"
+  },
+  {
+    "id": "notes-913c7f222a22",
+    "source": "[^a]: intro\n\n  | a |\n  | - |\n  | b |\n\n  closing line.\n\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-915889dde7ae",
+    "source": "x[^f]\nx[^f]\n\n\n[^f]:  note\n"
+  },
+  {
+    "id": "notes-91872589fbda",
+    "source": "see[^f]\n\n[^f]: a\n     [r]: /url\n    ::: note\n    :::\n\n\n[r][]\n"
+  },
+  {
+    "id": "notes-918fc4dd370b",
+    "source": "[^f]: b\n\n  :: t\n  : d\n   [r]: /url\n\nSe[^m]: - xe [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-91a0f5ca8844",
+    "source": "[^f]: n\na[^1]\n\n[^1]: %% n\n\n  ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-91e37ffffdc7",
+    "source": "[^n]: # H\n\n\n[H][]\n"
+  },
+  {
+    "id": "notes-920b800105a5",
+    "source": "a[^1]\n \n [^1]: ```=html\n   <b>x</b>\n  ```\n"
+  },
+  {
+    "id": "notes-9216ec22d558",
+    "source": "- [^a]: text\n      ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n      ~~~\nbelow\n\n"
+  },
+  {
+    "id": "notes-924e391520f2",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\n:::\n\n::: footnotes\nSecond marker.\n:::\n\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-92655155020d",
+    "source": "[^f]: n\n+\n\n: ```\na\n[^z]: zz\nb\n```\n\nsee[[^f]\n"
+  },
+  {
+    "id": "notes-927cec846a6f",
+    "source": "\n\nSee [^f].\na [t[^1]] b\n[^1]: n\n"
+  },
+  {
+    "id": "notes-928716b4fda8",
+    "source": "- body\n  [^g]: n\n\n    > z\n\nafter\n"
+  },
+  {
+    "id": "notes-92b7206463ea",
+    "source": "[^n]: # H\n\n</#[d]: uH>\n"
+  },
+  {
+    "id": "notes-93d8440a3af0",
+    "source": "a [t[^1]][nope] b [^1] c\n\n- [^1]: n\n"
+  },
+  {
+    "id": "notes-93e1890ade02",
+    "source": "\nA note^[see *later*] inline. And a ref[^a].\n[^a]: reference body.\n"
+  },
+  {
+    "id": "notes-9429cd878645",
+    "source": "x[^1]\n\n[^1]: q\n\n   ```js\n\nsee[^a] and [t][r]\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-943d28c51edd",
+    "source": "\n[^f]:   note\nsee[^f]\n"
+  },
+  {
+    "id": "notes-944554b108ba",
+    "source": "- body\n\n  [^g]: n\n   prose\n\nafter\n\n"
+  },
+  {
+    "id": "notes-944c35c08d8a",
+    "source": "[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-949c2d4d2b6c",
+    "source": "[^a]: intro\n   %%%\n  c\n  %%%\n  more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-950c30ec9dc7",
+    "source": "See the note.[^n]\n\n[^n]: First paragraph of the note.\n\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-950f9627ffda",
+    "source": "- body\n+ \n\n+   [^g]: nn\n+    prose\n\nafter\n"
+  },
+  {
+    "id": "notes-951235ce1fdf",
+    "source": "Wrapped[^two\nwords].\n\n\n[^broken\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-9556bc74f77c",
+    "source": "[^n]: intro\n\n  :: term\n  :  definition\n\n     > quote\nsee[^n]\n\n"
+  },
+  {
+    "id": "notes-95cc2c256eb1",
+    "source": "[^a]: +\n flush\n\ns$`x`ee[^a]\n"
+  },
+  {
+    "id": "notes-95d6bedb38de",
+    "source": "x[^f]\n\n\n"
+  },
+  {
+    "id": "notes-960b28b0c27a",
+    "source": "[^1]: n\nIntro[^a].\n\n> ::: footnotes\n|= a |= b |\n> :::\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-96348711763d",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r::: |]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-9651158ec199",
+    "source": "[^a]: intro\n* \n  | a |\n  | - |\n\n   | b |\n\n  closing line.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-9674e1c4c3bc",
+    "source": "> [^a]: n\n\n> +\n\n| a | b |\npara\n\n"
+  },
+  {
+    "id": "notes-9675b30426d4",
+    "source": "- > par{#i}a\n  > [^f]: n\n   >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-96b4faecd994",
+    "source": "[^a]: intro\n::: |\n  %% c\n   more\n \n see[^a]\n"
+  },
+  {
+    "id": "notes-96c34da57019",
+    "source": ": a [t[^1]][r] b\n  \n[r]: /u\n \n[^1]: n\n"
+  },
+  {
+    "id": "notes-9702524bec94",
+    "source": "see[^n]\n\n[^n]: para\n   # Heading\ntai* l\n</#h>\n\nBody.\n"
+  },
+  {
+    "id": "notes-97ba1f09bb53",
+    "source": "[^a]: q\n[l](u)+\n+\n\nref [^a]\n"
+  },
+  {
+    "id": "notes-97efd33c301c",
+    "source": "\n# H\n\nBody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-98722f631198",
+    "source": "a [t[^1]][r] b\n\n: [r]: /u\n: \n[^a]: intro\n  %% c\n: [^1]: n\n{.x}\n"
+  },
+  {
+    "id": "notes-9875761de68d",
+    "source": "x[^1]\n\n[^1]: q\n\n   ```js\n   c\n   ```\n$`x`\n[^m]: > q\n"
+  },
+  {
+    "id": "notes-98b14c298aa7",
+    "source": "x[^f]\n[r][d]\n::::[^f]:\n"
+  },
+  {
+    "id": "notes-98d66306819e",
+    "source": "x[^n]\n\nx[^f] [^g] [t][r]\n[^n]: intro\n:: c\n  [^n]: y\n"
+  },
+  {
+    "id": "notes-98f37ba8e809",
+    "source": "a [t[^1]][nope] b [^1] c\n\n[^a]: note\n\n  | a |\n  | - |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-99542e9a97be",
+    "source": "Text[^a].\n\n[^]: note.\n[^a]:  note.\n"
+  },
+  {
+    "id": "notes-9971b5fa8d7b",
+    "source": "[^a]: +\n  lush\n: \n  seee[^a]\n"
+  },
+  {
+    "id": "notes-9980f8efdfe9",
+    "source": "[^n]: a\n\n+\npara\n\n  [^g]: b\n> q\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-99a7d357e5da",
+    "source": "\n[^a]: note\n\n  after\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-99bc519a4b47",
+    "source": "[^a]: intro\n  %% c\n  more\n+ \nsee[^a]\n"
+  },
+  {
+    "id": "notes-99bf476a0550",
+    "source": "[^a]: note\n\n\n  | a |\n  | - |\n  | b |\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-99ccf57e5a95",
+    "source": "[^n]: intro\n[^n]: intro\n\n  :: term\n  :  definition\n\n      > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-99d230f1b7d8",
+    "source": "x[^n]\n\n:: a\n: b\n  :: c\n:     [^n]: y\n"
+  },
+  {
+    "id": "notes-99e4c6b22fb5",
+    "source": ": ^f]: note\nafter[^f]\n"
+  },
+  {
+    "id": "notes-9a0ed9556803",
+    "source": "- > para\n  >   - sub\n  > [^f]: n\n"
+  },
+  {
+    "id": "notes-9a7677cf6ed7",
+    "source": "Wrapped[^two\nwords].\n\n[^two words]: This definition is not referenced.\n\n[^broken\n label]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-9a7aeeea8d59",
+    "source": "See[^1].\n\n[^1]: a\n\n    - b\n\n"
+  },
+  {
+    "id": "notes-9a87eeaa9588",
+    "source": "x[^n]\n\n\n[^n]: # H\n[^n]: # H\n[H][]\n"
+  },
+  {
+    "id": "notes-9adbf64832c9",
+    "source": "[^n]: intro\n  > quote\n    ordinary line\n\n[d]: u\nsee[^n]\n"
+  },
+  {
+    "id": "notes-9b026b5b4fb8",
+    "source": "[^n]: intro\n  > quote\n    ordinary line\n\nsee[^n]\n*b*\n"
+  },
+  {
+    "id": "notes-9b1dd75e6ca5",
+    "source": "[^n]: intro\n  > quote\n    ordinary line\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-9b9439e682f2",
+    "source": "\na [t[^1]](/u) b\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-9bb3cd1d6b35",
+    "source": "Text[^a].\n\n* \n[^a]: note.\n"
+  },
+  {
+    "id": "notes-9bbacb424332",
+    "source": " text\n[^f]: note\n"
+  },
+  {
+    "id": "notes-9c4ebac7ff17",
+    "source": "[r][] [^p] [^c]\n: [^c]: - para\n     # H\n"
+  },
+  {
+    "id": "notes-9c53cdd833a1",
+    "source": " - x[^n]\n\n[^n]: # H\n\n[H][]]\n"
+  },
+  {
+    "id": "notes-9c5ba5351a85",
+    "source": " - a\n   [^f]: t\n [^f]: a\n     [r]: /url\n[r][]\n"
+  },
+  {
+    "id": "notes-9c77aa1fc9f5",
+    "source": "- a\nafter[^f]\n[^f]: note\n"
+  },
+  {
+    "id": "notes-9cd229ee5ba4",
+    "source": "\n\n\n  ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-9ce9a5038b17",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n\nsee[^a]\n     [r]: /url\n    :::\n\n[r][]\n"
+  },
+  {
+    "id": "notes-9d16790f826e",
+    "source": "Use [^a].\n\n\n[^a]:\n\n[^a]:\n First\n"
+  },
+  {
+    "id": "notes-9d3c4b49282d",
+    "source": "[^a]: note\n\n  ```=html\n  <b>x</b>\n  ```\n\n- see[^a]\n"
+  },
+  {
+    "id": "notes-9dfddfa8ffb0",
+    "source": "see [^aa\tb]\n\n[^a b]: note\n"
+  },
+  {
+    "id": "notes-9e29e44d9a75",
+    "source": "x[^1]\n\n[^1]: a\n\n    ```=latex\n    \\x\n\n    ```\n"
+  },
+  {
+    "id": "notes-9e3ba4f48de0",
+    "source": "1. [^a]: note\n\n  | a |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-9e7da6befcea",
+    "source": "[^a]: intro\n\n   | a |\n   | - |\n:    | b |\n\nsee[^a]\n   [r]: /u\n\n"
+  },
+  {
+    "id": "notes-9f1e72bff235",
+    "source": "see[^n]\n\n[# H^n]: a\n\n    > [r]: /x\n[x][r]\n"
+  },
+  {
+    "id": "notes-9f32df4bc0cb",
+    "source": "a[^1]\n\n[^1]:  ```=html\n  <b>x</b>\n  ```\n"
+  },
+  {
+    "id": "notes-9f67c2f53492",
+    "source": "- a\n  [^f]: t\n\n    more\ntail\n[fn]\nx[^f]\n"
+  },
+  {
+    "id": "notes-a04f2f457651",
+    "source": "See[^1].\n\n[^1]: a\n\n\n    b\n> \n``\n"
+  },
+  {
+    "id": "notes-a0a9d046ad0d",
+    "source": "See[^m] and again[^m].\n \n[^m]: One note, two refs.\n"
+  },
+  {
+    "id": "notes-a1b160368e5f",
+    "source": "Use [^a].\n\n\n[^a%%]:\n  First\n"
+  },
+  {
+    "id": "notes-a26152dd353d",
+    "source": "See[^1].\n\n[^1]: a\n\n\n\n   b\n"
+  },
+  {
+    "id": "notes-a27fa8af804c",
+    "source": "x[^n]\n\n- :: c\n    [^n]: y\n    %%   noote\n"
+  },
+  {
+    "id": "notes-a28bba205f1f",
+    "source": "> [^a]:  intro\n> +\nmore\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-a28e31a748ff",
+    "source": "Intro[^a].\n\n> ::: footnotes\n> :::\n\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-a2df8c58f5f8",
+    "source": "[^a]: note\n\n  # H\n\n  af%%%ter\n\nsee[^a]\n[^f]\n"
+  },
+  {
+    "id": "notes-a44073f0c00f",
+    "source": "[^n]: # H\n [^n]: # H\n[H][]\n\n"
+  },
+  {
+    "id": "notes-a45dabf03107",
+    "source": "[^f]: outer\n> \n       [^g]: mid\n\n         [r]: /url\n         TAILWORD\n: \nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-a471fda82496",
+    "source": "- a [t[^1]](/u) b\n  \n[^1{.x}]: n\n"
+  },
+  {
+    "id": "notes-a4975c1983e5",
+    "source": "See[^1].\n\n\n    - b\n"
+  },
+  {
+    "id": "notes-a4a67de5a810",
+    "source": "  [^a]: note\n  ``\n  code\n  code\n  ```\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-a4a92da24168",
+    "source": "x[^1]\n \n[^1]: > q\n\n\n        ```js\n        c\n>         ```\n"
+  },
+  {
+    "id": "notes-a4cb666aeccc",
+    "source": "x[^1]\n\n: [^1]: q\n: \n:    ```js\n   c\n  c\n   ```\n"
+  },
+  {
+    "id": "notes-a526c076ede4",
+    "source": "x[^a]\n\n[^a]: note\n+\n\npar[^m]: - xa\n"
+  },
+  {
+    "id": "notes-a52ebc103a9b",
+    "source": "::: note\n- para\n  [^f]: n\n```\n\ncode\n::::\n:::\n after *b*\n[^n]: body\n"
+  },
+  {
+    "id": "notes-a557289872c0",
+    "source": "[^a]: note\n\n[^n]\n  # H\n\n  after\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-a56e20acacb8",
+    "source": "x[^1]\n\n[^1]: a\n    ```=latex\n\n    \\x\n    ```\n"
+  },
+  {
+    "id": "notes-a5751ee68ef3",
+    "source": "x[r][d][^f]\n\n[^f]:  note\n  [^g]: n\n"
+  },
+  {
+    "id": "notes-a58a7a71e8ba",
+    "source": "a [^1]  b\n\n\n[^1]: see ^[</#h>]\n\n# h\n"
+  },
+  {
+    "id": "notes-a5c93b8f5333",
+    "source": "1. \n- x\n  [^g]: b\n   [r]: /url\n\nSee [r][] and [^g].\n"
+  },
+  {
+    "id": "notes-a5cdcc722e94",
+    "source": "\n- body\n\n   [^g]: n\n   # h\n\nafter\n"
+  },
+  {
+    "id": "notes-a691de56ebee",
+    "source": "x[^1]\n\n\n[^1]: > q\n\n        ```js\n        c\n\n        ```\n"
+  },
+  {
+    "id": "notes-a6d7d893aa04",
+    "source": "[^f]: outer\n\n  [^g]: mid\n\n      [^h]: inner\n\n    [r]: /url\n     TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-a6dae860b308",
+    "source": "- [^a]: text\n      ~~~\n    [^b]: inner\n      one\n      ~~~\n\n      ~~~\n      two\n      ~~~\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-a723350c7c17",
+    "source": "x[^a]\n\n[^a]: note\n+\n\n\npara\n"
+  },
+  {
+    "id": "notes-a7b8a0932e05",
+    "source": "\n[^n]: ntro\n  - item\n\n    > quote\nsee[^n]\n\n"
+  },
+  {
+    "id": "notes-a7c5ac83f1ec",
+    "source": "x[^m]: - x ^[a [^11] c]\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-a878bf1989ec",
+    "source": "[^n]: intro\n\n  :: term\n[^f]: t\n  :  definition\n\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-a90abc816916",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n       one\n      ~~~\n      ~~~\n\n      ~~~\n      ~~~\n      two\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-a9229e6c181d",
+    "source": "---\n\nx[^1]\n[^1]: note\n\n\n      ```\n      a\n        \n      b\n      ```\n"
+  },
+  {
+    "id": "notes-a92eae553fe7",
+    "source": "[^n]: intro\n\n    ::: >\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-a9793d6b427d",
+    "source": " [^a]: note\n\n\tmore\n::: note\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-a97b2cad213a",
+    "source": "\t[^n]: a\n+\npara\n> q\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-a9bdf1d3466a",
+    "source": "[^a]: +\n  flush\n\nsee^a]\n"
+  },
+  {
+    "id": "notes-aa4cc37942d1",
+    "source": "[^a]: intro\n+\nmore\n_u_\n%% c\n  more\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-aac06d5c4674",
+    "source": " [^f]: x\n- -  a\n"
+  },
+  {
+    "id": "notes-aadf2f25a2a5",
+    "source": "# H\n> \nBody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-aaf5f68a0708",
+    "source": "- - body\n\n  [^g]: n\n  [^g]: n\n   prose\n"
+  },
+  {
+    "id": "notes-ab1ebf8987b6",
+    "source": "[^f]: n\n+\n```\n\n\nb\n``\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-ab2c932b890a",
+    "source": ":: term\n: iteem\n  [^c]: para\n  ```\n  ```\n\n  See[^c]\n"
+  },
+  {
+    "id": "notes-ab5ed6124fb2",
+    "source": "[^a]: +\n[^a]: +\n flush\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-ab64b4f3e368",
+    "source": "[^n]: intro\n- \n  - * item\n\n    > quote\n\n    more\nsee[^n]\n"
+  },
+  {
+    "id": "notes-abd8fe364af2",
+    "source": "A note^[see *later*] inline. And a ref[^a].\n    ```=latex\n\n[d]: u\n[^a]: reference body.\n"
+  },
+  {
+    "id": "notes-ac3a511b83e4",
+    "source": "> %%%\n > [^f]: note\n> %%%\n\n\n"
+  },
+  {
+    "id": "notes-ac602d186a1d",
+    "source": "a [t[^1]][r] b\n + \n+ [r]: /u\n+ \n[^1]: n\n"
+  },
+  {
+    "id": "notes-ac7d6a615617",
+    "source": "x[^1]\n\n [^1]: > q\n\n   ```js\n   c\n\n"
+  },
+  {
+    "id": "notes-ad12858c8703",
+    "source": "see[^n]\n\n[^n]: aa\n\n    > [r]: /x\n[x][r]\n"
+  },
+  {
+    "id": "notes-ad837470e80a",
+    "source": "[^f]: outer\n\n   [^g]: mid\n \n    [^h]: inner\n\n [r]: /url\n  TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-ae081d367a3c",
+    "source": "- a\n  [^f]: t\n\n    morre\ntail\n- \nx[^f]\n~~~\n"
+  },
+  {
+    "id": "notes-ae0cd81cb956",
+    "source": "See[^1].\n\n\n[^1]: a\n\n    - b\n"
+  },
+  {
+    "id": "notes-ae1372f30051",
+    "source": "[^f]: b\n* \n  :: t\n  : d\n   [r]: /url\n\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-ae4441594dbf",
+    "source": "- a\n  [^f]: t\n    more\n\n tail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-ae6435e196f2",
+    "source": "see[^n]\n\n: [^n]: para\n  | a |\n#tag\n#tag\ntail\n"
+  },
+  {
+    "id": "notes-ae6b0472334d",
+    "source": "[^n]: # H\n\nsee[^a]\n\n[H][]\n"
+  },
+  {
+    "id": "notes-ae79f50fac2d",
+    "source": "+\n```\na\n^z]: zz\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-af113c6bc02d",
+    "source": "[^a]: +\n\n  flush\n\nsee[^::: notea]\n"
+  },
+  {
+    "id": "notes-af41bc568a3d",
+    "source": "[^f]: note\n- a\nafter[^f]\n"
+  },
+  {
+    "id": "notes-af868a9b6d78",
+    "source": "^f]: outer\n\n       [^g]: mid\n\n         [r]: /url\n         TAILWORD\n\nx[^f] [^g] [t][r]\n\n"
+  },
+  {
+    "id": "notes-afb2e24938ee",
+    "source": "x[^1]\n\n[^1]: a\n\n    ```=latex\n    \\x\n    ``[d]: u`\n"
+  },
+  {
+    "id": "notes-b06ebf482703",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n    [r]: /url\n    :::\n\n[r][]\n"
+  },
+  {
+    "id": "notes-b0aab5b15b07",
+    "source": "[^f]: b\n\n  [^g]: c\n  [^n]: note text\n\nSee [^n] and [^^f] and [^g].\n"
+  },
+  {
+    "id": "notes-b0b028b8830d",
+    "source": "-  a\n  [^f]: t\n    more\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-b0cc5629a26c",
+    "source": "See[^1].\n\n[^1]: a\n\n\n!`z`\n+     b\n"
+  },
+  {
+    "id": "notes-b1141b3e60fa",
+    "source": "\n[^a]: note\n\tmore\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-b11a5d6e8e47",
+    "source": ":: t\n:  - a\n    [^n]: note text\n\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-b13dfb6c417c",
+    "source": "x[^1]\n \n[^1]: a\n\n    ```=latex\n    \\x\n   ```\n\n"
+  },
+  {
+    "id": "notes-b1f56746326b",
+    "source": "x[^1]\n[^1]: > q\n\n   ```js\n   c\n::: note\n   ```\n"
+  },
+  {
+    "id": "notes-b22076e6c6a3",
+    "source": "[^]: x\n+\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-b2434bc228db",
+    "source": "- a\n  [^f]: note\n    more\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-b29a263f87b4",
+    "source": "\n[^1]: n\n"
+  },
+  {
+    "id": "notes-b2db69914e0b",
+    "source": "x[^1]\n\n[^1]: q\n\n\n   ```=latex\n   c\n\n   ```\n\n  after\n"
+  },
+  {
+    "id": "notes-b2fc3b263214",
+    "source": " [^n]: intro\n\n   :: term\n   :  definitiion\n\n      > quote\n\nsee[n]\n"
+  },
+  {
+    "id": "notes-b322c1a060c8",
+    "source": ":: term\n: item\n  [^c]: para\n> \n"
+  },
+  {
+    "id": "notes-b330cee0a8f1",
+    "source": "see[^n]\n</#h>\n[^n]: paraa\n  | a |\ntail\n"
+  },
+  {
+    "id": "notes-b3694493f8a9",
+    "source": "Wrapped[^two\nwords].\n\n[^two words]: This definition is not referenced.\n\n[^broken\n\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-b36c3b995572",
+    "source": "a[^1]\n \n[^1]: ```=latex\n  \\x\n  ```\n"
+  },
+  {
+    "id": "notes-b37fa97ba89b",
+    "source": "x[^f]\n[^a]: q\n+\n\n[^f]:\n"
+  },
+  {
+    "id": "notes-b391c9ae18dd",
+    "source": "a [t[1]][nope] b [^1] c\n \n\n    > [r]: /x\n[^1]: n\n"
+  },
+  {
+    "id": "notes-b3e246ad7288",
+    "source": "[^n]: # H\n[^n]: # H\n\n/i/\n[H][]\n"
+  },
+  {
+    "id": "notes-b468d41965eb",
+    "source": "[^f]: outer\n\n   [^g]: mid\n\n\n  [^g]: b\n    [^h]: inner\n\n  [r]: /u[^f]rl\n  TAILWORD\n\nx[^f] [^g] [^h] [t][r]\n"
+  },
+  {
+    "id": "notes-b51e2cf6b811",
+    "source": "[^outer]: intro\n\n     [^inner]: note\n\n\n      see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-b528aaaa2b92",
+    "source": "[^f]: b\n\n  [^g]: c\n   [^g]: c\n   [^n]: note text\n\nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-b5463512285b",
+    "source": "[^a]: note\n [r]: /u\nsee[^a] and [t][r]\n\n- para\n"
+  },
+  {
+    "id": "notes-b561ba2e8e20",
+    "source": "Use [^a].\n \n[^a]:\n  First\n"
+  },
+  {
+    "id": "notes-b62e0df3d06b",
+    "source": "[n]: # H\n\n [H][:::]\n"
+  },
+  {
+    "id": "notes-b650e6860624",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n \n[^1]: n\n"
+  },
+  {
+    "id": "notes-b706c1178b94",
+    "source": "[^n]: intro\n  > quote\n    ordinary line\n \nsee[^^n]\n"
+  },
+  {
+    "id": "notes-b71b82663281",
+    "source": "- see[^a] and [t][r]\n  \n  [r]: /uu\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-b75b30818260",
+    "source": "x[^f]\n\n\n[[^f]: \tnote\n"
+  },
+  {
+    "id": "notes-b7b7560f7196",
+    "source": "a[^1]\n\n[^1]: %% n\n\n  ```=latex\n  \\x\n\n  ```\n"
+  },
+  {
+    "id": "notes-b825b20c0950",
+    "source": "A note^[see *l* ater*] inline. And aref[^a].\ntext\n[^a]: reference body.\n"
+  },
+  {
+    "id": "notes-b868f4575405",
+    "source": "- > para\n  > [^f]: n\n  >   - sub\n  >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-b86cc2bf6481",
+    "source": "[^a]: intro\nmore\n\nse[^a]\n"
+  },
+  {
+    "id": "notes-b88095089230",
+    "source": "See [^a].\nSee [^a].\n> [^a]: note body\n"
+  },
+  {
+    "id": "notes-b8d43f08b764",
+    "source": "[^a]: +\n  flush\n\nsee[^f][^a]\n"
+  },
+  {
+    "id": "notes-b8fdfcddfe25",
+    "source": "- body\n\n  [^g]: n\n\n   # h\nafter\n"
+  },
+  {
+    "id": "notes-b928fd06a4df",
+    "source": "- body\n  [^g]: n\n\n   > z\nSee [^n].\n\n flush\n\nafter\n"
+  },
+  {
+    "id": "notes-b929beb21d22",
+    "source": "- - a\n\n [^f]: </#h>x\n"
+  },
+  {
+    "id": "notes-b92a6a75879b",
+    "source": "see[^a] and [t][r]\n[r]: /u\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-b93730e54c7b",
+    "source": ":: t\n:  a\n   [^f]: tt\n\ntail\nx[^f]\n"
+  },
+  {
+    "id": "notes-b9c43f3385f6",
+    "source": "\n+        [^g]: mid\n  \n         [r]: /url\n         TAILWORD\n\n\nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-b9cad4746e71",
+    "source": "  [^f]: note\n    more\ntail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-b9e68e1bea3e",
+    "source": "text\n"
+  },
+  {
+    "id": "notes-b9e785837b14",
+    "source": "[^a]: +\n ffllush\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-ba4f7c605faa",
+    "source": "a [t[^1]{#z}][r] [[^1]{#y}\n\n[r]: /u\n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-ba74d5188899",
+    "source": "See[^].\n\n- a[^f]\n:::[^1]: a\n\n\n    b\n"
+  },
+  {
+    "id": "notes-bb005c365c86",
+    "source": "x[^1]\n\n[^1]: > q\n\n   ```js\n   c\n   ```\n# H\n"
+  },
+  {
+    "id": "notes-bb43c5298c80",
+    "source": "[^n]: a\n+\npaa\n> q\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-bb9b6ccb1585",
+    "source": "[r][] [^p] [^c]\n[^c]: - para\n   # H\n    # H\n"
+  },
+  {
+    "id": "notes-bbcb8e61a7d6",
+    "source": "[^n] intro\n\n\n  :: term\n  :  definition\n\n     > quote\nsee[^n]\n\n"
+  },
+  {
+    "id": "notes-bbf685a2cbe8",
+    "source": "[H][]\n- see[^n]\n*b*\n[^n]: para\n  | a |\ntail\n"
+  },
+  {
+    "id": "notes-bc45631f111e",
+    "source": "- > paraa\n  > [^f]: n\n  >   - sub\ntail[^f]\ntail[^f]\n"
+  },
+  {
+    "id": "notes-bcead4271057",
+    "source": "> [^a]: n\n$`x`\n > +\n$`x`\npara\n"
+  },
+  {
+    "id": "notes-bcf83e0b7fa4",
+    "source": "[^n]: intro\n\n\n   ::: >\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-bd617b80768d",
+    "source": "x[^f]\n\n[::: note^f]: \tnote\n\n"
+  },
+  {
+    "id": "notes-bd70f5d00c14",
+    "source": ":::\n- body\n\n  [^g]: n\n   prose\n\nafter\n"
+  },
+  {
+    "id": "notes-bd9aa10a7e46",
+    "source": "\n[^n]: para\nIntro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only n/i/ote\n"
+  },
+  {
+    "id": "notes-bde45a92ab35",
+    "source": "[^n]: # H\n[^n]: # H\n\n[H][]\n"
+  },
+  {
+    "id": "notes-be22ca5141dd",
+    "source": "See the note.[^[d]: un]\n\n[^n]: First paragraph of the note.\n+\nA second paragraph, joined with +.\n"
+  },
+  {
+    "id": "notes-be8d8e7950a2",
+    "source": "> [r]: /url\n> [^f]: note\n```[^f]x\n\nmore\n\nSee [r][] [^f].\n"
+  },
+  {
+    "id": "notes-beaf515db3e2",
+    "source": "see [^a\tb]\nsee [^a\tb]\n\n[^a b]: note\n"
+  },
+  {
+    "id": "notes-bee17afdeee1",
+    "source": "- \na [t[^1]][nope] b [^1] c\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-bee8cc284913",
+    "source": "\n{\n  [^n]: a\n    # h\n"
+  },
+  {
+    "id": "notes-bf419b8ec561",
+    "source": ":: t\n:  - a\n    [^n]: note text\n\n \nSee [^n].\n"
+  },
+  {
+    "id": "notes-bf4b88a42f7a",
+    "source": "a [t[^1]](/u) b\na  [t[^1]](/u) b\n[^1]: n\n"
+  },
+  {
+    "id": "notes-bf51f2cb46b8",
+    "source": "*[A]: b:: term\n* : item\nsee [^a\tb]\n\n  [^c]: para\n   ```\n\n  See[^c]\n"
+  },
+  {
+    "id": "notes-bf90fd12646a",
+    "source": ":: note\n- a[^f]\n  - para\n    [^f]: n[^n]: body\n      more\nx\n"
+  },
+  {
+    "id": "notes-bfc5a833a73a",
+    "source": "  more\n[^f]: alpha\n :: term\n :: term\n\nSee[^f]\n"
+  },
+  {
+    "id": "notes-c019013af41f",
+    "source": "See [^a].\n\n> [^a]: note body\n> [^a]: note body\n"
+  },
+  {
+    "id": "notes-c03ebf96fab0",
+    "source": "[^f]: n\n+:: t\n```\na\n[^z]: zz\nb\n```\n \nsee[^f]\n"
+  },
+  {
+    "id": "notes-c097d10dfaf9",
+    "source": " [^n]: intro\n\n   :  definition\n   :: term\n    > quote\n \nsee[^n]\n"
+  },
+  {
+    "id": "notes-c0c15ea4a2f9",
+    "source": "a [t[^1]] b\n\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-c0c457cbab6e",
+    "source": "[^a]: intro\n  %% c\n  more\n\nsee[^a]\nsee[^a]\n"
+  },
+  {
+    "id": "notes-c0d0d7e4848b",
+    "source": "x[^n]\n\n[^n]: # H\n[H][]\n"
+  },
+  {
+    "id": "notes-c0e4dadcf339",
+    "source": "> %%%\n> [^f]: note\n[^1]: > q\n> %%%\n\nSee [^f].\n"
+  },
+  {
+    "id": "notes-c0e5eb40951a",
+    "source": " Note[^fn].\n\n [^fn]: boddy.\n"
+  },
+  {
+    "id": "notes-c1186110c846",
+    "source": "[^f]: alpha\n :: term\n \nSee[^f]\n"
+  },
+  {
+    "id": "notes-c12a7560273e",
+    "source": "[^f]: b\n\n \n  :: t\n  : d\n   [r]: /url\n\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-c1521bf13ee7",
+    "source": "\n[^1]: a\n\n\n\n\n    b\n"
+  },
+  {
+    "id": "notes-c1535a0960b2",
+    "source": "x ^[a [^1]] c]\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-c184886bd8ec",
+    "source": "x[^f]\n@user\n"
+  },
+  {
+    "id": "notes-c1b058ee9381",
+    "source": "[^a]: \n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-c1c1056655f1",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n     [r]: /url\n    :\t::\n\n[r][]\n"
+  },
+  {
+    "id": "notes-c1cc369c286b",
+    "source": ". d\n   [^n]: e\n     - aa\n"
+  },
+  {
+    "id": "notes-c1cc8c0c3e8e",
+    "source": "see[^n]\n\n>   | a |\n> [^n]: para\n> tail\n\n"
+  },
+  {
+    "id": "notes-c1ed6590428d",
+    "source": "[^a]: intro\n+\nmore\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-c31ea6850123",
+    "source": "^[fn]\nsee[^a] and [t][r]\n[r]: /u\n \n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-c34d64b6881a",
+    "source": "[^a]: q\n\n+\n\nref [^a]\n_u_\n"
+  },
+  {
+    "id": "notes-c3746394fc4d",
+    "source": "\n[^f]:  b\n  :: t\n  : d\n   [r]: /url\n\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-c38cd37e645f",
+    "source": "\n[^a]: note\n\n\tmore\n\t\nsee^a]\n"
+  },
+  {
+    "id": "notes-c3bb7355f300",
+    "source": "- a\n  [^f]: notee\n  [^f]: note\n    more\ntail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-c3c9750f3559",
+    "source": "a [t[^1]] b\n#tag\n[^1]: n\n"
+  },
+  {
+    "id": "notes-c3cbc4fb599c",
+    "source": "  [^f]: n\n+\n```\na\n[^z]: zz\nb\n``\n\n+ see[^f]\n"
+  },
+  {
+    "id": "notes-c3cc0f3397d4",
+    "source": "\n[^outer]: intro\n     [^inner]: note\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-c3da8267d6dd",
+    "source": "[^a]: x\n+\n- b\n\nsee[^a\n"
+  },
+  {
+    "id": "notes-c4109490e5c3",
+    "source": "[^a]: note\n   [r]: /u\n~~~\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-c4395f59a509",
+    "source": "[^a]: intro\n%% c\n  more\n\t\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-c441f3cc2618",
+    "source": "\n\na [t[^1]](/u) b\n[^1]]: n\n"
+  },
+  {
+    "id": "notes-c47f2470ce32",
+    "source": "\n# H\ntail\nBody[^n]\n\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-c4b899156a6f",
+    "source": "[r][] [^p] [^c]\n[^c]: - para\n   # \n   # \n"
+  },
+  {
+    "id": "notes-c4edee5a9e6e",
+    "source": "x[^a]\n\n[^a]: note\n# h\n+\n\n::::\npara\n"
+  },
+  {
+    "id": "notes-c5070af4948e",
+    "source": "[^a]: q\n+\n+\n\n ref [^a]\n"
+  },
+  {
+    "id": "notes-c521badf63c4",
+    "source": "seee[^n]\n\n[^n]: para\n   # Heading\ntail\n"
+  },
+  {
+    "id": "notes-c5d26bca0e75",
+    "source": "see [^a\tb]\n\n[^a b] note\n"
+  },
+  {
+    "id": "notes-c62dc2c6d93c",
+    "source": "[^f]:   note\n\n"
+  },
+  {
+    "id": "notes-c667e175e07d",
+    "source": "[^a]: note\n\tmore\n\n    more\nsee[^aa]\n"
+  },
+  {
+    "id": "notes-c66f5396ce52",
+    "source": "- a list>> \n[^a]: +\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-c68de0c94ddd",
+    "source": "a [^1] b\n: \n[^1]: see ^[</#h>]\n\n# h\n"
+  },
+  {
+    "id": "notes-c6ae6ba57878",
+    "source": " x[^n]\n\n:: a\n: b\n  :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-c6ba7fbdc59c",
+    "source": "[^m]: - x\n[^n]: # H\n: \n[H][]\n"
+  },
+  {
+    "id": "notes-c6c77f81d9c0",
+    "source": "- a\n\t  [^f]: t\n\t    more\n\t  b\n\n\n  x[^f]\n"
+  },
+  {
+    "id": "notes-c73360cd9259",
+    "source": "See[^1].\n\n[^1]: a\n\n- \n  \n    b\n"
+  },
+  {
+    "id": "notes-c7660c09912d",
+    "source": "a [t[^1]][nope] b [^1] c\n\n[^]: n\n"
+  },
+  {
+    "id": "notes-c7aff9dc6f1c",
+    "source": "Intro[^a.\n\n> ::: footnotes\n\n[^a]: only note\n"
+  },
+  {
+    "id": "notes-c808e54484ed",
+    "source": "[^1]: a\nx ^[a [^1] c]\n+`` \n+ [^1]: n\n"
+  },
+  {
+    "id": "notes-c83bdb44a8c4",
+    "source": "see[^n]\n\n\n    > [r]: /x\n[x][r]]\n"
+  },
+  {
+    "id": "notes-c8efcce45597",
+    "source": "x[^1]\n#tag\n [^1]: q\n\n   ```=latex\n   c\n   c\n   ```\n\n  after\n"
+  },
+  {
+    "id": "notes-c8fb3df0e44f",
+    "source": "See[^1].\n\n[^1]: a\n\n    b\n\n"
+  },
+  {
+    "id": "notes-c92d38b096e5",
+    "source": "[^a]: note\n\n  - one\n    - deep\n  end.\n\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-c94eaf72471b",
+    "source": "X[^a].\n\n::: footnotes\nFirst marker.\n:::\n\n::: footnoes\nSecond marker.\n:::\n\n[^a]: note\n* \n"
+  },
+  {
+    "id": "notes-c9a16d1e6a78",
+    "source": "see[^n]\n  \n  [^n]: para\n   # Heading\ntail\n"
+  },
+  {
+    "id": "notes-c9a7b6a23c85",
+    "source": "x[^1]\n\n [^1]: q\n\n   ```=latex\n   c\n   ```\n\n  after\n"
+  },
+  {
+    "id": "notes-c9e882bb42ca",
+    "source": " [^f]: b\n\n   [^g]: c\n   [^n]: note text\n \nSee [^n] and [^f] and [^g].\n"
+  },
+  {
+    "id": "notes-c9f8b0ca7b78",
+    "source": "Wrapped[^two\nwords].\n \n[^two words]: This definition is not referenced.\n\n[^broken\nlabel]: This is not a definition.\n"
+  },
+  {
+    "id": "notes-ca159e86abd1",
+    "source": "See[^1].\n\n[^1]: a\n\nsee[^a]\n\n\n    b\n"
+  },
+  {
+    "id": "notes-ca4d55b5893b",
+    "source": "x[^f]\n\n [^ff]:\n"
+  },
+  {
+    "id": "notes-cacdc01c0a4d",
+    "source": " See [^~s~a].\n\n > [^a]: note body\n"
+  },
+  {
+    "id": "notes-cafe38404574",
+    "source": "</#h>\n> [r]: /url\n> [^f]: note\n\n"
+  },
+  {
+    "id": "notes-cb1ae8a971b5",
+    "source": "[^outer]: intro\n\n     [^inner]: note\n\n     see[^inner]\n\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-cb1f63b822c2",
+    "source": "x[^n]\n\n[^n]: # H\n\ntail[^f]\n[H][]\n[H][]\n"
+  },
+  {
+    "id": "notes-cb3876919c38",
+    "source": " - > para\n  > [^f]: n\n >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-cb48c2763d44",
+    "source": "See [^a].\n\n1. > [^a]: note body\n"
+  },
+  {
+    "id": "notes-cb4bb6643182",
+    "source": "a[^1]\na[^1]\n\n[^1]: ```=html\n  <b>x</b>\n  ```\n"
+  },
+  {
+    "id": "notes-cb51fa517ed6",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n      ~~~\nbelow\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-cb5ee0d044f0",
+    "source": "[^a]: note\n\n\n\t  | a |\n\t  | - |\n  | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-cbc0e3d6936e",
+    "source": "x[^f]\n\n\n[^f]: \tnote\n"
+  },
+  {
+    "id": "notes-cbc6b5f84405",
+    "source": "[^a]: intro\n %%%\n  %%%\n  c\n  more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-cc00bab343da",
+    "source": "\n[r]: /u\n\n[^1]: nn\n"
+  },
+  {
+    "id": "notes-cc12ef23c292",
+    "source": "[^n]: intro\n\n   :: term\n    :  definition\n     > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-cc14c3aa8520",
+    "source": " {[d]: u#i}- - a\n [^f]: x\n"
+  },
+  {
+    "id": "notes-cc1955f6d20d",
+    "source": ": - x\n  [^g]: b\n   [r]: /url\n\nSee [r][] and [^g].\n"
+  },
+  {
+    "id": "notes-cc2cef22ef15",
+    "source": "\n- - body\n  [^g]: n\n   pro_u_se\n"
+  },
+  {
+    "id": "notes-cc81997b34f8",
+    "source": "\n[^n]: # H\n\n[H][]\n"
+  },
+  {
+    "id": "notes-cca075b5217c",
+    "source": "- x\n  [^g]: b\n   [r]: /url\n\nSee [r][] and [^g].\n    more\n"
+  },
+  {
+    "id": "notes-ccc1ab595fca",
+    "source": "- a\n    more\n  [^f]: t\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-ccf2574425ca",
+    "source": "See[^m] and again[^m].\n\n\n"
+  },
+  {
+    "id": "notes-cd91026c625f",
+    "source": "see[^f]\n\n[^f]: a\n    ::: note\n     [r]: /url\n    :::\n\n[r][]\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-ce4e197bb78b",
+    "source": "[^n]: intro\n: \n: \n   ::: >\n   > quote\n   :::\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-ce75f52aff55",
+    "source": "\n[^a]> : +\nee[^a]\n"
+  },
+  {
+    "id": "notes-ce7baa5e2811",
+    "source": "> %%%\n> > %%%\n  > [^^f]: note\n> %%%\n\nSee [^f].\n"
+  },
+  {
+    "id": "notes-ce953d37dc3f",
+    "source": "x[^n]\n\n:: c\n [[^n]: y\n"
+  },
+  {
+    "id": "notes-cf61fa0aaf99",
+    "source": "a [t[^1]](/u) b\n\n[^1]: n\n\n{#i}\n"
+  },
+  {
+    "id": "notes-cf95252e7fb0",
+    "source": "a [^1] b\n[d]: u\n\n\n# h\n"
+  },
+  {
+    "id": "notes-cfaf3a8e8e2f",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: [^m]: - x/u\n- [^1]: n\n- \n"
+  },
+  {
+    "id": "notes-cfcb820b2398",
+    "source": "[^a]: note\n [r]: /u\n ```x\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-cff185d47a04",
+    "source": "::: note\n- para\n  [^f]: n\n```\ncode\n::::\n:::\n after *b*\n"
+  },
+  {
+    "id": "notes-d0630204e2b5",
+    "source": "a [t[^1]][r] b\n\n[r]: {/u\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-d08687e730a5",
+    "source": ":: t\n:  a\n   [^f]: t\ntail\n\nx[^f]]\n"
+  },
+  {
+    "id": "notes-d0b4362b6e50",
+    "source": "[^n]: intro\n\n  :: term\n  :  definition\n     > quote\nsee[^n]\n"
+  },
+  {
+    "id": "notes-d0b8fda289a5",
+    "source": "+\n[^f]: n\n```\na\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-d0f399e3e8f0",
+    "source": "- \t[^f]: note\n- \tafter[^f]\n"
+  },
+  {
+    "id": "notes-d0f40d081c37",
+    "source": "x[^1]\n\n[^1]: note\n\n      ```\n      a\n::: note\n        \n      b\n      ```\n"
+  },
+  {
+    "id": "notes-d11b328bb072",
+    "source": "\nx[^1]\n- \n[^1]: q\n[^1]: q\n\n   ```js\n   c\n   ```\n"
+  },
+  {
+    "id": "notes-d15139604c1c",
+    "source": "- body\n\n\n   # h\n  [^g]: n\n\nafter\n"
+  },
+  {
+    "id": "notes-d192fe050c76",
+    "source": "\nx[^n]\n- :: c\n    %% note\n   [^n]: y\n"
+  },
+  {
+    "id": "notes-d19e82cd6e61",
+    "source": "[^nn]: a\n+\npara\n> q\nsee[\t^n]\n\n"
+  },
+  {
+    "id": "notes-d1cbaa4bb1a7",
+    "source": "[^n]: intro\n\n  :: term\n  :  definition\n\n\n     > quote\n\nee[^n]\n"
+  },
+  {
+    "id": "notes-d22c3f19a00a",
+    "source": " \nSee[^1].\n\n[^1]: a\n\n\n    - b\n\n"
+  },
+  {
+    "id": "notes-d2500c45a956",
+    "source": "- [^a]: text\n    [^b]: inner\n      ~~~\n      one\n      ~~~\n\n      ~~~\n      two\n     ~~~\nbelow\n\n[^a] [^b]\n"
+  },
+  {
+    "id": "notes-d347fc2706eb",
+    "source": "[^a]: +\n~s~\n flush\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-d377d986bb8f",
+    "source": "x[^n]\n\n:: a\n  :: c\n: b\n>      [^n]: y\n"
+  },
+  {
+    "id": "notes-d3a2e283e91c",
+    "source": ":: t\n:  d\n  [^f]: n\ntail\n\nSee[^f]\n[^1]: see [t[^2]][r]\n\n"
+  },
+  {
+    "id": "notes-d44a076e98a7",
+    "source": "[r][] [^p] [^c]\n[^c]: - para\n"
+  },
+  {
+    "id": "notes-d4aee70e4cb7",
+    "source": " [^f: x\n- - a\nsee[^f]\n"
+  },
+  {
+    "id": "notes-d4f0f51c042a",
+    "source": "x[^1]\n\n[^1]: q\t\n- \n-    ```=latex\n   c\n   ```\n\n    after\n"
+  },
+  {
+    "id": "notes-d5070a3fe57c",
+    "source": "x ^[a [^] c]\n \n[^1]: n\n"
+  },
+  {
+    "id": "notes-d5255803dc2f",
+    "source": "> %%%\n > [^f]: note\n> %%%\n\nSee [^f].\n"
+  },
+  {
+    "id": "notes-d544ef901ffb",
+    "source": "[^n]: see </#H>\nx[^1]\n\n[^1]: > q\n\n+         ```js\n+         c\n1.         ```\n"
+  },
+  {
+    "id": "notes-d59761106c1f",
+    "source": "> %%%\n\t> [^f]: note\n> %%%\n\nSee [^f].\n"
+  },
+  {
+    "id": "notes-d59869aa5362",
+    "source": "[^a]: intro\n  [^m]: - x | a |\n   | - |\n   | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-d5a6177798c2",
+    "source": "[^1]\n\n[^1]: ```=latex\n  \\x\nBody[^n]\n\n ```\n"
+  },
+  {
+    "id": "notes-d5c1cd0b79c3",
+    "source": "see[^a] and [t][r]\nsee[^a] and [t][r]\n\n::::\n[r]: /u\n\n[^a]: note\n"
+  },
+  {
+    "id": "notes-d5ed8c2f8f60",
+    "source": "+ [[^a]: q\n+\n+\n\nref [^a]\n"
+  },
+  {
+    "id": "notes-d630412f8b8c",
+    "source": "[H][]\n\n"
+  },
+  {
+    "id": "notes-d64125121400",
+    "source": "  [^f]: t\n    more\n  b\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-d6921273982c",
+    "source": "[^n]: intro\n\n   :: tterm\n   :  definition\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-d6cdb7104426",
+    "source": "x[^1]\n\n[^1]: q\n\n`\n    ```=latex\n   c\n   ```\n\na [t[^1]{#z}][r] [^1]{#y}\n\n  after\n"
+  },
+  {
+    "id": "notes-d73390397b7f",
+    "source": "#tag\n:: t\n:  - a\n    [^n]: note text\n\nSee [^n].\n"
+  },
+  {
+    "id": "notes-d7422f53c1d6",
+    "source": "[^f]]: n\n+\n```\n a\n[^z]: zz\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-d758f4bd9e7e",
+    "source": "See[^m] and again[^m].\nSee[^m] and again[^m].\n  \n[^m]: One note, two refs.\n"
+  },
+  {
+    "id": "notes-d7b3a200d70a",
+    "source": "[^n]: intro\n  > quote\n\n    ordinary line\nsee[^n]\n"
+  },
+  {
+    "id": "notes-d866209c8c8e",
+    "source": "\n[^n]: intro\n\n   :: term\n   :  definition\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-d8d3a3f386f5",
+    "source": "## H:::\n\nBody[^n]\n\n[^n]: see </#H>\n"
+  },
+  {
+    "id": "notes-d8ee6aec2e26",
+    "source": "See[^1].\n[^1]: a\n\n\n\n"
+  },
+  {
+    "id": "notes-d965ff8b93f7",
+    "source": "[^a]: note\n:  d [r]: /u\nsee[^a|= a |= b |] and [t][r]\n"
+  },
+  {
+    "id": "notes-d976fc4352b6",
+    "source": "[^n]: intro\n\n   :: term\n   :  definition\n\n      > quote\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-d9bb20ae9147",
+    "source": "a [^1] b\n\n[[^1]: see [t[^2]][r]\n\n[r]: /u\n\n[^2]: two\n"
+  },
+  {
+    "id": "notes-d9db79942937",
+    "source": "x[^1]\n\n [^1]: > q\n\n   ```=latex\n   c\n   ```\n| a | b |\n\n after\n"
+  },
+  {
+    "id": "notes-d9f0bd0ffba7",
+    "source": " seee[^n]\n\n[^n]: para\n  | a |\n+ tail\n"
+  },
+  {
+    "id": "notes-d9f24ac422f4",
+    "source": " > [^a]: n\n [r]: /u\n> +\npara\n\n"
+  },
+  {
+    "id": "notes-d9f7b9ca6d82",
+    "source": "[^f]: b\n[^/i/f]: b\n\n :: t\n  : d\n   [r]: /url\n\nSee [r][] and [^f].\n"
+  },
+  {
+    "id": "notes-da00a9d05f11",
+    "source": "see[^f]\nsee[^f]\n\n- [^f]: head\n\n  %%%\n  a\n%%%\n"
+  },
+  {
+    "id": "notes-db06853666a3",
+    "source": "[. ^n]: intro\n\n  :: term\n   :  definition\n\n    > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-db962b1780e8",
+    "source": "- see[^n]\n- \n\n  [^n]:: a\n    # h\n"
+  },
+  {
+    "id": "notes-db99c6365be8",
+    "source": "  [^f]: t\n    more\n- a\n  b\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-db9b1609eba4",
+    "source": "[^a]: +\n- a li`st\nsee[^a]\n\n"
+  },
+  {
+    "id": "notes-db9bb0ff51b1",
+    "source": "[^n]: intro\n\n  :: term\n   :  definition\n\n      > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-dbc13ae6cad3",
+    "source": "[^f]: alpha\n :: term\n :: term\n- \nSe```xe[^f]\n"
+  },
+  {
+    "id": "notes-dbd23f55556c",
+    "source": "- body\n\n  [^g]: n\n~~s~\n   prose\n\nafter\n"
+  },
+  {
+    "id": "notes-dc3ba0610fa3",
+    "source": "See[^1].\n\n\n[^1]: a\n\n\n\n    b\n"
+  },
+  {
+    "id": "notes-dc4f68372a96",
+    "source": "see[^n]\nsee[^n]\n\n[^n]: para\n+    # Heading\n+ tail\n"
+  },
+  {
+    "id": "notes-dcb3673aff15",
+    "source": "x[^n]\n\n[^m]: > q\n\n:: a\n: b\n  :: c\n    [^n]: y\n"
+  },
+  {
+    "id": "notes-dd04a3cf3dce",
+    "source": "see[^a] and [t][r]\nsee[^a] and [t][r]\n\n\n[r]: /u\n\n[^a]:note\n"
+  },
+  {
+    "id": "notes-dd130b0b59c1",
+    "source": "[^f]: n\n[^f]\n+\n```\na\n[^z]: z!`z`z\nb\n\t```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-dd29af5c9a61",
+    "source": "\n[^a]: intro\n   | a |\n   | - |\n   | b |\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-dd6007b93864",
+    "source": "[^a]: intro\n\n  | a |\n  | - |\n  | b |\n\n  closing line.\n\n\n> see[^a]\n"
+  },
+  {
+    "id": "notes-dd64282e9d36",
+    "source": "[^outer]: intro\n\n\n     see[^inner]\n\nsee[^outer]\n"
+  },
+  {
+    "id": "notes-ddb9380f42e5",
+    "source": ":: t\n:  - a\n\n    [^n]: note text\nSee [^n].\nSee [^n].\nSee [^n].\n"
+  },
+  {
+    "id": "notes-ddc69b225dc7",
+    "source": "\nSee[^m] and again[^m].\n\n[^m]: One note, two refs.\n"
+  },
+  {
+    "id": "notes-ddc870b19224",
+    "source": "\n::::\n- > para\n  > [^f]: n\n  >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-ddd217c04b00",
+    "source": "[^a]: note\n\n  ```=html\n  <b>x</b>\n\n   ```\nsee[^a]\n"
+  },
+  {
+    "id": "notes-de0b74fb5426",
+    "source": "- a\n\n[^f]: \tnote\n  [^f]: t\n\tmore\n[^f]: a\n     [r]: /url\n  [r][]\n"
+  },
+  {
+    "id": "notes-de16e50df769",
+    "source": " [^a]: +\n  flush\n\n\tsee[[^f]^a]\n"
+  },
+  {
+    "id": "notes-de2e869d11ad",
+    "source": "[^n]: a\n+\npara\n> q\n\nsee[^n]\n[^f]: alpha\n :: term\n"
+  },
+  {
+    "id": "notes-de4964fa464a",
+    "source": "> [^a</#h>]: n\n\npara\n"
+  },
+  {
+    "id": "notes-de959a3190f7",
+    "source": "See [^a].\n \n\n> [^a]: note body\n^ cap\n"
+  },
+  {
+    "id": "notes-de9ae6600368",
+    "source": "  \\x\na [t[^1]][nope] b [^1] c\n\n[^1]: n\n> %%%\n\n"
+  },
+  {
+    "id": "notes-deb41a7e6a8b",
+    "source": " [^a]: intro\n %% c\n   more\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-df006ed7c6db",
+    "source": "Text[^a].\nx[^1]\n\n[^a]: note.\n"
+  },
+  {
+    "id": "notes-df034d82248d",
+    "source": "[^a]: +\n\n flush\n"
+  },
+  {
+    "id": "notes-df25868243ba",
+    "source": "[^a]: +\n[^a]: +\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-df2b2705b5df",
+    "source": "[^n]: intro\n\n   :: term\n   :  definition\n>     > quote\n  \nsee[^n]\n"
+  },
+  {
+    "id": "notes-df75bb746533",
+    "source": "[^a]: q\n[^f]:   note\n\n+\nsee[^a]\n+\n\nref [^a]\n"
+  },
+  {
+    "id": "notes-df88fd8b68fc",
+    "source": "see[^n]\n\n[^n]: para\n   a |\nail\n"
+  },
+  {
+    "id": "notes-dfaf53e3881f",
+    "source": "> [r]: /url\n> [^f]: note\n\n    - b\n\n[^n]: see </#H>\nSe/i/e [r][] [^f].\n"
+  },
+  {
+    "id": "notes-dfc49f32e558",
+    "source": "- body\n\n  [^g]: n\n   # h\n---\n\n"
+  },
+  {
+    "id": "notes-dff49a4d08a5",
+    "source": "x[^f]\n\n[^f]:\n#tag\n"
+  },
+  {
+    "id": "notes-e028c7ddc3f7",
+    "source": ": item\n   [^c]: para\n   ```\n \n  See[^c]\n"
+  },
+  {
+    "id": "notes-e0536909201f",
+    "source": "x[^1]\n\n[^1]: a\n\n\n    ```=latex\n    \\x\n    ```\n    ```\n"
+  },
+  {
+    "id": "notes-e065114c465d",
+    "source": "[^n]: intro\n\n  :: term\n :  definition\n\n     > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-e0773834e78c",
+    "source": "Use [^a].\n``\n\n\n[^a]:\n  First\n"
+  },
+  {
+    "id": "notes-e1225c67c959",
+    "source": "\nUse [^a].\n[^a]:\n  First\n"
+  },
+  {
+    "id": "notes-e1671f95158e",
+    "source": "x[^f]\n[^f]:  note\n\n"
+  },
+  {
+    "id": "notes-e19264a950d1",
+    "source": "  closing line.\n  [^n]: e\n     - a\n"
+  },
+  {
+    "id": "notes-e19c355e40aa",
+    "source": "[^f]: outer\n\n   [^g]: mid\n  [r]: /url\n  [r]: /url\n\nx[^f] [^g] [t][r]\n"
+  },
+  {
+    "id": "notes-e1bc763354a0",
+    "source": ":: t\n:  a\n    [^f]: t\ntail\n\nx[^f]\n"
+  },
+  {
+    "id": "notes-e1d834f7340f",
+    "source": "%%\n- body\n [^g]: n\n\n   prose\n\nafter\n"
+  },
+  {
+    "id": "notes-e1e215709120",
+    "source": " a [t[^1]][r] b\n+\n\n[r]: /u\n\n[^1]: n\n\n"
+  },
+  {
+    "id": "notes-e1ea4eb8f732",
+    "source": "[^f]: n\n+\n\n```\na\n[^z]: zz\nb\n```\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-e2306fc9f601",
+    "source": "[^n]: intro\n\n  :: term\n  :  definition\n\n     > quote\n\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-e2657293eb6b",
+    "source": "[^a]: note\n\tmore\n \nsee[^a]\n"
+  },
+  {
+    "id": "notes-e27b29e3fafd",
+    "source": "Se[^1].\n\n[^1]: a\n\n\n    b\n"
+  },
+  {
+    "id": "notes-e2ac188550bb",
+    "source": "- > ara\n  > [^f]: n\n  >   - sub\ntail[^f]\n"
+  },
+  {
+    "id": "notes-e2e1ef13be71",
+    "source": "[^a]: note\n  - one\nmore\n\n\n    - deep\n\n  end.\n\nsee[^a]\n"
+  },
+  {
+    "id": "notes-e2fcbef59c5d",
+    "source": "+\n- b\nx[^n]\n\n- :: c\n    %% note\n>     [^n]: y\n"
+  },
+  {
+    "id": "notes-e344b261ace5",
+    "source": "- a\n+ \n[^f]: note\nafter[^f]\n    ```=latex\n"
+  },
+  {
+    "id": "notes-e3b9fe1d4219",
+    "source": "x[^f]\n[^f]: \tnote\npara\npara\n\n"
+  },
+  {
+    "id": "notes-e4282876a61e",
+    "source": "[^n]: intro\n\n   :: term\n   :  definition\n\n     > quote\n\nsee[^n]\n"
+  },
+  {
+    "id": "notes-e469aa626ae1",
+    "source": "x[^1]\n\n[^1]: a\n\n    ```=latex\n    \\x\n     ```\n"
+  },
+  {
+    "id": "notes-e46b56b71ba2",
+    "source": "::: note\n- para\n  [^f]: n\n```\ncode\n::::\n^ cap\n:::\nafter *b*\n"
+  },
+  {
+    "id": "notes-e4a8e571018a",
+    "source": "- a\n  [^f]: note\n    more\nttail\n\nsee[^f]\n"
+  },
+  {
+    "id": "notes-e4e9ceea65c7",
+    "source": " [^a]: note\n\n [r]: /u\nsee[^a] and [t][r]\n"
+  },
+  {
+    "id": "notes-e51423b79bf9",
+    "source": "- body\n> +\n  \n  [^g]: n\n   > z\n\nafter\n"
+  },
+  {
+    "id": "notes-e528a69240ad",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n[l](u)\n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "notes-e531a4b74eae",
+    "source": "[^f]: n\n+\n```\n```\na\n[^z]: zz\nb\n```\n+ \n see[^f]\n"
+  },
+  {
+    "id": "notes-e5913956394c",
+    "source": "[r[] [^p] [^c]\n[^c]: - para\n   # H\n"
+  }
+]

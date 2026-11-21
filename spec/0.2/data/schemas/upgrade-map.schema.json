@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["$schema", "source", "tree"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"const": "schemas/upgrade-map.schema.json"},
+    "source": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+    "tree": {"type": "array", "items": {"$ref": "#/$defs/tree"}}
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["id", "kind", "group", "from", "to", "meaning02", "toolEntry", "silent"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^U-[0-9]{3}$"},
+        "kind": {"enum": ["rewrite", "escape", "report", "none"]},
+        "group": {"type": "string"},
+        "from": {"type": "string"},
+        "to": {"type": "string"},
+        "meaning02": {"type": "string"},
+        "toolEntry": {"type": "string", "pattern": "^U-[0-9]{3}$"},
+        "silent": {"type": "boolean", "description": "True when 0.1 and 0.2 give different results for `from` and nothing in a 0.2 run reports the difference; `UPGRADING.md` marks the row SILENT."}
+      }
+    },
+    "tree": {
+      "type": "object",
+      "required": ["id", "kind", "from", "to", "migrationRule", "silent"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^T-[0-9]{3}$"},
+        "kind": {"enum": ["migration", "version", "rename", "move", "merge", "split", "drop", "add"]},
+        "from": {"type": "string"},
+        "to": {"type": "string"},
+        "migrationRule": {"type": "string"},
+        "silent": {"type": "boolean", "description": "True when the migration changes what the tree means and reports nothing. A row of C2-A-178 changes only the form, and the migration reports nothing for spelling (C2-A-180), so such a row is false."}
+      }
+    }
+  }
+}

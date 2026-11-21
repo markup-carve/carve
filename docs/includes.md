@@ -1,38 +1,54 @@
 ---
 title: "File inclusion"
-description: "The processor-level {{ … }} directive: syntax, the host resolver contract, fragment containment, cross-file collisions, reported dependencies, source mapping and the limits that bound an expansion."
-normative: true
+description: "The {{ … }} include directive in Carve 0.2: syntax, selections, the host resolver, references across files, failures, limits, dependencies and security."
 ---
 
 # File inclusion
 
-For the authoring workflow and common examples, start with
-[Include files](./include-files). This page defines the processor rules.
+For the authoring workflow, start with [Include files](./include-files). This
+page explains the processor rules with examples.
 
-This page gives the normative rules for Carve's file-inclusion (transclusion) directive,
-<code v-pre>{{ … }}</code>. Inclusion is a processor feature. The core parser does not
-expand files and leaves the directive as text. The syntax is defined in
-`resources/grammar.ebnf` PART 6, and so are its rules (`CARVE-P6-001`, I1 to I16); this page states them with examples.
+The normative text is the
+[0.2 includes specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md)
+(clauses `C2-N-001` to `C2-N-088`). The shape of the directive is defined by the
+[block chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md)
+(`C2-B-156`, `C2-B-201` to `C2-B-206`). This page cites those clauses and does
+not add to them; where the two differ, the specification wins. The table of
+failure causes, the option list and the limits are data files:
+[`data/includes.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/includes.json),
+[`data/include-options.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/include-options.json)
+and [`data/limits.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/limits.json).
 
-## What inclusion is (and is not)
+## What an include is
 
-File inclusion inserts another Carve or text file at the directive's position,
-as if its contents had been written there. Because that content comes from
-another file, the rules also cover path resolution, name collisions, limits,
-and security.
+An include directive, <code v-pre>{{ path }}</code> alone on its line, is a
+block. When the parse has a resolver, the directive's file is parsed as a
+document of its own and its blocks become the children of the `include` node,
+which stays where the directive stood (`C2-N-015`, `C2-N-016`). Nothing is
+spliced as source text, so an included file can neither complete nor
+interrupt a construct of the file that includes it.
 
-- **Processor-level.** The core parser performs **no file I/O**. Expansion is a
-  host-driven pass layered on top of the parser.
-- **The core leaves it literal.** Because the directive is unreachable from the
-  `block` and `inline` grammars, a core that does not implement includes never
-  recognizes <code v-pre>{{ … }}</code>. It parses those bytes under ordinary inline rules, so a
-  bare-path directive with no active inline markers renders **verbatim**. This
-  is corpus-pinned (see [Core behavior](#core-behavior-no-resolver-no-expansion)).
-- **Text-only.** <code v-pre>{{ … }}</code> includes Carve or text sources. Content is
-  read as Carve, unless `@code` asks for it as one code block (see
-  [Including source as code](#including-source-as-code-code)). A binary or image
-  target is **not** an include (images use `![]()`); a binary or unreadable
-  target yields a Warning and a literal directive.
+- **Block only.** There is no inline include. <code v-pre>{{ … }}</code> in a
+  sentence, a heading, a table cell or on a lazy paragraph line is text, and no
+  resolver ever sees it (`C2-N-002`):
+
+  ```carve
+  See {{ snippet.crv }} here.
+  ```
+
+  ```html
+  <p>See {{ snippet.crv }} here.</p>
+  ```
+
+- **Part of the parse.** Expansion runs after the top-level document is parsed
+  and before references resolve. A tree that was expanded lists
+  `includeExpansion` in its root `stages` (`C2-N-006`).
+- **No resolver, no expansion.** A library call without a resolver expands
+  nothing; each include stays unexpanded and reports `include-no-resolver`
+  (`C2-N-003`).
+- **Inert in code.** A directive inside a code span or a code block is code
+  content. The payload of a code include is not read as Carve either, so a
+  directive in it is never expanded (`C2-N-042`).
 
 ## Directive syntax
 
@@ -40,162 +56,129 @@ and security.
 {{ path }}
 {{ path #section }}
 {{ path @key:value }}
-{{ path #section @key:value }}
-{{ path @shift:N }}
-{{ path @region:name @code:lang }}
-{{ path#section }}
-{{ path#section@key:value }}
+{{ path #section @key:value @key }}
+{{ "my chapter.crv" #intro @shift:1 }}
+{{ path#section@shift:1 }}
 ```
 
-- **`path`** is either **bare** (it stops at the first space, `#`, `@`, or
-  `}`) or **double-quoted** (`"my chapter.crv"`) when it contains spaces. The
-  path is resolved **relative to the including file**; resolution is the host's
-  job (see [The host resolver](#the-host-resolver)). Inside the quotes, a backslash
-  escapes as it does in a quoted attribute value: before ASCII punctuation it
-  yields that character, so `\"` is a quote and `"a\.crv"` names `a.crv`. Before
-  anything else it is path text, so `"notes\new.crv"` names the file
-  `notes\new.crv`.
-The padding around the path is a **run** of whitespace, not one space. At least
-one character is required on each side - `{{path}}` and `{{ path}}` are ordinary
-text, because that requirement is what keeps a path from starting at `{` - but
-beyond the first, more changes nothing: a bare path stops at the first space
-anyway and a quoted path carries its own delimiters. Refusing extra padding
-would turn an aligned directive into prose with **no** warning, which is the one
-failure mode the [Errors](#errors) rules exist to avoid. Tabs count, as they do
-wherever else whitespace does.
+- **Padding.** <code v-pre>{{</code>, one or more spaces, the path, an optional section, any
+  options, one or more spaces and `}}`, with only spaces and tabs after it on
+  the line. A tab right after <code v-pre>{{</code> makes the line text (`C2-B-201`).
+- **Path.** A bare path stops at a space, `#`, `@`, `}` or a quote. A path with
+  spaces is double-quoted; inside the quotes a backslash before ASCII
+  punctuation is dropped and before anything else stays, so `"a\.crv"` names
+  `a.crv` and `"notes\new.crv"` names `notes\new.crv`. A path in curly quotes is
+  read as written. An empty path makes the line text and reports
+  `empty-include-path` (`C2-B-202`).
+- **Section.** `#name` names a heading or a block of the included file by its
+  id. The name is an ASCII letter, digit or `_`, then letters, digits, `_` and
+  `-`, so `#2024-plan` works (`C2-B-203`).
+- **Options.** `@key` or `@key:value`. The space before a section or an option
+  is optional, and an unquoted value ends at the next `@`, so
+  `@shift:1@lines:1-8` is two options. A quoted value may hold `@`, spaces and
+  `}}` (`C2-B-204`).
+- **The closer** is the first `}}` outside a quoted path or value (`C2-B-201`).
 
-**Inside the padding, the separators are optional.** Neither `#section` nor
-`@key:value` requires whitespace in front of it, in any position. Each of these is
-well formed and means what its spaced spelling means:
+The six option keys are `lines`, `region`, `rows`, `cols`, `shift` and `code`
+(`C2-B-205`):
 
+| Option | Kind | Value |
+|---|---|---|
+| `@lines:N-M` | selection | physical lines `N` to `M`, both included |
+| `@region:name` | selection | the lines between two named markers |
+| `@rows:N-M` | selection | records of a CSV or TSV table include |
+| `@cols:N-M` or `@cols:"A,B"` | transform | table columns by number or by head name |
+| `@shift:N` or `@shift:auto` | transform | a heading-level shift |
+| `@code` or `@code:lang` | mode | the selection as one code block |
+
+An option is **invalid** when its key is not one of the six, its value has the
+wrong shape, a needed value is missing, or the key already stood earlier in the
+directive. <code v-pre>{{ a.js @lines:1-1 @lines:3-3 }}</code> is invalid; the later value does
+not win. The node keeps the option as written, `include-option-invalid`
+reports it, and the include is not expanded (`C2-B-206`, `C2-N-025`). An invalid
+option never drops out of a selection: <code v-pre>{{ a.crv @lines:5-2 }}</code> does not read
+the whole file.
+
+### Which options combine
+
+A directive uses at most one selection: `#section`, `@lines`, `@region` or
+`@rows`. A section excludes `@code`, and `@rows` and `@cols` need a code include
+whose language is `csv` or `tsv` and whose attributes carry the `table` flag.
+Breaking one of these rows of `conflicts` in `data/includes.json` reports
+`include-selection-conflict` and leaves the include unexpanded (`C2-N-024`).
+Without a selection the include takes the whole file, and without `@code` it is
+read as Carve (`C2-N-026`).
+
+## Selections
+
+### Section (`#name`)
+
+The name is matched against the included file's own parse, before that file's
+includes expand and before its ids meet any other file's, exactly and with case
+(`C2-N-027`). Two steps, the first that matches wins (`C2-N-028`):
+
+1. **A heading** whose id is the name, authored or generated, selects its
+   section: the heading and the blocks after it up to the next heading of the
+   same or a higher level, bounded by the heading's container.
+2. **A block** with the authored id selects that block alone, with its
+   attributes.
+
+`recipes.crv`:
+
+````
+= Pizza
+
+{#dough}
+```text
+500 g flour
+325 g water
 ```
-{{ path#section }}
-{{ "path"#section }}
-{{ path@shift:1 }}
-{{ path #Name@shift:1 }}
+````
+
+```carve
+{{ recipes.crv #dough }}
 ```
 
-That is what the stop rules are for - a bare path ends at `#` or `@`, and a section
-name holds neither - so requiring the whitespace would leave those stops with
-nothing to do.
-
-- **`#section`** names a heading or a block in the resolved source (see
-  [Selecting by id](#selecting-by-id-section)). The id is matched the same way a
-  `</#id>` cross-reference matches: exactly, case included. The name takes any
-  spelling an explicit `{#id}` takes, so a digit-leading id such as
-  `#2024-plan` is nameable. The name ends at the first character the id class
-  cannot spell, which is how an option can follow it with no space.
-- **`@key:value`** is an extensible option slot. Each option opens at its own
-  `@`; the whitespace between options, and before the first one, is optional.
-  An unquoted value ends at the next `@`, so `@shift:1@lines:1-8` is two
-  options. A value that needs an `@` is quoted.
-  - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
-    through `M` of the resolved source. A range that ends past the file's last
-    line stops at that line, so <code v-pre>{{ two.txt @lines:2-9 }}</code> on
-    a two-line file includes line 2. A range that **starts** past the last line
-    is an `include-lines-out-of-range` error, and the directive stays literal.
-    A final line ending does not begin another line, so an empty file has no
-    lines. Neither has a file holding only a byte order mark.
-  - **`@region:name`** includes the physical lines between matching named
-    source comment markers. The name uses Carve's `identifier` spelling.
-  - **`@shift:N`** shifts the level of every included heading by the signed
-    integer `N` (see [Heading-level shift](#heading-level-shift-shift)).
-  - **`@code:lang`** or a bare **`@code`** includes the selected source as one
-    code block instead of reading it as Carve (see
-    [Including source as code](#including-source-as-code-code)). It is the one
-    option that takes no value.
-  - Every other `@key` is **reserved**. A processor that does not recognize an
-    option SHOULD treat the directive as unresolvable (Warning, literal).
-
-  Each option key appears at most once. A directive that repeats one, such as
-  <code v-pre>{{ a.js @code:js @code:py }}</code> or
-  <code v-pre>{{ a.js @lines:1-1 @lines:3-3 }}</code>, is an
-  `include-duplicate-option` error and stays literal: the last value does not
-  win. A bare `@code` and `@code:lang` are the same key.
-
-**The closer is the first `}}` outside any quoted run.** A quoted run - a
-quoted path, or the quoted form of an option value - MAY contain the `}}` pair:
-`quoted_include_path` and `quoted_value` each exclude only their own quote
-character, the backslash and the newline, so a `}}` between the quotes belongs
-to the run and does not end the directive. Both of these close at the `}}` that
-**follows** the closing quote, leaving ` end` as ordinary text:
-
-```
-{{ "a }} more" @k:v }} end
-{{ ch.crv @label:"a }} more" }} end
+```html
+<pre id="dough"><code class="language-text">500 g flour
+325 g water
+</code></pre>
 ```
 
-A recognizer that scans for the first `}}` without tracking quoting ends the
-first of those at its path's pair and the second at its value's - the two halves
-were measured to disagree, and the grammar as written was always on the side of
-admitting the pair. An **unterminated** quote does not open a run: it falls back
-to the unquoted reading, so it can never pair with a quote further along the
-line, and the closer is again the first `}}`, which is what leaves a malformed
-directive as the literal text the [Errors](#errors) rules describe.
+An id on an inline node, a list item, a table row or cell, a term or a footnote
+selects nothing (`C2-N-029`). A section that selects nothing reports
+`include-section` and the include stays unexpanded (`C2-N-030`). The
+definitions of the file that the selection did not take are appended to the
+children, so references in the selected blocks resolve against the whole file
+(`C2-N-031`).
 
-### Selection vs transform options
+### Lines (`@lines:N-M`)
 
-Directive options fall into two disjoint kinds:
+`@lines` selects physical lines, counted from 1, both ends included. A final
+line ending begins no further line, and a leading byte order mark is not
+content, so an empty file has no lines (`C2-N-034`). A range that ends past the
+last line stops there; one that starts past it reports
+`include-lines-out-of-range` (`C2-N-035`).
 
-- **Selection options** choose *which* content is pulled in: `#section`
-  (semantic, a heading's section or one block), a line range `@lines:N-M`,
-  a named region `@region:name` (both physical source lines), or
-  `@rows:N-M` (parsed CSV or TSV records on a table include).
-- **Transform options** reshape content that has already been selected:
-  `@shift:N` (heading-level shift) and `@cols` (table column projection).
-- **The mode option** `@code` decides what the selected content becomes: one
-  code block, instead of Carve.
+The selected lines are parsed as a document of their own, and their positions
+keep the line numbers of the file. A slice that cuts a fence, a list or a div
+ends that construct at the end of the slice (`C2-N-020`, `C2-N-036`). Frontmatter
+opens only when the selection starts at line 1 of the file, and the file's
+definitions outside the slice are appended as for a section (`C2-N-020`).
 
-The four **selection** mechanisms are **mutually exclusive**: a single
-directive MUST use at most one of `#section`, `@lines`, `@rows`, and `@region`.
-Combining them is an **error**: the processor emits a Warning and leaves
-the directive **literal**, exactly like the other error cases (see
-[Errors](#errors)).
+### Region (`@region:name`)
 
-**Transform** options are orthogonal to selection. `@shift` may accompany
-`#section`, `@lines`, `@region`, or no selection. `@cols` applies only to
-table includes and may accompany any valid selection.
+`@region:name` selects the lines strictly between an opening and a closing
+marker; the marker lines themselves are not selected (`C2-N-037`). Which markers
+count depends on the mode, so that a marker never shows in the file that holds
+it:
 
-`@code` composes with `@lines`, with `@rows` on a delimited table, with
-`@region`, or with neither. It does not
-compose with `#section`, which selects Carve structure that a code include never
-parses: that combination is an `include-selection-conflict` error.
-
-### Selecting a named source region (`@region:name`)
-
-`@region:demo` selects the physical lines between a pair of marker lines. A
-marker is a whole line: optional leading spaces or tabs, a comment that holds
-`#region demo` or `#endregion demo`, and nothing after it. The keywords are
-case-sensitive, so `#Region demo` is not a marker. An end marker may omit the
-name. Marker lines themselves are not included. A byte order mark (U+FEFF) at
-the start of the file is not part of line 1, so a file saved with one still has
-a marker on its first line.
-
-Which comments count as markers depends on what the include produces, because a
-marker must never show up in the file that holds it.
-
-- **An include read as Carve** (no `@code`) recognizes only the `%%` line
-  comment, which renders nothing:
-
-  ```carve
-  # Project
-
-  %% #region requirements
-  - PHP 8.3 or later
-  - Composer 2.7
-  %% #endregion requirements
-  ```
-
-  <code v-pre>{{ readme.crv @region:requirements }}</code> then includes the two list items, and
-  `readme.crv` itself renders as if the markers were not there. The selected
-  lines are read as Carve, like any included file; to include source code,
-  use `@code`. A bare
-  `#region` line, a `// #region` line and a braced `{% #region %}` comment are
-  ordinary text in a Carve file, so an include naming such a region reports
-  `include-region-invalid`.
-
-- **A code include** (`@code`) reads a source file, so it recognizes the
-  comment styles editors fold on, each on one line:
+- **Read as Carve** (no `@code`), only the line comment counts:
+  `%% #region name` and `%% #endregion`, with an optional name (`C2-N-038`,
+  `C2-B-217`). A marker renders nothing. A bare `#region` line or a
+  `// #region` line is text in a Carve file.
+- **A code include** recognizes the folding comments editors use, each alone
+  on its line (`C2-N-039`):
 
   | Marker | Typical languages |
   |---|---|
@@ -206,37 +189,20 @@ marker must never show up in the file that holds it.
   | `<!-- #region name -->` | HTML, XML |
   | `%% #region name` | Carve |
 
-  A block comment's closer (`*/`, `-->`) must end the same line.
+The keywords are case-sensitive, a `%%%` line is a comment fence and no marker,
+`#regional` is no marker and `#region-x` is a malformed one (`C2-N-040`). Distinct
+names may nest, a name opens at most once per file, and a closer may omit the
+name. A malformed, unmatched, unclosed or repeated marker, or a name the file
+does not open, reports `include-region-invalid` (`C2-N-041`).
 
-In both modes a `%%%` line is a block comment fence, not a marker. Spaces or
-tabs may separate the comment opener from the keyword. A nested region with a
-different name is allowed; its marker lines remain inside the outer region's
-source. A keyword run on by a word character, such as `#regional`, is ordinary
-text, while `#region-x` is a malformed marker. Names compare exactly and may
-occur only once per file.
+## Code includes (`@code`)
 
-In a `{table}` include a well-formed marker line is not a record, with or without
-`@region`. It adds no row, and neither `@rows` nor `header-rows` counts it.
+With `@code:lang` the include has one child: the code block an authored fence
+with that language would give, whose content is the selected source
+(`C2-N-042`). A bare `@code` gives no language; none is guessed from the file
+name. `src/server.js`:
 
-A missing name, duplicate opening name, malformed marker, unmatched end,
-mismatched nested end or unclosed start emits `include-region-invalid` and
-leaves the directive literal. Combining `@region` with `#section` or `@lines` is
-a different error, `include-selection-conflict`. Either way the dependency still
-records the file as read. The selected lines retain their original source
-positions. Insertions before the opening marker change line numbers but leave
-the selected content intact. This selector reads from source; it does not write
-changes back to it.
-
-`carve lint` reports a `#region` or `#endregion` line in a Carve file, including
-a case variant such as `#Region`, as `region-marker-renders-as-text`: it renders
-as text and is not a marker for a Carve include. Write `%% #region` instead.
-
-### Including source as code (`@code`)
-
-`@code:lang` includes the selected source as **one code block** with the
-language `lang`. Nothing in it is parsed as Carve. Given `src/server.js`:
-
-```js
+```
 import http from 'node:http'
 
 // #region start
@@ -245,13 +211,10 @@ server.listen(3000)
 // #endregion start
 ```
 
-the directive
-
+<!-- carve-sample {"fmtSkip":"the pinned engine predates the C2-W-058 order"} -->
 ```carve
-{{ src/server.js@region:start @code:js }}
+{{ src/server.js @code:js @region:start }}
 ```
-
-renders
 
 ```html
 <pre><code class="language-js">const server = http.createServer(handler)
@@ -259,962 +222,508 @@ server.listen(3000)
 </code></pre>
 ```
 
-- **Selection.** `@code` takes the whole file, an `@lines` range or an
-  `@region` region. `#section` with `@code` is an `include-selection-conflict`
-  error.
-- **Payload.** The selected lines, unparsed. A <code v-pre>{{ … }}</code> inside them stays
-  text and a fence line is content. Line endings follow the document's line
-  rules, a leading byte order mark is dropped, and every line ends with a line
-  feed, as in an authored fence. An empty selection is an empty code block.
-  A selected blank last line is kept: `@lines:1-3` of a file holding `x` and
-  two blank lines gives the same block as including the whole file.
-- **Position.** In the AST (`carve --json`), the block's `pos` points into the
-  included file. It runs from the start of the first selected line to the end
-  of the last selected line's text, without its line ending. Offsets count a
-  CRLF as two characters.
-- **Language.** `lang` is spelled like a fence's language token. A bare `@code`
-  produces a code block with no language; the language is never guessed from
-  the file extension.
-- **Attributes.** An attribute line directly above the directive applies to the
-  code block exactly as it does to an authored fence:
+- **Payload.** One line per selected line, each ended by a line feed, as in an
+  authored fence. A CRLF becomes a line feed, a missing final line ending is
+  added, and a leading byte order mark is dropped (`C2-N-043`).
+- **Position.** The child's `pos` is in the included file, from column 1 of the
+  first selected line to the end of the last one, without its line ending
+  (`C2-N-044`).
+- **Attributes and captions.** The attribute line above the directive applies
+  to the code block, and a caption line below a code include captions it, as on
+  an authored fence (`C2-N-071`, `C2-N-073`). On an include without `@code`, the
+  attributes do nothing and `include-attributes-unused` reports them, and a
+  caption below it is text (`C2-N-072`, `C2-N-073`).
+- **Shift** has no effect on a code include (`C2-N-051`).
 
-  ```carve
-  {.diff title="server.js"}
-  {{ src/server.js@region:start @code:js }}
-  ```
+### Tables from CSV and TSV
 
-  renders `<pre class="diff" title="server.js">`. Extensions that read a code
-  block, such as callouts, read this one too.
-- **Delimited data.** A `{table}` flag above a `@code:csv` or `@code:tsv`
-  include turns the included data into a table, the same way it does for an
-  authored `csv` or `tsv` fence (see
-  [CSV and TSV data](/cheatsheet#csv-and-tsv-data)). Given `data/plans.csv`:
+With the `table` flag and the language `csv` or `tsv`, the child is the
+delimited table such a fence gives, with bad quoting reported as on an authored
+fence (`C2-N-045`). `data/plans.csv`:
 
-  ```csv
-  Plan,Seats
-  Starter,1
-  "Team, annual",10
-  ```
-
-  the lines
-
-  ```carve
-  {table}
-  {{ data/plans.csv @code:csv }}
-  ```
-
-  render
-
-  ```html
-  <table>
-    <thead>
-      <tr><th scope="col">Plan</th><th scope="col">Seats</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Starter</td><td>1</td></tr>
-      <tr><td>Team, annual</td><td>10</td></tr>
-    </tbody>
-  </table>
-  ```
-
-  Data with malformed quoting stays a code block, as it does in an authored
-  fence. Given an include root, `carve lint` reports the `delimited-table-*`
-  diagnostics for included data too (see
-  [Linting included content](#linting-included-content)).
-- **Table rows and columns.** On a `{table}` CSV or TSV code include,
-  `@rows:2-4` selects parsed records, including records with quoted newlines.
-  The header still comes from the top of the file and is not repeated in the
-  body. `@cols:"Seats,Plan"` selects header names in that order. Escape a
-  comma or double quote within a name with a backslash. For a file without
-  headers, `{table header-rows=0}` allows numeric `@cols:1-3` instead.
-  `@rows` is exclusive with `#section`, `@lines`, and `@region`; `@cols`
-  can accompany any one selection. `@lines` still selects physical file lines,
-  and lint suggests `@rows` when it appears on a delimited table include.
-  Markdown export writes the selected cells as a GFM pipe table, with a
-  caption as a paragraph after it.
-- **Block only.** A code block is block structure, so `@code` inside a sentence
-  is an `include-block-in-inline` error. `@shift` has no effect, since the code
-  holds no headings.
-
-Resolution, containment, the byte budget, cycles, depth and dependency
-reporting work exactly as for any other include.
-
-### Selecting by id (`#section`)
-
-The name is looked up in the child's own parse, before the child's nested
-includes expand. The first step that matches wins:
-
-1. **A heading.** A heading whose id is the name - explicit `{#id}` or the
-   auto slug - selects its **section**: the heading and the blocks after it, up
-   to the next heading of the **same or higher** level. A heading inside a
-   container stops at the end of that container.
-2. **A block.** Otherwise, a block carrying the **explicit** id selects exactly
-   that block, attributes included: a paragraph, list, table, figure, code
-   block, block quote, div, admonition, and so on, at any depth.
+```
+Plan,Seats
+Starter,1
+"Team, annual",10
+```
 
 ```carve
-{{ recipes.crv #dough }}
+{table}
+{{ data/plans.csv @code:csv }}
 ```
 
-with `recipes.crv` containing
-
-````carve
-# Pizza
-
-{#dough}
-```text
-500 g flour
-325 g water
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Plan</th><th scope="col">Seats</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Starter</td><td>1</td></tr>
+    <tr><td>Team, annual</td><td>10</td></tr>
+  </tbody>
+</table>
 ```
-````
 
-includes the code block alone, still carrying `id="dough"`.
+- **`@rows:N-M`** counts the parsed records of the whole file from 1, header
+  records included; a quoted field with line breaks is one record. The head
+  (`header-rows`, one by default) and the foot (`footer-rows`, none by default)
+  always come from the whole file, and a selection chooses only body records.
+  A range that starts past the last record reports `include-rows-out-of-range`
+  (`C2-N-046`).
+- **`@lines`** on a table include chooses whole records whose first line lies
+  in the range, so a quoted field is never cut, and lint adds the hint
+  `include-lines-table-rows-hint` (`C2-N-046`, `C2-N-088`).
+- **`@cols:"Seats,Plan"`** takes the columns with those head names, in that
+  order. A missing or doubled head name reports `include-cols-invalid`, a name
+  requested twice `include-cols-duplicate`. A numeric `@cols:1-3` needs
+  `header-rows=0` (`C2-N-047`).
+- A region marker line outside a quoted field is never a record (`C2-N-046`).
 
-- **First match wins.** Within a step, the first match in document order is
-  selected; a container comes before the blocks inside it.
-- **Headings come first.** A heading match wins over a block match anywhere
-  in the file, so a document that already selects a section keeps its meaning.
-- **Not a block, not selectable.** An id on an inline element, a list item, a
-  table row or cell, a definition term or a footnote selects nothing. Neither
-  does a block inside a footnote. The directive warns and stays literal, the
-  same as a name the child does not contain.
-- **Everything else is unchanged.** A selected block is treated like a
-  selected section: an inline include splices a selected paragraph's inlines
-  (its own attributes stay behind), `@shift` reaches the headings inside the
-  block, and cycles, collisions, provenance and dependencies follow the rules
-  below.
+## Heading-level shift (`@shift`)
 
-### Heading-level shift (`@shift`)
+`@shift:N` adds `N` to the level of every heading among the include's
+children, at every depth. A level that would leave 1 to 6 is set to the nearest
+bound, the heading is kept, and `include-heading-clamp` reports it. A shift
+changes no text and no id, so a cross-reference into a shifted heading still
+resolves (`C2-N-048`).
 
-`@shift` takes **either** a signed integer **or** the literal value `auto`,
-never both. `@shift:N` increases the level of **every** heading in the included
-content by `N`:
+`@shift:auto` computes `N = (C + 1) - T` (`C2-N-049`):
+
+- `C` is the level of the nearest heading before the include in its own
+  container or in a container around it; a heading inside a sibling container
+  that closed before the include does not count. With no such heading, `C` is 0.
+- `T` is the lowest heading level among the children, after selection and
+  after the includes inside them expand.
+- Children without a heading make `auto` a no-op, with no report.
+
+`chapter-one.crv` opens with `= Chapter One`, so `T = 1`; the directive stands
+under a level-2 heading, so `C = 2` and `N = 2`:
 
 ```carve
-{{ chapter.dj @shift:2 }}
-```
-
-- With `@shift:2`, an included `h1` becomes an `h3`, an `h2` becomes an `h4`, and
-  so on. A **negative** `N` raises headings toward the top level: `@shift:-1`
-  turns an `h2` into an `h1`.
-- The option is **optional**; an omitted `@shift` is equivalent to `@shift:0`
-  (no shift, the default behavior).
-- **Clamp to `[1, 6]`.** The shifted level is clamped to the valid heading range.
-  If a shift would push a heading below level 1 or above level 6, the processor
-  clamps it to the nearest bound (1 or 6) and emits a Warning. The heading is
-  **kept**, never dropped.
-- **Ids and slugs are unchanged.** `@shift` changes only a heading's *level*,
-  never its id or slug (ids are name-based, not level-based), so `</#id>`
-  cross-references into a shifted heading still resolve.
-- **Auto-numbering follows the new level.** If section auto-numbering (the
-  [HeadingNumbers](/extensions#_9-headingnumbers-tier-3) feature) is enabled,
-  shifted headings renumber at their **new** level as a consequence of the shift.
-#### Context-relative shift (`@shift:auto`)
-
-With `@shift:auto` the processor **computes** the shift instead of taking it
-from the author. Two quantities define it:
-
-- **Context level `C`** is the level of the nearest **preceding** heading, in
-  document order, that sits in the directive's own block container or in an
-  **enclosing** (ancestor) container. A heading inside a **sibling** container
-  that has already closed does **not** set the context. If no such heading
-  exists, `C = 0`.
-- **Top level `T`** is the **minimum** heading level present in the resolved
-  content, **after** any `#section` or line-range selection has been applied.
-  Using the minimum rather than the first heading's level preserves the included
-  document's internal relative structure.
-
-The computed shift is:
-
-```
-N = (C + 1) - T
-```
-
-`N` is then applied exactly as a literal shift under the rules above: the
-resulting level is clamped to `[1, 6]` with a Warning on clamp, the heading is
-kept and never dropped, ids and slugs are unchanged so cross-references still
-resolve, and section auto-numbering renumbers at the new level.
-
-Worked example - the including document has a `## Chapters` heading before the
-directive, so `C = 2`:
-
-```carve
-## Chapters
+== Chapters
 
 {{ chapter-one.crv @shift:auto }}
 ```
 
-`chapter-one.crv` starts at `# Chapter One`, so `T = 1` and
-`N = (2 + 1) - 1 = 2`. The child's `h1` renders as an `h3`, one level below the
-`## Chapters` heading that contains it.
+```html
+<section id="Chapters">
+  <h2>Chapters</h2>
+  <section id="Chapter-One">
+    <h3>Chapter One</h3>
+    <p>Text of the chapter.</p>
+  </section>
+</section>
+```
 
-- **Content with no headings.** If the resolved content contains no headings,
-  `auto` is a **no-op** (`N = 0`) and emits **no** Warning.
-- **Nested includes.** `auto` resolves against the document **as assembled at
-  that point**, so a shift already applied by an ancestor include is in effect
-  when a nested `auto` is computed. Expansion proceeds **outside-in**, which
-  makes the result deterministic.
-- **Inline includes.** Inline content cannot contain headings, so `auto` on an
-  inline include is a no-op.
+Shifts apply once the tree is expanded, an include before the includes inside
+it, so a nested `auto` reads the levels its ancestors already shifted and is not
+shifted twice (`C2-N-050`).
 
-`auto` makes a chapter file **portable**: the same file can be included at any
-depth without editing its heading levels. And because the author writes
-`@shift:auto` explicitly at the include site, the position-dependence is
-**opt-in per directive** rather than ambient behavior.
+## Expansion
 
-## Block vs inline includes
+- **A whole document.** An included file is parsed with the parse options of
+  the top-level document, as a document of its own: its own depth limits, its
+  own frontmatter, and a construct open at its end closes there. An unclosed
+  fence in a child ends at the end of the child and reports
+  `unclosed-code-fence` there; it never swallows the parent (`C2-N-015`).
+- **Frontmatter** of an included file is that file's: the first child of the
+  include, rendering nothing, never the metadata of the top-level document
+  (`C2-N-021`).
+- **Recursive, in tree order.** Includes in an included file expand the same
+  way, each path relative to its own including file. The resolver is called and
+  the size cap is charged in tree order (`C2-N-018`).
+- **Positions are local.** Every node an included file produced carries
+  `pos.file`, the id the resolver returned, and lines, columns and offsets
+  counted in that file. The include node is positioned in the file that holds
+  the directive. Nothing is mapped into the offsets of the including file
+  (`C2-N-019`). With `sourceLines` on, `data-source-line` is the line in the
+  element's own file (`C2-N-076`).
+- **In a container.** A directive may be the only block of a list item, a
+  description or a quote. List spacing is decided in the including file, so
+  blank lines inside the included file do not make the list loose (`C2-N-022`).
+- **The node.** An include carries `file` whenever the resolver returned a text,
+  and `children` exactly when it was expanded. Both are resolution results, so
+  tree equality skips them (`C2-N-017`).
 
-Inclusion follows Carve's block/inline split (PART 9 §10):
+### Rendering
 
-- A directive that is **alone on its own line** (in block context) is a **block
-  include**. Its resolved content merges as **blocks** at the directive site.
-- A directive that appears **within inline content** is an **inline include**.
-  Its resolved content merges as **inline**.
+An expanded include renders its children and nothing else: no wrapper element,
+no attribute of its own. Section wrapping, the one-line forms of items and
+quotes and the placement of the footnote section all read the children in the
+include's place, so a heading in a child opens a section that takes the blocks
+of the including file after it (`C2-N-075`).
 
+An unexpanded include renders the directive as text in a paragraph and reports
+the render loss `include-unresolved`, whatever the cause (`C2-N-070`):
+
+<!-- carve-sample {"lint":"the include target does not exist on purpose"} -->
 ```carve
-Intro paragraph.
+Text.
 
-{{ chapter-2.crv }}
-
-See {{ snippet.crv }} for the short form.
+{{ missing.crv }}
 ```
 
-The first directive is a block include (its file becomes sibling blocks between
-the paragraphs); the second is an inline include (its content is spliced into
-the surrounding sentence).
-
-An inline include is constrained to **inline-only content**: the resolved
-source MUST parse (as a [self-contained
-fragment](#merge-mechanism-and-source-mapping)) to a single paragraph, or to
-nothing. Its inlines are then spliced into the surrounding inline sequence. If
-the resolved content carries any other block structure - multiple paragraphs, a
-heading, a list, a fence - the directive is an **error**: the processor emits a
-Warning and leaves the directive **literal**, like the other error cases (see
-[Errors](#errors)). Block-shaped content belongs in a block include.
-
-## The directive is inert in code (verbatim protection)
-
-An include directive is recognized **only** where inline and block constructs
-are recognized. Inside a code span, a fenced or raw code block, or any other
-verbatim context, <code v-pre>{{ … }}</code> is ordinary literal text and is
-**never** resolved. This is a consequence of Carve's general invariant that
-**code is verbatim** - no construct transforms inside a code span or code block,
-and the include directive is no exception. It means a literal directive can
-always be written and displayed by placing it in code:
-
-~~~carve
-```
-{{ path }}
-```
-~~~
-
-renders the fenced line verbatim; it is not an include. The same holds for an
-inline code span: <code v-pre>`{{ path }}`</code> is literal. Because recognition
-is grammar-level, a processor MUST NOT resolve includes by blind textual
-substitution over the raw source (which would clobber a directive a user wrote
-inside a code block); it recognizes the directive only in directive position.
-
-### Recognition operates on a run, not on one node
-
-Grammar-level recognition does **not** mean "one parsed text node matches the
-directive grammar". A directive's own syntax overlaps constructs the core
-already parses: `#section` is tag syntax, `@key:value` is mention syntax, and a
-double-quoted path is rewritten by smart quotes. By the time the include pass
-runs, <code v-pre>{{ chapter.crv #intro @shift:1 }}</code> is therefore several
-adjacent nodes - text, a tag, a mention - not one.
-
-A processor MUST therefore recognize a directive over a **contiguous run of
-inline nodes that carry only literal text content** (text, tag, mention, and any
-other node whose source form is recoverable verbatim), reassembling the run's
-source before matching, and replacing only the matched span. Recognizing single
-nodes silently drops every directive that carries `#section` or an option, and
-every directive that appears mid-sentence.
-
-The run stops at any node that is **not** literal-text-shaped. A directive
-interrupted by emphasis, a link, or a code span is therefore **not** recognized
-and stays literal - the same rule that keeps a bare-path directive with active
-inline markers literal.
-
-### A child is parsed as a WHOLE document, not as a fragment
-
-I4's containment has a second half that is easy to under-implement: the child is
-parsed by the **whole document grammar**, not by the block layer alone.
-
-Two things fall out of that, and both have been got wrong in an engine that
-passed every other rule:
-
-- **Frontmatter is only frontmatter at the start of a document.** A child parsed
-  as a fragment renders its own leading `--- … ---` as a thematic break, a
-  paragraph and another thematic break. The child's frontmatter is consumed by
-  the child's own parse; it does not appear in the assembled document and does
-  not become the parent's metadata.
-- **The inline vocabulary is the same one.** Included content is parsed the way
-  content typed into the parent is, so whatever the parent recognizes in a
-  paragraph the child recognizes too. An engine carrying part of that vocabulary
-  outside its bare parser can render `@alice` in a child as plain text while the
-  same child, opened on its own, produces a mention.
-
-## Writing Carve back out
-
-Two obligations, both about the same thing: a document that goes through a
-processor and comes back as **Carve source** must be the document the author
-wrote.
-
-**I12: the writer preserves a directive verbatim.** A Carve writer MUST NOT
-escape the braces of a well-formed directive. Escaping renders as the same
-literal text, so nothing downstream looks wrong. Formatting a document would
-silently destroy every include in it and no round-trip invariant would catch it,
-because the escaped form and the directive form render identically.
-
-**I15: a processor targeting Carve source MUST NOT expand.** Expansion answers
-"what does this document say"; the Carve target answers "what does this document
-consist of", and those are different questions. A processor that expands first
-returns a DIFFERENT document - every child inlined, every directive gone - which
-is the same loss I12 forbids, reached by another route. So a `fmt` command, a
-`--carve` render, or any pipeline whose output is Carve source leaves directives
-unexpanded, whether or not a resolver is configured.
-
-The two are separable and both are needed. I12 is about the writer's escaping;
-I15 is about whether the expansion pass runs at all before the writer sees the
-document. An engine can satisfy either one while failing the other, and one
-did: all three engines preserved the directive in the writer while one of them
-expanded before calling it, so `render --carve` returned a flattened book on one
-engine and the author's source on the other two.
-
-This says nothing about other targets. Rendering the same document to HTML with
-a resolver configured expands normally; it is the Carve target specifically that
-round-trips.
-
-## Linting included content
-
-**I16: lint expands includes.** A linter MUST expand include directives when
-the caller gives it an include root or a resolver. Expansion for lint follows
-the rendering rules: the same root containment, byte budget, resolver-call
-bound, depth limit and cycle guard. Without a root or a resolver the linter
-reads no include target and reports nothing about one, as it did before this
-rule.
-
-What runs:
-
-- The top-level document is linted as it is without includes.
-- Every Carve-mode include the expansion accepts is linted with every rule and
-  with the top-level document's lint options, over the source the expansion
-  parsed: the whole file, the `@lines` range or the `@region` region. A
-  `#section` selection lints the whole file and keeps the findings on the
-  selected lines.
-- A `@code` include's block gets the rules that read a block's payload, once
-  the attribute line above the directive applies to it. Today those are
-  `delimited-table-malformed` and `delimited-table-wide-row` on a
-  `{table}`-marked `csv` or `tsv` code include.
-- A `{table}` CSV or TSV code include with `@lines` gets a Hint recommending
-  `@rows` for record selection.
-
-A finding in included content names the included file and a line and column in
-that file, plus the include chain that reached it, top-level directive first. A
-payload finding points at column 1 of the line where the offending record
-starts. Given `data/plans.csv`:
-
-~~~text
-Plan,Seats,Price
-Starter,1,"$0"
-Team,10,"$49" billed yearly
-~~~
-
-and `doc.crv`:
-
-~~~carve
-{table}
-{{ data/plans.csv @code:csv }}
-~~~
-
-the linter reports `delimited-table-malformed` at `data/plans.csv:3:1`, reached
-from the directive at `doc.crv:2:1`. Line 3 is the record whose quoting cannot
-be read.
-
-A finding in included content is reported once per distinct file, line, column
-and rule; the first reach in document order supplies the chain. A file included
-twice reports each finding once. Two selections of different ranges of one file
-each report their own range, and `@shift` does not make a range distinct.
-
-Every include Warning that leaves a directive literal is a finding under its
-own rule id (`include-unresolved`, `include-non-text`, `include-region-invalid`,
-`include-selection-conflict`, `include-cycle` and the rest), at the directive in
-the file that wrote it. Renames and heading clamps do not leave a directive
-literal and are not lint findings. The shared vectors in
-`tests/lint-include-conformance/` pin all of the above across engines.
-
-## The host resolver
-
-The **resolution model** keeps the parser pure and pushes all filesystem
-knowledge into the host. This mirrors the bibliography loader precedent, where
-"the extension does not perform file I/O ... the host resolves the path and
-passes the parsed data in as a processor option" (see
-[Extensions §6.1](/extensions#_6-1-data-source)). Carve implementations are not
-all filesystem-capable (browser, WASM, sandboxed hosts), so mandating `fopen`
-would break cross-implementation parity.
-
-The host supplies a **resolver** with this contract:
-
-> Given `(path, section?, options?, includingFileContext)`, return the resolved
-> Carve source text and a canonical **id** for the target, **or** an error.
-
-The `path` here is an **opaque target string**: a filesystem host reads it as a
-path, and another medium reads it as whatever names a document there (see
-[When the medium is not a filesystem](#when-the-medium-is-not-a-filesystem)).
-
-- **No resolver configured** means the directive is left **literal**: the
-  processor emits the verbatim <code v-pre>{{ … }}</code> text. This is the default state, and it
-  is what keeps browser / WASM builds inert by construction.
-- The resolver is **opt-in** and MUST be off for untrusted input unless the host
-  has satisfied the [Security](#security) requirements.
-
-### When the medium is not a filesystem
-
-A resolver is a function, and the processor never learns what is behind it. A
-host whose documents live in a database, an object store, a CMS, a git tree or
-an in-memory map implements the same contract as one reading files, and this is
-the better-tested path rather than an exotic one: 99 of the corpus's conformance
-vectors resolve through an in-memory resolver, and only six need a real
-filesystem, which is why carve-rs can build with its filesystem resolver
-compiled out and still pass them.
-
-**On the words `path` and `file`.** The directive's first part is called a
-**path** because that is what an author writes and reads, and `pos.file` names
-the unit of inclusion. Neither promises a filesystem. To a resolver the path is
-an **opaque target string**: interpret it as a row key, an object name, a slug
-or a URL as the medium requires. `pos.file` likewise holds whatever **identity**
-the resolver returned for that target.
-
-What a host on such a medium still owes:
-
-- **A stable identity per target.** The canonical id a resolver returns is what
-  cycle detection compares and what dependency reporting publishes. Two
-  spellings that name the same document MUST return the same id, or a cycle
-  escapes the guard and a preview watches something that never changes.
-- **Containment, in whatever namespace the medium has.** The rule that outlives
-  directories is: resolve to a canonical identity **first**, then test whether
-  that identity is inside the permitted set - never validate the spelling of the
-  request. A tenant, a collection or a key prefix plays the part `root` plays
-  for files.
-- **A per-target size limit.** The byte budget bounds expanded OUTPUT, not the
-  work done to obtain it, so a resolver with no limit of its own reads an
-  oversized record in full before expansion refuses it.
-- **Treat the target as untrusted input.** It comes from a document, so it must
-  not be interpolated into a query, a URL or a command. It is a key to look up,
-  not a fragment to compose with.
-
-Everything else is the processor's and applies unchanged whatever the medium:
-the byte budget, the depth limit, cycle detection, the bound on resolver calls,
-the warning cap, and the rule that a refused directive is left literal.
-
-### The containment root
-
-Every resolved path is checked against a single **containment root**. Where that
-root comes from depends on whether the entry point carries a path at all.
-
-- **File-based entry points** - a CLI invocation on a document path, or a
-  convert-from-file API - **SHOULD** default the containment root to the
-  **directory of the top-level document**. A document path is already known
-  there, so requiring the host to name a root explicitly is not necessary. The
-  root **MUST NOT** default to the process working directory: that directory is
-  arbitrary with respect to the document and may be `/` or a home directory.
-- **String-input APIs** have no document path, so no root can be inferred. A host
-  **MUST** supply the root explicitly; otherwise inclusion stays disabled and
-  directives remain literal. This preserves the opt-in posture for embedders: an
-  application that converts a string never gains filesystem reach by accident.
-- **A configured root MUST be absolute.** A root spec a host supplies that is
-  not an absolute path is **refused**: inclusion stays disabled and directives
-  remain literal, exactly as for a host that supplied no root at all. The test
-  is **absoluteness**, not emptiness after trimming - `"   "` is a legal POSIX
-  directory name, so whitespace-only is refused because it is relative, and a
-  directory whose name contains only spaces stays reachable by its absolute path.
-  A relative spec has no base the specification can name: every canonicalizer
-  in the ecosystem resolves one against the **process working directory**,
-  which reaches the very directory the bullet above forbids as a default, by a
-  route that bullet does not cover. `"."` roots containment at the working
-  directory and `".."` at its parent. A front end is free to compute an
-  absolute root of its own - a CLI may expand `--include-root .` in its
-  argument parsing before handing it over - because what is required is that
-  the root BE absolute, not that no one may derive it.
-- **One root for the whole expansion.** Relative include paths resolve relative
-  to the **including file** (I1), but containment is checked against the single
-  **top-level** root. The root **MUST NOT** re-base per included file. A re-based
-  root would shrink at every level of nesting, so a nested document could never
-  reference a sibling directory of the project.
-
-```
-book/            <- root (default: directory of the top-level document)
-  main.crv
-  chapters/ch1.crv
-  shared/glossary.crv
+```html
+<p>Text.</p>
+<p>{{ missing.crv }}</p>
 ```
 
-From `chapters/ch1.crv`, the include `../shared/glossary.crv` is **allowed**: it
-canonicalizes to `book/shared/glossary.crv`, which is inside the root, even
-though the path contains a `..` segment. From the same file,
-`../../../etc/passwd` is **denied**: it canonicalizes outside `book/`.
+The parse reports `include-not-found`, the render `include-unresolved`. With
+`strictLosses` on, such a render returns no output (`C2-N-078`). Under the
+`comment` and `minimal` profiles an include is outside the profile and is
+written as its directive text (`C2-N-077`).
 
-## Merge mechanism and source mapping
+## References across files
 
-The specification is normative on the **outcome** and permissive on the
-**mechanism**:
+Expansion merges every file into one tree, and ids and definitions follow the
+rules of a single document over that tree. Nothing is renamed: Carve 0.1
+renamed a repeated id or footnote label to `-2` with a Warning, and 0.2 dropped
+that rename (see the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md)).
+The clauses are `C2-N-053` to `C2-N-060` in the
+[includes specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md#references-across-files).
 
-- The observable result MUST be **as if** the resolved content had appeared
-  inline at the directive site, subject to **fragment containment**: included
-  content is parsed as a **self-contained fragment**. A construct still open at
-  the end of the included content **closes at child EOF**, exactly as it would
-  at the end of a standalone document. Included content can therefore **never
-  capture or reinterpret parent content** that follows the directive.
-- An implementation MAY splice the resolved **source** before parsing, or parse
-  the child and **merge events / AST** into the parent - but only where the
-  result equals the fragment-containment outcome. The two diverge exactly when
-  the child ends inside an unterminated construct: a naive textual splice of a
-  child ending in an **unclosed fence** would let that fence swallow the rest
-  of the parent document. That result is **non-conformant** - the fence ends
-  with the included content. A splice-based implementation must compensate
-  (e.g. synthesize the missing closer, or fall back to fragment parsing) to
-  stay conformant.
-- Fragment containment matters doubly for `@lines:N-M`: a physical line slice
-  can cut a fence or a div in half and manufacture exactly such a torn
-  construct. The tear is bounded to the fragment; the parent document is never
-  affected.
-- Source positions **SHOULD** identify the file they are measured in, so that
-  source-mapped hosts (editors, highlighters, error reporters) can attribute an
-  included span to the child file rather than to the directive (PART 6 I4).
-  When a processor provides file attribution, every coordinate is measured
-  in the file named by `pos.file` (PART 12 §41).
-  A node from the document being parsed has no `pos.file`, so a document with
-  no includes is unchanged.
+### Authored ids are never renamed
 
-  Line and column alone cannot carry this. A child's first paragraph and the
-  parent's first paragraph both report line 1, and nothing in the tree
-  distinguishes them - a host jumping to "line 1" would open the wrong file.
-  The identity is the one the resolver returned (spec I11's canonical id), so
-  it matches the dependency list entry for the same file.
+An authored `{#id}` keeps its spelling in every file (C2-N-057). An id that
+stands in two files is a duplicate id, the same as one that stands twice in one
+file (C2-N-058):
 
-  When a processor provides file attribution, nested includes attribute to the
-  file the node actually came from, not to the file that pulled its parent in:
-  a grandchild's nodes carry the grandchild's id. A processor therefore stamps a
-  resolved child after expanding that
-  child's own includes, and only where no identity is already recorded.
+- both elements are written with the id;
+- `duplicate-id` reports the later occurrence (C2-A-039);
+- a cross-reference `</#id>`, a link to `#id` and a link reference that
+  resolves to a heading reach the **first** occurrence in document order, also
+  when they stand in the file that holds the later one.
 
-  An **inline** include's leading and trailing text joins the host's text
-  run, which PART 12 §1a coalesces, and the merged run carries the host's span.
-  When file attribution is provided, provenance is kept per node, not per
-  character: every other node the child contributes still names the child's file.
-
-Worked example - `snippet.crv` ends inside an unclosed fence:
-
-~~~carve
-Some text.
-
-```js
-let x = 1;
-~~~
-
-<code v-pre>{{ snippet.crv }}</code> yields a paragraph and a code block whose fence closes at
-the end of `snippet.crv`. The parent content after the directive is parsed
-normally - it is **not** pulled into the code block.
-
-## Reported dependencies
-
-Expansion has a second output besides the document and its Warnings. A processor
-that expands includes **MUST** report the **set of include targets it touched**
-during the expansion.
-
-- **Whole expansion, de-duplicated.** The set covers the entire recursive
-  expansion including nested children, with duplicates collapsed, in a
-  **deterministic** order.
-- **Identity.** Each target is identified by the resolver's **canonical id**
-  where the resolver supplies one - the same identity the cycle guard uses (see
-  [Limits](#limits)) - and otherwise by the resolved path. An unresolved target
-  is resolved against the including file the same way, so `sub/frag.crv` asking
-  for a missing `missing.crv` names `sub/missing.crv`, not `missing.crv`, which
-  is the path a watcher needs. A path that escapes the containment root keeps its spelling.
-  So does a target that exists but the resolver refuses, and so does a request
-  carrying a URI scheme, which names no place for the id to point at.
-- **Attempted targets are included, not just successful ones.** The set MUST
-  contain targets that were **attempted but not resolved**: missing or
-  unreadable, binary, containment-denied, cycle-broken, and depth- or
-  size-exceeded. The reason is invalidation: a host that watches only the files
-  it successfully read never learns that a previously-missing target now
-  **exists**, so a preview would stay stale at exactly the moment the author
-  fixes the problem.
-- **Resolved versus attempted is observable.** Each entry MUST be
-  distinguishable as **resolved** or **attempted-but-unresolved**, so a host can
-  drive file watching from the whole set while driving diagnostics from the
-  failures.
-
-Hosts use this set for **invalidation** (file watching) and for **diagnostics**.
-It is a **cross-implementation contract**: an editor can rely on it regardless
-of which engine backs it. Without it, preview invalidation cannot be implemented
-correctly - see
-[Live preview guidance](#live-preview-guidance).
-
-## Cross-file collisions
-
-How an identifier behaves when expansion merges files depends on whether it is
-**document-visible** or **file-local**.
-
-### Document-visible identifiers are renamed on collision
-
-Two kinds of identifier are exposed by the assembled document and can be
-targeted across file boundaries:
-
-- **Explicit element ids.** Every `{#id}` an author writes, on **any** element:
-  a heading, a paragraph, a list, a table, a code block, a div, a list item, a
-  table cell, an inline span or link. They are **one** namespace, because HTML
-  has one `id` namespace per document, so a heading `{#tip}` and a paragraph
-  `{#tip}` collide just as two headings do.
-  Names are compared **exactly**, case included, as HTML compares ids: `{#Tip}`
-  and `{#tip}` do not collide, and `</#tip>` reaches only the lowercase one.
-- **Footnote labels.** Footnotes are collected and numbered globally in the
-  assembled document. Labels are a **separate** namespace: `[^tip]` never
-  collides with `{#tip}`.
-
-The processor MUST resolve duplicates **deterministically** by
-**rename-on-collision**:
-
-1. **Ordering.** Read the fully expanded document top to bottom: parent before
-   child, and an earlier include before a later include. An occurrence is
-   renamed when an **earlier** occurrence of the same name came from a
-   **different** file inclusion (another file, or another inclusion of the same
-   file). The first occurrence keeps its name. Duplicates a single file already
-   held on its own are not created by expansion and are not renamed here.
-2. **Rename scheme.** Every renamed occurrence gets its own suffix: the least
-   `-N` (integer `N >= 2`) that no explicit name of the same namespace uses
-   **anywhere in the assembled document** (the parent, earlier and later
-   includes, and the child itself) and that no earlier rename took. A child
-   holding a colliding `{#d}` twice yields `d-2` and `d-3`, and a `{#d-2}`
-   written after the include pushes the rename to `d-3`.
-3. **Warning per rename.** Every renamed occurrence emits its own Warning so
-   the collision is visible and debuggable.
-4. **Automatic ids are out of scope.** An id the author did not write - the slug
-   a heading derives from its own text - is disambiguated the way it already is
-   inside a single document, and **without** a Warning. Two chapters opening
-   `# Overview` collide on an id nobody asked for, and that is one of the most
-   common shapes a book has; reporting it as a collision would make the warning
-   channel useless for the ones that matter. A processor that parses each child
-   as its own document (I4) still has to RENAME here, because each child stamps
-   its own slug independently and nothing re-stamps after the merge - the rule
-   is about what is REPORTED, not about letting duplicate ids reach the output.
-
-### References follow the rename
-
-A reference follows a rename when it is written in the **same file inclusion**
-as the renamed target and resolves to that target when the file is read on its
-own:
-
-- a `</#id>` cross-reference;
-- a link or image destination that is exactly `#` followed by the id, written
-  inline or reached through that file's own reference definition;
-- a footnote reference, for a renamed footnote label.
-
-Where the file held several renamed copies of one name, its references follow
-the first (`d-2`), the copy the file reaches first when read on its own.
-
-A reference in any **other** file keeps the name as written and reaches the
-first occurrence, which is how a child links to a target the parent defines. A
-fragment link to an id its own file does not define is never rewritten.
-
-```carve
-%% parent.crv
-{#tip}
-Keep the dough cold.
-
-{{ child.crv }}
-```
+Ids are one namespace across element types, as HTML has one `id` namespace per
+document, and they compare exactly, case included: `{#Tip}` and `{#tip}` are
+two ids.
 
 ```carve
 %% child.crv
+
 {#tip}
 Rest it overnight.
 
 [The tip above](#tip) is the one this file wrote.
 ```
 
-The child's paragraph is renamed to `tip-2` with a Warning, and its
-`[The tip above](#tip)` follows it to `#tip-2`. Without the rename the output
-would carry `id="tip"` twice, which is invalid HTML.
-
-### Footnotes are answered in the assembled document
-
-A footnote reference is judged against the **assembled** document, not against
-the file it was written in. A child referring to a note the parent defines
-resolves, and so does a parent referring to one a child brings in. An engine
-that decides "undefined" while parsing a single file, and does not revisit it
-after the merge, freezes both as literal text.
-
-Definitions an include brings in are **collected the same way the document's own
-are**. A definition written mid-document is collected by an ordinary parse; a
-merged child's definition must end up where parsing the equivalent flat file
-would put it, or the assembled tree - and any Carve written from it - disagrees
-with the same document typed by hand. This is invisible in rendered HTML, since
-footnotes are collected globally at render time either way.
-
-### File-local identifiers are scoped, not renamed
-
-A **reference-definition label** is file-local metadata: it is resolved **within
-the document that defines it, before that document is merged** into its parent.
-Two files may therefore use the same label with different destinations, and each
-file's references resolve to its own definition:
-
+<!-- carve-sample {"lint":"the child repeats the parent's id on purpose"} -->
 ```carve
 %% parent.crv
-See [a][].
 
-[a]: /PARENT
+{#tip}
+Keep the dough cold.
+
+{{ child.crv }}
 ```
+
+```html
+<p id="tip">Keep the dough cold.</p>
+<p id="tip">Rest it overnight.</p>
+<p><a href="#tip">The tip above</a> is the one this file wrote.</p>
+```
+
+`id="tip"` appears twice, `duplicate-id` reports the paragraph of `child.crv`,
+and the child's link reaches the parent's paragraph, not the one the child
+wrote. The output is invalid HTML until the author gives each id one name across
+the files.
+
+An include's own attributes take part in none of this: its id is no anchor and
+is not counted as a duplicate (`C2-N-072`).
+
+### Generated heading ids get suffixes
+
+A heading id that comes from the heading's text is not an authored id. After
+expansion the authored ids of every file are reserved first, in document order,
+and then the generated ids follow in document order with the suffixes `-2`,
+`-3` and so on (C2-N-057, C2-H-024). No Warning is reported: two chapters
+opening with the same heading text are an ordinary shape for a book.
+`chapter.crv` opens with `= Chapter`:
 
 ```carve
-%% child.crv
-See [a][].
+= Chapter
 
-[a]: /CHILD
+{{ chapter.crv }}
 ```
 
-The parent's `[a][]` resolves to `/PARENT` and the child's to `/CHILD`. This is
-**not** a collision: it MUST NOT emit a Warning and MUST NOT rename anything.
+```html
+<section id="Chapter">
+  <h1>Chapter</h1>
+</section>
+<section id="Chapter-2">
+  <h1>Chapter</h1>
+  <section id="Section">
+    <h2>Section</h2>
+    <p>Text of the chapter.</p>
+  </section>
+</section>
+```
 
-**Rationale.** A reference-definition label is never addressable from another
-file, so renaming it would be pure churn plus a spurious warning. An explicit
-element id or a footnote label is visible in the document, so a duplicate
-there must be resolved and surfaced.
+A section include selects by the id the heading has in its own file, before it
+meets the ids of other files (C2-N-027), so a heading selected as `#Chapter`
+may be written as `Chapter-2` after expansion (C2-N-032).
 
-### Scope and ordering
+### Definitions resolve in their own file, then outward
 
-The include-time rename pass is scoped to **explicit element ids (headings
-included) and footnote labels only**. Auto-generated (slug) heading-id collisions are **not** part of
-this pass: they continue to be de-duplicated by the existing heading-id tracker
-(PART 9 §13, which already appends `-2`, `-3`, … to duplicate slugs once the
-files are merged into one document). Two `## Introduction` headings from
-different included files are therefore suffixed by §13, not here.
+Link reference definitions, footnotes and abbreviations are never renamed
+either. A reference looks up its definition in its own file first, then in the
+file that includes it, then in each file further out up to the top-level
+document (C2-N-054, C2-N-055, C2-N-023). The first file that defines the key
+decides. A link reference that no file defines then falls back to the headings
+of the whole tree (C2-N-054).
 
-**Ordering.** The include-time explicit-id / footnote rename runs **before** the
-§13 slug dedup. Fixing this order keeps ids deterministic: the explicit-id
-namespace is settled first, and §13 then dedups the auto-slug ids against the
-already-final set. See PART 9 §13.
+A definition never reaches **inward**: a reference in the including file does
+not see a definition of a file it includes. Define a note in the document that
+cites it, or in a file that includes that document.
 
-## Limits
+Two files may each define the same key. They are two definitions, not a
+duplicate, and nothing is reported (C2-N-060). `child.crv`:
 
-Inclusion is bounded to keep expansion linear and terminating:
+<!-- carve-sample {"includes":"definitions"} -->
+```carve
+%% child.crv
 
-- **Cycles.** The processor MUST detect an inclusion **cycle** (a file that
-  transitively includes itself). The offending directive is left **literal**
-  (not expanded) and a Warning is emitted. Detection is over the include graph,
-  not a single edge, so `A -> B -> A` is caught.
-- **Depth.** Implementations MUST enforce a **finite** include-depth limit; the
-  RECOMMENDED default is **at least 16**, and the host MAY configure it. This is a
-  small, human-scale nesting bound, well under the structural `MAX_NESTING = 200`
-  of [Security](/security#resource-limits-denial-of-service). Cycle detection
-  remains the **primary** guard; the depth limit is the **secondary** DoS bound.
-  A directive deeper than the limit is left literal with a Warning.
-- **Size.** Total expanded output is charged against the same per-render byte
-  budget as other amplifying features, `max(1 MB, 8 × input length)`. Once a
-  render would exceed it, further expansion degrades to the literal directive
-  with a Warning. This stops an **include bomb** (a small file included `N`
-  times, transitively) the same way the abbreviation / index budget stops
-  output amplification.
-- **Resolver calls.** The byte budget bounds the expanded OUTPUT; it does not
-  bound the WORK a processor does to produce it, because a target is resolved
-  before its size is known and a document may carry one directive per dozen
-  bytes. Implementations MUST therefore enforce a finite bound on resolver
-  invocations per render; the RECOMMENDED default is **at least 1000**, and the
-  host MAY configure it. A directive past the bound is left literal with a
-  Warning and MUST NOT be passed to the resolver.
-- **Refusal is terminal.** The byte budget and the resolver-call bound are
-  whole-render totals that only ever grow, so once either is spent no later
-  directive can succeed. Every remaining directive MUST degrade to literal
-  **without being resolved** - not resolved and then refused. A processor that
-  keeps resolving after exhaustion performs unbounded I/O for a bounded
-  expansion, which is the amplification the budget exists to prevent.
-- **Diagnostics.** Warnings are themselves per-directive, so a document of
-  refused directives produces a warning per directive. A processor can cap the
-  number of include Warnings it retains per render. A useful capped report
-  retains at least one Warning per distinct condition and reports the total
-  number suppressed, so it is not mistaken for a clean one.
+See [a][] and the note.[^n]
 
-## Errors
+[a]: /CHILD
 
-Every failure path is **visible**, never a silent drop. Each of these emits a
-**Warning** and leaves the directive **literal**:
+[^n]: The child's note.
+```
 
-<!-- normative-obligations: PART 6 I1 I1a I1b I2 I3 I6 I11 -->
-| Condition | Result |
-|---|---|
-| Unreadable / missing path | `include-unresolved` Warning + literal directive |
-| Binary / non-text content | `include-non-text` Warning + literal directive |
-| A `#section` that selects nothing | `include-section` Warning + literal directive; a case-only mismatch names the exact id |
-| More than one of `#section`, `@lines`, `@rows` and `@region`, or `#section` with `@code` | `include-selection-conflict` Warning + literal directive |
-| Invalid or missing named region | `include-region-invalid` Warning + literal directive |
-| An invalid `@lines` value, including zero, a reversed range, or a leading zero | `include-lines-invalid` Warning + literal directive; file remains a resolved dependency |
-| An `@lines` range that starts past the file's last line | `include-lines-out-of-range` Warning + literal directive |
-| An invalid `@rows` value or context, or a range starting past the last record | `include-rows-invalid` or `include-rows-out-of-range` Warning + literal directive |
-| A missing, empty, or ambiguous `@cols` header name, or an invalid range or context | `include-cols-invalid` Warning + literal directive |
-| A column named twice in `@cols` | `include-cols-duplicate` Warning + literal directive |
-| The same option key given twice | `include-duplicate-option` Warning + literal directive |
-| Block-structured content in inline position (inline include) | `include-block-in-inline` Warning + literal directive |
-| Inclusion cycle | `include-cycle` Warning + literal directive |
-| Depth exceeds the include-depth limit | `include-depth` Warning + literal directive |
-| Expanded size exceeds the byte budget | `include-budget` Warning + literal directive |
-| Resolver calls exceed the call bound | `include-call-limit` Warning + literal directive, not resolved |
-| A directive after budget or call-bound exhaustion | `include-budget` or `include-call-limit` Warning, matching the bound that was spent, + literal directive, not resolved |
-| No resolver configured | Literal directive (no Warning required, so no rule id) |
+<!-- carve-sample {"includes":"definitions"} -->
+```carve
+%% parent.crv
 
-A `@shift:N` whose result would leave the valid heading range is the one
-degrade that does **not** go literal: the heading is **kept** with its level
-clamped to `[1, 6]` and a Warning is emitted (see
-[Heading-level shift](#heading-level-shift-shift)).
+See [a][] and the note.[^n]
+
+[a]: /PARENT
+
+[^n]: The parent's note.
+
+{{ child.crv }}
+```
+
+```html
+<p>See <a href="/PARENT">a</a> and the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>See <a href="/CHILD">a</a> and the note.<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>The parent’s note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>The child’s note.<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+Each `[a][]` resolves to its own file's definition, and each footnote reference
+reaches the note of its own file. Footnotes are numbered once over the expanded
+tree, in the order of their first reference, and one footnote section collects
+the notes of every file (C2-N-056). Caption and equation numbers are counted
+over the expanded tree the same way (C2-N-059).
+
+## The resolver
+
+The parser reads no files. The host gives it a **resolver**, a function that
+receives the decoded path, the section name, the valid options and the id of
+the including file, and returns either the text of the target and an id for it,
+or one cause: `not_found`, `outside_root`, `unreadable` or `non_text`
+(`C2-N-007`). It returns the whole target; the processor applies every
+selection itself (`C2-N-008`).
+
+- **Identity.** Two spellings that reach one target give one id, so `a/b.crv`
+  and `a/./b.crv` are one id. The cycle check, `pos.file` and the node's `file`
+  all use it (`C2-N-009`).
+- **Relative to the including file**, never to the root or a working directory
+  (`C2-N-010`).
+- **Text only.** Content is text when it is well-formed UTF-8 without U+0000;
+  anything else is `non_text`, and no byte is replaced (`C2-N-011`). Images use
+  `![]()`, not an include.
+
+The path is an opaque target string. A host whose documents live in a database,
+an object store or an in-memory map implements the same contract as one that
+reads files; it still owes a stable id per target and containment in its own
+namespace.
+
+### The command-line resolver and its root
+
+A command-line tool expands by default when it reads its entry document from a
+file and writes any target other than Carve source. Its containment root is the
+directory of the entry file, as a canonical path. It offers a way to turn
+expansion off and a way to name another root. With the entry read from standard
+input there is no default root, and nothing expands unless the caller names one
+(`C2-N-004`).
+
+The file resolver resolves the path against the including file's directory,
+canonicalizes it with every symbolic link resolved, and returns `outside_root`
+unless the result lies inside the canonical root. A `..` segment is fine when
+the result stays inside; a path that starts with a URI scheme is always
+`outside_root`, so nothing remote is fetched (`C2-N-012`).
+
+```
+book/            <- root (the directory of main.crv)
+  main.crv
+  chapters/one.crv
+  shared/glossary.crv
+```
+
+From `chapters/one.crv`, <code v-pre>{{ ../shared/glossary.crv }}</code> reads the glossary, and
+<code v-pre>{{ ../../etc/passwd }}</code> gives `outside_root`. One expansion has one root: a
+nested include resolves against its own file but is tested against the root of
+the top-level document. A configured root must be absolute; a relative one is
+refused and expansion stays off (`C2-N-014`).
+
+## Failures and limits
+
+Every failure leaves the include unexpanded and reports one code, a warning at
+the include node. Causes are tested in the order of `causes` in
+`data/includes.json`, and the first that applies is the one reported
+(`C2-N-061`):
+
+| Cause | Code | Clause |
+|---|---|---|
+| no resolver given | `include-no-resolver` | `C2-N-003` |
+| an invalid option | `include-option-invalid` | `C2-N-025` |
+| options that may not combine | `include-selection-conflict` | `C2-N-024` |
+| the file would stand deeper than 16 | `include-depth` | `C2-N-064` |
+| the size cap is already spent | `include-budget` | `C2-N-065` |
+| the target lies outside the root | `include-outside-root` | `C2-N-012`, `C2-N-013` |
+| no target exists | `include-not-found` | `C2-N-013` |
+| the target cannot be read | `include-unreadable` | `C2-N-013` |
+| the content is not text | `include-non-text` | `C2-N-011` |
+| an include cycle | `include-cycle` | `C2-N-066` |
+| the text would pass the size cap | `include-budget` | `C2-N-065` |
+| the section selects nothing | `include-section` | `C2-N-030` |
+| bad or missing region markers | `include-region-invalid` | `C2-N-041` |
+| a line range past the last line | `include-lines-out-of-range` | `C2-N-035` |
+| a row range past the last record | `include-rows-out-of-range` | `C2-N-046` |
+| a missing or doubled column name, a bad range | `include-cols-invalid` | `C2-N-047` |
+| a column named twice | `include-cols-duplicate` | `C2-N-047` |
+
+The first five are tested before the resolver is called and leave the node
+without `file`. A cause the resolver returns also leaves no `file`. Every cause
+after the resolver returned a text leaves `file` on the node: the file was read
+(`C2-N-062`). A heading clamp under `@shift` is the one report that keeps the
+expansion (`C2-N-048`).
+
+- **Depth.** The top-level document stands at depth 0. A file deeper than
+  `include_depth`, 16, is not resolved. A host may lower the limit, never raise
+  it (`C2-N-064`).
+- **Size.** The sum of the UTF-8 bytes of every text the resolver returns is
+  capped at `include_bytes`, 8388608, the same file counted each time it is
+  read. Once the cap is reached, every later include is refused before its
+  resolver is called. A host may lower the cap, never raise it (`C2-N-065`).
+- **Cycles.** An include whose id is the top-level document or the `file` of an
+  include around it is refused, so a file that includes itself is read once on
+  that chain (`C2-N-066`).
+- **Work.** Each directive is at least seven bytes, so the two limits also bound
+  the resolver calls; there is no separate call limit (`C2-N-067`).
+- **Messages** name the path as the directive wrote it and never repeat a path
+  or an error text from the resolver, so host paths do not leak (`C2-N-068`).
+  Past 100 entries, failures are counted and not listed (`C2-N-061`).
+
+## Writing Carve back out
+
+A processor whose output is Carve source does not expand, with or without a
+resolver: `carve fmt` and a render to the Carve target return the directive as
+the author wrote it and report no `include-no-resolver` (`C2-N-005`). A Carve
+writer writes an include as its directive, with its attribute line and caption,
+and never writes the children or `file` (`C2-N-080`). Because tree equality skips
+both, `parse(fmt(x)) == parse(x)` holds whether or not either side was expanded
+(`C2-N-081`).
+
+With `roundtrip` on, an expanded include still writes only its children, so an
+import of that HTML gives the included blocks in place of the directive; the
+render reports `include-expanded-roundtrip` (`C2-N-079`).
+
+## Dependencies
+
+The dependencies of a document are the include nodes of its tree, in tree order.
+Each names its path as written, its including file, and whether it was read: a
+node with `file` was read, one without was not (`C2-N-083`). With no resolver,
+every directive is a dependency that was not read.
+
+A host that watches files watches the distinct `file` values, and for each node
+without `file` the place its path would name relative to its including file
+(`C2-N-084`). Watching the unread targets matters: creating a file that was
+missing has to refresh a preview.
+
+## Linting included content
+
+A linter expands includes when its caller gives a resolver or a root, with the
+same rules and limits; without one it reads no target, and each include
+reports `include-no-resolver` (`C2-N-085`). The top-level document is linted as
+it is, and every Carve include the expansion accepted is linted with every rule
+over the source it parsed: the whole file, the line range or the region. For a
+section the whole file is linted and only the findings on the selected lines are
+kept. Rules that read a block's payload also run on a code include's child
+(`C2-N-086`).
+
+A finding in included content names its file by id, a line and a column in that
+file, and the tree path through the includes that reached it. Each distinct
+file, line, column and rule is reported once (`C2-N-087`). Given
+`data/plans.csv`:
+
+~~~text
+Plan,Seats,Price
+Starter,1,"$0"
+Team,10,"$49 billed yearly
+~~~
+
+and `doc.crv`:
+
+<!-- carve-sample {"includes":"malformed-csv","lint":"shows delimited-table-malformed in an included file"} -->
+~~~carve
+{table}
+{{ data/plans.csv @code:csv }}
+~~~
+
+the linter reports `delimited-table-malformed` in `data/plans.csv` at line 3,
+the record whose quote is never closed, reached from the directive on line 2
+of `doc.crv`.
 
 ## Security
 
-Inclusion is a §25 / security-model concern. The full treatment is on the
-[Security](/security#file-inclusion) page; the requirements in brief:
+- **The parser stays pure.** Without a resolver nothing is read.
+- **Containment is canonical.** The resolver canonicalizes the target, symbolic
+  links included, before it tests the root. Rejecting `..` by its spelling is
+  wrong both ways: it refuses `../shared/glossary.crv` inside the project and
+  misses a symbolic link that leaves it (`C2-N-012`).
+- **No existence oracle.** The root test comes before any test of existence,
+  so a target outside the root is `outside_root` whether or not it exists
+  (`C2-N-013`).
+- **Test what you open.** The file the resolver reads is the file it tested: it
+  compares the identity of the open handle with the tested path, or opens each
+  segment from a handle of the root. A platform that offers neither serves the
+  files from a store that cannot change during the expansion (`C2-N-013`).
+- **No relaxed rules for included content.** One `urlPolicy`, one `rawHtml`
+  setting, one profile and every sanitizing rule apply to the whole expanded
+  tree (`C2-N-069`).
 
-- **The parser stays pure.** No inclusion makes the core touch the filesystem or
-  the network. Absent a resolver, the directive is inert text.
-- **The host resolver MUST enforce path containment.** Resolve `..` and symlinks
-  **first**, then reject any target that lands outside a configured root. A path
-  is contained only after canonicalization.
-- **Containment is canonical, not lexical.** A processor **MUST** canonicalize
-  the candidate path, resolving symbolic links, and then verify that the
-  canonical result is contained within the canonical root. A `..` segment is
-  permitted exactly when the canonical result stays inside the root. Rejecting
-  `..` lexically is wrong in **both** directions: it is too strict, because it
-  rejects legitimate sibling-directory layouts such as a document in `chapters/`
-  including `../shared/glossary.crv` whose target is inside the project root; and
-  it is too weak, because symbolic links and absolute paths escape a root with no
-  `..` present at all.
-- **A refusal MUST NOT reveal whether the target exists.** Containment is
-  decided on the **canonical candidate**, which is constructible for a missing
-  path too - canonicalize the longest existing prefix, normalize the remaining
-  path, then append it - so a resolver can always answer from the spelling plus
-  the root. A processor that reads first and decides containment afterwards
-  reports a miss for an absent out-of-root target and a containment denial for a
-  present one, which makes the refusal class an **existence oracle** for paths
-  outside the root: anyone who can get a document rendered and read its warnings
-  learns whether a path is on the host, without ever reading it. Both targets
-  MUST be refused as containment denials.
-- **The root defaults to the top-level document's directory** for file-based
-  entry points, is supplied explicitly for string input, and is fixed for the
-  whole expansion - see [The containment root](#the-containment-root).
-- **Symlink / escape policy.** A symlink whose real target escapes the root is
-  rejected the same as a literal traversal.
-- **Absolute paths and schemes MAY be denied.** Absolute paths remain denied
-  unless they canonicalize inside the root. Remote fetches (`file:`, `http:`,
-  `data:`, …) are off unless explicitly allowlisted.
-- **Same-sanitization parsing.** Included content is parsed under the **same**
-  raw-HTML, URL-scheme, attribute, and Trojan-Source sanitization as any Carve
-  content. Inclusion is a source-merge, **not** a privilege boundary: there is
-  **no privilege escalation via include**.
-- **Non-filesystem hosts.** With no resolver, every directive is literal.
+See also the [Security](./security#file-inclusion) page.
 
-Threats addressed: path traversal, symlink escape, include cycles, zip-bomb /
-size amplification, and DoS by depth.
+## Editor and host guidance
 
-## Editor and IDE integration
+This section is guidance, not a rule of the specification.
 
-This section is **guidance**, not new parsing rules: it describes how a host
-SHOULD apply the normative model above. Carve's editor and host surfaces fall
-into three **trust classes**, and inclusion policy follows the class.
-
-### Class 1: local editors on the user's own files
-
-Editor integrations (`vscode-carve`, `intellij-carve`, `zed-carve`,
-`helix-carve`, `emacs-carve`, `vim-carve`, `sublime-carve`) have both a document
-path and a trust signal, which is the most favorable position for inclusion.
-
-- **Gate on workspace trust.** Inclusion SHOULD be enabled only when the
-  workspace or project is **trusted** (VS Code Workspace Trust, JetBrains
-  Trusted Projects). In untrusted or restricted mode, directives stay literal.
-  The host SHOULD show a visible hint in that state rather than failing
-  silently: a document that quietly renders <code v-pre>{{ … }}</code> as text
-  looks like a syntax error to the author.
-- **Root at the workspace, not the document.** The containment root SHOULD be
-  the **workspace / project root** rather than the individual document's
-  directory, so that a document in `chapters/` can reference `shared/` without
-  each file needing its own root. This **refines** the file-based default of
-  [The containment root](#the-containment-root) for the editor case: the
-  document's directory remains the fallback for a file opened outside any
-  workspace.
-- **Expose the policy as a setting.** Hosts SHOULD offer an explicit setting -
-  `enabled: auto | on | off`, where the default `auto` means *on if and only if
-  the workspace is trusted* - plus a root override for projects whose content
-  root is not the workspace root.
-
-### Class 2: browser hosts with no filesystem
-
-Browser-embedded hosts (`carve-components`, `carve-wysiwyg`, the docs
-playground) have no filesystem and a string-input API. No root can be inferred,
-so includes cannot resolve at all (see
-[The containment root](#the-containment-root)).
-
-- Such hosts SHOULD surface an **explicit affordance** that includes are not
-  resolved, rather than silently rendering the directive as literal text.
-- They MAY accept a **virtual resolver**: an in-memory map from path to source.
-  That lets sandboxes, demos, and documentation exercise inclusion end to end
-  with no filesystem access, while the host stays inert by construction.
-
-### Class 3: server-side rendering of attacker-influencable content
-
-Server-side hosts that render content supplied by users (CMS and e-commerce
-field rendering, for example `wp-carve` and `shopware-carve`) are the dangerous
-class.
-
-- Inclusion **MUST remain disabled** on these paths. A post body or a product
-  description is user-controlled input, so enabling a file-read capability there
-  is a **file-disclosure vulnerability**, not a feature.
-- If such a host ever offers inclusion, it MUST be an explicit,
-  **administrator-only**, explicitly-rooted opt-in, and that opt-in MUST NOT be
-  inherited by front-end rendering paths.
-
-### Live preview guidance
-
-This is **host guidance** for an editor preview that expands includes.
-
-1. **Dependency tracking and invalidation.** A preview should re-render when an
-   **included** file changes, not only when the open document changes. A preview
-   that watches only the open file will silently show stale output, which is the
-   most common inclusion bug in practice. Hosts do not have to infer the
-   dependency set themselves: a processor that expands includes **MUST** report
-   the targets it **resolved** and those it merely **attempted** (see
-   [Reported dependencies](#reported-dependencies)). Watch the whole reported
-   set, failures included - creating a previously-missing target has to
-   invalidate the preview too.
-2. **Diagnostics.** The Warnings the spec already requires - unresolved target,
-   cycle, containment denial, depth exceeded, size exceeded (see
-   [Errors](#errors) and [Limits](#limits)) - should be surfaced as editor
-   diagnostics. Leaving them as silent literal text hides a real error behind
-   something that looks like plain prose.
-3. **Navigation.** Hosts MAY offer go-to-definition on an include path. Because
-   positions carry child-file attribution (see
-   [Merge mechanism and source mapping](#merge-mechanism-and-source-mapping)), a
-   preview-to-source jump SHOULD land in the correct **child** file rather than
-   on the directive line.
-4. **Caching.** Hosts SHOULD cache child parses keyed by **target identity plus
-   modification time**, rather than re-reading every target on every keystroke.
-
-### Implement it once, in the language server
-
-Implementing resolution in a **language server** (`carve-lsp`) rather than per
-editor gives the thin integrations (`helix-carve`, `emacs-carve`, `vim-carve`,
-`zed-carve`, `sublime-carve`) both inclusion and include diagnostics with no
-per-editor work. The server's `rootUri` is the natural containment root, and it
-already owns the document lifecycle that dependency tracking and caching need.
-
-## Core behavior: no resolver, no expansion
-
-A conformant **core** never expands includes; it renders the directive as
-literal text. This is the one behavior pinned in the conformance corpus:
-
-```carve
-See {{ chapter-2.crv }} here.
-```
-
-renders as
-
-```html
-<p>See {{ chapter-2.crv }} here.</p>
-```
-
-verified byte-identical across the executable-spec oracle and every engine.
+- **Local editors** (`vscode-carve`, `intellij-carve` and the others) should
+  expand includes only in a trusted workspace, and should root containment at
+  the workspace rather than the document's directory. In an untrusted
+  workspace, show that includes are off instead of rendering the directive as
+  plain text without comment.
+- **Browser hosts** (`carve-components`, the playground) have no file system.
+  They can offer an in-memory resolver that maps names to sources.
+- **Server-side rendering of user content** (CMS and shop fields such as
+  `wp-carve` or `shopware-carve`) should keep includes off. A resolver there is
+  a file-disclosure risk; if it is ever offered, make it an administrator-only
+  option with an explicit root.
+- **Live preview.** Watch every dependency, read or not (see
+  [Dependencies](#dependencies)), show the include failures as diagnostics, use
+  `pos.file` to jump to the right file, and cache child parses by id and
+  modification time.
+- **Implement it once** in the language server (`carve-lsp`): its workspace root
+  is the natural containment root, and the thin editor integrations get
+  includes and their diagnostics for free.

@@ -21,6 +21,12 @@ spec pin that is not a published carve tag.
 
 `tree-sitter-carve` and the other satellites release on their own cadence.
 
+The engine pin, drift, declaration and fleet steps below, and
+`scripts/pre-tag-check.sh`, belong to the 0.1 oracle. They live on the
+[`0.1` branch](https://github.com/markup-carve/carve/tree/0.1) and apply to
+0.1.x releases cut from it. On this branch the release workflow's pre-tag job
+runs `npm run spec2:data` and `npm test` on the dispatched commit.
+
 ## Per-repo checklist
 
 For each repo, on `main`, with the spec submodule (if any) already advanced and
@@ -164,9 +170,8 @@ CI green:
    commit.
 6. **Dispatch `.github/workflows/release.yml` from `main` with the version.**
    Its manifest, changelog, draft, and pre-tag jobs must pass before the release
-   environment asks for approval. The pre-tag job installs the pinned reference
-   build, checks out the three engines, and runs the same script, including the
-   declaration audit and fleet spec-pin check (the fleet verdicts as `INFO`).
+   environment asks for approval. The pre-tag job runs the 0.2 spec data check
+   and the test suite on the dispatched commit.
    Approve the green run. It creates
    the tag and then publishes the prepared draft. Do not publish the draft from
    the GitHub release page, since that bypasses the pre-tag gate.
@@ -229,7 +234,7 @@ names every merge that moved shipped source and is cited nowhere:
   ahead of the publish step.
 - **carve-php**: a tag-push Release Gate. The Packagist webhook cannot be held
   back, so it reports rather than blocks.
-- **carve**: the dispatched release workflow runs `pre-tag-check.sh` before
+- **carve**: the dispatched release workflow runs its pre-tag job before
   approval and tag creation. `.github/workflows/release-gate.yml` runs the
   changelog completeness check again on the tag; that later check reports a
   failure but cannot hold the release back. Run it yourself any time with

@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 table marks",
+  "description": "The marks of a pipe table: how a row splits into cells, the cell prefix, the span marks, the alignment marks and the whole-table attributes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "cell_split",
+    "cell_prefix",
+    "header_cell_mark",
+    "span_marks",
+    "continuation_fragment",
+    "alignment_marks",
+    "vertical_marks",
+    "attributes"
+  ],
+  "properties": {
+    "$schema": { "const": "schemas/table-marks.schema.json" },
+    "cell_split": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["separator", "not_a_separator", "before", "clauses"],
+      "properties": {
+        "separator": { "const": "|" },
+        "not_a_separator": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "Pipes that do not split."
+        },
+        "before": { "const": "reading_cell_content" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "cell_prefix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "clauses"],
+      "properties": {
+        "sequence": { "type": "array", "items": { "type": "object" }, "description": "The parts of the prefix in order." },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "header_cell_mark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mark", "followed_by", "otherwise", "head", "clauses"],
+      "properties": {
+        "mark": { "const": "|=" },
+        "followed_by": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["<", ">", "?", "cell_end", "space", "tab", "{", "~"] },
+          "description": "What may follow the `=` for it to be the header cell mark (C2-B-171). Sorted by code point."
+        },
+        "otherwise": { "const": "equals_sign_is_cell_text", "description": "Followed by anything else, the `=` is the first character of the cell's text." },
+        "head": { "type": "string", "description": "Which rows form the head." },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "span_marks": {
+      "type": "array",
+      "description": "A cell that holds only the mark joins another cell. Spans resolve backward only. Sorted by the code point of the mark.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mark", "joins", "failed", "clauses"],
+        "properties": {
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "joins": { "enum": ["cell_to_left", "cell_above"] },
+          "failed": { "enum": ["cell_with_the_mark_as_text"], "description": "A mark that joins nothing is an ordinary cell that holds the mark as text; its prefix applies as on any cell (C2-B-173)." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "blocked_by": {
+            "type": "array",
+            "items": { "enum": ["first_column", "left_cell_covered_by_row_span", "first_row_of_group", "cell_above_spans_columns"] },
+            "uniqueItems": true,
+            "description": "Where the mark joins nothing. A group is the head, the body or the foot (C2-B-174)."
+          }
+        }
+      }
+    },
+    "continuation_fragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "joins",
+        "joined_with",
+        "empty_fragment",
+        "under_span_mark",
+        "under_failed_span_mark",
+        "past_last_column",
+        "reads",
+        "clauses"
+      ],
+      "properties": {
+        "joins": { "const": "cell_of_its_column_in_row_above" },
+        "joined_with": { "type": "string", "description": "What stands between the text of the cell and the fragment." },
+        "empty_fragment": { "const": "adds_nothing" },
+        "under_span_mark": { "const": "cell_that_covers_the_column_after_spans_resolve" },
+        "under_failed_span_mark": { "const": "cell_that_holds_the_mark" },
+        "past_last_column": { "const": "new_cell" },
+        "reads": {
+          "type": "array",
+          "maxItems": 0,
+          "description": "What a fragment reads of the cell syntax: nothing. No cell prefix, no span mark, no row attribute."
+        },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "Where each fragment of a continuation row goes. Span marks are read from the first line of the row."
+    },
+    "alignment_marks": {
+      "type": "array",
+      "description": "The marks that come first in the brace block of a cell prefix.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mark", "alignment", "clauses"],
+        "properties": {
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "alignment": { "enum": ["left", "right", "center", "none"], "description": "none: the mark sets no horizontal alignment." },
+          "only_before": { "const": "vertical_mark", "description": "The mark stands only directly before a vertical mark." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "vertical_marks": {
+      "type": "array",
+      "description": "The marks that stand directly after an alignment mark in the brace block of a cell prefix.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mark", "alignment", "after", "clauses"],
+        "properties": {
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "alignment": { "enum": ["top", "middle", "bottom"] },
+          "after": { "const": "alignment_mark", "description": "The mark is read only as the character directly after an alignment mark; elsewhere it is no mark." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "attributes": {
+      "type": "array",
+      "description": "Sorted by name.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": { "type": "string", "description": "The key on the attribute line of the table." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "applies_to": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "no_effect_on": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "report": { "type": "string", "description": "The code that reports misuse. An id of lint-rules.json." },
+          "value": {
+            "enum": ["count", "count_list", "alignment_list", "width_list", "flag"],
+            "description": "The shape of the value. count: decimal digits, and an empty value counts as one. alignment_list: comma-separated entries, each one of `entries` after its spaces are trimmed; one empty or other entry makes the whole value invalid. width_list: comma-separated entries, each a decimal number above 0 and at most 100 after its spaces are trimmed; one empty or other entry makes the whole value invalid. count_list: comma-separated counts, one per table body, checked together with the other body keys (C2-B-230). An invalid value has no effect and stays in `attrs`. flag: the key alone."
+          },
+          "entries": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "The values an entry of an alignment_list takes." },
+          "sets": { "type": "string", "description": "The tree field the value sets, as `node.field`." },
+          "written_to_html": { "type": "boolean", "description": "False when the renderer writes no HTML attribute for the key, whether the table consumed it or kept it in `attrs`." }
+        }
+      }
+    }
+  }
+}

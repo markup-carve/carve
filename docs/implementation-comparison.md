@@ -1,86 +1,18 @@
 ---
-description: Choose a Carve implementation by runtime, output formats, integrations, and tested compatibility.
+description: Current implementation choices for Carve 0.2.
 ---
 
 # Compare implementations
 
-Carve has reference implementations for JavaScript, Rust, and PHP, plus a
-WebAssembly package for browsers and other runtimes. They share the core syntax
-and expected output; choose primarily by where your application runs and which
-integration it needs.
+Carve 0.2 is under development. [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2) is the reference implementation for the candidate specification. The released JavaScript, PHP and Rust engines implement 0.1. Their 0.1 conformance and speed measurements do not establish 0.2 support.
 
-For exact test runs, corpus accounting, timing methodology, and maintainer
-commands, see the [comparison methodology](./implementation-comparison-methodology).
+| Need | Current 0.2 path |
+|---|---|
+| Parse, render, format or lint | The `carve-js` 0.2 branch and its `carve` CLI |
+| Implement another language | Pin the [0.2 spec](./grammar) and run its [shared corpus](./conformance) |
+| Migrate 0.1 documents | Read the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md) and test the reference engine's `upgrade` command |
+| Use a released implementation today | Use the [0.1 site](https://markup-carve.github.io/carve/) and a released engine |
 
-## Quick choice
+The 0.2 required output is HTML, canonical Carve source and AST 2.0. The Markdown, plain text and ANSI writers are outside 0.2.0 ([writer, Out of scope](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#out-of-scope)). For importing Markdown, the JavaScript reference engine offers an extra importer; the common 0.2 contract is HTML import ([tooling, Scope](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#scope)).
 
-| Implementation | Best fit | Install and API |
-|---|---|---|
-| **carve-js** | JavaScript and TypeScript applications, Node-based tooling, and browser bundlers | [carve-js documentation](https://github.com/markup-carve/carve-js) |
-| **carve-rs** | Rust applications, native command-line tools, and performance-sensitive services | [carve-rs documentation](https://github.com/markup-carve/carve-rs) |
-| **carve-php** | PHP applications, server rendering, and PHP editor integrations | [carve-php documentation](https://github.com/markup-carve/carve-php) |
-| **carve-wasm** | Browser or non-Rust runtimes that can host WebAssembly | [carve-wasm documentation](https://github.com/markup-carve/carve-wasm) |
-
-Start with [Get Started](./get-started) for installation examples. The broader
-[ecosystem page](./ecosystem) lists bindings, editors, and conversion tools.
-
-## Shared capabilities
-
-The three reference engines support the same core language and are checked
-against shared expected results. Their common surface includes:
-
-- parsing Carve and rendering HTML, Markdown, plain text, and ANSI output;
-- standard formatting back to Carve;
-- parsed document JSON;
-- built-in safety requirements;
-- core syntax and the shared optional-feature tests;
-- diagnostics for unsupported or degraded operations.
-
-A shared language contract does not require identical package names or
-framework adapters. Consult an implementation’s own documentation for its
-language-native API.
-
-## Output formats
-
-HTML, Markdown, plain text, ANSI, and canonical Carve output are shared by the
-three reference engines. If a target format cannot express a Carve feature,
-the renderer should follow the [graceful-degradation rules](./graceful-degradation)
-and report meaningful loss where the API provides diagnostics.
-
-For DOCX, LaTeX, Typst, EPUB, and other publishing formats, use a tool described
-in [Format conversion](./format-bridges).
-
-## Optional features
-
-Standard optional features are designed to behave consistently when enabled,
-but registration uses each language’s normal API style. Application extensions
-may exist in only one ecosystem. Check [Optional features and
-extensions](./extensions) before assuming that a host-specific feature is
-portable.
-
-## Compatibility expectations
-
-Use the latest compatible release of your chosen implementation. A release may
-temporarily trail a newly accepted language rule even when its development
-branch has already caught up. For a feature near a release boundary:
-
-1. check the implementation’s release notes;
-2. test a representative document in your deployment version; and
-3. consult the technical snapshot if exact cross-engine status matters.
-
-The [comparison methodology](./implementation-comparison-methodology) records
-the dated evidence behind conformance claims. On October 25, 2026, the pinned
-engines each passed 3,249 scored core fixtures from 3,056 documents and
-69 optional cases. These count-only runs checked expected output on scored
-targets; they did not compare unscored targets.
-
-## Performance
-
-Runtime startup, process invocation, and embedding strategy often matter more
-than parser throughput for small documents. Compare implementations inside your
-own application rather than treating CLI timings from another machine as a
-benchmark. See [Performance](./performance) for the measurements Carve does
-publish and how to interpret them.
-
-For measured engine status and maintainer checks, see the
-[comparison methodology](./implementation-comparison-methodology).
+See [methodology](./implementation-comparison-methodology) before comparing future engine results. The [performance page](./performance) will publish 0.2 measurements after a benchmark rerun.

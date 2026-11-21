@@ -43,13 +43,16 @@ const caseStudySidebar = [
   { text: '← Back to docs', link: '/get-started' },
 ]
 
-// If the repo is published at https://markup-carve.github.io/carve/
-// keep `base: '/carve/'`. If you publish from an org page repo named
-// `markup-carve.github.io`, change `base` to '/'.
+const docsBase = process.env.DOCS_BASE ?? '/carve/'
+const docsVersionText = process.env.DOCS_VERSION_TEXT
+const docsLatestBase = process.env.DOCS_LATEST_BASE ?? '/carve/'
+const docsOtherBase = process.env.DOCS_OTHER_BASE ?? '/carve/0.2/'
+const siteUrl = (base: string) => `https://markup-carve.github.io${base}`
+
 export default defineConfig({
   title: 'Carve',
   description: 'A markup language for structured documents.',
-  base: '/carve/',
+  base: docsBase,
   lang: 'en-US',
   // README.md is a GitHub-facing orientation file for people browsing the
   // docs/ source on GitHub; it is not a site page.
@@ -115,17 +118,19 @@ export default defineConfig({
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] })
 })()`,
     ],
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/carve/logo.svg' }],
+    // The unreleased series must not compete with the released docs in search results.
+    ...(process.env.VITE_DOCS_SERIES === 'dev' ? [['meta', { name: 'robots', content: 'noindex' }] as [string, Record<string, string>]] : []),
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${docsBase}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Carve' }],
     ['meta', { property: 'og:description', content: 'A markup language for structured documents.' }],
-    ['meta', { property: 'og:url', content: 'https://markup-carve.github.io/carve/' }],
-    ['meta', { property: 'og:image', content: 'https://markup-carve.github.io/carve/og-image.svg' }],
+    ['meta', { property: 'og:url', content: siteUrl(docsBase) }],
+    ['meta', { property: 'og:image', content: `${siteUrl(docsBase)}og-image.svg` }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Carve' }],
     ['meta', { name: 'twitter:description', content: 'A markup language for structured documents.' }],
-    ['meta', { name: 'twitter:image', content: 'https://markup-carve.github.io/carve/og-image.svg' }],
+    ['meta', { name: 'twitter:image', content: `${siteUrl(docsBase)}og-image.svg` }],
   ],
 
   themeConfig: {
@@ -189,6 +194,13 @@ export default defineConfig({
         ],
       },
       { text: 'Community', link: '/community' },
+      ...(docsVersionText ? [{
+        text: docsVersionText,
+        items: [
+          { text: process.env.DOCS_LATEST_LABEL ?? '0.1 (latest)', link: siteUrl(docsLatestBase), target: '_self' },
+          { text: process.env.DOCS_OTHER_LABEL ?? '0.2 (dev)', link: siteUrl(docsOtherBase), target: '_self' },
+        ],
+      }] : []),
     ],
 
     // Path-keyed (multi) sidebar so each page's sub-nav lists only its own
@@ -208,6 +220,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { text: 'Get Started', link: '/get-started' },
+            { text: 'Upgrading from 0.1', link: '/upgrade-0-2' },
             { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Playground', link: '/playground' },
             { text: 'Cheat Sheet', link: '/cheatsheet' },
@@ -267,19 +280,7 @@ export default defineConfig({
                 { text: 'Development', link: '/development' },
                 { text: 'Rule Coverage', link: '/rule-coverage' },
                 { text: 'Formal Grammar', link: '/grammar' },
-              {
-                text: 'Specification Rules',
-                collapsed: true,
-                items: [
-                  { text: 'Overview', link: '/rules/' },
-                  { text: 'Parsing', link: '/rules/parsing' },
-                  { text: 'References & Output', link: '/rules/resolution-rendering' },
-                  { text: 'Parsed Document JSON', link: '/rules/ast-interchange' },
-                  { text: 'Standard Formatting', link: '/rules/canonical-writing' },
-                  { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
-                  { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
-                ],
-              },
+              { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
               ],
             },
             { text: 'Feature Design Notes', link: '/native-features-analysis' },
@@ -318,7 +319,7 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: 'https://github.com/markup-carve/carve/edit/main/docs/:path',
+      pattern: `https://github.com/markup-carve/carve/edit/${process.env.DOCS_EDIT_BRANCH ?? 'main'}/docs/:path`,
       text: 'Edit this page on GitHub',
     },
 

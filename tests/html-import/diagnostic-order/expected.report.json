@@ -1,1 +1,0 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","severity":"warning","path":"/table[1]/caption[2]","fidelity":"dropped","confidence":"exact"},{"code":"attribute-dropped","severity":"warning","path":"/table[1]/tr[1]/td[1]","fidelity":"dropped","confidence":"exact"}]}

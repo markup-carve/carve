@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 annotation ranges",
+  "type": "object",
+  "properties": {
+    "ranges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "start": { "$ref": "#/$defs/endpoint" },
+          "end": { "$ref": "#/$defs/endpoint" }
+        },
+        "required": ["id", "start", "end"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["ranges"],
+  "additionalProperties": false,
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?:|/(?:[^~/]|~[01])*)*$" },
+        "offset": { "type": "integer", "minimum": 0, "description": "UTF-8 bytes into the annotation text of the node at path (C2-A-207, C2-A-214)" }
+      },
+      "required": ["path", "offset"],
+      "additionalProperties": false
+    }
+  }
+}

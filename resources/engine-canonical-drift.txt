@@ -1,4 +1,0 @@
-# Canonical formatter fixtures ahead of the pinned JavaScript writer.
-# Each row must differ from the pinned writer's bytes and preserve the input's rendering.
-# Remove a row when the JavaScript pin writes the canonical fixture.
-# Format: <slug><two spaces><reason>

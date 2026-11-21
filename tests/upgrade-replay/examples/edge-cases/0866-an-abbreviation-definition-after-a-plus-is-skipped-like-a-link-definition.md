@@ -1,0 +1,142 @@
+---
+page: edge-lists
+---
+
+## An abbreviation definition after a plus is skipped like a link definition
+
+CARVE-P9-067, CARVE-P9-013 (carve#4449). An abbreviation definition is an invisible line like a link or note definition, so a `+` skips it and the first visible line decides.
+
+An unquoted abbreviation definition after a `+` is skipped like a link or note definition: the item takes `text` and `A` is defined in the document.
+
+:::::: compare
+
+`````carve
+- {% %}
+text
+
+*[A]: b
+
+A
+`````
+
+```html
+<ul>
+  <li>text</li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+::::::
+
+A definition-body host and a quote host read it the same way.
+
+:::::: compare
+
+`````carve
+:: t
+: {% %}
+text
+
+*[A]: b
+
+A
+`````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>text</dd>
+</dl>
+<p><abbr title="b">A</abbr></p>
+```
+
+::::::
+
+:::::: compare
+
+`````carve
+> {% %}
+text
+
+*[A]: b
+
+A
+`````
+
+```html
+<blockquote><p>text</p></blockquote>
+<p><abbr title="b">A</abbr></p>
+```
+
+::::::
+
+Under a host in a quote or an item it reads the same way (carve#4865).
+
+:::::: compare
+
+`````carve
+> - {% %}
+> text
+
+*[A]: b
+
+A
+`````
+
+```html
+<blockquote>
+  <ul>
+    <li>text</li>
+  </ul>
+</blockquote>
+<p><abbr title="b">A</abbr></p>
+```
+
+::::::
+
+:::::: compare
+
+`````carve
+- x
+  - {% %}
+  text
+
+*[A]: b
+
+A
+`````
+
+```html
+<ul>
+  <li>x
+    <ul>
+      <li>text</li>
+    </ul>
+  </li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+::::::
+
+The off-column definition is erased before the `+` tests its follower (PART 0 S1, carve#5012). It still defines `A` document-wide.
+
+:::::: compare
+
+`````carve
+- {% %}
+text
+
+*[A]: b
+
+A
+`````
+
+```html
+<ul>
+  <li>text</li>
+</ul>
+<p><abbr title="b">A</abbr></p>
+```
+
+::::::

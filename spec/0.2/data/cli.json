@@ -1,0 +1,987 @@
+{
+  "$schema": "schemas/cli.schema.json",
+  "commands": [
+    {
+      "name": "ast",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-A-012",
+        "C2-T-018"
+      ]
+    },
+    {
+      "name": "diagnostics",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-T-032"
+      ]
+    },
+    {
+      "name": "fix",
+      "specified": true,
+      "expands": true,
+      "flags_of": "lint",
+      "clauses": [
+        "C2-T-049",
+        "C2-T-050"
+      ]
+    },
+    {
+      "name": "flatten",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-T-047",
+        "C2-T-048"
+      ]
+    },
+    {
+      "name": "fmt",
+      "specified": true,
+      "expands": false,
+      "clauses": [
+        "C2-W-100",
+        "C2-T-030"
+      ]
+    },
+    {
+      "name": "import",
+      "specified": true,
+      "expands": false,
+      "clauses": [
+        "C2-M-001",
+        "C2-T-033",
+        "C2-T-034",
+        "C2-T-035"
+      ]
+    },
+    {
+      "name": "lint",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-W-103",
+        "C2-T-031"
+      ]
+    },
+    {
+      "name": "migrate-ast",
+      "specified": true,
+      "expands": false,
+      "clauses": [
+        "C2-A-180",
+        "C2-T-036"
+      ]
+    },
+    {
+      "name": "render",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-H-137",
+        "C2-T-025"
+      ]
+    },
+    {
+      "name": "upgrade",
+      "specified": false,
+      "expands": false,
+      "clauses": [
+        "C2-T-003"
+      ]
+    }
+  ],
+  "flags": [
+    {
+      "name": "adapter",
+      "commands": [
+        "import"
+      ],
+      "kind": "enum",
+      "values": [
+        "generic",
+        "tiptap",
+        "prosemirror",
+        "ckeditor",
+        "tinymce",
+        "word",
+        "google-docs"
+      ],
+      "option": "adapter",
+      "clauses": [
+        "C2-T-010",
+        "C2-M-102"
+      ]
+    },
+    {
+      "name": "align-tables",
+      "commands": [
+        "fmt"
+      ],
+      "kind": "switch",
+      "option": "alignTables",
+      "clauses": [
+        "C2-T-010",
+        "C2-W-118"
+      ]
+    },
+    {
+      "name": "allow-loss",
+      "commands": [
+        "import",
+        "render"
+      ],
+      "kind": "code",
+      "channel": "render-loss",
+      "repeatable": true,
+      "clauses": [
+        "C2-T-027",
+        "C2-H-204"
+      ]
+    },
+    {
+      "name": "check",
+      "commands": [
+        "fmt"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-W-100",
+        "C2-T-030"
+      ]
+    },
+    {
+      "name": "diff",
+      "commands": [
+        "fmt"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-W-100",
+        "C2-T-030"
+      ]
+    },
+    {
+      "name": "envelope",
+      "commands": [
+        "ast"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-A-012"
+      ]
+    },
+    {
+      "name": "fix",
+      "commands": [
+        "lint"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-049",
+        "C2-T-050"
+      ]
+    },
+    {
+      "name": "from",
+      "commands": [
+        "import"
+      ],
+      "kind": "enum",
+      "values": [
+        "html"
+      ],
+      "clauses": [
+        "C2-T-033"
+      ]
+    },
+    {
+      "name": "from-ast",
+      "commands": [
+        "fmt",
+        "render"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-A-188",
+        "C2-W-102",
+        "C2-T-018"
+      ]
+    },
+    {
+      "name": "heading-ids",
+      "commands": [
+        "lint",
+        "render"
+      ],
+      "kind": "enum",
+      "values": [
+        "off",
+        "keep-case",
+        "lower",
+        "ascii",
+        "ascii-lower",
+        "ascii-strict",
+        "ascii-strict-lower"
+      ],
+      "option": "headingIds",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-131"
+      ]
+    },
+    {
+      "name": "help",
+      "commands": [
+        "ast",
+        "diagnostics",
+        "fix",
+        "flatten",
+        "fmt",
+        "import",
+        "lint",
+        "migrate-ast",
+        "render"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-007"
+      ]
+    },
+    {
+      "name": "ignore",
+      "commands": [
+        "lint"
+      ],
+      "kind": "file",
+      "repeatable": true,
+      "clauses": [
+        "C2-T-009",
+        "C2-T-052"
+      ]
+    },
+    {
+      "name": "include-root",
+      "commands": [
+        "ast",
+        "diagnostics",
+        "flatten",
+        "lint",
+        "render"
+      ],
+      "kind": "path",
+      "clauses": [
+        "C2-N-004",
+        "C2-T-018"
+      ]
+    },
+    {
+      "name": "includes",
+      "commands": [
+        "ast",
+        "diagnostics",
+        "lint",
+        "render"
+      ],
+      "kind": "switch",
+      "default": true,
+      "clauses": [
+        "C2-N-004",
+        "C2-T-018"
+      ]
+    },
+    {
+      "name": "json",
+      "commands": [
+        "diagnostics",
+        "lint"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-021"
+      ]
+    },
+    {
+      "name": "labels",
+      "commands": [
+        "render"
+      ],
+      "kind": "json",
+      "option": "labels",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "max-render-losses",
+      "commands": [
+        "import",
+        "render"
+      ],
+      "kind": "count",
+      "default": 100,
+      "clauses": [
+        "C2-T-029",
+        "C2-H-205"
+      ]
+    },
+    {
+      "name": "mode",
+      "commands": [
+        "render"
+      ],
+      "kind": "enum",
+      "values": [
+        "interactive",
+        "static"
+      ],
+      "option": "mode",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "normalize",
+      "commands": [
+        "fmt"
+      ],
+      "kind": "switch",
+      "option": "normalize",
+      "clauses": [
+        "C2-T-010",
+        "C2-W-127"
+      ]
+    },
+    {
+      "name": "output",
+      "commands": [
+        "flatten",
+        "fmt",
+        "import",
+        "render"
+      ],
+      "kind": "path",
+      "short": "-o",
+      "clauses": [
+        "C2-T-053"
+      ]
+    },
+    {
+      "name": "platforms",
+      "commands": [
+        "lint"
+      ],
+      "kind": "json",
+      "option": "platforms",
+      "clauses": [
+        "C2-T-010",
+        "C2-W-109"
+      ]
+    },
+    {
+      "name": "positions",
+      "commands": [
+        "ast"
+      ],
+      "kind": "switch",
+      "default": true,
+      "clauses": [
+        "C2-T-005"
+      ]
+    },
+    {
+      "name": "profile",
+      "commands": [
+        "render"
+      ],
+      "kind": "enum",
+      "values": [
+        "full",
+        "article",
+        "comment",
+        "minimal"
+      ],
+      "option": "profile",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-163"
+      ]
+    },
+    {
+      "name": "raw-html",
+      "commands": [
+        "import",
+        "render"
+      ],
+      "kind": "switch",
+      "option": "rawHtml",
+      "clauses": [
+        "C2-T-010",
+        "C2-M-066"
+      ]
+    },
+    {
+      "name": "report-includes",
+      "commands": [
+        "ast",
+        "diagnostics",
+        "render"
+      ],
+      "kind": "path",
+      "clauses": [
+        "C2-T-022"
+      ]
+    },
+    {
+      "name": "report-losses",
+      "commands": [
+        "import",
+        "render"
+      ],
+      "kind": "path",
+      "clauses": [
+        "C2-T-021",
+        "C2-T-028"
+      ]
+    },
+    {
+      "name": "roundtrip",
+      "commands": [
+        "render"
+      ],
+      "kind": "switch",
+      "option": "roundtrip",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "rules",
+      "commands": [
+        "lint"
+      ],
+      "kind": "json",
+      "option": "rules",
+      "clauses": [
+        "C2-T-010",
+        "C2-W-109"
+      ]
+    },
+    {
+      "name": "sections",
+      "commands": [
+        "render"
+      ],
+      "kind": "switch",
+      "option": "sections",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "smart-typography",
+      "commands": [
+        "render"
+      ],
+      "kind": "switch",
+      "option": "smartTypography",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "social",
+      "commands": [
+        "render"
+      ],
+      "kind": "json",
+      "option": "social",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "soft-break",
+      "commands": [
+        "render"
+      ],
+      "kind": "enum",
+      "values": [
+        "newline",
+        "space",
+        "br"
+      ],
+      "option": "softBreak",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-203"
+      ]
+    },
+    {
+      "name": "source-lines",
+      "commands": [
+        "render"
+      ],
+      "kind": "switch",
+      "option": "sourceLines",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "strict",
+      "commands": [
+        "lint",
+        "render"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-051"
+      ]
+    },
+    {
+      "name": "strict-losses",
+      "commands": [
+        "import",
+        "render"
+      ],
+      "kind": "switch",
+      "option": "strictLosses",
+      "clauses": [
+        "C2-T-026",
+        "C2-H-130",
+        "C2-M-082"
+      ]
+    },
+    {
+      "name": "symbols",
+      "commands": [
+        "render"
+      ],
+      "kind": "json",
+      "option": "symbols",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "url-policy",
+      "commands": [
+        "render"
+      ],
+      "kind": "json",
+      "option": "urlPolicy",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "version",
+      "commands": [
+        "ast",
+        "diagnostics",
+        "fix",
+        "flatten",
+        "fmt",
+        "import",
+        "lint",
+        "migrate-ast",
+        "render"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-007"
+      ]
+    },
+    {
+      "name": "write",
+      "commands": [
+        "fmt",
+        "lint"
+      ],
+      "kind": "switch",
+      "default": false,
+      "short": "-w",
+      "clauses": [
+        "C2-T-016",
+        "C2-T-030",
+        "C2-T-050"
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "name": "ast-json-invalid",
+      "status": 2,
+      "errors": [
+        "CarveLayoutError",
+        "CarvePatchError",
+        "CarveTreeError"
+      ],
+      "clauses": [
+        "C2-W-101",
+        "C2-A-188",
+        "C2-T-040",
+        "C2-T-045"
+      ]
+    },
+    {
+      "name": "flatten-changed",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-048"
+      ]
+    },
+    {
+      "name": "import-input-invalid",
+      "status": 2,
+      "errors": [
+        "ImportInputError"
+      ],
+      "clauses": [
+        "C2-M-006",
+        "C2-T-035"
+      ]
+    },
+    {
+      "name": "import-tree-invalid",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-035"
+      ]
+    },
+    {
+      "name": "include-unresolved",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-048"
+      ]
+    },
+    {
+      "name": "input-invalid",
+      "status": 2,
+      "errors": [
+        "CarveInputError"
+      ],
+      "clauses": [
+        "C2-H-163",
+        "C2-T-040"
+      ]
+    },
+    {
+      "name": "input-unreadable",
+      "status": 2,
+      "errors": [],
+      "clauses": [
+        "C2-W-101",
+        "C2-T-012"
+      ]
+    },
+    {
+      "name": "output-unwritable",
+      "status": 2,
+      "errors": [],
+      "clauses": [
+        "C2-T-040",
+        "C2-T-053"
+      ]
+    },
+    {
+      "name": "render-loss",
+      "status": 1,
+      "errors": [
+        "CarveRenderError"
+      ],
+      "clauses": [
+        "C2-H-130",
+        "C2-T-026"
+      ]
+    },
+    {
+      "name": "usage",
+      "status": 2,
+      "errors": [
+        "CarveOptionError"
+      ],
+      "clauses": [
+        "C2-W-101",
+        "C2-T-008"
+      ]
+    },
+    {
+      "name": "writer-refused",
+      "status": 1,
+      "errors": [
+        "CarveWriteError"
+      ],
+      "clauses": [
+        "C2-W-134",
+        "C2-T-030"
+      ]
+    }
+  ],
+  "library": [
+    {
+      "name": "applyPatch",
+      "clauses": [
+        "C2-T-044",
+        "C2-T-045"
+      ]
+    },
+    {
+      "name": "decodeTree",
+      "clauses": [
+        "C2-A-188"
+      ]
+    },
+    {
+      "name": "diffTree",
+      "clauses": [
+        "C2-T-043"
+      ]
+    },
+    {
+      "name": "encodeEnvelope",
+      "clauses": [
+        "C2-A-012"
+      ]
+    },
+    {
+      "name": "encodeTree",
+      "clauses": [
+        "C2-A-012",
+        "C2-A-217"
+      ]
+    },
+    {
+      "name": "format",
+      "clauses": [
+        "C2-W-001",
+        "C2-W-134"
+      ]
+    },
+    {
+      "name": "formatWithDiagnostics",
+      "clauses": [
+        "C2-W-134"
+      ]
+    },
+    {
+      "name": "importDocument",
+      "clauses": [
+        "C2-M-001",
+        "C2-M-066",
+        "C2-M-082",
+        "C2-M-100",
+        "C2-M-102"
+      ]
+    },
+    {
+      "name": "includeDependencies",
+      "clauses": [
+        "C2-N-083"
+      ]
+    },
+    {
+      "name": "lint",
+      "clauses": [
+        "C2-W-103",
+        "C2-W-109",
+        "C2-N-085",
+        "C2-T-042"
+      ]
+    },
+    {
+      "name": "migrateTree",
+      "clauses": [
+        "C2-A-178",
+        "C2-A-180"
+      ]
+    },
+    {
+      "name": "parse",
+      "clauses": [
+        "C2-A-106",
+        "C2-B-218"
+      ]
+    },
+    {
+      "name": "parseWithDiagnostics",
+      "clauses": [
+        "C2-A-172",
+        "C2-T-024"
+      ]
+    },
+    {
+      "name": "parseWithLayout",
+      "clauses": [
+        "C2-A-003"
+      ]
+    },
+    {
+      "name": "positionOf",
+      "clauses": [
+        "C2-T-019",
+        "C2-T-041"
+      ]
+    },
+    {
+      "name": "render",
+      "clauses": [
+        "C2-H-137"
+      ]
+    },
+    {
+      "name": "renderWithDiagnostics",
+      "clauses": [
+        "C2-A-172",
+        "C2-H-130"
+      ]
+    },
+    {
+      "name": "sourceFingerprint",
+      "clauses": [
+        "C2-T-046"
+      ]
+    },
+    {
+      "name": "treeFingerprint",
+      "clauses": [
+        "C2-T-046"
+      ]
+    },
+    {
+      "name": "validateTree",
+      "clauses": [
+        "C2-A-188"
+      ]
+    },
+    {
+      "name": "write",
+      "clauses": [
+        "C2-W-001",
+        "C2-W-102"
+      ]
+    },
+    {
+      "name": "writeWithDiagnostics",
+      "clauses": [
+        "C2-W-134"
+      ]
+    }
+  ],
+  "entry_fields": [
+    {
+      "name": "channel",
+      "always": true,
+      "library": true,
+      "clauses": [
+        "C2-W-104"
+      ]
+    },
+    {
+      "name": "code",
+      "always": true,
+      "library": true,
+      "clauses": [
+        "C2-W-106"
+      ]
+    },
+    {
+      "name": "column",
+      "always": false,
+      "library": false,
+      "clauses": [
+        "C2-T-019"
+      ]
+    },
+    {
+      "name": "file",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-N-063"
+      ]
+    },
+    {
+      "name": "foreignType",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-M-081"
+      ]
+    },
+    {
+      "name": "includedBy",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-N-063",
+        "C2-T-020"
+      ]
+    },
+    {
+      "name": "line",
+      "always": false,
+      "library": false,
+      "clauses": [
+        "C2-T-019"
+      ]
+    },
+    {
+      "name": "message",
+      "always": true,
+      "library": true,
+      "clauses": [
+        "C2-A-173"
+      ]
+    },
+    {
+      "name": "path",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-A-173"
+      ]
+    },
+    {
+      "name": "range",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-A-173"
+      ]
+    },
+    {
+      "name": "severity",
+      "always": true,
+      "library": true,
+      "clauses": [
+        "C2-W-105"
+      ]
+    }
+  ]
+}

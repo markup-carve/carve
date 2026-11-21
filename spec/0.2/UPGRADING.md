@@ -1,0 +1,1216 @@
+# Upgrading from Carve 0.1 to Carve 0.2
+
+This is a non-normative guide. Carve 0.2 is a freeze candidate and not yet released ([status](STATUS.md)). The [0.2 specification](README.md) defines behavior. The [upgrade map](data/upgrade-map.json) holds the source and tree changes in these tables. Its source examples are literal strings with line breaks. `SILENT` means unchanged 0.1 source still parses in 0.2 but produces different HTML. Review those entries even when a document has no syntax error.
+
+## Part 1. Authors: your documents
+
+| Check first | 0.1 habit | 0.2 result | Action |
+| --- | --- | --- | --- |
+| Blocks under text | A heading, quote, definition, or attribute line could start a block at once. | Most such lines continue the paragraph. | Insert a blank line; `U-001` to `U-010`. **SILENT** |
+| Lists | `+`, `{loose}`, marker columns, and task boxes controlled list shape. | Blank lines and content columns control shape; mixed task and plain items share a list, including ordered items. | Run the tool, then inspect list HTML; `U-014` to `U-030`, `U-117` to `U-120`. **SILENT** |
+| Breaks, fences, tables | `---`, `___`, `~~~`, and GFM separator rows had special meanings. | These are text, typography, or table rows. | Use `***`, backticks, and 0.2 cell marks; `U-044` to `U-062`, `U-116`. **SILENT** |
+| Inline | Bare `_`, `~`, `=`, substitution, flags, and references changed. | Several now print literally or gain a new interpretation, including defined shortcuts. | Use braced spans and inspect escapes; `U-065` to `U-075`, `U-101` to `U-115`, `U-121`. **SILENT** |
+| Table column lists | `{aligns=right,x}`, `{valigns=top,x}` and `{widths=25,x}` applied their valid entries and skipped the bad one. | A list with one empty or malformed entry sets no column at all, and the attribute stays on the table without effect. Lint reports it as `table-attribute-invalid`. | Correct or remove the bad entry; C2-B-211, C2-B-212, C2-B-227. No tool entry yet. **SILENT** |
+| Raw HTML | Raw block and span forms emitted HTML by default. | `rawHtml` defaults to false and escapes it. | Decide whether the host may enable `rawHtml`; `U-076`, `U-077`, `U-079`. **SILENT** |
+| Notes in link text | A footnote mark appeared inside the link anchor, as in `[t^[n]](/u)`. | Each footnote reference or inline footnote mark follows the closing link anchor, in source order. The tree keeps the original positions. | U-154 reports this change. Inspect HTML or CSS that depends on the mark's position; C2-H-088. **SILENT** |
+
+The tables below enumerate every entry in the shipped tool contract. The “0.2 unchanged” column shows the beginning of HTML from the 0.2 renderer for the first contract input. It is a rendering observation, not a proposed source spelling. The map holds the full input (`from`), the proposed source (`to`, empty where there is none) and, in `meaning02`, the 0.2 HTML of the input or an account in words; it holds no 0.1 HTML. A row marked `none` needs no source edit. A `report` needs a person. `rewrite` changes the spelling. `escape` keeps old literal text literal. The tool may report a case even when it cannot preserve its exact HTML.
+
+### Replay gap rulings
+
+The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; `%%` directly after the opener of a bracket or a braced form is text again (C2-I-023). U-399 to U-402 and U-405 to U-407 were first checked on seven sources; the replay of 19 November widens them with U-432 to every line comment that 0.1 ended early, written only where the complete 0.1 and 0.2 HTML compare equal. U-390 now needs no change. U-393 and U-426 report every other line comment in a frame. A comment inside a raw image alt is still source text (C2-I-074).
+
+For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-407, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
+
+| ID | 0.1 cause | 0.2 result | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-375 | An ASCII double quote right after `-` or `/` opens a curly quote in 0.1: `-"q"` gives `-“q”`; 0.2 closes it. **SILENT** | The old HTML is restored by the verified source spelling. | Replace the opening quotes after `-` and `/` with `“`; rewrite |
+| U-376 | Every space after the colon of an abbreviation definition is separator in 0.1: `*[HTML]:  Hyper Text` gives the title `Hyper Text`; 0.2 keeps the second space in the title. **SILENT** | The old HTML is restored by the verified source spelling. | Use one space after `*[HTML]:`; rewrite |
+| U-377 | A table attribute `aligns="right,,center"` aligns each column in 0.1; 0.2 has no `aligns` attribute. **SILENT** | The old HTML is restored by the verified source spelling. | Remove the invalid `aligns` list and put `{>}` or `{~}` on each affected cell; rewrite |
+| U-378 | A footnote definition inside a definition description, then an indented and an unindented line: `:: t`, `:  [^f]: note`, `     cont`, `tail`. 0.1 writes an empty description; 0.2 keeps the three lines as description text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the nested definition opener through the following unprefixed line; report |
+| U-379 | A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 adds `more` to the term. **SILENT** | The old HTML differs. Where a blank line above the comment keeps the complete 0.1 HTML, U-433 writes it. | Report from the comment line through the following retained line; report |
+| U-380 | A comment in a div label: `::: note [%% hidden]`. 0.1 hides it and writes an empty label; 0.2 writes `%% hidden` as the label. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the bracketed label on the div opener; report |
+| U-381 | Inline markup in a div label: `::: note [/i/]`. 0.1 writes `<em>i</em>`; 0.2 writes the label as plain text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the bracketed label on the div opener; report |
+| U-382 | A comment line in a div that opens on a list item: `- ::: inner`, ` %% c`, ` text`. 0.1 ends the div and the list at the comment and `text` is a paragraph after the list; 0.2 keeps `text` in the div. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment line through the next retained line; report |
+| U-383 | A comment fence in a nested list inside a div in a quote, followed by a fence indented less than the inner item: 0.1 puts the code block in the div after the inner list; 0.2 puts it in the inner item. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment fence through the shifted code opener; report |
+| U-384 | A comment line in a div nested in a div in a quote: 0.1 ends the inner div at the comment and the next line joins the outer div; 0.2 keeps it in the inner div. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment-only line through the next retained line; report |
+| U-385 | A comment line in a nested list inside a div in a double quote, followed by a fence indented less than the inner item: 0.1 puts the code block in the div after the inner list; 0.2 puts it in the inner item. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment line through the shifted code opener; report |
+| U-386 | A line block that closes inside a nested item, followed by a fence indented less than that item: 0.1 puts the code block in the outer div; 0.2 puts it in the item. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the line-block closer through the shifted code opener; report |
+| U-387 | A list indented one column past a definition description in a list item: `- :: t`, `  : para`, `   - li`. 0.1 puts the list in the item after the definition list; 0.2 puts it in the description. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the description marker through the shifted list line; report |
+| U-388 | A footnote-shaped run inside an insertion inside an inline note: `^[{+[^[g]+}] b+}]`. 0.1 keeps `[^[g]+}] b` in the insertion; 0.2 closes the insertion at the first `+}`. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the inline footnote opener through its closing bracket; report |
+| U-389 | A braced underline right after an equals sign: `={_a=b_}`. 0.1 writes `=<u>a=b</u>`; 0.2 writes the whole run as text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the outer equals sign through the final closing brace; report |
+| U-390 | A comment marker at the start of a deletion: `{-%% b-}`. | Both versions keep `%%` as text after the braced opener and write `<del>%% b</del>`. | No change; none |
+| U-391 | A comment fence with no closer in a footnote body: `[^n]: head`, then an indented `%%%`. 0.1 hides the rest of the body, including a later indented `tail`; 0.2 ends the footnote and writes `tail` as a paragraph. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment fence opener through the following unhidden line; report |
+| U-392 | An uppercase attribute name: `{CLASS=z}` on a line block. 0.1 writes `CLASS="z line-block"`; 0.2 writes `class="z line-block"`, the same HTML attribute. **SILENT** | Attribute names compare without case, so the HTML is the same. | Nothing to change; none |
+| U-393 | A line comment inside a substitution, ended in 0.1 at the first raw closer of its frame: `{~a %% b~>c~} d`. 0.1 writes `{~a d`; 0.2 writes `{~a`. **SILENT** | The comment takes every closer on its line and the rest of the line (C2-I-024). Any bracket or braced frame changes the same way; U-399 to U-402 rewrite only their own verified sources. | Report from the comment marker through the end of its line; report |
+| U-394 | A comment fence opened in a quote, an unquoted `%%` line, and a quoted closer: `> %%%`, `%%`, `> %%%`, `z`. 0.1 writes one empty quote; 0.2 writes two. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the quoted opener through its matching closer; report |
+| U-395 | A comment fence line inside a braced comment in a list item: `- p`, `  {% a`, `   %%%`, `   z %}`, `plain`. 0.1 hides the braced comment and keeps `plain` in the item; 0.2 writes `{% a` as text and `plain` as a paragraph after the list. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the braced comment opener through its closing mark; report |
+| U-396 | An empty unclosed math run at the end of inline content: <code>a $&#96;</code> or <code>$$&#96;&#96;</code>. 0.1 writes an empty math span; 0.2 writes the run as text (C2-I-017). **SILENT** | The old HTML differs; no preserving spelling exists: an adjacent closer joins the opener into a wider run, and a separator changes the empty value. | Report at the parsed math range; report |
+| U-397 | `v.` followed by `vi.`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
+| U-398 | `i.` followed by `j.`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
+| U-399 | A line comment takes a link closer and tail: `[a %% b](/u) c`. **SILENT** | The link does not form. | Replace the line comment with a braced comment glued to the retained text, `[a{% b %}](/u) c`; rewrite |
+| U-400 | A line comment takes an inline footnote closer: `^[a %% c] d`. **SILENT** | The note does not form. | Write `^[a{% c %}] d`; rewrite |
+| U-401 | A line comment takes a braced span closer: `{_a %% b_} y`. **SILENT** | The span does not form. | Write `{_a{% b %}_} y`; rewrite |
+| U-402 | A line comment takes an extension closer: `:foo[a %% c] d`. **SILENT** | The extension does not form. | Write `:foo[a{% c %}] d`; rewrite |
+| U-403 | `i)` followed by `j)`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
+| U-404 | `v)` followed by `vi)`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
+| U-405 | A line comment at the start of a bracket: `[%% c] d`. 0.1 hides the comment and writes `[] d`; 0.2 writes `%% c` as text. **SILENT** | The old HTML is restored by the verified source spelling. | Write `[{% c %}] d`; rewrite |
+| U-406 | A line comment at the start of an inline footnote: `^[%% c] d`. 0.1 writes an empty note; 0.2 writes `%% c` in the note. **SILENT** | The old HTML is restored by the verified source spelling. | Write `^[{% c %}] d`; rewrite |
+| U-407 | A line comment at the start of extension content: `:f[%%]`. 0.1 writes an empty extension; 0.2 writes `%%` in it. **SILENT** | The old HTML is restored by the verified source spelling. | Write `:f[{% %}]`; rewrite |
+| U-426 | A line comment directly after the opener of a bracket, an inline note or extension content: `[%% hidden](/u)`. 0.1 hides the comment and writes an empty link; 0.2 writes `%% hidden` as the link text (C2-I-023). **SILENT** | The old HTML differs; U-405 to U-407 rewrite only their own verified sources. | Report from the `%%` through the closer of its frame; report |
+
+### Extension rulings of 18 November
+
+The explicit extension forms preserve their core fallback when no renderer is registered. Review source and host settings before changing a document.
+
+| ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-408 | See [Page][]. **SILENT** | A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A reference may instead be a core reference, so report and choose from its resolved target. | Review by hand; report |
+| U-409 | See [Page](#Page). **SILENT** | A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label. | Review by hand; report |
+| U-410 | Visit https://example.test. **SILENT** | Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and the original link target before rewriting. | Review by hand; report |
+| U-411 | See [cite doe, p. 4]. **SILENT** | A citation uses `:cite[doe]{locator="p. 4"}` and its definition belongs in a named bibliography or references directive (C2-X-058). Report because the old integration may have interpreted the locator differently. | Review by hand; report |
+| U-412 | :::: tabs ⏎ ::: tab [Install] ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | The bracket label becomes the only tab label when moved to a nonempty quoted title (C2-X-040, C2-X-056); this source has no other tab label. | Use the quoted-title spelling; rewrite |
+| U-413 | :::: tabs ⏎ {label=Install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | The sole `label` attribute is moved to the quoted title (C2-X-056); inspect any other attribute before applying the rewrite. | Use the quoted-title spelling; rewrite |
+| U-414 | :::: tabs ⏎ ::: tab ⏎ # Install ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | A first heading is content, not a tab label (C2-X-056). Report because changing it to a title would also change the body. | Review by hand; report |
+| U-415 | :::: tabs ⏎ {.install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | A class alone supplies no quoted title (C2-X-056). Report to choose a title without guessing from the class. | Review by hand; report |
+| U-416 | :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (0.1 host setting `mode: 'aria'`) **SILENT** | The 0.1 aria mode maps onto the option `mode: 'aria'` of the 0.2 tabs renderer (C2-X-043, C2-X-056): the same WAI-ARIA tab pattern, with the switching script left to the host. The ids are `tabs-N-K` and `tabs-N-K-panel` (C2-X-048), not `tabset-N-tab-K` and `tabset-N-panel-K`, a tab id does not supply them, the buttons carry no class, the panels the class `tab-panel`, and no line break separates the elements. | No source edit; set `mode: 'aria'` on the tabs renderer and check scripts and styles that select the 0.1 ids or classes; none |
+| U-417 | {.custom-tabs} ⏎ :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (former per-instance host class) **SILENT** | A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer. | Review by hand; report |
+| U-418 | :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ {selected} ⏎ ::: tab "B" ⏎ b ⏎ ::: ⏎ :::: | `selected` keeps choosing the initially selected tab: the first marked tab, or the first tab with no mark, as in 0.1 (C2-X-056). The renderer markup around it is covered by U-416 and U-419. | No source edit; none |
+| U-419 | :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (static mode) **SILENT** | Static mode keeps the 0.1 static elements and classes, a `section` with an `h3` per tab and no controls (C2-X-043), but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. | Review the host's static HTML processing; report |
+| U-427 | {.tabs} ⏎ :::: ⏎ {.tab} ⏎ ::: [Install] ⏎ Run it. ⏎ ::: ⏎ :::: **SILENT** | The tabs extension matches the div names `tabs` and `tab`, not the classes (C2-X-039, C2-X-040), so a class-form group or tab stays a core div. A class beside `tabs` or `tab` stays in the attribute block; the label moves to the quoted title as in U-412. | Write `:::: tabs` ⏎ `::: tab "Install"`; rewrite |
+| U-428 | :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ stray ⏎ :::: **SILENT** | 0.1 left a block that is not a tab out of the tabs output; 0.2 claims a group only when every block in it is a tab (C2-X-040), so the group stays a core div. Moving the block out of the group or into a tab changes the document. | Review by hand; report |
+
+### Extension rulings of 19 November
+
+0.2 adds no delimiter for an extension, so the 0.1 wiki and sample spellings move to the explicit forms. Rewrite only where the 0.1 host registered the extension: without it, `[[Page]]` was text in 0.1.
+
+| ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-423 | See [[Main Page]]. (former wikilinks host extension) **SILENT** | The wiki form is `:wiki[Page]` (C2-X-013, C2-X-057). | Write `See :wiki[Main Page].`; rewrite |
+| U-424 | See [[Main Page\|home]]. (former wikilinks host extension) **SILENT** | The display text after the first `\|` stays the display text and the fallback (C2-X-057). | Write `See :wiki[Main Page\|home].`; rewrite |
+| U-425 | Type :samp[ls -l]. (former samp host extension) **SILENT** | Sample output is a span with the key `samp`, an ordinary attribute of the core that a registered semantic span extension writes as `<samp>` (C2-X-066). | Write `Type [ls -l]{samp}.`; rewrite |
+| U-429 | # Intro ⏎ ⏎ See </#intro>. (`carve upgrade --migrate`) **SILENT** | A cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the 0.1 `fmt --migrate` repair; the record is `case-reference`. An id is matched exactly (C2-I-097). A reference with several candidates is left for `lint`. | Write `See </#Intro>.`; rewrite |
+
+### Upgrade replay rows of 19 November
+
+The upgrade replay of the 0.1 conformance pack and examples found nine more changes with a preserving 0.2 spelling. Each is written only when the complete 0.1 and 0.2 HTML of the document compare equal.
+
+| ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-430 | a /b {+c/ d+} **SILENT** | 0.2 pairs a bare delimiter wherever it can open and close (C2-I-046 to C2-I-051), also across a braced opener or an attribute block, where 0.1 kept it text: `<p>a <em>b {+c</em> d+}</p>`. | Write `a \/b {+c/ d+}` (C2-I-010); escape |
+| U-431 | a ----------- b **SILENT** | C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again, `—––––`; 0.1 wrote as many em dashes as leave an even rest, `———–`. | Write the dashes 0.1 wrote, `a ———– b`; rewrite |
+| U-432 | `/*a %% b*/ y` **SILENT** | A line comment takes every closer on its line (C2-I-024) and starts only at a line start or after whitespace (C2-I-023): `<p>/*a</p>`. 0.1 ended it at the closer of an open span and read it directly after an opener. | Write a braced comment in its place, `*/a{% b%}/* y` (C2-I-025); rewrite |
+| U-433 | :: t ⏎  %% c ⏎    more **SILENT** | 0.2 skips a comment-only line (C2-B-137), so `more` continues the term: `<dl><dt>t more</dt></dl>`. 0.1 ended the term at the comment line. | Write a blank line above the comment line; rewrite |
+| U-434 | -   [ ] a **SILENT** | A task box is read only directly after the one space of the bullet (C2-B-046), so the box is text: `<li>[ ] a</li>`. 0.1 also read it after more spaces. | Write one space between the bullet and the box, `- [ ] a`; U-163 reports the shapes this does not verify; rewrite |
+| U-435 | [^n]: a ⏎ ⏎    :: t ⏎    :  d ⏎     > q **SILENT** | A block indented past the description mark stays in the description (C2-B-076): `<dd>d &gt; q</dd>`. 0.1 ended the description there, and the quote followed the description list in the note. | Move the block to the column of the list that holds it (C2-B-067), with a blank line where it stood under text (U-002); in a list item the same; rewrite |
+| U-436 | - + ⏎   %% c ⏎ after **SILENT** | With U-017 the comment moves to the marker line, and no paragraph is open to take `after` as a lazy line (C2-B-012), so it follows the list. 0.1 read it into the item. | Indent the line to the item column, `- %% c` then `  after` (C2-B-025); rewrite |
+| U-437 | > a ⏎ + ⏎ - b ⏎ > c **SILENT** | With U-016 the item takes the quote mark, and `> c` is then a lazy line of the item (C2-B-012, C2-B-024). 0.1 read `c` as a new paragraph of the quote. | Write a quoted blank line above it; rewrite |
+| U-438 | 1. outer ⏎ lazy ⏎    2. sibling **SILENT** | C2-B-015 makes a nested ordered marker starting above 1 a lazy line of the open item paragraph: `<li>outer\nlazy\n2. sibling</li>`. 0.1 opened an ordered list starting at 2. | Write a blank line before the nested marker, preserving its value; rewrite |
+
+### Source change index
+
+
+#### Paragraphs and blocks
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-001 | Heading directly under text **SILENT** | &lt;p&gt;Some text ⏎ # Heading&lt;/p&gt; | Some text ⏎ ⏎ # Heading ⏎ ; rewrite |
+| U-002 | Quote directly under text **SILENT** | &lt;p&gt;Some text ⏎ &gt; quote&lt;/p&gt; | Some text ⏎ ⏎ &gt; quote ⏎ ; rewrite |
+| U-003 | Attribute line directly under text **SILENT** | &lt;p&gt;Some text ⏎ {.x} ⏎ Next block&lt;/p&gt; | Some text ⏎ ⏎ {.x} ⏎ Next block ⏎ ; rewrite |
+| U-004 | Description list directly under text **SILENT** | &lt;p&gt;Some text ⏎ :: term ⏎ : description&lt;/p&gt; | Some text ⏎ ⏎ :: term ⏎ : description ⏎ ; rewrite |
+| U-005 | Definition directly under text **SILENT** | &lt;p&gt;Some text ⏎ [ref]: https://example.com&lt;/p&gt; ⏎ &lt;p&gt;See [ref][].&lt;/p&g… | Some text ⏎ ⏎ [ref]: https://example.com ⏎ ⏎ See [ref][]. ⏎ ; rewrite |
+| U-006 | Heading or quote at column 0 directly under item text **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item text ⏎ # Heading&lt;/li&gt; ⏎ &lt;/ul&gt; | - item text ⏎ ⏎ # Heading ⏎ ; rewrite |
+| U-007 | List marker without the quote mark under a list in a quote **SILENT** | &lt;blockquote&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;a ⏎ - b&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;/block… | &gt; - a ⏎ ⏎ - b ⏎ ; rewrite |
+| U-008 | List marker directly after description text **SILENT** | &lt;dl&gt; ⏎ &lt;dt&gt;term&lt;/dt&gt; ⏎ &lt;dd&gt;desc ⏎ - item&lt;/dd&gt; ⏎ &lt;/dl&gt; | :: term ⏎ : desc ⏎ ⏎ - item ⏎ ; rewrite |
+| U-009 | Term mark directly under item text **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;text ⏎ :: term ⏎ : desc&lt;/li&gt; ⏎ &lt;/ul&gt; | - text ⏎ ⏎ :: term ⏎ : desc ⏎ ; rewrite |
+| U-010 | Block directly under a caption line **SILENT** | &lt;table&gt; ⏎ &lt;caption&gt;Caption ⏎ 1 Heading&lt;/caption&gt; ⏎ &lt;tbody&gt; ⏎ &lt;… | \| a \| b \| ⏎ ^ Caption ⏎ ⏎ # Heading ⏎ ; rewrite |
+| U-011 | Include directive | &lt;p&gt;Some text ⏎ {{ other.crv }}&lt;/p&gt; | Review by hand; report |
+| U-012 | List marker directly under text at the top level | &lt;p&gt;Some text ⏎ - item&lt;/p&gt; | Keep it; none |
+| U-013 | Table row, fence line or &#96;***&#96; directly under text | &lt;p&gt;Some text&lt;/p&gt; ⏎ &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/… | Keep it; none |
+
+#### Lists
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-014 | &#96;+&#96; line before a block in an item **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;step one ⏎ + ⏎ &gt; a note&lt;/li&gt; ⏎ &lt;li&gt;step two&lt;/li&… | - step one ⏎ ⏎ &gt; a note ⏎ - step two ⏎ ; rewrite |
+| U-015 | &#96;+&#96; line before a paragraph in an item **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a ⏎ + ⏎ second&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Review by hand: `- a`, a blank line, `  second`, `- b` keeps `second` in the item, but as `<p>second</p>` where 0.1 wrote it bare (C2-H-034, U-019); report |
+| U-016 | &#96;+&#96; line in a quote **SILENT** | &lt;blockquote&gt;&lt;p&gt;quoted ⏎ + ⏎ - a list inside the quote&lt;/p&gt;&lt;/blockquot… | &gt; quoted ⏎ &gt; ⏎ &gt; - a list inside the quote ⏎ ; rewrite |
+| U-017 | &#96;+&#96; as the first block of an item **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;+ ⏎ &lt;pre&gt;&lt;code&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ &lt;… | - &#96;&#96;&#96; ⏎ code ⏎ &#96;&#96;&#96; ⏎ - two ⏎ ; rewrite |
+| U-018 | Blank line inside an item makes the list loose **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a ⏎ &lt;p&gt;second&lt;/p&gt; ⏎ &lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&g… | - a ⏎ ⏎ second ⏎ ⏎ - b ⏎ ; rewrite |
+| U-019 | Later paragraph of a tight item **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt; ⏎ &lt;h1 id="Heading"&gt;Heading&lt;/h1&gt; ⏎ &lt;p&gt;more&lt;/p… | Review by hand; report |
+| U-020 | &#96;{loose}&#96; on a list with several items **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | - a ⏎ ⏎ - b ⏎ ; rewrite |
+| U-021 | Loose list with one item **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;Note text.&lt;/li&gt; ⏎ &lt;/ul&gt; | Review by hand; report |
+| U-023 | Marker indented less than the content column of the item above **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item text ⏎ 3. child&lt;/li&gt; ⏎ &lt;/ul&gt; | - item text ⏎ 3. child ⏎ ; rewrite |
+| U-025 | Ordered marker of ten or more digits **SILENT** | &lt;p&gt;1234567890. x&lt;/p&gt; | Review by hand: `{start=1234567890}` above `. x` keeps the number only as an HTML attribute, since the tree starts at 1 (C2-B-219); report |
+| U-026 | Comment block at column 0 between two items **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | - a ⏎ %%% ⏎ x ⏎ %%% ⏎ - b ⏎ ; rewrite |
+| U-027 | Three blank lines between two lists | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | Keep it; none |
+| U-028 | &#96;-&#96; and &#96;*&#96; items | &lt;ul&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;two&lt;/li&g… | Keep it; none |
+| U-029 | Comment-only line between items, empty task box, &#96;- -&#96; | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Keep it; none |
+| U-030 | Uppercase letter marker | &lt;p&gt;A. Smith went home.&lt;/p&gt; ⏎ &lt;ol type="A"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎… | Keep it; none |
+
+#### Attributes
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-031 | Attribute line above a blank line **SILENT** | &lt;p&gt;{.note}&lt;/p&gt; ⏎ &lt;p&gt;Paragraph.&lt;/p&gt; | {.note} ⏎ Paragraph. ⏎ ; rewrite |
+| U-032 | Attribute block over several lines **SILENT** | &lt;p&gt;{.a ⏎ .b} ⏎ Paragraph.&lt;/p&gt; | {.a .b} ⏎ Paragraph. ⏎ ; rewrite |
+| U-033 | Attribute line between two items **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a ⏎ {.x}&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | - a ⏎ ⏎ {.x} ⏎ - b ⏎ ; rewrite |
+| U-034 | Attribute line that reaches no block **SILENT** | &lt;p&gt;Paragraph.&lt;/p&gt; ⏎ &lt;p&gt;{.x}&lt;/p&gt; | Paragraph. ⏎ ; rewrite |
+| U-035 | Glued and stacked attribute blocks, empty braces **SILENT** | &lt;p id="b" class="a"&gt;Paragraph.&lt;/p&gt; | Keep it; none |
+| U-036 | Order of attributes in HTML **SILENT** | &lt;p id="b" class="a"&gt;Paragraph.&lt;/p&gt; ⏎ &lt;p&gt;&lt;span id="b" class="a"&gt;x&… | Review by hand; report |
+| U-037 | Brace suffix after a fence language | &lt;pre&gt;&lt;code class="language-js"&gt;a ⏎ &lt;/code&gt;&lt;/pre&gt; | &#96;&#96;&#96;js ⏎ a ⏎ &#96;&#96;&#96; ⏎ ; rewrite |
+
+#### Definitions
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-038 | Definition inside a quote or an item **SILENT** | &lt;blockquote&gt; ⏎ &lt;p&gt;See [ref][].&lt;/p&gt; ⏎ &lt;p&gt;[ref]: https://example.co… | &gt; See [ref][]. ⏎ ⏎ [ref]: https://example.com ⏎ ⏎ Outside [ref][]. ⏎ ; rewrite |
+| U-039 | Indented definition at the top level **SILENT** | &lt;p&gt;Text [a][].&lt;/p&gt; ⏎ &lt;p&gt;[a]: /u&lt;/p&gt; | Text [a][]. ⏎ ⏎ [a]: /u ⏎ ; rewrite |
+| U-040 | Duplicate link definition **SILENT** | &lt;p&gt;&lt;a href="/one"&gt;x&lt;/a&gt;&lt;/p&gt; | [a]: /two ⏎ ⏎ [x][a] ⏎ ; rewrite |
+| U-041 | Duplicate abbreviation definition **SILENT** | &lt;p&gt;&lt;abbr title="First"&gt;HTML&lt;/abbr&gt; here.&lt;/p&gt; | *[HTML]: Second ⏎ ⏎ HTML here. ⏎ ; rewrite |
+| U-042 | Definitions that read the same | &lt;p&gt;Text&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;… | Keep it; none |
+
+#### Headings
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-043 | &#96;#&#96; headings, closing hashes, brace text, seven markers | &lt;section id="One"&gt; ⏎ &lt;h1&gt;One&lt;/h1&gt; ⏎ &lt;/section&gt; ⏎ &lt;section id="… | Keep it; none |
+
+#### Breaks
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-044 | Hyphen or underscore run **SILENT** | &lt;p&gt;para&lt;/p&gt; ⏎ &lt;p&gt;—&lt;/p&gt; ⏎ &lt;p&gt;next&lt;/p&gt; ⏎ &lt;p&gt;___&l… | para ⏎ ⏎ *** ⏎ ⏎ next ⏎ ⏎ *** ⏎ ⏎ *** ⏎ ; rewrite |
+| U-045 | Spaced breaks **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;*&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;/li&gt;… | *** ⏎ ⏎ *** ⏎ ; rewrite |
+| U-046 | Spaced underscores, stars under an item | &lt;p&gt;_ _ _&lt;/p&gt; | Keep it; none |
+
+#### Frontmatter
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-047 | Format names, the space before them, unclosed frontmatter | &lt;p&gt;text&lt;/p&gt; | Keep it; none |
+| U-048 | Unknown format name | &lt;p&gt;text&lt;/p&gt; | Keep it; none |
+
+#### Fences, quotes, comments
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-049 | Fence closer at another indent **SILENT** | &lt;pre&gt;&lt;code&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ &lt;p&gt;after&lt;/p&gt; | &#96;&#96;&#96;&#96; ⏎ code ⏎ &#96;&#96;&#96; ⏎ after ⏎ &#96;&#96;&#96;&#96; ⏎ ; rewrite |
+| U-050 | &#96;%%%&#96; closer followed by text **SILENT** |  | %%% ⏎ hidden ⏎ visible? ⏎ %%% ⏎ after ⏎ ; rewrite |
+| U-052 | &#96;%%&#96; line inside a line block **SILENT** | &lt;div class="line-block"&gt; ⏎ &lt;p&gt;one&lt;br&gt; ⏎ %% hidden&lt;br&gt; ⏎ two&lt;/p… | ::: \| ⏎ one ⏎ {% hidden %} ⏎ two ⏎ ::: ⏎ ; rewrite |
+| U-053 | Tab in code under a container **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item ⏎ &lt;pre&gt;&lt;code&gt;x ⏎ y ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ … | Review by hand: four spaces for the tab keep the 0.1 code text, but 0.1 made the one-item list loose, `<li><p>item</p>`, and a one-item list is tight in 0.2 (C2-B-062); report |
+| U-054 | Fence and div spellings that read the same | &lt;pre title="T"&gt;&lt;code class="language-js"&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; | Keep it; none |
+
+#### Tables
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-055 | GFM separator row **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;/td&gt;&lt… | \|= a \|={&gt;} b \| ⏎ \| 1 \| 2 \| ⏎ ; rewrite |
+| U-056 | Glued alignment marks **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;&lt; a&lt;/th&gt;&lt;th s… | \|={&lt;} a \|={&gt;} b \|={~} c \| ⏎ \| 1 \| 2 \| 3 \| ⏎ ; rewrite |
+| U-057 | Escaped last pipe **SILENT** | &lt;p&gt;\| a \| b \|&lt;/p&gt; | \| a \| b \\| \| ⏎ ; rewrite |
+| U-058 | &#96;header-rows&#96; on a pipe table **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;/td&gt;&lt… | \|= a \|= b \| ⏎ \| 1 \| 2 \| ⏎ ; rewrite |
+| U-059 | &#96;footer-rows&#96; on a table with only a header row **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;a&lt;/th&gt;&lt;th scope=… | Review by hand; report |
+| U-060 | Row span into the head **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;a&lt;/th&gt;&lt;th scope=… | Review by hand; report |
+| U-061 | Delimited table with bad quoting **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;a&lt;/th&gt;&lt;th scope=… | Review by hand; report |
+| U-062 | Table forms that read the same | &lt;p&gt;\| a \| b ⏎ \| c \| d&lt;/p&gt; | Keep it; none |
+
+#### Captions
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-063 | Caption after a blank line **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;/td&gt;&lt… | \| a \| b \| ⏎ ^ Caption ⏎ ; rewrite |
+| U-064 | Captions that read the same | &lt;figure&gt; ⏎ &lt;pre&gt;&lt;code class="language-js"&gt;let x = 1 ⏎ &lt;/code&gt;&lt;… | Keep it; none |
+
+#### Inline emphasis and typography
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-065 | In 0.1, `_underlined_` writes an underline, and `_z_/y/` writes an underline followed by literal `/y/`. **SILENT** | Under C2-I-046 through C2-I-048, a bare underscore is text and the slash after `{_z_}` can start emphasis in 0.2. | Write `{_underlined_}` or `{_z_}\/y/`; rewrite |
+| U-066 | Bare strike **SILENT** | &lt;p&gt;a ~struck~ word and ~/config&lt;/p&gt; | a {~struck~} word and ~/config ⏎ ; rewrite |
+| U-067 | Bare highlight **SILENT** | &lt;p&gt;a =marked= word and x =1, y= 2&lt;/p&gt; | a {=marked=} word and x {=1, y=} 2 ⏎ ; rewrite |
+| U-068 | Emphasis outside strong **SILENT** | &lt;p&gt;&lt;em&gt;&lt;strong&gt;bold italic&lt;/strong&gt;&lt;/em&gt; and &lt;strong&gt;… | */bold italic/* and */bold italic/* ⏎ ; rewrite |
+| U-069 | Substitution arrow **SILENT** | &lt;p&gt;&lt;s&gt;old~&gt;new&lt;/s&gt;&lt;/p&gt; | {-old-}{+new+} ⏎ ; rewrite |
+| U-070 | Delimiter inside a braced span that closes an outer span **SILENT** | &lt;p&gt;&lt;strong&gt;bold {/note&lt;/strong&gt;/} more*&lt;/p&gt; | *bold {/note\*/} more* ⏎ ; rewrite |
+| U-071 | Single opening quote with no closer **SILENT** | &lt;p&gt;said ‘Bob and left.&lt;/p&gt; | said ’Bob and left. ⏎ ; rewrite |
+| U-072 | Editorial comment that starts like an id **SILENT** | &lt;p&gt;a*{#b} c #}&lt;/p&gt; | Review by hand; report |
+| U-073 | Sigil after a letter or number **SILENT** | &lt;p&gt;see config:items[0] and :smile: and x:smile:&lt;/p&gt; | Review by hand; report |
+| U-074 | Inline spellings that read the same | &lt;p&gt;***bold italic*** here&lt;/p&gt; | Keep it; none |
+
+#### References and footnotes
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-075 | References that read the same | &lt;p&gt;See &lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;… | Keep it; none |
+
+#### HTML
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-076 | Raw HTML block **SILENT** | &lt;pre&gt;&lt;code class="language-html"&gt;&lt;b&gt;x&lt;/b&gt; ⏎ &lt;/code&gt;&lt;/pre… | Review by hand; report |
+| U-077 | Raw HTML span **SILENT** | &lt;p&gt;a &lt;b&gt;x&lt;/b&gt; b&lt;/p&gt; | Review by hand; report |
+| U-078 | Bare HTML tag | &lt;p&gt;a &lt;b&gt;bold&lt;/b&gt; tag&lt;/p&gt; | Keep it; none |
+
+#### Host options
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-079 | Render options of the host | Host options must be reviewed | Review by hand; report |
+| U-420 | The soft break mode of the 0.1 PHP renderer, `SoftBreakMode::Newline`, `::Space` or `::Break` | A soft break is a line break unless the render option `softBreak` says `space` or `br` (C2-H-203) | Set `softBreak` to `newline`, `space` or `br`; none |
+| U-421 | The loss allow list of the 0.1 command line, `--allow-loss CODE` | The flag stays and sets the render and import option `allowLosses`, which a library host can now set too (C2-H-204, C2-T-027) | Pass the same codes as `allowLosses`; none |
+| U-422 | The 0.1 cap on retained losses, `maxRenderLosses` and `--max-render-losses`, default 100 | The flag stays and sets the option `maxLosses`, default 100; the others are counted in `suppressedDiagnostics` (C2-H-205, C2-T-029) | Pass the same count as `maxLosses`; none |
+
+#### New block shapes
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-101 | &#96;=&#96; at the start of a paragraph, an item or a quote **SILENT** | &lt;section id="s-4-is-the-answer"&gt; ⏎ &lt;h1&gt;4 is the answer&lt;/h1&gt; ⏎ &lt;p&gt;… | \= 4 is the answer ⏎ and more. ⏎ ; escape |
+| U-102 | Indented line directly under a heading **SILENT** | &lt;section id="Heading-indented-text"&gt; ⏎ &lt;h1&gt;Heading ⏎ indented text&lt;/h1&gt;… | # Heading ⏎ indented text ⏎ ; escape |
+| U-103 | Letter marker with one space **SILENT** | &lt;ol type="a"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;li&gt;two&lt;/li&gt; ⏎ &lt;/ol&gt; | a\. one ⏎ b. two ⏎ ; escape |
+| U-104 | Quote fence or line block with a title **SILENT** | &lt;blockquote&gt;&lt;p&gt;quoted&lt;/p&gt;&lt;/blockquote&gt; | \::: &gt; "T" ⏎ quoted ⏎ ::: ⏎ ; escape |
+| U-105 | Raw fence with a title **SILENT** | &lt;pre&gt;&lt;code class="language-html"&gt;&lt;b&gt;x&lt;/b&gt; ⏎ &lt;/code&gt;&lt;/pre… | {%%}&#96;&#96;&#96;=html "T" ⏎ &lt;b&gt;x&lt;/b&gt;&#96;&#96;&#96; ⏎ &#96;&#96;&#96; ⏎ ; escape |
+| U-106 | Text line directly under a term **SILENT** | &lt;dl&gt; ⏎ &lt;dt&gt;term ⏎ more term text&lt;/dt&gt; ⏎ &lt;dd&gt;first description&lt;… | :: term ⏎ ⏎ more term text ⏎ : first description ⏎ ; escape |
+| U-107 | Second caret line under a caption **SILENT** | &lt;table&gt; ⏎ &lt;caption&gt;first ⏎ ^ second&lt;/caption&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&… | \| a \| b \| ⏎ ^ first ⏎ ⏎ ^ second ⏎ ; escape |
+| U-108 | Row attribute one space after the closing pipe **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr class="r"&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;… | \| a \| b \| \{.r} ⏎ ; escape |
+| U-109 | Line indented short of the content column after a blank line **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item ⏎ &lt;p&gt;second paragraph&lt;/p&gt; ⏎ &lt;/li&gt; ⏎ &lt;/ul… | - item ⏎ ⏎ second paragraph ⏎ ; escape |
+
+#### New inline shapes
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-110 | Full reference whose label is a heading **SILENT** | &lt;section id="My-Heading"&gt; ⏎ &lt;h1&gt;My Heading&lt;/h1&gt; ⏎ &lt;p&gt;See &lt;a hr… | # My Heading ⏎ ⏎ See [My Heading][] and \[the text][My Heading]. ⏎ ; escape |
+| U-111 | Reference label that wraps **SILENT** | &lt;p&gt;See &lt;a href="/u"&gt;the text&lt;/a&gt; here.&lt;/p&gt; | See \[the text]\[a long ⏎ label] here. ⏎ ⏎ [a long label]: /u ⏎ ; escape |
+| U-112 | Reference label that starts with a caret **SILENT** | &lt;p&gt;See [x]&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&… | See [x]\[^n]. ⏎ ⏎ [^n]: Note. ⏎ ; escape |
+| U-113 | Markup inside an unresolved reference **SILENT** | &lt;p&gt;See [&lt;strong&gt;b&lt;/strong&gt; and &lt;em&gt;i&lt;/em&gt;][nope] and [&lt;c… | See [\*b\* and \/i\/][nope] and [\&#96;c\&#96;][]. ⏎ ; escape |
+| U-114 | New spellings that 0.1 already had | &lt;ol&gt; ⏎ &lt;li&gt;first&lt;/li&gt; ⏎ &lt;li&gt;second&lt;/li&gt; ⏎ &lt;/ol&gt; | Keep it; none |
+| U-115 | Hyphen run 0.1 kept as typed, and the braced en dash **SILENT** | &lt;p&gt;a{–}b and –flag&lt;/p&gt; | a--b and -\-flag ⏎ ; escape |
+
+#### Later rulings
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-116 | Tilde fence **SILENT** | &lt;p&gt;~~~js ⏎ x ⏎ ~~~&lt;/p&gt;; `block-marker-as-text` reports the refused fence candidate | &#96;&#96;&#96;js ⏎ x ⏎ &#96;&#96;&#96; ⏎ ; rewrite |
+| U-117 | List of task items next to a list of plain items **SILENT** | &lt;ul class="task-list"&gt; ⏎ &lt;li class="task"&gt;&lt;input type="checkbox" disabled … | - [ ] a ⏎ ⏎ ⏎ ⏎ - b ⏎ ; rewrite |
+| U-118 | Uppercase marker with a dot and one space | &lt;p&gt;II. Background&lt;/p&gt; | Keep it; none |
+| U-119 | List marker left of every open list under item text | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Keep it; none |
+| U-120 | Ordered marker followed by task box text **SILENT** | &lt;ol class="task-list"&gt; ⏎ &lt;li class="task"&gt;&lt;input type="checkbox" disabled aria-label="x"&gt; x&lt;/li&gt; ⏎ &lt;/ol&gt; | `1. \[ ] x`; escape |
+| U-121 | Defined shortcut that was text **SILENT** | &lt;p&gt;&lt;a href="/u"&gt;text&lt;/a&gt;&lt;/p&gt; | `\[text]` before `[text]: /u`; escape |
+
+### Rulings of 16 November 2026
+
+These rulings change what some documents give against the 0.1 engine or against early 0.2 engines. The rows carry no `U-` id; the clause decides. Two of them have a rewrite-tool entry, named in their last cell.
+
+| What you wrote | Before | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A div name or fence language with a character glued behind it: `::: glossary>`, ```` ```js} ````, ```` ```=html~ ```` | 0.1: text. Early 0.2: the whole word was the name or language, as `class="glossary&gt;"`. | The name ends at the first character outside its set; the rest is reported and dropped. | C2-B-225 |
+| An admonition name with a glued attribute block: `::: note{.x}` | Early 0.2: a div with `class="note{.x}"`. | The admonition `note`; the attribute block is reported and not applied. | C2-B-105, C2-B-225 |
+| Two spaces after a fence run: ```` ```  b ```` | Early 0.2: language `b`. | No language; `b` is reported. | C2-B-122 |
+| Spaces at the end of a line inside a code span | Early 0.2: kept in the code value. | Removed, as in text. | C2-I-002, C2-I-015 |
+| `{++-+}`, an insertion of `+-` | Early 0.2: `+-`. | `±`. | C2-I-117 |
+| A letter assigned in Unicode 18.0.0 next to a delimiter | Depended on the engine's Unicode tables. | Unicode 18.0.0 decides. | C2-I-127 |
+| `{{ a.crv @shift:1234567890 }}`, ten or more digits | 0.1: an include with the number, exact up to 2^53 (9007199254740992) and rounded past it, so `@shift:9007199254740993` gave 9007199254740992. Early 0.2: a paragraph. | An include whose node keeps the option as written in `invalid`, with no effect; `include-option-invalid` reports it. | C2-B-205, C2-B-206 |
+| An include option with an unknown key, a value outside its shape, a missing value or a repeated key: `{{ a.crv @size:2 }}`, `{{ a.crv @shift:x }}`, `{{ a.crv @lines }}` | Early 0.2: a paragraph for some options and an include for others, depending on the key. | Always an include. The option has no effect, the node keeps it as written, `fmt` writes it back, and `include-option-invalid` reports it. | C2-A-181, C2-B-206 |
+| A span mark that cannot join: `\| < \|` in the first column, `\| ^ \|` in the first row, below a head row or in the first footer row | 0.1 and early 0.2: an empty cell, a header cell when the other cells of its row were; a row span from the body into the foot made the HTML one `<tbody>`. | A cell that holds `<` or `^` as text, reported by `table-span-marker-blocked`; its header mark applies as on any cell. No span crosses the head, the body or the foot. Remove the mark, or write an empty cell. | C2-B-172 to C2-B-174, U-259 |
+| Trees of a captioned image, code block, quote or math block, for tree consumers | Early 0.2: a `figure` node around the block, holding the caption and the attributes of the attribute line. | The block carries `caption` in its own slot and keeps its attributes; there is no `figure` node, and the HTML is unchanged. Migrate stored trees by T-051 and T-052. | C2-A-082, C2-A-183, C2-H-062 |
+| An attribute line on a block image | Early 0.2: a bare `<img>`, the id and classes lost. Freeze candidate 6: `<p id="…" class="…"><img …></p>`. | The bare `<img>` carries them, as in 0.1: `<img src="y.png" alt="a" class="c">` (ruling of 17 November, 12:30). | C2-H-020 |
+| A table panel of a figure group | Early 0.2: a bare `<table>`. | `<figure class="carve-figure-panel">` around the `<table>`. | C2-H-064 |
+| A captioned figure or table under `comment` or `minimal` | Early 0.2: `Figure : cap`, table caption lost. | `Figure 1: cap` as a paragraph after the degraded block. | C2-H-165 |
+| A linked mention under a profile without `link` | Early 0.2: an `<a class="mention">`. | The inert `<span class="mention">`. | C2-H-167 |
+| A reference to a heading the profile degrades | Early 0.2 library resolution read the profile. | The tree does not change with the profile; the reference link renders as unresolved text; a degraded cross-reference writes its resolved link text. | C2-H-165, C2-H-177 |
+| A trailing comment on a table row, `\| 1 \| 2 \| %% note` | Early 0.2: no tree node for the comment. | A `comment` node after the row; `fmt` writes it on its own line below the row. | C2-A-086, C2-W-135 |
+| Trees of a delimited table with `header-rows`, for tree consumers | Early 0.2: the body carried the declared count as `table_body.headRows`, so a pipe table and a delimited table with the same cells were unequal trees. | The groups alone hold the partition, and equal tables are equal trees; the count is the sidecar fact `headerRows`, and `fmt` writes `header-rows` from it or where the head is not the first row. Migrate stored trees by T-053. | C2-A-088, C2-L-057, C2-W-066 |
+| A layout sidecar of a byte input that is not well-formed UTF-8 | Early 0.2: `source` held the decoded text, whose bytes did not match the offsets. | `encoding` is `"base64"` and `source` holds the input bytes in base64; the offsets count those bytes. | C2-L-012, C2-L-056 |
+| Positions (`pos`) of tree consumers | Early 0.2: no `pos` on empty cells, span mark cells, caption numbers; an include and a last-line comment ended before trailing spaces. | These carry `pos`; trailing spaces belong to the block, the line comment or the break. | C2-A-151, C2-A-153, C2-A-158 |
+| A code span line that ends in a backslash and one space | 0.1: the space was removed. | The escaped space stays in the code value; a tab there is still removed. | C2-I-002 |
+| A div opener with a sigil glued to a word, `::: >a`, or with a first word that is no name, `::: *` | 0.1: text. Early 0.2: a div. | `::: >a` opens a quote fence, `::: *` an anonymous div; the words are reported. | C2-B-119, C2-B-122 |
+| An abbreviation expansion after two spaces: `*[HTML]:  Hyper Text` | 0.1 and early 0.2: the second space was dropped, `title="Hyper Text"`. | It is the first character of the expansion, as `title=" Hyper Text"`. After a space and a tab, `*[HTML]: `, a tab, `Hyper Text`, 0.1 and 0.2 both keep the tab as the first character: only the one space after the colon separates. | C2-B-084 |
+| A list marker at column 0 directly below item text of a list inside a footnote or a description: `[^n]: note`, `  - one`, `- x` | Early 0.2: a lazy line, so `- x` was text of `one`. | The note or the description closes and the marker opens a list at the top level, as in 0.1. | C2-B-015, C2-B-228 |
+| A bare dot with a task box before a further dot: `. [x] . x` | 0.1: an item with the text `[x] . x`. Early 0.2 (one engine): a paragraph. | A task item whose content `. x` is a nested ordered list. | C2-B-043, C2-B-229 |
+| Inline markup nested about 200 deep inside quotes, lists or divs, as `- *[x](u)` behind 197 quote marks | 0.1 and early 0.2: blocks and inline nodes shared one cap of 200, so deep blocks left inline openers as text. | Blocks and inline content have a limit of 200 each; inline depth counts from zero in each inline content, so the link forms. | C2-B-190, C2-I-118 |
+| A delimited table whose `header-rows` count is larger than its rows: `{table header-rows=5}` on two rows | 0.1 and early 0.2: no head, every cell a header cell, all rows in one body, and `fmt` kept the 5. | Every row is in the head; `fmt` writes the effective count, and `table-row-count-clamped` reports it. | C2-B-209, C2-B-221 |
+| A comment-only line directly below a heading, at or left of its marker: `# Title`, `%% note`, `  more` | 0.1 and early 0.2: the comment closed the heading and stood beside it, and `more` was a paragraph. | The comment is a child of the heading, and `more` continues the heading; the HTML of a heading followed by an unindented line is unchanged. `deprecated-indented-line-under-heading` reports `more`. | C2-B-137, C2-B-154 |
+| An inline form that crosses a continuation row, as a code span opened in a row and closed in its `+` row | 0.1: rows joined before inline parsing, one code span with a space, `<code>a b</code>`. Early 0.2: one code span whose value holds a line feed. | Each fragment is read alone: the backticks, and any other opener without its closer in the same row, are text. | C2-B-184, C2-B-223 |
+| A single quote at the start of a word: `'tis`, `'em`, `rock 'n' roll`, or a quote inside a single quotation: `'I said 'yes' twice'` | 0.1 and early 0.2: a list of elision words gave an apostrophe, and an open quotation made the inner quote an apostrophe. | A quote after whitespace or opening punctuation opens; only a quote between two word characters or before a digit is an apostrophe. Type `’` where it matters: `’tis`. | C2-I-104, C2-I-105 |
+| A quote directly behind a hyphen, a dash or a slash: `said---"Go"`, `and/"or"` | 0.1 and early 0.2: the quote opened unless a space or a closing punctuation character followed. | The quote closes. Type `“` where it opens. | C2-I-104 |
+| A backtick run with no closing run of its length in the same paragraph, heading, caption or cell: ``see `x and *y*``, `` $`a + b `` | 0.1 and early 0.2: code or math to the end of the content, except at the end of a table cell. `fmt` could write a code value that starts with a line break and ends with a backtick as an open span. | The run, and a `!`, `$` or `$$` before it, is text, and the rest of the content is read as usual. Close the span where the code ends. A code value that starts with a line break and ends with a backtick has no spelling, and `fmt` reports `field-unspellable`. | C2-I-017, C2-W-077, U-258 |
+
+A code span, or any other inline form, that crossed a continuation row is now text. Write the cell on one row, which gives the code a space where the row broke, or use a delimited table when the value must keep its line break: a delimited cell is plain text and may hold a quoted line break (C2-B-226).
+
+Before:
+
+```carve
+| `a | 1 |
++ b` | 2 |
+```
+
+After, on one row:
+
+```carve
+| `a b` | 1 2 |
+```
+
+### Rulings of 17 November 2026
+
+These rulings change what some documents give against freeze candidate 5 of 0.2 and against early 0.2 engines; against 0.1 they remove differences.
+
+Vertical alignment reads as in 0.1 (C2-B-182, C2-B-211, C2-B-213). Against candidate 5: `{>v}` on a cell is right and bottom, where it was right and the bare key `v`; `{>^}` is a mark, where it was cell text; and `valigns` sets the columns, where it was written as an HTML attribute. U-260 and U-261 are withdrawn, U-162 is a rewrite, and U-269 records the one difference to 0.1.
+
+A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?`, `~` or the end of the cell behind it (C2-B-171). Against candidate 5: `|=a|` is a data cell with the text `=a`, where it was a header cell that held `a`; write `|= a |` where a header cell is meant.
+
+### 0.1 behaviors restored, 17 November 2026
+
+Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Its seventeen points give the nineteen rows below, one per behavior. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.
+
+| What you wrote | Freeze candidate 5 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
+| --- | --- | --- | --- |
+| An attribute block at the end of a link definition: `[ex]: https://example.com {.external}` | The line was text, and every reference to `ex` stayed literal. | The attributes reach every link and image that uses the definition. | C2-B-083, C2-B-089, C2-B-106 |
+| `body-rows`, `body-header-rows` and `body-header-cols` on a table | Ordinary keys, written as HTML attributes; the rows stayed in one body. | The rows below the head split into one `<tbody>` per body, with header rows and row header columns inside a body. U-271 records what still differs from 0.1. | C2-B-230, C2-H-055, C2-H-056 |
+| A region marker line, `%% #region x` or `%% #endregion`, below text, a quote or a list | Not seen by block structure: the text went on, and the quote or list stayed open across it. | The line ends the paragraph, closes the quote or list it is not owned by, and ends a heading or a table. | C2-B-137, C2-B-199 |
+| An authored `rowspan` or `colspan` key on a cell: `\|{colspan=3} b \|` | Written on the `<td>`, so the row looked wider than it was. | Never written; only span marks shape the grid. The key stays in the tree. | C2-H-058 |
+| A backslash and spaces or tabs at the end of a line, `a\ ` above `b` | A no-break space and a soft break. | A hard break; inside a code span the escaped space still stays in the value (the ruling of 16 November). | C2-I-011, C2-I-102 |
+| A cross-reference typed with a decomposed character, `</#Cafe` and U+0301 `>`, to `# Café` | Unresolved, written as typed. | Resolved: the id and the target ids are compared under NFC. | C2-I-097, C2-H-095 |
+| A footnote reference inside an inline footnote: `a ^[b [^1] c]` | A second note, and every later note number moved up by one. | Text inside the note; the numbers stay. An inline footnote inside one is text too since the ruling on the open points of candidate 6 (below). | C2-I-089 |
+| A comment block in an item or a quote closed by a `%%%` line at column 0: `- %%%`, `%%%`, `x` | The closer closed the item, opened a second comment block, and every line after it to the end of the document vanished. | The closer closes the comment block and no container; `x` is a paragraph. U-224 keeps only the shapes that still differ. | C2-B-109 |
+| A comment block inside a line block: `::: \|`, `a`, `%%%`, `x`, `%%%`, `b`, `:::` | Three fence lines and `x` were lines of text. | The comment block hides its lines and adds no line; a `%%` line is still text (U-052). | C2-B-123 |
+| A backslash at the end of a line of a line block: `::: \|`, `a\`, `b`, `:::` | Two `<br>` between `a` and `b`, a blank line. | One `<br>`; the tree still holds the hard break, and a backslash alone on a line still gives an empty line. | C2-H-043 |
+| `align` on a line block: `{align=center}` above `::: \|` | Written as the attribute `align="center"`. | Written as `style="text-align: center;"`, as on every block that writes `<p>`, `<div>` or a heading element. A value in another case is folded since the ruling on the open points of candidate 6 (below). | C2-H-015 |
+| A continuation row that adds a cell to a row of header cells: `\|= a \|`, `+ \| b \|` | `b` was a data cell, `<td>` inside the head. | A header cell, as are the empty cells of columns it skips; in a row with a data cell the new cell stays a data cell. | C2-B-176 |
+| A pipe inside a quoted value of a row attribute: `\| a \|{title="p\|q"}` | The line was text, and the table ended above it. | A row whose `<tr>` carries `title="p\|q"`; the writer writes such a value in quotes, where it reported `field-unspellable`. | C2-B-166, C2-W-098 |
+| Core math rendered with `mode: "static"`: `` $`x` ``, `` $$`x` `` | `<code class="language-math">` and `<pre><code class="language-math">` around the source. | The math span with the TeX delimiters, as in interactive mode: `<span class="math inline" role="math">\(x\)</span>`. | C2-H-122, C2-H-168 |
+| A note referenced only from another note, under `comment` or `minimal`: `a [^1]`, `[^1]: see [^2]`, `[^2]: two` | A footnote section with the second note, reached through a reference that was degraded. | No section: a note whose references stand in notes that are not written is not written. | C2-H-094 |
+| A link or an autolink whose destination the policy denies, under `comment`: `[x](javascript:a)` | `<a href="" rel="nofollow ugc">x</a>`. | The text with no `<a>`: `x`, and for an autolink its visible text. Other profiles keep the empty `href`. | C2-H-160, C2-H-163 |
+| A backslash escape in image alt text: `![5 \* 3](/i.png)` | The backslash stayed: `alt="5 \* 3"`. | Removed before ASCII punctuation: `alt="5 * 3"`, and `\[` and `\]` give brackets. U-266 is withdrawn. | C2-I-074, C2-W-097 |
+| A cross-reference to a panel of a numbered figure group: `</#fig-x-a>` | Unresolved, written as typed. | `<a href="#fig-x-a">Figure 1a</a>`: the group's label and number and the panel's letter. U-268 is withdrawn. | C2-H-095, C2-H-096 |
+
+### Differences to 0.1 that stay, 17 November 2026
+
+A ruling of 17 November keeps these 0.2 behaviors. Each has a row of the upgrade map: a rewrite where a changed source gives the 0.1 HTML, a report where none does. Where an older row already held part of a point, that row now holds all of it and is named below the table.
+
+| ID | What you wrote | 0.1 | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-273 | Under C2-I-051, a bare delimiter of a kind that is already open: `/This /does not/ nest/`, `*a *b* c*` **SILENT** | The inner delimiter is text: `<em>This /does not</em> nest/`, `<strong>a *b</strong> c*`. | A kind nests in itself: `<em>This <em>does not</em> nest</em>`. Escape each delimiter that 0.1 kept as text, `/This \/does not/ nest\/`; rewrite |
+| U-274 | Under C2-I-051 and C2-I-059, a bare pair of the kind of an open braced span: `{*a *b* c*}`, `{/a /b/ c/}` **SILENT** | The bare pair is text: `<strong>a *b* c</strong>`. | The pair nests: `<strong>a <strong>b</strong> c</strong>`. Escape the inner delimiters, `{*a \*b\* c*}`; rewrite |
+| U-275 | Under C2-I-035 and C2-I-036, a valid attribute block that attaches to nothing in running text: `a {#id} b`, `x {.c #id} y`; with straight quotes, `{k=""}x`; with a bracket in a value, `{title="[a"}](u)` **SILENT** | The tag inside is a tag: `a {<span class="tag"><strong>#id</strong></span>} b`. The quotes were smart quotes, `{k=““}x`, and the bracket opened a link with `](u)`. | The block is one literal atom, `a {#id} b`, and a `span.tag` selector finds nothing; its quotes stay straight and no bracket inside it pairs. Escape the opening brace, `a \{#id} b`; rewrite |
+| U-276 | Under C2-B-119 and C2-B-122, a tab between the title and the label of a colon fence: `::: note "Title"`, a tab, `[First]` **SILENT** | Neither title nor label: `<aside class="admonition note" aria-label="Note">`. | The title is kept, `aria-labelledby` and a title paragraph, and the label is further words, reported by `fence-title-syntax`. Only spaces separate the parts of an opener. Where the 0.1 output is meant, drop both, `::: note`; rewrite |
+| U-277 | Under C2-B-117, C2-B-120 and C2-B-122, a code fence title before a tab or before a further word: ```` ```js "T" ````, a tab, `[L]`; ```` ```js "T" junk ```` **SILENT** | No title: `<pre><code class="language-js">`. | `<pre title="T">`; the label behind the tab and the word are reported. Where the 0.1 output is meant, drop the title, ```` ```js ````; rewrite |
+| U-278 | Under C2-B-108 and C2-B-122, a backtick fence run followed by a tab, by two spaces, by a brace block or by a language with a character outside the language word: ```` ```<TAB>js ````, ```` ```  x ````, ```` ``` {.c} ````, ```` ```j$s ````; and a colon fence run followed by a brace block, `::: {.c}` **SILENT** | Paragraph text: an unclosed code span runs from the line to the end of the paragraph, `<p><code>` with the tab, `js`, a line break and `x`, and the closer line opens an empty code block, `<pre><code></code></pre>`. `::: {.c}` is text and the closer opens an empty div. | The line opens the block, and what follows the run is reported. Close the span on the last text line with a two-backtick run, ```` ``<TAB>js ```` and ```` x`` ````, or start the line with `\:::`; rewrite |
+| U-279 | Under C2-B-146 and C2-I-002, the indent of a continuation line of a caption, `\|x\|`, `^ a`, `  - b`; and a tab behind the space of the caption mark, `^ `, a tab, `second` **SILENT** | Both are caption text: `<caption>a` and `  - b</caption>`, `<figcaption>` with the tab before `second`. | The caption text starts at its first character that is not a space or a tab, on each line: `- b`, `second`. Escaped spaces give no-break spaces and a tab has no escape, so no spelling keeps the 0.1 text; report |
+| U-280 | Under C2-I-079 and C2-I-084, a tab inside a reference label, `[t][a`, a tab, `b]`, with the definition `[a b]: /u`; a tab inside a heading, `# A`, a tab, `B`, with the reference `[A B][]` **SILENT** | Only runs of spaces folded: the reference is text, `[t][a` tab `b]`, and `[A B][]` stays text. | Spaces, tabs and one line break fold to one space, so the reference resolves, `<a href="/u">t</a>`, and `[A B][]` links to the heading. Escape the opening bracket of the label, `[t]\[a` tab `b]`, `\[A B][]`; rewrite |
+| U-281 | Under C2-I-084, a reference whose only target is a heading inside a quote: `> # Quoted`, a blank line, `[Quoted][]` **SILENT** | A heading inside a quote was no target: `<p>[Quoted][]</p>`. | The first heading in document order with an id is the target, quoted or not: `<a href="#Quoted">Quoted</a>`. Escape the opening bracket, `\[Quoted][]`; rewrite |
+| U-282 | Under C2-I-042, an empty or blank `class` value: `{class=""}` above `p`, `{class=" "}` **SILENT** | Written as authored: `<p class="">`, `<p class=" ">`. | An empty value adds no class, so no element carries `class=""`: `<p>p</p>`. No 0.2 source writes the empty attribute; report |
+| U-283 | Under C2-H-167, an empty `rel` on a link: `[x](/u){rel=""}` **SILENT** | Written as authored: `<a href="/u" rel="">`. | A link carries no `rel` when nobody gives a word: `<a href="/u">x</a>`. No 0.2 source writes the empty attribute; report |
+| U-284 | Under C2-I-067, a no-break space inside a link destination: `[t](u`, U+202F, `v)`; U+00A0 the same **SILENT** | Text: 0.1 ended a destination at any Unicode whitespace, so the paragraph is the source as written. | A link whose `href` is `u`, U+202F, `v`: whitespace is a space, a tab or a line break. Escape the opening bracket, `\[t](u`, U+202F, `v)`; rewrite |
+| U-285 | Under C2-B-083 and C2-I-067, a narrow no-break space before the destination of a link definition: `[a]: `, U+202F, `/u`, then `[a][]` **SILENT** | Two paragraphs of text, the definition line as written and `[a][]`. | A definition whose destination starts with the U+202F, and the reference resolves to it. Escape the opening bracket of the definition, `\[a]: `; rewrite |
+| U-286 | Under C2-I-118, an attributed bracket span around 200 more opening brackets: 201 `[`, `x`, 201 `]`, `{.a}` **SILENT** | A span, `<span class="a">` around 200 literal bracket pairs and `x`. | The 201st opening bracket is read at depth 200 and is text, so the outermost closer pairs with nothing and `{.a}` is text: the whole line is text. Escape the 200 inner pairs, `[\[` ... `x` ... `\]]{.a}`; rewrite |
+| U-287 | Under C2-H-016, `sourceLines` on (0.1: `sourceLine`), with `\| a \| b \|`, a block image `![x](a.png)`, a line block or a footnote **SILENT** | `data-source-line` on `<table>` only, and on the bare `<img>`, on each `<p>` of a line block and on each `<li>` of the footnote section. | Also on `<tbody>` and `<tr>`, and not on the bare `<img>`, the stanza `<p>` or the footnote `<li>`. Update readers of `data-source-line`; report |
+| U-288 | Under C2-H-016, an authored `data-source-line` with `sourceLines` on: `{data-source-line="99"}` above `p` **SILENT** | The authored value stays: `<p data-source-line="99">`. | The generated value replaces it: `<p data-source-line="1">`. Without the option both write 99. Rename the authored key; report |
+| U-289 | Under C2-H-133 and C2-N-070, a social token inside an unexpanded include: `{{ a.crv @shift:1 }}` with no resolver, `{{ part.crv @unknown:foo }}` with one **SILENT** | `@shift` is a mention inside the literal directive: `{{ a.crv <span class="mention"><strong>@shift</strong></span>:1 }}`. | The directive is text, `<p>{{ a.crv @shift:1 }}</p>`. Escaping the opening brace gives the 0.1 HTML but stops the include from being expanded where a resolver is given; report |
+| U-290 | Under C2-N-002, a directive with an invalid option inside a sentence: `x {{ a.crv @lines:0 }} y` **SILENT** | Opaque text: `x {{ a.crv @lines:0 }} y`. | Text whose braces are read on their own, so `@lines` is a mention. Escape the at sign, `\@lines:0`; rewrite |
+| U-291 | Under C2-H-133 and C2-H-171, an unexpanded include with an option glued to the path or options in another order: `{{ a.crv@code:js }}`, `@cols` before `@code` **SILENT** | Written as authored: `{{ a.crv@code:js }}`. | Written from the tree: `{{ a.crv @code:js }}`, each option after one space in the order of C2-W-058. No 0.2 source keeps the authored spelling; report |
+| U-292 | Under C2-N-072, attributes on an unexpanded include: `{.diff}` above `{{ a.crv @code:js }}` with no resolver; `{table}` above a table include rejected for `@rows:0-2` **SILENT** | The fallback paragraph carries them: `<p class="diff">`. | An include's own attributes are never written: `<p>{{ a.crv @code:js }}</p>`. The caption of a code include is another matter; report |
+| U-293 | Under C2-H-165 and C2-H-163, a construct the profile does not admit, under `minimal` or `comment` (0.1: `Profile.minimal()`, `Profile.comment()`) and `article` **SILENT** | A placeholder word, the node type in brackets, for each degraded node without text: `[div]` for `:::` and `:::`, `[table]` for `\|\|`, `[block_quote]` for `>`, `[code_block]` for an empty fence, `[link]` for `[](/u)`, `[text]` for each quote of `x.*/"q"/*`, `[img]` for `![](a.png)`. | No placeholder word: a construct writes its plain text, behind the mark of its kind (`# `, `> `, `- `, `[img: ALT]`, so `[img: ]` for an empty alt), and an empty one writes nothing. Further degraded forms that differ, by input: A-18 `[](/u)` writes no text, and its paragraph renders nothing (C2-H-019); A-19 `{#note#}` gives no text, where 0.1 wrote `note`; A-22 `#tag` is text without `<span class="tag">`; A-23 a caption is one more paragraph, `<p>[img: x]</p>` and `<p>cap</p>`, where 0.1 wrote `[img: x] cap`; A-24 the lines of a line block are paragraphs, and a hard-break block joins its lines with spaces, where 0.1 wrote `<br>`; A-25 `:: x` and `: y` give `<p>x</p>` and `<p>y</p>`, where 0.1 wrote `x<br>` and `- y`; A-26 `\| a \| < \|` gives `a`, where 0.1 wrote `a \| `; A-30 a code block is one paragraph holding its line breaks, where 0.1 wrote `<br>`; A-31 under `article` an empty div and an empty quote are written, since the profile admits them, where 0.1 wrote nothing; A-32 under `article` a raw block is a paragraph of its value, where 0.1 wrote a code block with the format as its language. Review pages rendered under a profile; report |
+
+Restored, not kept: a `time` key with no value, `[x]{time}` or `[x]{time=""}`, writes no `datetime`, `<p><time>x</time></p>`, as in 0.1, where freeze candidate 6 and early 0.2 engines wrote `datetime=""` (C2-H-075). An empty `abbr` value writes no `title` in both. No row.
+
+Older rows that hold a point of this ruling, extended where they held only part of it:
+
+- U-145: `/a /b/` is one shape of U-273 (C2-I-051); the row now names U-273 and U-274.
+- U-160: a tab inside a footnote label, `x[^a` tab `b]` with `[^a b]: note`, resolves in 0.2 and was text in 0.1 (C2-I-079); the row now names U-280, the reference-label half.
+- U-264 and U-265, extended into U-130: each line of a line block is its own inline content, so `*Roses are red` above `Violets are blue*` keeps both stars as text where 0.1 wrote one `<strong>` across the `<br>` (inline Preliminaries, C2-A-069; report); `Roses  are red` keeps its inner spaces as spaces where 0.1 wrote `&nbsp;&nbsp;` (C2-H-043; rewrite `Roses\ \ are red`). U-130, the line block row, now names both.
+- U-263: every line end inside a hard-break block is a `<br>`, also inside a quote, an item, a description, an admonition or a caption in it and in a div with the class `hardbreaks`: `::: \` above `> a`, `> b` gives `<p>a<br>` and `b</p>` in the quote, where 0.1 kept the soft break (C2-A-068; report). U-241 is the unresolved reference in such a block.
+
+### Rulings of 17 November 2026, open points
+
+The maintainer decided these open points as their recommendations: O14 to O21 of `STATUS.md`, and H1 to H4, V1, V2, V6 and V10 of the header mark and vertical alignment rulings. Each line names the point, the ruling and the clauses that carry it; the upgrade rows it adds or withdraws are named in the line. The last line labels the extension mechanism provisional.
+
+| Point | Ruling | Clauses |
+| --- | --- | --- |
+| O14 | A `%%` line inside a code span, a math span, a braced comment or an editorial comment that runs over lines is a comment-only line. Its comment stands in the innermost inline node open at its place, and no atom spans it: `` `a ``, `%% b`, `` c` `` is text on both sides of the comment. The writer refuses an atom value with such a line. U-300 records the difference to 0.1. | C2-B-138, C2-I-017, C2-W-016 |
+| O15 | Where the fallback of an extension node is written, attributes of the node wrap it in a `<div>` (block) or a `<span>` (inline) that carries them; a node without attributes adds no element. No 0.1 document changes meaning. | C2-X-035, C2-H-076 |
+| O16 | The inline depth limit counts openers only: a delimiter that can close is tested as a closer first, also while 200 entries are open, so 199 open brackets around `*a*` give `<strong>a</strong>`, as in 0.1. | C2-I-118, C2-I-051, C2-I-007 |
+| O17 | Resolution visits the slots of an extension node only when a renderer is registered and the profile admits the node; a node the profile degrades is resolved in its fallback, and a qualified inline extension degrades to the plain text of its fallback. A fallback written after a renderer throws is written unresolved, and its diagnostic says so. No 0.1 document changes meaning. | C2-X-032, C2-X-050, C2-H-165, C2-H-177 |
+| O18 | A line or region selection opens frontmatter only when it starts at line 1 of the file; a later `---` line and the lines after it are ordinary content. U-301 records the difference to 0.1. | C2-N-020, C2-N-021 |
+| O19 | A line or region selection sees the definitions of its whole file: as under a section, its children are the selected blocks and then every definition of the file it did not take, in source order. U-302 records the difference to 0.1. | C2-N-020, C2-N-031, C2-N-054 |
+| O20 | On import, an `<a>` marked as a note reference whose `href` names no note and has no fragment, or a fragment that is empty once the note prefixes are cut, is a link that keeps `role` as a key: `<a href="/u" role="doc-noteref">x</a>` gives `[x](/u){role=doc-noteref}`. The upgrade map covers source only, so no row. | C2-M-062 |
+| O21 | Only a valid attribute block glued to a div name, a fence language or a raw format is reported as an attribute block (`fence-opener-fallback`); a brace block that is no valid attribute block starts further words (`fence-title-syntax`). The tree and the HTML are the same either way. | C2-B-225 |
+| H1 | Confirmed: the header mark keeps its cell where any of the four alignment marks `<`, `>`, `?`, `~` or any `{` follows it, whether or not a brace block forms: `\|=?v a\|` and `\|={}a\|` are header cells (CC-096, CC-092). | C2-B-171 |
+| H2 | A tab after the header mark keeps the header cell, as a space does; U-303 (report) records the difference to 0.1, which read `\|=` and a tab as a data cell. | C2-B-171 |
+| H3 | U-270 is withdrawn: 0.2 reads `\|=a\|` as 0.1 did, a data cell with the text `=a`, so a 0.1 document has nothing to upgrade. | C2-B-171 |
+| H4 | No lint is added for a data cell whose text starts with `=` directly after its pipe: `\|=SUM(A1)\|` reads as in 0.1, and such a hint would fire on every spreadsheet formula. | C2-B-171 |
+| V1 | A part may follow the alignment marks of a cell prefix without a space: `\|{>.c} a \|` is right with the class `c`. U-304 (escape) records the difference to 0.1, which read the cell as text; it covers the vertical marks too. | C2-B-182 |
+| V2 | Confirmed: the character directly after the horizontal mark or `?` is the vertical mark whenever it is `^`, `~` or `v`, so `{>vx}` is right and bottom with the bare key `x`; a bare key that starts with `v` is written after a space, `{> vx}`. No 0.1 document changes meaning beyond U-304. | C2-B-182 |
+| V6 | A column's alignment from the head is, for each axis, the mark of the last header cell in the head that starts in the column and carries a mark on that axis; C2-A-089 now says the same. Both engines and 0.1 read it so (CC-246, CC-247). | C2-B-213, C2-A-089 |
+| V10 | The alignment marks stand only at the start of the first of a cell prefix's glued blocks; a later block is read by the attribute grammar alone, and the first one that is no valid attribute block ends the run and starts the cell text: `\|{>}{^} a \|` is right with the text `{^} a`. U-305 (escape) records that 0.1 read glued blocks in a cell prefix as text. | C2-B-182, C2-B-171, C2-B-093 |
+| Extensions | The extension mechanism of `extensions.md` is provisional, not frozen: its interfaces may change in a 0.2.x release together with the extension catalog, because the interface points O12, O15 and O17 belong to that work. No rule changes. | `STATUS.md`, `extensions.md` head |
+
+### Rulings of 17 November 2026, 12:30
+
+A ruling of 17 November, 12:30, on three further audits restores thirteen 0.1 behaviors (the ruling of 13:55 took the typed attribute blocks of an unresolved reference back, U-371, so twelve are listed), keeps further 0.2 behaviors with an upgrade row each, and corrects rows and sentences of this guide. Against 0.1 a restore removes a difference; against freeze candidate 6 and early 0.2 engines it changes what a document gives. The restores carry no `U-` id; the clause decides.
+
+#### Restored
+
+| What you wrote | Freeze candidate 6 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
+| --- | --- | --- | --- |
+| A `figure` div with no title and no label anywhere inside a figure group, also in a quote, a list item or an admonition in it: `::: figure` around `:::: figure` | A second figure group inside the first. | A plain div with the class `figure`, `<div class="figure">` inside `<figure class="carve-figure-group">`. Its captioned blocks are plain figures, no panels, and `figure-group-nested` reports the div. A supplied tree with a group inside a group has no spelling. | C2-B-127, C2-A-066, C2-W-117 |
+| A frontmatter format name with capitals or digits, `---JSON`, `---Yaml`, `---1`, or with a hyphen, `---x-y` | The first three were text, and `---x-y` opened frontmatter. | A name is one or more ASCII letters and digits in any case, kept as written, and a hyphen is no part of it: the first three open frontmatter, `---x-y` is text. U-047 and U-048 stay true. | C2-B-164, C2-W-052 |
+| A lazy line below an open stanza of a line block: `- ::: \|`, `  a`, `b`; the same in a quote and a footnote body | The item closed, and `b` was a paragraph below the list. | The stanza takes the lazy line as an open paragraph does: one stanza `a<br>` and `b` in the item. A heading, a quote, an attribute line and a definition still end the stanza. U-130 now says what 0.2 gives for its lazy line. | C2-B-024 |
+| An attribute line above a lone image: `{.c}` above `![a](y.png)` | `<p class="c">` around the image. | The bare `<img src="y.png" alt="a" class="c">`; the attributes merge before the image's own glued blocks, and the tree is unchanged, the attributes stay on the paragraph. U-220 is withdrawn: `{.outer k=one}` above `![a](b){.inner k=two}` gives `class="outer inner" k="two"` in both versions. | C2-H-020, C2-H-018 |
+| A large abbreviation expansion or a long heading used very often: `*[HT]: ` and 10,000 `X`, then `HT` 150 times; `# A` and 9,999 `!`, then `</#A>` 150 times | Every use was expanded: about 1.5 MB of HTML from 11 KB of source. | Abbreviations and cross-reference labels share a budget of 1,000,000 bytes or 8 times the source bytes; a use past it is written as its term, `HT`, or its key, `<a href="#A">A</a>`, and the render reports `derived-text-budget` once (0.1 reported nothing). | C2-H-201 |
+| `social: {resolveMention: ({name}) => '/u/' + name}` with `@alice`, the 0.1 callback moved into `social` | The resolver received the name string, so the link went to `/u/undefined`. | The resolver receives one object with `kind` (`mention` or `tag`), `name` and `context`, the value of `social.context`, which replaces the 0.1 option `socialContext`: `<a class="mention" href="/u/alice">`. | C2-H-126 |
+| `social: {mentionUrl: '/u/{name}', resolveMention: () => null}` with `@alice`, a resolver that refuses a name | The template was used when the resolver returned nothing: `<a class="mention" href="/u/alice">`. | A resolver is final: the template of its pair is not read, and a mention or tag it returns nothing for is the inert span, `<span class="mention"><strong>@alice</strong></span>`. | C2-H-126 |
+| `@alice` with `social: {mentionUrl: '/u/{name}'}`, `#news` with `tagUrl` | The link held a `<strong>`: `<a class="mention" href="/u/alice"><strong>@alice</strong></a>`. | No `<strong>` in a link: `<a class="mention" href="/u/alice">@alice</a>`; the inert span keeps its `<strong>`. | C2-H-100 |
+| A semantic key in another case: `[x]{KBD}`, `[x]{ABBR="Hyper"}`, `[x]{TIME=12:00}` | The key matched in any case: `<kbd>x</kbd>`, `<abbr title="Hyper">x</abbr>`. | The keys `abbr`, `time` and `kbd` match in lower case only; another case is an ordinary attribute, `<span KBD="">x</span>`. | C2-H-075, C2-H-013 |
+| `# Hello World` and `# Café 日本語` with `headingIds: 'ascii'`, the 0.2 value for 0.1 `asciiHeadingIds: true` | `hello-world` and `cafe`: lowered, and what the table could not map made a hyphen or dropped (`# A日B` gave `a-b`). | `Hello-World` and `Cafe-日本語`, case and unmapped characters kept, as 0.1 `asciiHeadingIds: true` gave. The candidate 6 behavior is now `ascii-strict-lower`; `ascii-strict` and `ascii-lower` give the other two 0.1 combinations. | C2-H-022, C2-H-147, C2-H-131 |
+| Lint input: `{kbd}` above `# H`; frontmatter `carve-version: 9.9`; and the messages of `figure-group-nested`, `footnote-labels-differ-only-in-whitespace`, `unclosed-inline-emphasis`, `block-opener-overindented`, `platform-issue-reference` and `platform-mention-token` | `semantic-attribute-outside-span` fired for `abbr` and `time` only, and `carve-version-unsupported` read only the key `carve`; the six messages had new wording (`column(s)`, `strong (or: emphasis)`, `a mention token`, no final period, the key unquoted). | Both rules fire as in 0.1, `kbd` and `carve-version` included, and the six messages are the 0.1 texts. | `writer.md` C2-W-106 (catalog table), `data/lint-rules.json` |
+
+#### Kept and recorded
+
+These 0.2 behaviors stay. Each has a row of the upgrade map: a rewrite where a changed source gives the 0.1 HTML, a report where none does. U-340 and U-341 come from the source and tests of the 0.1 engine, U-360 to U-370 from replaying a corpus through both engines. Where an older row already held the rule for another place, that row now names this one too and is listed below the table.
+
+| ID | What you wrote | 0.1 | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-340 | Under C2-I-079, a footnote label of spaces: `[^ ]: x`, a blank line, `a[^ ]`; a link label of spaces, `[t][ ]` with `[ ]: /u`; three spaces or a tab the same **SILENT** | A label: `a` with note 1 and an endnote section holding `x`; a link to `/u`. | No label: both lines are text, `<p>[^ ]: x</p>`, `<p>a[^ ]</p>`, and the note is lost. `blank-reference-label` reports it. Give the label a name the document does not use, `[^blank]`; rewrite |
+| U-341 | Under C2-H-126, the 0.1 placeholders `{user}` in `mentionUrl` and `{tag}` in `tagUrl`: `social: {mentionUrl: '/u/{user}'}` with `@alice` | Replaced by the name: `<a class="mention" href="/u/alice">@alice</a>`. | `{name}` is the only placeholder; a template that holds any other is refused with `CarveOptionError`, so no link goes to a literal `{user}`. Write `{name}`; report |
+| U-360 | Under C2-B-147, C2-N-073 and C2-N-074, a caption line directly below an unexpanded code include: `{{ a.txt @code }}`, `^ cap`, also in a quote or a list item **SILENT** | The caret line is text: `<p>{{ a.txt @code }}</p>` and `<p>^ cap</p>`. | The caption attaches to the include and follows it as one more paragraph, `<p>cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote; in a list item 0.1 also made the list loose, so add a blank line between the items too, and an item alone in its list stays tight (C2-B-062); rewrite |
+| U-361 | Under C2-B-025, C2-B-026 and C2-B-108, a comment block at column 0 inside a description list or a list: `:: t`, `: d`, `%%%`, `%%%`, `: d2`; `- a`, `%%%`, `%%%`, `  b` **SILENT** | The list stayed open across the comment block: two descriptions, `<dd>d</dd>` and `<dd>d2</dd>`; `b` in the item. | The opener at column 0 is owned by no description or item, so the list closes and `: d2` is a paragraph. Indent the comment block into the description, `  %%%`; below an item that keeps `b` in it as `<p>b</p>`, where 0.1 wrote it bare (U-019); rewrite |
+| U-362 | Under C2-B-025, C2-B-140 and C2-H-069, a line of braced comments indented short of the content column after a blank line, with a list marker below it: `- a`, a blank line, ` {%%}`, `  - b` **SILENT** | The comment line closed the list, and `- b` was text of a paragraph that started with a line feed, `<p>` then `- b</p>`. | The comment line belongs to the item (U-109) and renders nothing, so `- b` is a nested list. With the comment at column 0 the list closes, but a comment line takes its line break with it, so no source writes the leading line feed; report |
+| U-363 | Under C2-I-026 and C2-I-104, a single quote directly behind a braced comment that follows a space: `a {%%}'word`; also `a{%%} 'word` **SILENT** | An apostrophe: `<p>a ’word</p>`. | The comment counts as nothing, so the quote follows a space and opens: `<p>a ‘word</p>`. Type the apostrophe, `a {%%}’word`; rewrite |
+| U-364 | Under C2-I-026 and C2-I-090, a sigil directly behind a braced comment that follows a letter: `a{%%}#tag` **SILENT** | A tag: `a<span class="tag"><strong>#tag</strong></span>`. | The comment counts as nothing, so `#` follows a letter and starts no tag: `<p>a#tag</p>`. A tag glued to a letter has no 0.2 spelling; report |
+| U-365 | Under C2-I-005, C2-I-035 and C2-I-119, a valid attribute block inside a braced span that holds the span's closer: `{-{#x-}`; the underline `{_{#x_}` **SILENT** | The span closed at `-}`: `<del>{<span class="tag"><strong>#x</strong></span></del>`. | `{#x-}` is one atom, so the span finds no closer and the line is text: `<p>{-{#x-}</p>`. Escape the inner brace, `{-\{#x-}`; the underline keeps `#x_` a tag then and has no rewrite; rewrite |
+| U-366 | Under C2-H-096 and C2-H-143, a heading that holds a cross-reference to itself: `# A </#A>` **SILENT** | The reference text held the reference once more: `<a href="#A">A A </a>`. | The heading's plain text, in which a cross-reference gives nothing: `<a href="#A">A </a>`. U-206 records the same rule for emphasis. Write an explicit link and keep the id, `{#A}` above `# A [A A ](#A)`; rewrite |
+| U-367 | Under C2-H-096, a cross-reference to a figure whose caption label is a tag: `{#t}`, `![a](u)`, `^ #y#`, then `</#t>` **SILENT** | The label's markup in the link: `<a href="#t"><span class="tag"><strong>#y</strong></span> 1</a>`. | The label word and the number as text: `<a href="#t">#y 1</a>`. Write an explicit link, `[#y 1](#t)`, whose number then no longer follows the figure; rewrite |
+| U-368 | Under C2-B-118, a backtick in the info string of a backtick fence: ```` ```js ` ```` above ```` ``` ```` **SILENT** | A code block with the language: `<pre><code class="language-js"></code></pre>`. | The line is no opener and is paragraph text, and the next run opens a code block to the end of its container: `<p>```js `</p>` and `<pre><code></code></pre>`. Remove the backtick from the info string, ```` ```js ````; rewrite |
+| U-369 | Under C2-B-174, a row span mark behind an attribute block in the cell prefix: `\| a \|` above `\|{.x} ^ \|` **SILENT** | Cell text: `<td class="x">^</td>`. | The mark joins the cell above, `<td rowspan="2">a</td>`, and the prefix is kept for nothing; `table-span-marker-attribute` reports it. Escape the caret, `\|{.x} \^ \|`; rewrite |
+| U-370 | Under C2-B-222, an unclosed code fence whose last line has no line feed at the end of input: ```` ``` ````, `code` and no line feed; also in a quote or a list item **SILENT** | The value as the input ended: `<pre><code>code</code></pre>`. | A line feed after the last line: `<pre><code>code` and a line feed `</code></pre>`. A code value always ends with a line feed, so no source keeps the 0.1 HTML; report |
+
+Older rows that hold a point of this ruling, extended to name the new place:
+
+- U-213: a footnote definition indented into a note body, `[^a]: first` above `  [^b]: second`, is text of note `a` in 0.2 (C2-B-081), where 0.1 made a second note; rewrite with a blank line and the definition at column 0.
+- U-210: a definition indented below a description term, `:: t` above `  [r]: /u`, continues the term in 0.2 (C2-B-069, C2-B-081), where 0.1 defined `r`; rewrite with a blank line and the definition at column 0.
+- U-109: a comment-only line before the blank line, `- a`, ` %% c`, a blank line, ` b`, changes nothing: `b` stays in the item (C2-B-137, C2-B-025), where 0.1 closed the list; the rewrite to column 0 is the same.
+- U-275: the unattached attribute atom also keeps its straight quotes, `{k=""}x`, where 0.1 wrote smart quotes, and pairs no bracket, `{title="[a"}](u)`, where 0.1 formed a link (C2-I-005, C2-I-035); the escaped opening brace keeps the 0.1 HTML of both.
+- U-170: a tag ends before a trailing hyphen as a mention does, `#x-` (C2-I-092), where 0.1 kept the hyphen in the tag; report.
+- U-280: a tab inside a heading, `# A`, a tab, `B`, folds to a space for the heading lookup (C2-I-084, C2-I-079), so `[A B][]` links to the heading where 0.1 kept it as text; rewrite `\[A B][]`.
+- U-164: an authored attribute that is no URL sink loses a scheme value hidden behind a control as a link destination does, `*x*{k="..."}` with U+202E before `javascript:x` (C2-H-161); report.
+- U-184: two include directives on adjacent lines, `{{ a.crv }}` above `{{ b.crv }}`, are two includes and two paragraphs (C2-B-156), where 0.1 wrote one paragraph, expanded or not; the row is also corrected (below).
+
+#### Corrections
+
+These rows and sentences said something false about 0.1 or about their own example; each was checked against both engines. Only the first point changes a rule.
+
+- An empty reference key matches no heading: `# :smile:` above `[:smile:][]` leaves the reference text, `<p>[:smile:][]</p>`, as in 0.1. A symbol gives no plain text, so freeze candidate 6 compared two empty texts and linked the reference to the heading (C2-I-084).
+- U-184: its example, `- {{ e }}`, gives the same HTML in 0.1 and 0.2, and its rule named list openers and attributes. It now holds a line below an include directive, `- {{ e }}` above `  b`, which 0.1 read as one paragraph and 0.2 as an include and a paragraph (C2-B-156), and two directives on adjacent lines. The escape keeps the 0.1 HTML only where no resolver is given, so the row is a report.
+- U-248: its example held the text `U+000B`, which both engines print as written. It now holds a control character itself, `c`, U+007F, `d`, which 0.1 writes and 0.2 replaces with U+FFFD (C2-H-176); U+000B behaves the same but cannot stand unescaped in JSON.
+- U-227 and U-243 were escapes that the tool applies, but the escaped source does not give the 0.1 HTML: 0.1 wrote `<li>`, a line feed and `plain`, 0.2 `<li>plain</li>`, because a comment line takes its line break with it (C2-H-069). Both are reports now, and "Running the rewrite tool" says that its comparison drops a line feed at the start of item text, which is why such a rewrite passes; the three sentences about the complete HTML check point there.
+- U-015, U-053, U-235 and U-238 were rewrites whose spelling does not give the 0.1 HTML: each restores the structure, but 0.1 wrote a later paragraph of a tight item bare (U-015, U-235, U-238), or made a one-item list loose (U-053), and 0.2 writes `<p>` there (C2-B-062, C2-H-034). Each is a report now and names the spelling to review.
+- `syntax-blocks.md` example 116 was labeled as 0.1 output, but 0.1 writes no line feed after `code` there; it is unverified now, and U-370 records the difference. `html.md` example 70 is the same case for U-360.
+- Guide sentences: the map holds no 0.1 HTML, only `from`, `to` and `meaning02` (the introduction said "rendered HTML"); 0.1 kept a ten-digit `@shift` exact and rounded only past 2^53; after a space and a tab before an abbreviation expansion both versions keep the tab, and only the case of two spaces differs; the comment line below a heading is shown with `# Title`, since 0.1 read `= Title` as text; the reference engine has an extension implementation, the `tab` and `tabs` family.
+
+### Rulings of 17 November 2026 on the open points of candidate 6
+
+A ruling of 17 November decides four open points of the restore round of candidate 6 toward 0.1. Against 0.1 each removes a difference; against freeze candidate 7 and early 0.2 engines it changes what a document gives. The rows carry no `U-` id; the clause decides, and the rows the ruling withdraws are named in the line.
+
+| What you wrote | Freeze candidate 7 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
+| --- | --- | --- | --- |
+| An implicit heading reference typed with a decomposed character, `[Cafe` and U+0301 `][]`, below `# Café` | Text: the folded plain texts were compared without normalization. | `<a href="#Café">`: the key and the heading text are compared under NFC, as a cross-reference is. | C2-I-084 |
+| An inline footnote inside an inline footnote: `x ^[a ^[b] c]` | A second note, and every later note number moved up by one. | Text inside the note, `a ^[b] c`, as a footnote reference there is: the caret is text and its bracket an ordinary bracket, which can still form a link. U-202 and U-257 are withdrawn: `^[/[^[g]/] b/]` gives emphasis around `[^[g]/] b` in the note in both versions. | C2-I-089 |
+| An `align` value in another case or with spaces around it: `{align=Right}` above `para`, `{align=" left "}` | Compared as written: `<p align="Right">`. | Trimmed and folded to ASCII lower case: `<p style="text-align: right;">`; on import a `style` of that form is the key `align` with the folded value. U-272 is withdrawn. | C2-H-015, C2-M-075 |
+
+### Rulings of 17 November 2026, 13:55
+
+A ruling of 17 November, 13:55, decides the open points of the round of candidate 7. It confirms the choices of that round that `STATUS.md` listed (the `headingIds` names, the nested figure group of an import, the fixed cap on include diagnostics, the JSON rule selection of `lint`), and it changes these: a degraded node with no children writes its plain text at every level and a paragraph left empty by degradation renders nothing (C2-H-165, C2-H-019), a throwing resolver gives the inert span (C2-H-126), a lazy `%%` line below a stanza is a comment at the end of the line above (C2-B-024), the 0.1 `lint` exit status has a row in the command line map, and the typed attribute blocks of an unresolved reference are taken back. The rows below record what therefore stays different from 0.1.
+
+| ID | What you wrote | 0.1 | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-371 | Under C2-I-085 and C2-H-139, attribute blocks glued to an unresolved reference: `[x][no]{.c}{#i}` **SILENT** | Written as typed: `<p>[x][no]{.c}{#i}</p>`. | Merged and written as one block in the fixed order, `<p>[x][no]{#i .c}</p>`, so the HTML is a function of the tree; candidate 7 had restored the typed form from a sidecar fact, which is gone. Review; report |
+| U-372 | Consecutive marker-shaped paragraph lines: `a` then `- b` then `- c` | `list-marker-without-blank-line` reports the first marker-shaped line of the run. | Each marker-shaped line reports; HTML is unchanged; report |
+| U-373 | Consecutive table-shaped paragraph lines: `\| a` then `\| b` | `table-shaped-paragraph` reports the first line of the run. | Each table-shaped line reports; HTML is unchanged; report |
+| U-374 | Nested braced boundaries: `{-{_a-}_} b-}` and `{-a-}{+{+b~}+}+}` **SILENT** | The first writes `<p><del><u>a-}</u> b</del></p>`; the second writes `<p><del>a</del><ins>{+b~}</ins>+}</p>`. | C2-I-058 and C2-I-059 pair the first matching closer and remove later openers, changing the nesting and HTML. Review the nested marks; report |
+
+U-207 now holds the same rule for a footnote reference, `Text[^a]{.c}{#i}.`; its old example, one block, gives the same HTML in both versions.
+
+### Rulings of 18 November 2026
+
+A ruling of 18 November decides #6055: the ids of notes and their marks take part in the uniqueness of generated ids (C2-H-202). Two elements with one id are invalid HTML, and the note link then lands on the wrong element: a reference that carries `{#fn1}` linked to itself, and a heading `fn1` caught the link of the first note. This takes back the rule of candidate 13 that these ids are fixed. A document without such a collision renders as before.
+
+| What you wrote | 0.1 and freeze candidate 13 | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A heading whose slug is `fn1` and a footnote: `# fn1` above `a[^x]` | The section and the first note both carry `id="fn1"`; the reference jumps to the heading. | The note is `<li id="fn1-2">` and the reference links `#fn1-2`. | C2-H-024, C2-H-202 |
+| An authored id that a note id would take: `a^[x] and b[^n]{#fn1}` | Two `id="fn1"`; the first reference jumps to the second. | The authored id stays; the first note is `fn1-2`. | C2-H-202 |
+| An authored id that a later reference id would take: `a^[x]{#fnref2} b^[y]` | Two `id="fnref2"`; the second note's backlink goes to the first reference. | The second reference is `fnref2-2`. | C2-H-202 |
+
+### Rulings of 21 November 2026
+
+A ruling of 21 November decides #6306: a parse bounds the copies of abbreviation expansions in its tree by the derived-text budget that HTML already has (C2-I-098, C2-H-201). The HTML does not change, and neither does tree equality, which skips `expansion` on a use (C2-A-162).
+
+| What you wrote | 0.1 and early 0.2 | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A long abbreviation expansion used very often, for tree consumers: `*[A]: ` and 99,999 `x`, then `A` 11 times | Every `abbreviation` node carried the expansion, so the tree JSON grew with the square of the source. | The uses draw on 1,000,000 bytes or 8 times the source bytes; the eleventh `A` carries no `expansion`. Resolve it from the `abbreviation_def` of its key. | C2-I-098, C2-A-117 |
+
+### Include expansion
+
+The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
+
+| What you wrote | 0.1 | 0.2 | Clause |
+| --- | --- | --- | --- |
+| One authored id in two files, `{#tip}` in the document and in an included file | The later id became `tip-2`, the references of its file followed it, and `include-id-rename` reported it. | Both elements keep `tip`; `duplicate-id` reports the later one, and every `</#tip>` and `#tip` link reaches the first in document order, also from the file of the later one. Give each id one name across the files. | C2-N-057, C2-N-058 |
+| One footnote label in two files | The later label was renamed, and `include-footnote-rename` reported it. | Two notes; a reference reaches the note of its own file, else of the nearest including file. | C2-N-055 |
+| A footnote reference in the including document to a note that only an included file defines | Resolved, the note was numbered. | Unresolved: definitions reach outward, never inward. Define the note in the including document. | C2-N-054, C2-N-055 |
+| A directive inside a sentence, a heading or a table cell | Expanded inline. | Text; only a directive alone on its line is an include. Social tokens in that text are read (U-290). | C2-N-002 |
+| A directive with no resolver | Literal, no warning, no dependency. | Literal, with `include-no-resolver` and the render loss `include-unresolved`; the node is a dependency that was not read. The literal text differs from 0.1 in three ways: U-289, U-291 and U-292; a line below the directive (U-184) and a caption below a code include (U-360) differ too. | C2-N-003, C2-N-070, C2-N-083 |
+| A missing file, a path outside the root, an unreadable file | `include-unresolved` for all three. | `include-not-found`, `include-outside-root` or `include-unreadable`, and the render loss `include-unresolved`. | C2-N-061 |
+| An option value outside its shape or a repeated key, as `@lines:5-2` or two `@code` | `include-lines-invalid`, `include-duplicate-option` and others; the directive stayed literal. | `include-option-invalid`; the directive stays literal. | C2-N-025 |
+| A large include tree | A budget of `max(1 MB, 8 x input length)` over the output and at most 1000 resolver calls. | A cap of 8388608 bytes over the texts the resolver returns, and no call bound. | C2-N-065, C2-N-067 |
+| Malformed quoting in a `{table}` CSV or TSV include | A code block. | A table, as on an authored fence, with `delimited-table-malformed`. | C2-N-045, C2-B-181 |
+
+### Worked source changes
+
+These before and after pairs were rendered on both engines. The after text is the tool's actual output.
+
+A heading directly below text is a lazy paragraph line in 0.2 (`U-001`).
+
+Before:
+
+```carve
+Some text
+# Heading
+```
+
+After:
+
+```carve
+Some text
+
+# Heading
+```
+
+The 0.1 and upgraded 0.2 output is a paragraph followed by `<section id="Heading"><h1>Heading</h1></section>`. Without the blank line, 0.2 prints `# Heading` inside the paragraph.
+
+Bare underline, strike, and highlight need braces (`U-065` to `U-067`). For example, the tool changes:
+
+```carve
+an _underlined_ word and snake_case and _id
+```
+
+into:
+
+```carve
+an {_underlined_} word and snake_case and _id
+```
+
+Both render `<u>underlined</u>`. An unchanged `_underlined_` prints as text in 0.2. For strong emphasis containing emphasis, `/*text*/` becomes `*/text/*` (`U-068`); the nesting of `<strong>` and `<em>` otherwise reverses. Substitution `{~old~>new~}` becomes `{-old-}{+new+}` (`U-069`). Bare flags such as `--flag` need a code span or an escaped second hyphen. The tool writes `-\-flag` (`U-115`).
+
+The backtick is the only code fence marker in 0.2 (`U-116`):
+
+Before:
+
+````carve
+~~~js
+x
+~~~
+````
+
+After:
+
+````carve
+```js
+x
+```
+````
+
+Both produce `<pre><code class="language-js">x` followed by a newline and `</code></pre>`. Unchanged `~~~js` is paragraph text. A body with a backtick run needs a longer backtick fence; the tool measures it.
+
+Task and plain items now share one list (`U-117`). The tool puts four line breaks between adjacent lists to keep the 0.1 HTML list boundaries. This exact output came from its first contract example:
+
+```carve
+- [ ] a
+
+
+
+- b
+```
+
+This preserves two lists, but the 0.2 engine adds `class="task"` on the boxed item. If one mixed list is what you want, keep the original two lines and update the page CSS. In a new document, one mixed list is valid. An uppercase ordered marker with a dot needs two spaces after it, including roman numerals (`U-118`). Right-aligned numbers such as ` 9.` and `10.` form one ordered list (C2-B-030).
+
+In 0.1, `1. [ ] x` is an ordered item whose text starts with `[ ] x`. In 0.2 the box is a task field and the ordered number stays visible. The tool writes `1. \[ ] x` to keep the old text (`U-120`). In 0.1, `[text]` and `![text]` remain text even when `[text]: /u` is defined. In 0.2 both are shortcut references. The tool escapes their opening brackets to keep the old text (`U-121`).
+
+A 0.2 heading may start with `=` and continue on indented lines. For example, `= Heading` followed by two spaces and `continued` makes one heading. The 0.1 engine treats those lines as a paragraph. The 0.2 formatter accepts `normalize: true` to choose its canonical spelling when the source layout offered alternatives; `carve fmt --normalize` sets it on the command line ([tooling](tooling.md)).
+
+### Running the rewrite tool
+
+From a checkout of `carve-js` on `next2`, build the 0.1 engine once with `npm ci` and `npm run build`, then run:
+
+```sh
+node upgrade/src/cli.ts --check docs/intro.crv
+node upgrade/src/cli.ts --json docs/intro.crv
+node upgrade/src/cli.ts --write docs/intro.crv
+```
+
+Use the real path to each file. Without `--write`, one file's upgraded source goes to stdout and the report goes to stderr. `--json` puts the report on stdout. `--check` writes nothing and exits 1 if a change or human review is needed. Exit 2 is a usage error. This is a separate tool in `upgrade/`. The 0.2 program of the JavaScript engine runs the same tool as `carve upgrade`; that command is part of the JavaScript engine only and outside the specification (C2-T-003).
+
+For the first heading example, `--json` returns a file record with `changed: true`, `check: "pass"`, and a record with `entry: "U-001"`, `class: "rewrite"`, `line: 2`, and `lint: "block-opener-without-blank-line"`. The full report also names the pinned 0.1 engine, currently `0.1.17`. `report` and `escape` records need the same review as rewrites. `U-019` summarizes extra list paragraph elements once per file. `U-079` reminds you to migrate host render options.
+
+The tool renders the old input in 0.1 and the proposed output in 0.2. It compares after lowercasing attribute names and sorting attributes (HTML attribute names are not case-sensitive, U-392), ignoring whitespace between tags and a line feed at the start of the text in an `<li>`, and ignoring the new `task` class, so a rewrite can pass while the text of an item differs by that line feed (U-227, U-243). `upgrade-mismatch` means an HTML difference is not explained by a contract entry. `--write` leaves that file alone, and `--force` does not override the HTML check: both upgrade programs then print `carve[upgrade-force-ignored]` and write nothing. Two edits on the same span produce `upgrade-conflict`; the lower entry ID wins. The tool reads only 0.1 source. **Run it once per 0.1 file. It is not idempotent.** Running it on a native 0.2 source, including the output of a first run, is outside its contract; a second run can change already upgraded list text. If HTML still differs and no U row maps the cause, the blocking `upgrade-mismatch` record has status `no mapped row` and the range of the differing 0.1 source. The file is not written. A mapped difference that cannot be verified retains its mapped row id and also blocks writing.
+
+### Repository checklist
+
+1. Make a copy or branch and inventory every `.crv` file, including generated and included documents.
+2. Run `--check`, then `--json` for each file. Record all `report`, `upgrade-conflict`, and `upgrade-mismatch` entries.
+3. Run `--write` once on the 0.1 files. Review every `SILENT` row above, especially list shape, punctuation, references, raw HTML, and host options.
+4. Render representative pages with both engines. Compare selectors, generated ids, links, and page scripts. Review differences that the tool's normalized comparison hides, including attribute order and the `task` class.
+5. Decide how the application will handle includes, lint, extensions, importers, and non-HTML output before switching its runtime.
+6. Keep the upgraded source and the tool's JSON report together in review. Do not feed upgraded files into the tool again.
+
+#### Measured continuation rewrites
+
+The 0.1 continuation marker `+` no longer owns a following block in 0.2 under C2-B-059. Write the block at the indentation of its owning list item, description, footnote, or quote. The tool checks the HTML before applying these rewrites.
+
+| ID | Before in 0.1 | 0.2 unchanged input | After in 0.2 |
+| --- | --- | --- | --- |
+| U-122 | Plus continuation in a list item **SILENT** | - > + | - >; rewrite |
+| U-123 | Under C2-B-059 and C2-B-076, `:: term` then `:  intro` then `+` then `  more` writes `more` outside the description in 0.1. **SILENT** | The same lines keep `more` in the description body in 0.2. | Replace `+` with a blank line and move `more` to column zero; rewrite |
+| U-124 | Plus continuation in a footnote body **SILENT** | a ⏎ [^n]: + | a ⏎  ⏎ [^n]: +; rewrite |
+| U-125 | Under C2-B-032, C2-B-059, and C2-I-015, a quote `+` can attach the next line or leave a code-span paragraph before it in 0.1. **SILENT** | The same 0.2 lines can merge the code span and following paragraph. A backtick run that 0.1 read as code to the end of its content is text in 0.2 (C2-I-017), so an empty quote line keeps no code span there; U-258 closes such a span, and the empty code span that 0.1 gave for a run at the end of the content is not reached. | Remove `+`; insert an empty quote line when needed, after the full HTML check; rewrite |
+
+#### Measured quote boundary rewrite
+
+Under C2-B-031 and C2-B-032, an empty quote directly after paragraph text is a lazy line in 0.2. For `y` followed by `>`, the 0.1 HTML has a paragraph and an empty block quote, while unchanged 0.2 source has one paragraph containing a literal `>`. A blank line before `>` retains the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-126 | `y` then `>` **SILENT** | One paragraph containing `y` and a literal `>` | `y`, a blank line, then `>`; rewrite |
+
+#### Measured list fence boundary rewrite
+
+Under C2-B-057, C2-B-109, and C2-B-111, a code fence in a list item ends when the item ends. For `- ````, a blank line, then `+`, 0.1 writes an empty code line inside the item, while unchanged 0.2 source writes an empty code block and a paragraph containing `+`. Close the fence at the item's content column to retain the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-127 | `- ````, a blank line, then `+` **SILENT** | An empty item code block followed by a `+` paragraph | `- ````, a blank line, then an indented closer; rewrite |
+
+#### Measured description ownership rewrite
+
+Under C2-B-069, C2-B-076, and C2-B-078, a description body belongs to its term only when its mark is at the list's owning column and later body blocks are indented past that mark. For ` :: t` followed by `: x`, 0.1 writes a description list, while unchanged 0.2 source folds `: x` into the term text. Move the term mark to the owning column to retain the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-128 | ` :: t` then `: x` **SILENT** | One term containing `: x` | `:: t` then `: x`; rewrite |
+
+#### Measured percent comment fence rewrite
+
+Under C2-B-108, C2-B-110, and C2-B-112, a longer percent run closes a comment in 0.2 when it has at least the opener's length. For `%%%`, then `%%%%`, then `y`, 0.1 hides every line, while unchanged 0.2 source shows `y` as a paragraph. Lengthen the opener beyond the internal run to retain the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-129 | Under C2-B-108, C2-B-110, and C2-B-112, `- a` then ` %%% n`, ` x`, ` %%%`, and ` tail` writes `tail` outside the list in 0.1. In a quoted sequence of three bare percent runs, 0.1 can hide the follower and leave the later line outside the quote. **SILENT** | The same lines keep `tail` inside the list in 0.2; the quoted sequence can expose its follower. | Move `tail` to column zero, or indent the whole comment fence under its owner when 0.1 kept the follower inside. Add one matching bare percent line to keep the quoted follower hidden when the complete HTML check passes; rewrite |
+
+#### Measured rendering changes
+
+The following changes are specified by the cited 0.2 clauses and require review when the old HTML matters.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1. **SILENT** | The line block keeps the tab as text before `x`. In 0.2 the backtick run is text on its own line, since each line of a line block is its own inline content, and the following lazy line is a further line of the stanza, as in 0.1 (C2-B-024). Emphasis across two lines of a line block is U-264, a run of spaces inside a line is U-265. | The tool checks removal of trailing no-break spaces in plain line-block lines under C2-H-043. Other ownership differences need review; report |
+| U-131 | Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. A nested item with a definition can also leave a following colon line outside the list. **SILENT** | The item contains the definition text, and the following line can stay inside it. | The tool replaces a consumed definition with `{% %}` and releases a following colon when the complete HTML check passes. Review other shapes; report |
+| U-132 | Under C2-B-081 and C2-B-083, `[r]:` writes no HTML. **SILENT** | The line writes a paragraph containing `[r]:`. | Review the definition; report |
+| U-133 | Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. For `-{#k} [x] bare` followed by `  # inside`, 0.1 uses `aria-label="bare"`. **SILENT** | The item has class `task`, generated bullet suppression style, and a checkbox with `aria-label="+"`; the plus is item text. The following heading makes the second example use `aria-label="bare inside"`. | Review task HTML; report |
+| U-134 | Under C2-B-032 and C2-B-081, `> [f]:` writes one empty block quote. **SILENT** | It writes a paragraph containing `[f]:`. | Review the quote; report |
+
+#### Measured block and inline rewrites
+
+The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HTML compare equal in the sense of "Running the rewrite tool".
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-135 | Under C2-B-113, an unclosed ` ``` ` fence with one trailing blank line writes one code line; `- q` then an indented fence and a blank line before `tail` keeps that blank code line in 0.1. **SILENT** | The same 0.2 source discards the trailing blank code line. | Close the fence after the blank line and before `tail`; rewrite |
+| U-136 | Under C2-I-036, `{%` followed by a newline and `%}x` prints literally in 0.1. **SILENT** | Unchanged 0.2 source consumes the brace comment and prints only `x`; escaping the opening brace prints the old text. | Escape the brace; escape |
+| U-137 | Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` writes an empty item in 0.1; `- {.k}` then `tail` leaves `tail` outside that item. **SILENT** | The same 0.2 sources print the attribute or keep `tail` inside the item. | Write `- {% %}` and insert a blank line before `tail`; use the same empty comment for an empty item inside a quote; remove an empty `{}` after the marker when the item has later text; rewrite |
+| U-138 | Under C2-B-147 and C2-B-149, `>` followed by `^ p` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source attaches `p` as a figure caption; a blank line before the caret retains the paragraph. | Insert a blank line; rewrite |
+| U-139 | Under C2-I-089, `x^[]` prints literally in 0.1. **SILENT** | Unchanged 0.2 source creates an empty inline footnote; escaping the caret retains the literal text. | Write `x\^[]`; escape |
+
+#### Measured cell and attribute changes
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-140 | Under C2-B-171, a tab between two table pipes is cell text in 0.1. **SILENT** | Unchanged 0.2 source treats the tab as cell padding and writes an empty cell. | Review the cell; report |
+| U-141 | Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. The multiline `{.x` then `.y}` form under `- >` is also consumed. In a doubly quoted item, `> > - {.x` then `> >    .y}` leaves an empty item and a following paragraph in 0.1. **SILENT** | Unchanged 0.2 source prints the attribute inside the quote. | Remove the consumed attribute and keep the empty quote or item; use an empty comment and blank line for the doubly quoted item; rewrite |
+| U-142 | Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1. **SILENT** | The same 0.2 source prints `{empty}` and keeps `flush` in the body. | Write `: {% %}` and insert a blank line before `flush`, and replace every sentinel when several empty descriptions occur together; rewrite |
+
+#### Other measured rendering changes
+
+Each row gives the smallest input retained by the measurement and the exact HTML from both renderers.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-143 | Under C2-I-047,C2-I-051, /{/ writes &lt;p&gt;&lt;em&gt;{&lt;/em&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;/{/&lt;/p&gt; in 0.2. | Review; report |
+| U-145 | Under C2-I-047,C2-I-048,C2-I-051, /*// writes &lt;p&gt;&lt;em&gt;*&lt;/em&gt;/&lt;/p&gt; in 0.1. The 0.1 reading of `/***/` nests strong and emphasis around a star. **SILENT** | The first source is text in 0.2; C2-I-049 makes the three-star run in the second source literal. In `/a /b/`, 0.2 pairs the inner slashes; U-273 and U-274 record the general rule, a kind nests in itself. | The tool writes `{*{/*/}*}` or `{/a /b/}` for the checked shapes. Review other pairings; report |
+| U-147 | Under C2-B-175,C2-B-184, \|\| ⏎ +\|\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-148 | Under C2-I-081,C2-I-084, # 	%%h writes &lt;section id="h"&gt; ⏎   &lt;h1&gt;	%%h&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="s"&gt; ⏎   &lt;h1&gt;&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+| U-150 | Under C2-B-180,C2-B-185, {widths=5} ⏎ \|\|\| writes &lt;table&gt; ⏎   &lt;colgroup&gt; ⏎     &lt;col style="width: 5%;"&gt; ⏎   &lt;/colgroup&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;colgroup&gt; ⏎     &lt;col style="width: 5%;"&gt; ⏎     &lt;col&gt; ⏎   &lt;/colgroup&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-151 | Under C2-I-050,C2-I-052, _{_ writes &lt;p&gt;&lt;u&gt;{&lt;/u&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;_{_&lt;/p&gt; in 0.2. | Review; report |
+| U-152 | Under C2-B-169,C2-B-172, \|\|	&lt;\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;	&amp;lt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td colspan="2"&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-153 | Under C2-B-027,C2-B-033, - 	e writes &lt;ul&gt; ⏎   &lt;li&gt;	e&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul&gt; ⏎   &lt;li&gt;e&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | The tool checks removal of the marker-padding tab against the complete HTML; report |
+| U-154 | Under C2-H-088, a footnote reference in link text, `[see this[^1] page](/u)` with the definition `[^1]: n`, wrote its mark inside the anchor in 0.1: &lt;a href="/u"&gt;see this&lt;sup id="fnref1"&gt;1&lt;/sup&gt; page&lt;/a&gt;. **SILENT** | The same source writes the mark after the closing anchor: &lt;a href="/u"&gt;see this page&lt;/a&gt;&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. | Review; report |
+| U-155 | Under C2-I-034,C2-I-039, a	%% writes &lt;p&gt;a	%%&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;a&lt;/p&gt; in 0.2. | Review; report |
+| U-157 | Under C2-B-108,C2-B-110,C2-B-122, &#96;&#96;&#96;s ""u writes &lt;pre&gt;&lt;code class="language-s"&gt;&lt;/code&gt;&lt;/pre&gt; in 0.1. **SILENT** | The same source writes &lt;pre title=""&gt;&lt;code class="language-s"&gt;&lt;/code&gt;&lt;/pre&gt; in 0.2. | Review; report |
+| U-158 | Under C2-H-085, the unresolved reference `[\[][]` is written as typed, backslash included, in 0.1. **SILENT** | The children of an unresolved reference are rendered, so the escape is gone: `[[][]`. | Review the unresolved reference; report |
+| U-159 | Under C2-B-046,C2-H-032, - [x] a  h writes &lt;ul class="task-list"&gt; ⏎   &lt;li data-task-state="x"&gt;&lt;input type="checkbox" checked disabled aria-label="a h"&gt; a  h&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul class="task-list"&gt; ⏎   &lt;li data-task-state="x" class="task" style="list-style: none"&gt;&lt;input type="checkbox" checked disabled aria-label="a  h"&gt; a  h&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
+| U-160 | Under C2-I-087,C2-B-082, x[^f ⏎ g] ⏎ [^f g]: n writes &lt;p&gt;x[^f ⏎ g]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;x[^f g] ⏎ [^f g]: n&lt;/p&gt; in 0.2: the definition line directly below text is a lazy line (C2-B-024), so the reference stays unresolved. With a blank line before the definition the label with its line break resolves to it, and a tab inside the label has the same lookup effect (C2-I-079); escaping the opening bracket, `x\[^a` tab `b]`, keeps the 0.1 text. U-280 records the tab for a reference label. | Review; report |
+| U-161 | Under C2-I-067,C2-B-083, ![][a ⏎ b] writes &lt;p&gt;![][a ⏎ b]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;![][a b]&lt;/p&gt; in 0.2. | Review; report |
+| U-162 | Under C2-B-171,C2-B-180, \|?v \| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td style="vertical-align: bottom;"&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;?v&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Brace the marks, `\|{?v} \|`, which gives the 0.1 HTML (C2-B-182); rewrite |
+| U-163 | Under C2-B-046, -  [ ] q writes &lt;ul class="task-list"&gt; ⏎   &lt;li&gt;&lt;input type="checkbox" disabled aria-label="q"&gt; q&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul&gt; ⏎   &lt;li&gt;[ ] q&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; where one space after the bullet keeps the complete 0.1 HTML, U-434 writes it; report |
+| U-164 | Under C2-H-101 and C2-H-161, [](‮javascript:) writes &lt;p&gt;&lt;a href="‮javascript:"&gt;&lt;/a&gt;&lt;/p&gt; in 0.1. An authored attribute that is no URL sink, `*x*{k="..."}` with U+202E before `javascript:x`, kept its value in 0.1 too. **SILENT** | The same source writes &lt;p&gt;&lt;a href=""&gt;&lt;/a&gt;&lt;/p&gt; in 0.2, and the attribute is written empty, `k=""`. | Review; report |
+| U-165 | Under C2-B-171,C2-B-167, \|{#x}\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;{&lt;span class="tag"&gt;&lt;strong&gt;#x&lt;/strong&gt;&lt;/span&gt;}&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td id="x"&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. An authored `rowspan` or `colspan` on a cell is never written, as in 0.1 (C2-H-058). | Review; report |
+| U-166 | Under C2-I-078, [][@a] writes &lt;p&gt;[][@a]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[][&lt;span class="mention"&gt;&lt;strong&gt;@a&lt;/strong&gt;&lt;/span&gt;]&lt;/p&gt; in 0.2. | Review; report |
+| U-167 | Under C2-B-182,C2-B-185, \|=\| ⏎ \|:-\| writes &lt;table&gt; ⏎   &lt;thead&gt; ⏎     &lt;tr&gt;&lt;th scope="col" style="text-align: left;"&gt;=&lt;/th&gt;&lt;/tr&gt; ⏎   &lt;/thead&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;thead&gt; ⏎     &lt;tr&gt;&lt;th scope="col"&gt;&lt;/th&gt;&lt;/tr&gt; ⏎   &lt;/thead&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;:-&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-168 | Under C2-B-179,C2-B-182, \|=\|\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;=&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;th scope="row"&gt;&lt;/th&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-169 | Under C2-B-100,C2-B-101, -{k} {#h} writes &lt;ul&gt; ⏎   &lt;li k=""&gt;&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul&gt; ⏎   &lt;li k=""&gt;{#h}&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
+| U-170 | Under C2-I-092, @a- (and the tag #x-) writes &lt;p&gt;&lt;span class="mention"&gt;&lt;strong&gt;@a-&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;span class="mention"&gt;&lt;strong&gt;@a&lt;/strong&gt;&lt;/span&gt;-&lt;/p&gt; in 0.2. | Review; report |
+| U-171 | Under C2-B-157,C2-B-197, ![ ⏎ ]() writes &lt;img src="" alt=" ⏎ "&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;img src="" alt=" ⏎ "&gt;&lt;/p&gt; in 0.2. | Review; report |
+| U-172 | Under C2-B-066,C2-H-040, {loose} ⏎ :: T writes &lt;dl&gt; ⏎   &lt;dt&gt;T&lt;/dt&gt; ⏎ &lt;/dl&gt; in 0.1. **SILENT** | The same source writes &lt;dl loose=""&gt; ⏎   &lt;dt&gt;T&lt;/dt&gt; ⏎ &lt;/dl&gt; in 0.2. | Review; report |
+| U-174 | Under C2-B-027,C2-B-014, # 	x writes &lt;section id="x"&gt; ⏎   &lt;h1&gt;	x&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="x"&gt; ⏎   &lt;h1&gt;x&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+| U-175 | Under C2-I-067,C2-I-068, []( ) writes &lt;p&gt;&lt;a href=""&gt;&lt;/a&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[]( )&lt;/p&gt; in 0.2. | Review; report |
+| U-176 | Under C2-B-001,C2-I-084, # T ␍ b writes &lt;section id="T"&gt; ⏎   &lt;h1&gt;T&lt;/h1&gt; ⏎   &lt;p&gt;b&lt;/p&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="T-b"&gt; ⏎   &lt;h1&gt;T ␍ b&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+
+#### Further measured rewrites
+
+Each spelling in this table is applied only when the complete 0.1 HTML equals the rewritten 0.2 HTML, compared as "Running the rewrite tool" states.
+
+| ID | Rule | Before in 0.1 | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-177 | A footnote definition body owns only its indented continuation under C2-B-081,C2-B-087 **SILENT** | [^a]: o ⏎ + ⏎  e ⏎  ⏎ s | [^a]: o ⏎  ⏎ {% %} ⏎  e ⏎  ⏎ s; rewrite |
+| U-178 | A div label or title is recognized only in its metadata slot under C2-B-119,C2-B-121 **SILENT** | :::[+] | ::: [+]; rewrite |
+| U-179 | A fence after a description mark ends at the description boundary under C2-B-072,C2-B-078,C2-B-109 **SILENT** | :: t ⏎ : &#96;&#96;&#96; ⏎  y | :: t ⏎ : &#96;&#96;&#96; ⏎ y; rewrite |
+| U-180 | An indented description mark below a term is term text under C2-B-067,C2-B-069 **SILENT** | :: t ⏎  : b |  :: t ⏎  : b; rewrite |
+| U-181 | A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092 **SILENT** | \&lt;/#x&gt; | \&lt;/\#x&gt;; escape |
+| U-182 | Under C2-I-119 and C2-I-050, `[{*a]*}` writes literal text in 0.1. **SILENT** | The same 0.2 source writes a strong span that crosses the bracket boundary. | Escape the star after the opening brace to retain the literal text; escape |
+| U-183 | Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1. **SILENT** | The same 0.2 source writes a figure with the text `![a][nope]` and the caption `cap`. | Escape the image opener as `\![a][nope]`; escape |
+| U-184 | A line below an include directive starts a block of its own under C2-B-156, also a second directive **SILENT** | - {{ e }} ⏎   b | Review by hand: - \{{ e }} ⏎   b keeps the 0.1 HTML only where no resolver is given; report |
+| U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
+| U-187 | An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091 **SILENT** | [@]: y |  [@]: y; rewrite |
+| U-188 | A plus-minus shorthand is recognized inside a colon pair under C2-I-117 **SILENT** | :+-: | :\+-:; escape |
+| U-189 | An empty footnote label followed by braces changes inline ownership under C2-I-087,C2-I-089 **SILENT** | d[^]{} | d[\^]{}; escape |
+
+#### Remaining measured source changes
+
+The tool checks each rewrite against the complete 0.1 HTML, compared as "Running the rewrite tool" states. The report rows name differences for which a preserving 0.2 spelling has not been verified.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-190 | Under C2-I-035, `-"` before a hard break writes a closing smart quote, and <code>x{.k title="&#96;"} y</code> reads its backtick as code to the end in 0.1. **SILENT** | The quote before a hard break closes, as in 0.1 (C2-I-104), and needs no change. In <code>x{.k title="&#96;"} y</code> the backtick has no closer and is text (C2-I-017), and the brace opens no attribute block. | Write the rendered Unicode quote before the backtick and close the code span where the content ends, <code>x{.k title=“&#96;"} y&#96;</code>, when the complete HTML check passes; rewrite |
+| U-192 | Under C2-A-037, `[]{:r lang}` writes an empty `lang` attribute. **SILENT** | The language shorthand wins and writes `lang="r"`. | Remove the shorthand, including when a later separate `lang` attribute supplies the old value; rewrite |
+| U-193 | Under C2-B-067 and C2-B-069, `:: ` followed by a tab and `x` writes the tab in the term. **SILENT** | The tab is marker padding and the term is `x`. | Review the term; report |
+| U-194 | Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash. **SILENT** | The tab is cell padding and only the smart dash remains. | Review the cell; report |
+| U-195 | Under C2-B-119 and C2-B-121, `:::[`x`]` writes a div label containing a code span. **SILENT** | With a space after the fence, the label contains literal backticks. | Review the div label; report |
+| U-197 | Under C2-B-090, C2-B-095, and C2-B-101, `- a` then `  {.k}` then `# H` consumes the attribute without attaching it. **SILENT** | The same source prints the attribute in the item. | Remove the attribute and put a blank line before the following heading or paragraph; rewrite |
+| U-198 | Under C2-I-062, `{~a~>~}` writes `&lt;del&gt;a&lt;/del&gt;&lt;ins&gt;&lt;/ins&gt;` in 0.1. **SILENT** | The source writes `&lt;s&gt;a~&amp;gt;&lt;/s&gt;` in 0.2, and C2-W-116 gives the empty insertion no spelling. | Review the replacement; report |
+| U-199 | Under C2-B-076 and C2-B-078, `:: t` then `:  d` then `   {.k}` then `tail` consumes the attribute and leaves `tail` outside the description in 0.1. After `:  %% c`, an indented `flush` also stands outside. **SILENT** | The same lines keep the attribute text or `flush` in the description body in 0.2. | Remove the consumed attribute and put a blank line before `tail`. For `:: term`, `: first`, a blank line, and ` second`, move `second` to column zero. Move an outside `flush` to column zero; rewrite |
+| U-200 | Under C2-I-062 and C2-I-043, `{~a~>b~}{.k} c` writes a deletion, an insertion, and literal `{.k}` in 0.1. **SILENT** | After the arrow is expanded in 0.2, `{.k}` attaches to the insertion. | Write `{-a-}{+b+}\{.k} c`; rewrite |
+| U-204 | Under C2-B-059 and C2-B-113, `:: t` then `:  d` then `+` then an open code fence with `a`, a blank line, and `b` keeps only `a` and the blank line inside the description fence in 0.1. **SILENT** | The unchanged source keeps `b` inside the code fence in 0.2. At end of input without a final line feed, C2-B-222 adds one to the code value. | Remove `+`, indent the fence under the description, and close it before `b`. The tool checks the final line feed difference before explaining it; rewrite |
+| U-206 | Under C2-H-095 and C2-H-096, `# *Setup*` then `See </#Setup>.` writes a link with a bold `Setup` label in 0.1. **SILENT** | The same cross-reference writes a plain `Setup` label in 0.2. | Review the cross-reference display; report |
+| U-207 | Under C2-I-088 and C2-H-139, an unresolved footnote reference with glued attribute blocks, `Text[^a]{.c}{#i}.`, writes the blocks as typed in 0.1. **SILENT** | One block in the fixed order: `<p>Text[^a]{#i .c}.</p>`. | Review; report |
+| U-209 | Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1. **SILENT** | After the available continuation rewrite, 0.2 keeps `more` inside the quoted list item. | Review the container boundary; no preserving rewrite was verified for this source; report |
+| U-210 | Under C2-B-069, C2-B-076, and C2-B-081, `:: term` then `:  [r]: /u` leaves an empty description body and defines `r` for a later link in 0.1. A definition indented below a term, `:: t` then `  [r]: /u`, also defines `r` in 0.1. **SILENT** | The same 0.2 source prints the definition as description text and leaves the link unresolved; below a term the line continues the term and is term text. | Put `[r]: /u` at document scope and write `: {% %}`; below a term, put the definition at column 0 after a blank line; rewrite |
+| U-211 | Under C2-B-090 and C2-B-095, `{.a` then `.b}` then a blank line and `paragraph` attaches both classes to the paragraph in 0.1. **SILENT** | The same 0.2 source prints the multiline attribute as text and leaves the paragraph unstyled. | Join the attribute as `{.a .b}` and remove the separating blank line; rewrite |
+| U-212 | Under C2-B-147 and C2-B-149, `> a` then an indented `^ cap` line keeps `^ cap` as quote text in 0.1. **SILENT** | The same 0.2 source attaches `cap` as a figure caption. | Escape the caret as `\^ cap`; escape |
+| U-213 | Under C2-B-081 and C2-B-083, `See [^a].` then `- [^a]: note body` writes an empty item and resolves the footnote in 0.1. A definition indented into a footnote body, `[^a]: first` then `  [^b]: second`, also defines `b` in 0.1. **SILENT** | The same 0.2 source prints the definition as item text and leaves the footnote unresolved; in a note body the line is text of the note, so the second note is not written. | Put `[^a]: note body` at document scope and write `- {% %}`; in a note body, put the definition at column 0 after a blank line; rewrite |
+| U-214 | Under C2-B-169, \| a &#96;b \| c d \| keeps the middle pipe inside one code cell in 0.1. **SILENT** | The same 0.2 source splits the unclosed code span into two cells. | Close the code run before the final pipe, as in \| a &#96;b \| c d&#96; \|; rewrite |
+| U-215 | Under C2-B-108, C2-B-110, and C2-B-112, `:: t` then `%%%` then `a` then `%%%` then `: body` writes one description list whose body is `body` in 0.1. **SILENT** | The same 0.2 source ends the description list before `: body`. | Remove the invisible percent fence span; rewrite |
+| U-216 | Under C2-I-036 and C2-B-147, `{%%}![alt](x.png)` writes a block image in 0.1, and `![a](/i) %% c` followed by `^ cap` writes a captioned figure. **SILENT** | The same 0.2 sources can write a paragraph containing the image or a separate caret line. | Remove the invisible comment before or after the image; rewrite |
+| U-218 | Under C2-B-082 and C2-I-036, `See[^f]` then `[^f]: {empty}` resolves an empty footnote in 0.1. **SILENT** | The same 0.2 source prints `{empty}` inside the footnote body. | Write `[^f]: {% %}` to keep the body empty; rewrite |
+| U-219 | Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1, including when both lines have a quote prefix. **SILENT** | The longer run closes the shorter div in 0.2, including inside that quote. | Review the div structure; no preserving spelling has been verified for this shape; report |
+| U-221 | Under C2-I-069, a link with a quoted title crossing a line break writes a link whose HTML title contains that line break in 0.1. **SILENT** | A tail that holds a line break is no tail (C2-I-069), so the source is paragraph text. | Review the title; joining it onto one line gives a link whose title holds a space instead of the line break; report |
+| U-222 | Under C2-B-014, C2-B-025 and C2-B-076, `- one` then an indented `::: note` leaves the div outside the item in 0.1. A single-space line after a closed div in a description can likewise stand outside the description. **SILENT** | The same 0.2 lines keep the div or following text inside the preceding container. | Move the div opener or following text to column zero when the complete HTML check passes; rewrite |
+| U-223 | Under C2-B-087 and C2-B-076, `[^f]: :: t` then a two-space `: | a |` keeps the table in the note's description body in 0.1. A one-space caret line stays outside the note. **SILENT** | The same 0.2 lines can fold into the term and lose the outside caret paragraph. | Indent the description mark to the note content column, and move the outside caret to column zero; rewrite |
+| U-224 | Under C2-B-109 and C2-B-111, a comment block in a container with lines after it that the container does not own: `- ::: box`, `  %%%%`, `%% j`, `  x`; `:: t`, `: d`, `%%%`, `c`, `%%%`, ` : d2`; and `[^n]: head`, a blank line, `  %%%`, `%% below`, a blank line, `  tail`. **SILENT** | 0.1 hid `x` and `tail` and read ` : d2` as a second description. 0.2 gives `x` and `tail` as paragraphs after the list and the note, and ` : d2` as the paragraph `: d2`. | Review the comment block; report |
+| U-225 | Under C2-B-147 and C2-B-197, `![alt](u)` followed by `^ %% hidden` keeps the caret as literal paragraph text in 0.1. **SILENT** | The same 0.2 source can take the caret as a caption mark. | Escape the caret so the image and caret remain in one paragraph; escape |
+| U-226 | Under C2-B-147 and C2-B-198, `$$` followed by an unclosed backtick span and then `^ p` writes a math figure with caption `p` in 0.1. **SILENT** | The same 0.2 source keeps the caret line in the paragraph, as text behind the unclosed run (C2-I-017). | Close the code span on its math line, or remove a trailing invisible comment after a closed span, so the caption attaches; rewrite |
+| U-227 | Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a percent fence and change the following list boundary. | Escape the percent run inside the brace comment, `\%%%`: the list boundary is the 0.1 one, but 0.1 started the item text with a line feed, which no 0.2 source writes (C2-H-069, U-362); report |
+| U-228 | Under C2-B-069 and C2-B-076, `:: term` then `: - a` then a blank line and a three-space `> c` writes the quote as a sibling of the list inside the description body in 0.1. **SILENT** | The same 0.2 source keeps the quote inside the item. | Move the quote or following list item to the description content column; rewrite |
+| U-229 | Under C2-B-076 and C2-B-081, `[^f]: - :::::` then a seven-space `:::::` writes the second div outside the item but inside the note in 0.1. A seven-space caret line after a note-hosted item is likewise outside that item. **SILENT** | The same 0.2 lines keep the div or caret inside the item. | Move the follower to the note content column when the complete HTML check passes; rewrite |
+| U-230 | Under C2-B-041 and C2-B-045, `{start=9}` before `3. x` writes `<ol start="3">` in 0.1. **SILENT** | The same 0.2 source writes `<ol start="9">` because the attribute decides. | Remove the conflicting attribute to keep the marker's start value; rewrite |
+| U-232 | Under C2-B-069 and C2-B-076, `:: t` then `: para` then a one-space `| a |` writes a description followed by a table in 0.1. **SILENT** | The same 0.2 source writes the table inside the description body. | Move the table row to column zero to keep the 0.1 HTML; rewrite |
+| U-233 | Under C2-I-035 and C2-I-104, `:a:"q"` then `:long-name:'q'` writes `:a:“q”` and `:long-name:‘q’` in 0.1. **SILENT** | The same 0.2 source can write closing quotes at both openings. | Write literal curly opening quotes where the complete HTML check confirms the old result; rewrite |
+| U-234 | Under C2-I-079 and C2-I-085, `[\\^][]` writes a literal backslash and caret in 0.1. **SILENT** | The same 0.2 source drops the backslash while folding the unresolved label. | Add two backslashes to the run when the complete HTML check confirms the old result; rewrite |
+| U-235 | Under C2-B-081 and C2-B-083, `* * [d]: u` then a two-space `:` writes an empty nested item and a colon outside it in 0.1. **SILENT** | The same 0.2 source keeps the definition and colon as item text. | Write an empty comment in the nested item and a blank line before the colon: the structure is the 0.1 one, but the colon is `<p>:</p>` where 0.1 wrote it bare (C2-H-034, U-019); report |
+| U-236 | Under C2-B-067, C2-B-069, and C2-B-076, `:: t` then ` :: u` then `: d` then ` : e` writes two terms and two descriptions in 0.1. A quote after a note-hosted description can likewise stand beside the description. **SILENT** | The same 0.2 source folds the indented marks or quote into the preceding description content. | Move the sibling marks or quote to their owning column when the complete HTML check passes; rewrite |
+| U-237 | Under C2-B-015 and C2-B-076, `- a` then `  * w` then `  1. v` then a four-space `- u` writes the last list beside the ordered list inside the outer item in 0.1. Text after a nested div can also stand at that outer item level. **SILENT** | The same 0.2 source keeps the follower in the inner item. | Move the follower to the outer item content column when the complete HTML check passes; rewrite |
+| U-238 | Under C2-B-057 and C2-B-111, <code>- &#96;&#96;&#96;</code>, `  x`, a blank line, `+`, and `tail` write one list item whose code holds the blank line and whose text is `tail` in 0.1. **SILENT** | The same 0.2 source ends the item before `+` and leaves `tail` outside. | Write a matching fence closer and indent `tail` under the item: the structure is the 0.1 one, but `tail` is `<p>tail</p>` where 0.1 wrote it bare (C2-H-034, U-019); report |
+| U-239 | Under C2-B-072 and C2-B-078, `:: t`, `: a`, a tab-indented code fence, and a one-space code fence write two code blocks in 0.1. **SILENT** | The same 0.2 source reads the second fence as a closer and writes only the first block. | Put the second fence at column zero when the complete HTML check passes; rewrite |
+| U-240 | Under C2-I-030, `[a]{:abcdefgh} [b]{:abcdefghi}` writes a language span for `a` and literal `[b]{:abcdefghi}` in 0.1. **SILENT** | The same 0.2 source writes language spans for both `a` and `b`. | Review the new language span; report |
+| U-241 | Under C2-A-068, `::: \\` then `[a` then `b][missing]` writes an unresolved reference fallback with a line feed in 0.1. **SILENT** | The same 0.2 source writes a hard break between `a` and `b`. | Review the fallback in the hardbreak div; report |
+| U-242 | Under C2-B-108 and C2-B-110, a three-backtick fence containing an indented three-backtick line can keep that line as code content in 0.1. **SILENT** | The same 0.2 source can close the fence at the indented line. | Lengthen the opening fence to four backticks when the complete HTML check passes; rewrite |
+| U-243 | Under C2-I-036 and C2-B-108, a line containing three backticks inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a code fence and change the following list boundary. | Escape the first backtick inside the brace comment, `` \``` ``: the list boundary is the 0.1 one, but 0.1 started the item text with a line feed, which no 0.2 source writes (C2-H-069, U-362); report |
+| U-244 | Under C2-B-082, C2-B-091, and C2-B-095, `{.a}` followed by `[^f]: note`, a blank line, and `Visible` writes class `a` on the visible paragraph in 0.1. **SILENT** | The same 0.2 source leaves the visible paragraph without that class. | Move the floating attribute below the footnote definition when the complete HTML check passes; rewrite |
+| U-245 | Under C2-B-108 and C2-B-110, a quoted ordered item can open a code fence whose blank line is written as a bare `>` before the next quoted paragraph. In 0.1, that line remains a blank code line. **SILENT** | The same 0.2 source omits that blank code line. | Add an indented closing fence after the bare quote line when the complete HTML check passes; rewrite |
+| U-246 | Under C2-I-087, C2-I-119, and C2-B-091, `x[^n]{#i}` followed by `## {#i}` writes the unresolved footnote attribute literally and gives the heading id `i` in 0.1. **SILENT** | The same 0.2 source drops the inline attribute and changes the generated heading id. | Escape the attribute's hash, move the authored id above the heading, and escape the heading's opening brace when the complete HTML check passes; rewrite |
+| U-247 | Under C2-B-025 and C2-B-026, an ordered item followed by an indented table row inside an admonition writes the table outside the item in 0.1. **SILENT** | The same 0.2 source keeps the table inside the item. | Move the row to the admonition column when the complete HTML check passes; rewrite |
+| U-248 | Under C2-H-176, `c` followed by U+007F and `d` writes the control character itself between `c` and `d` in 0.1 HTML. **SILENT** | The same 0.2 source writes U+FFFD there; U+000B and U+0085 change in the same way. | Review the replacement character; report |
+| U-249 | Under C2-H-009 and C2-H-013, inline math with `{CLASS=c}` writes the attribute name `CLASS` in 0.1 HTML. **SILENT** | The same 0.2 source writes `class`, keeping the `math inline c` value. | Review the canonical attribute name; report |
+| U-250 | Under C2-B-082, C2-B-108, and C2-B-110, a note definition inside an item with an open code fence writes an empty list item and a resolved note with a trailing blank code line in 0.1. **SILENT** | The same 0.2 source can leave the note unresolved and show its definition as item text. | Move the definition to document scope, retain the empty item with a brace comment, and close the note fence when the complete HTML check passes; rewrite |
+| U-251 | Under C2-B-046, C2-B-082, and C2-H-032, `[^n]: - [ ]  [^f]: x` followed by `r[^n] [^f]` writes the inner note definition separately and writes the task item without 0.2 task HTML in 0.1. **SILENT** | The same 0.2 source lets the task item consume that definition and writes task item HTML. | Review the changed note ownership and task HTML; report |
+| U-252 | Under C2-B-046, C2-B-067, and C2-H-032, `- [x]   - :: term` followed by indented description lines writes the description at the older list boundary and writes the task item without 0.2 task HTML in 0.1. **SILENT** | The same 0.2 source changes nested description ownership and writes task item HTML. | Review the changed description and task HTML; report |
+| U-253 | Under C2-B-082 and C2-B-109, `:::` followed by `b[^1]` and a later `[^1]: c` resolves the note after an implicitly closed div in 0.1. **SILENT** | The same 0.2 source keeps the definition inside the open div and leaves the reference unresolved. | Add an explicit div closer before the definition when the complete HTML check passes; rewrite |
+| U-254 | Under C2-I-023, C2-I-043, and C2-I-047, `/{+a/{k=b+}` writes a literal slash and an insertion, while `/x /*a %% b*/{.c} y` writes nested emphasis and strong text in 0.1. **SILENT** | The same 0.2 sources give the slash an emphasis opener or let `%%` consume the rest of its line. | Review delimiter and comment ownership; report |
+| U-255 | Under C2-I-047, two escaped HTML tags containing `http://` and `fetch("//evil/?")` pair slash delimiters around the text from `iframe` to `fetch` in 0.1. **SILENT** | The same 0.2 source closes that emphasis after `evil`. | Review the escaped text emphasis boundary; report |
+| U-256 | Under C2-I-119 and C2-I-090, `# H {#id .cls}` and `{%~{#i}` expose a tag inside a failed brace attribute in 0.1. **SILENT** | The intact brace form hides the tag in 0.2. | Escape the closing brace in the heading or the opening brace before `#i` after checking the complete HTML; rewrite |
+| U-258 | Under C2-I-017, a backtick run with no closing run of its length, <code>a &#96;b c</code>, is code to the end of the content in 0.1. **SILENT** | The run is text. | Close the span where the old code or math ends; an empty math run is U-396; rewrite |
+| U-259 | Under C2-B-173 and C2-B-174, a span mark that cannot join, `\|= ^\|`, is an empty cell in 0.1. | A cell that holds `^` as text, reported by `table-span-marker-blocked`. | Write an empty cell, `\|= \|`; rewrite |
+| U-262 | Under C2-H-116, an authored attribute with a reserved carrier name, as in `[t]{data-carve-raw=html}`, passed through in 0.1 when `roundtrip` was off. **SILENT** | The same source writes `<span>` without the attribute and reports `carrier-attribute-dropped`. | Rename the attribute; report |
+| U-263 | Under C2-A-068, a quote inside `::: \` kept its soft line breaks in 0.1, as did an item, a description, an admonition and a caption inside it, and a div with the class `hardbreaks`. **SILENT** | Every line end inside the block, nested blocks included, is a `<br>`. | Review nested blocks; no preserving 0.2 spelling exists; report |
+| U-264 | Under the inline Preliminaries, a strong span across two lines of a line block, `*Roses are red` then `Violets are blue*`, was one `<strong>` around the `<br>` in 0.1. **SILENT** | Both stars are text: each line of a line block is its own inline content. | Close and reopen the span on each line, `*Roses are red*` then `*Violets are blue*`, which gives one `<strong>` per line; report |
+| U-265 | Under C2-H-043, a run of spaces inside a line of a line block, `Roses  are red`, was written as `&amp;nbsp;` in 0.1. **SILENT** | The inner spaces are ordinary spaces; only leading spaces become `&amp;nbsp;`. | Write each space of the run as an escaped space: `Roses\ \ are red`; rewrite |
+| U-267 | Under C2-I-043, the U-065 rewrite fails for an underline whose text starts with `name=`: `{_a=b_}` is an attribute block. **SILENT** | `an _a=b_ word` and `an {_a=b_} word` both render the text, not `<u>a=b</u>`. | Escape the equals sign: `an {_a\=b_} word`; rewrite |
+| U-269 | Under C2-B-174, an alignment block on a span mark that joins, `\|= A \|={>^} < \|` above `\| a \| b \|`, set the default of the column the mark covers in 0.1: `b` was right and top. | The block is kept for nothing, `table-span-marker-attribute` reports it, and `b` has no alignment. This holds for both axes. | Move the marks to each cell of that column below the head that has no mark of its own on that axis, `\| a \|{>^} b \|`, and drop the block; rewrite |
+| U-271 | Under C2-B-230, a header row inside a body, `{body-rows=1 body-header-rows=1}` above `\| a \|` and `\| b \|`, wrote `<th scope="col">a</th>` in 0.1; and with `body-rows` a pipe table had no head unless `header-rows` gave one. **SILENT** | The cells of a body header row are header cells with `scope="row"` (C2-H-056). The head of a pipe table is its leading rows of header cells (C2-B-178), also with `body-rows`. | Review the scope; write a head with header marks in place of `header-rows` (U-058); report |
+| U-300 | Under C2-B-138, a comment-only line inside a code span, a math span or an editorial comment that closes on a later line, <code>&#96;a</code>, `%% b` and <code>c&#96;</code>, was dropped in 0.1, and the span formed: <code>&lt;code&gt;a ⏎ c&lt;/code&gt;</code>. **SILENT** | No inline atom spans a comment-only line, so the opener and the closer are text: <code>&#96;a ⏎ c&#96;</code>. | Move the comment line below the line that closes the span; rewrite |
+| U-301 | Under C2-N-020, a line or region selection whose first line is a `---` line, `{{ a.crv @lines:3-7 }}` on an `a.crv` of `x`, a blank line, `---`, `t: 1`, `---`, a blank line and `para`, opened frontmatter in 0.1: `<p>para</p>`. **SILENT** | A selection opens frontmatter only when it starts at line 1 of the file; here the three lines are a paragraph. | Start the selection below the closing `---` line; report |
+| U-302 | Under C2-N-020 and C2-N-054, a line or region selection resolved its references only against the definitions it selected in 0.1: `{{ a.crv @region:k }}` on a region that holds `See [s][] and HTML.`, with `[s]: /u` and `*[HTML]: Hyper` below it, wrote `[s][]` and a plain `HTML`. **SILENT** | The selection sees every definition of its file, as a section does: a link and an abbreviation. | Review references in the selected lines; report |
+| U-303 | Under C2-B-171, a tab directly after the header mark, `\|=` and a tab before `a\|`, was a data cell whose text started with `=` and the tab in 0.1. **SILENT** | The header mark keeps its cell before a tab as before a space: a header cell `a`. | Review the cell; report |
+| U-304 | Under C2-B-182, a part glued to the alignment marks of a cell prefix, `\|{>.c} a \|`, `\|{>^.c} a \|` or `\|{>vx} a \|`, was cell text in 0.1: `<td>{>.c} a</td>`. **SILENT** | The marks and the part apply: `{>.c}` is right with the class `c`, `{>vx}` right and bottom with the bare key `x`. | Escape the brace where the text is meant, `\|\{>.c} a \|`; escape |
+| U-305 | Under C2-B-171 and C2-B-182, glued brace blocks in a cell prefix, `\|{>}{^} a \|` or `\|{.a}{.b} a \|`, were cell text in 0.1. **SILENT** | The run of glued blocks is the prefix, with the marks only at the start of the first block: `{>}{^} a` is right with the text `{^} a`, `{.a}{.b} a` has the classes `a` and `b`. | Escape the first brace where the text is meant, `\|\{>}{^} a \|`; escape |
+
+U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-196 and U-231 are withdrawn for the same reason: `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104). U-183 keeps only the labeled reference: `![][]` above `^ a` stays paragraph text in both, since its brackets are text (C2-I-072, C2-B-197). U-191 is withdrawn: `` ```s `` followed by a tab and `""` gives the same HTML in both, a code block with the language `s` and no title.
+
+U-266 and U-268 are withdrawn: `![5 \* 3](/i.png)` writes `alt="5 * 3"` and a cross-reference to a panel of a numbered figure group, `</#fig-x-a>`, writes `Figure 1a`, in 0.1 and 0.2 alike (C2-I-074, C2-H-095, C2-H-096).
+
+U-224 keeps only the three shapes of its row. Its quote shape, `> %%%`, `> secret`, an unmarked `  %%%` and `after`, gives the same HTML in 0.1 and 0.2, an empty quote and the paragraph `after`, since the closer of a comment block closes it on any line (C2-B-109). The note shape of U-224 agrees too: `[^1]: %%%`, `  hidden`, `%%%` and `  shown` keep `shown` in the note.
+
+U-270 is withdrawn: `|=a|` gives the same HTML in 0.1 and 0.2, a data cell with the text `=a` (C2-B-171), so a 0.1 document has nothing to upgrade; the rewrite to `|= a |` served only sources written for freeze candidate 5, and the upgrade tool checks each rewrite against the 0.1 HTML, which it would change.
+
+U-024 was withdrawn by the 17 November restore. The 18 November ruling takes that restore back; U-398 reports the split for `i.` then `j.`, and U-403 reports `i)` then `j)`. U-220 remains withdrawn: `{.outer k=one}` above `![a](b){.inner k=two}` gives `<img src="b" alt="a" class="outer inner" k="two">` in both versions (C2-H-020).
+
+U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark glued to a letter is cell text (C2-B-171).
+
+U-260 and U-261 are withdrawn: `{valigns="top,bottom"}` above a table and the cell marks `{>^}` give the same HTML in 0.1 and 0.2, `vertical-align` styles on the cells (C2-B-182, C2-B-211, C2-B-213, C2-H-057).
+
+## Part 2. Integrators: your code and your pages
+
+| Surface | 0.1 | 0.2 action |
+| --- | --- | --- |
+| JavaScript | One large package API with parse, resolve, render, import, lint, and extension helpers. | Port to the functions of the package root. |
+| HTML | Existing section, list, table, footnote, and raw HTML conventions. | Compare rendered pages and update CSS and scripts. The source rewrite check hides some HTML changes. |
+| CLI | `dist/cli.js` offers render, fmt, lint, flatten, fix, diff, merge, portability, trace, and migrate. | [Tooling](tooling.md) specifies the 0.2 commands `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`. The reference engine ships them as `carve` and adds `upgrade`. |
+| Missing runtime features | Lint, extension pipeline, include expansion, importers, and other output formats work in 0.1. | 0.2 has lint, include expansion, the HTML importer, and Markdown, plain-text and ANSI export renderers (C2-T-003). Export output and options are engine behavior outside the specification. |
+
+### JavaScript API
+
+The 0.2 entry point is the `carve-js` package root. These are the function replacements for the main public workflows.
+
+| 0.1 public function | 0.2 counterpart or action |
+| --- | --- |
+| `carveToHtml(source, options)` | `render(source, options)`; pass only 0.2 options. |
+| `parse(source, options)` | `parseTree(source, options)` for syntax only, or `parse(source, options)` for a resolved document. |
+| `resolve(document, options)` | `resolveTree(parsedOrDocument, options)`; use its result with `renderTree`. |
+| `renderHtml(document, options)` | `render(document, options)`, or `renderTree(resolveTree(document, options))`. |
+| `renderDocument`, `renderDocumentWithReport` | `render` or `renderWithDiagnostics`; the old grouped entry points are absent. |
+| `carveToHtmlWithReport`, `renderHtmlWithReport` | `renderWithDiagnostics`; inspect `html` and `diagnostics`. |
+| `carveToAstJson`, `toAstJson`, `toAstEnvelope` | `parse` plus `encodeTree` or `encodeEnvelope`; the 2.0 schema differs. |
+| `fromAstJson`, `fromAstEnvelope` | `decodeTree`; it accepts a 2.0 bare tree or envelope and refuses 1.x. |
+| `parseWithSourceLayout`, `toSourceLayout` | `parseWithLayout`; use its `document`, `layout`, and `diagnostics`. |
+| `renderCarve`, `carveToCarve`, `renderCarveWithReport`, `carveToCarveWithReport` | `write` or `writeWithDiagnostics` for a 2.0 tree. |
+| `carveToCarvePatch`, `createSourcePatch`, `applySourcePatch` | No 0.2 source patch counterpart. For tree changes, use `diffTree` and `applyPatch` with JSON Patch (C2-T-043 to C2-T-045); they do not edit source text. |
+| `renderMarkdown`, `renderPlainText`, `renderAnsi` and each `carveTo*` or `*WithReport` variant | Use the engine's library export renderer for the target (C2-T-003); the old entry point names and report shapes are not specified. |
+| `carveToMarkdown`, `carveToPlainText`, `carveToAnsi` and report variants | Use the engine's library export renderer or `carve render --to markdown`, `--to plain` or `--to ansi` (C2-T-003). |
+| `parseWithProvenance`, `createEditorSession`, `astNodePaths`, node identity, provenance and annotation-range helpers | `parseWithLayout` covers source layout. Supply an annotation-range sidecar to `validateTree` or `decodeTree` to check it against a tree (C2-T-005, C2-A-203). Node identity and provenance have no 0.2 schema or call. |
+| `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | Use `diffTree` and `applyPatch` for JSON Patch on 2.0 trees (C2-T-043 to C2-T-045). Reversible patches, three-way merge and the old change formats have no 0.2 counterpart. |
+| `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | `lint(source, options)` with `rules`, `platforms` and `includes` (C2-W-103 to C2-W-109, C2-N-085); the command is `carve lint` (C2-T-031), and its lines replace `formatLintWarnings` (C2-T-019). `parseWithDiagnostics` reports parser and resolution findings. |
+| `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The reference engine has it as `importDocument(html, { from: 'html', rawHtml })` in `import/src/index.ts`, outside the `v2/src` entry point, and as `carve import --from html`. |
+| the import option `adapter` of carve-js, `importAdapter` of carve-php (`new HtmlToCarve(importAdapter: 'word')`), `adapter` of carve-rs | the import option `adapter` with the same seven values (C2-M-102), which every engine offers: `importDocument(html, { from: 'html', adapter: 'word' })`. `word` and `google-docs` read a word processor's notes as footnotes (C2-M-103 to C2-M-110); the other five give the tree of `generic`, as in 0.1. |
+| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). The 0.1 `markdownToCarve` is `from: 'gfm'`, not `from: 'markdown'` (see [Markdown import is GFM import](#markdown-import-is-gfm-import)). BBCode is read by `importDocument(source, { from: 'bbcode' })` of `@markup-carve/carve/import`, also outside the specification. |
+| `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | Pass the `includes` option with a resolver to `parse` or `render` (C2-N-003); `includeDependencies(tree)` lists the files (C2-N-083). The command line expands by default (C2-N-004, C2-T-018). |
+| `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. A 0.1 `LinkPolicy` maps to the options of the `linkPolicy()` navigation extension (see `profileBaseHost` below). |
+| `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
+| `stampCarve`, stamp/read/version helpers, `decisionTrace`, `tabNormalize` | A 0.1 stamp stays a plain comment; the frontmatter key `carve` or `carve-version` declares the version, `carve-version-unsupported` checks it, and `carve upgrade` replaces the review step. The 0.1 trace names layout steps that do not carry into 0.2; 0.2 uses its layout clauses, clause cases and conformance run. `tabNormalize()` moved to `@markup-carve/carve/extensions`. |
+| Extension factories such as `smartQuotes`, `tableOfContents`, `tabs`, `mermaid`, `mathBlock`, `wikilinks`, and `listTable` | The 0.2 extension interface is specified and provisional (`extensions.md`). The engines take the `extensions` and `renderers` options. The reference engine ships the `tab` and `tabs` definitions with their renderer (`tabsExtensions`, `tabsRenderer`) and provisional factories for other standard extensions from `@markup-carve/carve/extensions`. Check each factory below for its 0.2 spelling and options. |
+
+The 0.2 entry point also exposes `format`, `formatWithDiagnostics`, `writeWithDiagnostics`, `validateTree`, `validateLayout`, and low-level scanner and event helpers. Those are new APIs, not drop-in replacements for the 0.1 helpers with similar names.
+
+The table audits the remaining 0.1 function exports. Many moved to `@markup-carve/carve/extensions`, some have a counterpart in the 0.2 core or importer entry points, and others are gone. Review each call before switching.
+
+| 0.1 function | 0.2 action |
+| --- | --- |
+| `abc` | The `abc` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `applyMigrationFixes` | `fix(source, { rules })` with the `djot-` rules turned on (C2-T-049); `fixEdits` returns the edits of one finding. The fixable `djot-` rules are `djot-emphasis-underscore`, `djot-intraword-underscore`, `djot-subscript-tilde`, `djot-superscript-caret` and `djot-plus-bullet`. |
+| `applyReversibleAstPatch` | Removed: "There is no reversible patch and no three-way merge" (C2-T-044). Keep the old tree to undo a change; `diffTree` and `applyPatch` give a JSON Patch (C2-T-043). |
+| `autolink` | The `autolink()` navigation extension in `@markup-carve/carve/extensions`. Links bare URLs and email addresses; `allowedSchemes` defaults to `https`, `http`, and `mailto`. |
+| `buildMarker` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
+| `canonicalType` | Part of the 0.1 profile object API, which the `profile` string replaces (row `Profile` above). 0.2 has no aliased node types; `NODE_TYPES` lists the vocabulary. No replacement needed. |
+| `carveToAnsiWithReport` | `toAnsi` of `@markup-carve/carve/export` on the tree of `parse(source)`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `carveToMarkdownWithReport` | `toMarkdown` of `@markup-carve/carve/export` on the tree of `parse(source)`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `carveToPlainTextWithReport` | `toPlainText` of `@markup-carve/carve/export` on the tree of `parse(source)`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `chart` | The `chart` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `citations` | The `citations` factory in `@markup-carve/carve/extensions`. |
+| `codeCallouts` | The `codeCallouts` factory in `@markup-carve/carve/extensions`. |
+| `codeGroup` | The `codeGroup` factory in `@markup-carve/carve/extensions`. |
+| `colorSwatch` | The `colorSwatch` factory in `@markup-carve/carve/extensions`. |
+| `compareSpecVersions` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
+| `createReversibleAstPatch` | Removed: "There is no reversible patch and no three-way merge" (C2-T-044). Keep the old tree to undo a change; `diffTree` and `applyPatch` give a JSON Patch (C2-T-043). |
+| `d2` | The `d2` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `decisionTraceJsonLines` | No 0.2 counterpart and no `trace` command; whether a trace returns is open in markup-carve/carve#6264. |
+| `defaultAttributes` | The `defaultAttributes` factory in `@markup-carve/carve/extensions`. |
+| `details` | The `details` factory in `@markup-carve/carve/extensions`. |
+| `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids, which are off by default (C2-W-109). The `markdown-` rules report the Markdown habits. |
+| `expandsForTarget` | Internal in 0.1: the command line's choice of which targets expand includes. No replacement needed; C2-N-004 and C2-T-018 state when the command line expands. |
+| `externalLinks` | The `externalLinks()` navigation extension in `@markup-carve/carve/extensions`. Sets `target` and `rel` on external HTTP links; options are `target`, `rel`, and `nofollow`. |
+| `fencedRender` | The `fencedRender` factory in `@markup-carve/carve/extensions`. |
+| `formatChanges` | Removed with the 0.1 change format: `diffTree` returns a JSON Patch instead (C2-T-043, C2-T-044). A host formats the operations itself. |
+| `formatMigrationWarnings` | The lines of `carve lint` (C2-T-019, C2-T-031); a host that calls `lint` formats its `diagnostics`. |
+| `formatProfileViolation` | A construct outside the profile is a diagnostic `profile-construct-degraded` of `renderWithDiagnostics`, with its catalog message (C2-H-129); `strictLosses` makes it an error. |
+| `glossary` | The `glossary` factory in `@markup-carve/carve/extensions`. |
+| `graphviz` | The `graphviz` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `headingLevelShift` | The `headingLevelShift()` navigation extension in `@markup-carve/carve/extensions`. Moves headings down; `shift` is 0 to 5 and defaults to 1. |
+| `headingNumbers` | The `headingNumbers()` navigation extension in `@markup-carve/carve/extensions`. Numbers headings; options are `minLevel`, `label`, and `crossref` (`number`, `number-title`, or `title`). |
+| `headingPermalinks` | The `headingPermalinks()` navigation extension in `@markup-carve/carve/extensions`. Adds heading anchors; options are `symbol`, `cssClass`, `ariaLabel`, `levels`, `prepend`, `showOnHover`, and `copyToClipboard`. |
+| `headingReference` | The `headingReference()` navigation extension in `@markup-carve/carve/extensions`. Styles heading reference links; `cssClass` defaults to `heading-ref`. |
+| `imgFence` | The `imgFence` factory in `@markup-carve/carve/extensions`. |
+| `index` | The `index` factory in `@markup-carve/carve/extensions`. |
+| `inspectColonFences` | The lint rule `colon-fence-length-mismatch`, on by default, reports what this helper found. |
+| `isDirectiveShape` | Parse the source: a directive the parser recognizes is an `include` node, made only by a block line (C2-N-002, C2-B-156). There is no inline include. |
+| `isSmartQuoteLocaleSupported` | The `isSmartQuoteLocaleSupported` helper in `@markup-carve/carve/extensions`. |
+| `migrateBbcode` | `importDocument(source, { from: 'bbcode' })` of `@markup-carve/carve/import`, or `carve import --from bbcode`. The importer is outside the 0.2 specification (C2-T-003). |
+| `migrateCaseOnlyReferences` | `carve upgrade --migrate` (U-429), the upgrade tool's repair of a reference whose only target differs in case. The library `upgrade` does not run it. |
+| `migrateDjot` | Use `importDocument(source, { from: 'djot' })` or `carve import --from djot`. The importer is outside the 0.2 specification (C2-T-003). |
+| `migrateHtml` | Use `importDocument(source, { from: 'html' })` or `carve import --from html`. The importer is outside the 0.2 specification (C2-T-003). |
+| `migrateMarkdown` | Use `importDocument(source, { from: 'gfm' })` or `carve import --from gfm`. The importer is outside the 0.2 specification (C2-T-003). |
+| `needsReview` | No 0.2 counterpart. A 0.1 stamp stays a plain comment; the frontmatter key `carve` or `carve-version` declares the version, `carve-version-unsupported` checks it, and `carve upgrade` replaces the review step. |
+| `plantuml` | The `plantuml` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `presets` | The `presets` collection of fenced-render factories in `@markup-carve/carve/extensions`. |
+| `readAnnotationRanges` | Supply the annotation-range sidecar to `validateTree` or `decodeTree` for its C2-A-203 reader check (C2-T-005). No 0.2 call builds the sidecar. |
+| `readNodeIdentity` | No 0.2 counterpart: node identity and provenance have no 0.2 schema or call. A diagnostic names its node by an RFC 6901 `path`. |
+| `readProvenance` | No 0.2 counterpart: node identity and provenance have no 0.2 schema or call. A diagnostic names its node by an RFC 6901 `path`. |
+| `readStamp` | No 0.2 counterpart. A 0.1 stamp stays a plain comment; the frontmatter key `carve` or `carve-version` declares the version, `carve-version-unsupported` checks it, and `carve upgrade` replaces the review step. |
+| `renderAnsiWithReport` | `toAnsi` of `@markup-carve/carve/export`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `renderCarveWithConversionReport` | `writeWithDiagnostics`: a structure or field with no Carve spelling is a `structure-unspellable` or `field-unspellable` diagnostic (C2-W-104, C2-W-134); `write` throws `CarveWriteError` instead. |
+| `renderMarkdownWithReport` | `toMarkdown` of `@markup-carve/carve/export`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `renderPlainTextWithReport` | `toPlainText` of `@markup-carve/carve/export`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `sanitizeSvg` | The `sanitizeSvg` helper in `@markup-carve/carve/extensions`. |
+| `selectIncludeRegion` | `includeRegion(text, name, { code })` of the 0.2 core entry; `code: true` is the 0.1 mode `'code'`. It returns the text and the first and last line, or `ok: false` with the reason of `region_invalid` (C2-N-037 to C2-N-043). |
+| `semanticSpan` | The `semanticSpan` factory in `@markup-carve/carve/extensions`. |
+| `smartQuoteLocales` | The `smartQuoteLocales` helper in `@markup-carve/carve/extensions`. |
+| `sourceFingerprint` | The same-named function in the 0.2 core entry point; it returns a `sha256:` hash of source bytes. |
+| `spoiler` | The `spoiler` factory in `@markup-carve/carve/extensions`. |
+| `stripTrailingMarker` | No 0.2 counterpart. A 0.1 stamp stays a plain comment; the frontmatter key `carve` or `carve-version` declares the version, `carve-version-unsupported` checks it, and `carve upgrade` replaces the review step. |
+| `toAnnotationRanges` | Supply the annotation-range sidecar to `validateTree` or `decodeTree` for its C2-A-203 reader check (C2-T-005). No 0.2 call builds the sidecar. |
+| `toAuthoredProvenance` | No 0.2 counterpart: node identity and provenance have no 0.2 schema or call. A diagnostic names its node by an RFC 6901 `path`. |
+| `toNodeIdentity` | No 0.2 counterpart: node identity and provenance have no 0.2 schema or call. A diagnostic names its node by an RFC 6901 `path`. |
+| `toProvenance` | No 0.2 counterpart: node identity and provenance have no 0.2 schema or call. A diagnostic names its node by an RFC 6901 `path`. |
+| `tocPlacement` | The `tocPlacement()` navigation extension in `@markup-carve/carve/extensions`. Places the table of contents at each `::: toc` directive; use `{depth=N}` or `{from=X to=Y}` on the directive. |
+| `tryRenderHtmlStreaming` | `render`, which returns the same HTML in one string. 0.1 wrote it in chunks only after the whole source was accepted; 0.2.0 defines no streaming renderer (C2-H-111). |
+| `vegaLite` | The `vegaLite` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `wavedrom` | The `wavedrom` fenced-render preset in `@markup-carve/carve/extensions`. |
+
+| 0.1 option or behavior | 0.2 option or behavior |
+| --- | --- |
+| `lowercaseHeadingIds`, `asciiHeadingIds` | `headingIds`, default `'keep-case'` (neither 0.1 option). `lowercaseHeadingIds: true` is `'lower'`; `asciiHeadingIds: true` or `'fold'` is `'ascii'`, and with `lowercaseHeadingIds: true` `'ascii-lower'`; `asciiHeadingIds: 'strict'` is `'ascii-strict'`, and with `lowercaseHeadingIds: true` `'ascii-strict-lower'`. `'off'` writes no generated id and still writes authored ids. |
+| `sourceLine` | `sourceLines`, default false. |
+| `allowRawHtml`, default true | `rawHtml`, default false. |
+| `sanitizeUrls`, `allowedUrlSchemes`, `deniedUrlSchemes` | `urlPolicy: {allow: [...]}` or `{deny: [...]}`. There is no disabled URL filter. |
+| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`, without the 0.1 member `attrs`, and is final: where it returns nothing or throws, the template is not used and the mention or tag is the inert span. A resolver that needs the attributes resolves on the tree. A linked mention or tag holds its text directly, `<a class="mention" href="URL">@NAME</a>`, as in 0.1. A template takes `{name}` only: the 0.1 aliases `{user}` and `{tag}` are refused (U-341). |
+| `profile` object and `profileBaseHost` | `profile` string: `full`, `article`, `comment`, or `minimal`; default `full`. The base host is the `baseHost` option of the `linkPolicy()` navigation extension, which carve-js ships in `@markup-carve/carve/extensions` and the provisional extension catalog does not list yet: with `allowExternal: false`, a link to `https://<baseHost>/...` stays and a link to another host is written as its text. With a named profile, 0.1 `profileBaseHost` changed no output, because no named profile limits link hosts. |
+| `mode`, `sections`, `roundtrip` | Same names and defaults: `interactive`, true, false. Review changed HTML semantics. |
+| `smartTypography` | Boolean, default true; 0.1 accepted a richer option shape. |
+| `labels`, `symbols` | Same names; labels are escaped text, symbols are host-supplied output. |
+| `positions` | Parse option, default true. |
+| `extensions`, `includes`, `renderers` | `includes` holds a resolver and two limits (C2-N-003). `extensions` and `renderers` follow the [extension interface](extensions.md). |
+| `strictLosses` | Same name, default false. `renderWithDiagnostics` returns empty HTML on a render loss when true. |
+| `defaultFrontmatterFormat`, parser callbacks, `semanticSpanNames`, `codeBlockTabWidth` | No 0.2 option. An unknown option throws `CarveOptionError`. |
+| 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
+| 0.1 lint options | `lint` reads `rules` and `platforms`; `carve lint` takes them as `--rules` and `--platforms` with JSON values (C2-T-010). |
+
+0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `renderTree` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
+
+### Markdown import is GFM import
+
+The 0.1 Markdown importer (`markdownToCarve`, `migrate --from markdown`) read GitHub Flavored Markdown: tables, task lists, strikethrough, bare URL autolinks and footnotes. In 0.2, `from: 'markdown'` reads CommonMark only, and `from: 'gfm'` adds the GitHub extensions. A caller that keeps the name `markdown` loses those constructs without an error: a table becomes escaped paragraph text.
+
+Input:
+
+```markdown
+| a | b |
+|---|--:|
+| 1 | 2 |
+
+- [x] done
+
+~~gone~~ https://example.com
+```
+
+`importDocument(input, { from: 'markdown' })`:
+
+```carve
+\| a | b |
+\|-\--|-\-:|
+\| 1 | 2 |
+
+- \[x] done
+
+~~gone~~ https://example.com
+```
+
+`importDocument(input, { from: 'gfm' })`:
+
+```carve
+|= a |={>} b |
+| 1 | 2 |
+
+- [x] done
+
+{-gone-} [https://example.com](https://example.com)
+```
+
+Map every 0.1 Markdown import to `gfm`: `importDocument(input, { from: 'gfm' })` and `carve import --from gfm`. Use `markdown` only for input that must be read as strict CommonMark. A host that offers a "Markdown" import should pass `gfm` by default.
+
+### HTML and page selectors
+
+The table groups differences observed by rendering the same source with both engines. The comparison included the 0.1 `resources/examples/` fixtures and fenced Carve examples in the six 0.2 documents. Of 850 inputs, 221 had different HTML before source upgrades. Many are intentional source changes in Part 1. The 167 rewrite contract inputs were also rendered before and after the tool. Do not treat those counts as a claim that every existing document differs.
+
+| HTML surface | Observed 0.1 to 0.2 difference | Page action |
+| --- | --- | --- |
+| Paragraphs and sections | A block opener directly below text can become text inside one `<p>` instead of a new `<section>`, `<blockquote>`, list, or table. | Add the source blank lines and review direct-child selectors. |
+| Heading ids | The default case-preserving slug and duplicate suffix still rendered `Héllo-World` and `Héllo-World-2` in both engines for the tested heading. The 0.2 `headingIds` option can move, fold, or suppress generated ids; authored ids remain. | Check every `#fragment` link and any script that finds ids. |
+| Section wrappers | Both default renderers wrap top-level headings in `<section id="…">`. With `sections: false`, ids are on headings. A changed block boundary changes which wrapper owns a block. | Check `section > *`, sibling, and child-index selectors. |
+| Lists | A changed item boundary can add or remove `<ul>` or `<ol>`, nested lists, `<p>` in `<li>`, and `start` or `type` attributes. A later paragraph in a tight item gains `<p>` in 0.2 (`U-019`). | Review list spacing and selectors based on list depth. |
+| Tasks | 0.1 split a task item next to a plain item into two lists. 0.2 uses one list with `class="task-list"` on `<ul>` or `<ol>` and `class="task"` on the boxed `<li>`. Checkbox inputs and `data-task-state` remain. | Add a `li.task` rule for bullet items and review list grouping. Ordered task items keep their visible number. |
+| Description lists and quotes | Lazy lines and continuation changes alter `<dt>`, `<dd>`, `<blockquote>`, and their child paragraphs. A caption may cease to wrap a quote in `<figure>`. | Review quote and definition layout. |
+| Tables | Old GFM separator rows can become data rows; 0.2 cell marks can change `<thead>`, `<tbody>`, `<tfoot>`, `<th>`, `<td>`, `scope`, `rowspan`, `colspan`, and cell alignment. A row span into a head is reported. | Compare table structure and header associations. |
+| Captions and images | A caption separated by a blank line no longer supplies `<figure>` and `<figcaption>`. A shaped block image still does in the tested direct-caption case. | Check figure selectors and caption scripts. |
+| Attributes | 0.1 wrote some attributes in authored order; 0.2 writes id, class, and other attributes in a fixed order. One test changed `<p class="a" id="b">` to `<p id="b" class="a">`. Attribute attachment can also move to a different element. | Scripts that compare serialized HTML must parse attributes; selectors must inspect the new host element. |
+| Inline elements | Bare underline, strike, highlight, substitution, and strong/emphasis nesting can replace `<u>`, `<s>`, `<mark>`, `<del>`, `<ins>`, `<strong>`, or `<em>` with text or another nesting. | Run the source tool and check inline styling. |
+| Typography | Single quotes, long hyphen runs, flags, and some line-block spaces produce different text and entities. | Check text comparisons and generated labels. |
+| Links and references | A definition moved into a container, a duplicate definition, or an unresolved reference changes `<a>` and its `href`. Unresolved reference children now render as inline HTML inside literal brackets. | Test navigation and fallback text. |
+| Footnotes | A plain top-level footnote still rendered `<a role="doc-noteref">` plus `<section role="doc-endnotes">` with `fn1` and `fnref1` in both engines. Definition placement and lazy lines can remove or add that markup. | Verify note links and backlink scripts on real pages. |
+| Raw HTML and escaping | 0.1 emitted `=html` raw blocks and spans by default. 0.2 escapes a raw block inside `<pre><code class="language-html">` and escapes an inline raw span when `rawHtml` is false. Bare `<b>` text stays escaped in both. | Set `rawHtml: true` only where the old output is required and allowed. |
+| URL filtering | Both default engines blanked a tested `javascript:` link and `data:` image URL, keeping `href=""` or `src=""`. 0.2 also filters URL-valued attributes by its `urlPolicy`, and refuses a disabled policy. | Test scheme handling and any code that assumes a missing attribute instead of an empty one. |
+| Source lines and carriers | `sourceLine` becomes `sourceLines`. `roundtrip` carriers and their names changed. The `<template data-carve-abbreviations>` now holds the Carve source of one run of definitions, attribute lines and blank lines included, and stands at the place of that run (C2-H-178, C2-H-179). | Update `data-source-line` readers and do not parse old carrier names as a 2.0 contract. Read an abbreviation template with the Carve block reader, not line by line. |
+| Opaque blocks and comments | A changed fence or comment closer can replace a code block, div, or hidden comment with visible paragraph text. | Review syntax highlighting and content hiding. |
+
+For one concrete HTML comparison, the unchanged 0.1 source below produced two `<ul>` elements in 0.1 and one `<ul class="task-list">` with both `<li>` elements in 0.2:
+
+```carve
+- [ ] task
+- plain
+```
+
+A direct top-level heading and a direct footnote, by contrast, produced the same default section and endnotes markup on both engines in the probes. Those stable cases are useful regression checks, not reasons to skip the other rows.
+
+### Command line and missing features
+
+The 0.1 CLI at `dist/cli.js` exists and accepts a file or stdin. It has render targets for HTML, Markdown, plain text, ANSI, Carve, and AST JSON; `fmt`, `flatten`, `fix`, `lint`, `diff`, `merge`, `portability`, `trace`, and `migrate --from html|markdown|djot|bbcode`. It can expand includes. The 0.2 command line is specified in [tooling](tooling.md): `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`, with their flags, exit codes and reports. The reference engine ships it as `carve`, so far without the reports that `tooling.md` adds; its `upgrade` command and `node upgrade/src/cli.ts` are the rewrite program described in Part 1.
+
+The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table does not name keeps its name where `tooling.md` lists it, or belongs to a target or command that 0.2 does not have.
+
+| 0.1 | 0.2 |
+| --- | --- |
+| `--json`, `--ast` | `carve ast`, a 2.0 tree |
+| `flatten`, `fix` | `carve flatten` (C2-T-047, C2-T-048) and `carve fix`, which is `carve lint --fix` (C2-T-049, C2-T-050) |
+| `-o FILE`, `--output FILE` of the PHP engine | the same flags on `render`, `fmt`, `import` and `flatten` (C2-T-053) |
+| `--from-json` | `--from-ast`, which reads a 2.0 tree; migrate an older tree first with `carve migrate-ast` |
+| `--no-raw-html`, `--safe` | the default; `--raw-html` turns raw HTML on |
+| `--report-losses`, `--allow-loss`, `--max-render-losses`, `--report-includes` | the same names (C2-T-021 to C2-T-029); a loss report holds 0.2 diagnostic entries, and the include report the dependencies of C2-N-083 with `path`, `from`, `file` and `read` |
+| `migrate --from html` | `carve import --from html` |
+| `migrate --adapter NAME` | `carve import --adapter NAME` (C2-M-102) |
+| `migrate --from markdown` | `carve import --from gfm`; `--from markdown` reads CommonMark only and leaves tables as text |
+| `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
+| `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
+| `lint --rule ID`, `lint --platform NAME` | `carve lint --rules '{"ID":"on"}'`, `--platforms '["NAME"]'` (C2-T-010) |
+| `lint --from-djot` | turn on the `djot-` rules by their ids in `--rules` (C2-T-031) |
+| `lint --caption-hints` | none needed: `caption-looking-paragraph` is on by default |
+| `lint --ignore ID` | `carve lint --ignore FILE-ID`, repeatable (C2-T-052) |
+| `fmt --migrate` | `carve upgrade --migrate`, the upgrade tool's repair of a reference whose only target differs in case; each respelled line is a record `case-reference` of entry U-429 |
+| `lint` exits with 1 on any finding, a hint included | `carve lint` exits with 1 only for a warning or an error, and with 0 for hints alone, so a hint rule never fails a CI job (C2-T-031); `--strict` restores the 0.1 status (C2-T-051) |
+| include option `maxWarnings` (default 100) and `suppressedWarnings` | the fixed cap `include_diagnostics` of 100 and `suppressedDiagnostics` (C2-T-024) |
+| `-h`, `-V` | `--help`, `--version` |
+
+Not carried over:
+
+- `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
+
+0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). Callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows; the editor adapters of the HTML importer are the import option `adapter` (C2-M-102).
+
+## Part 3. Tree consumers: AST 1.x to 2.0
+
+| First check | 1.x shape | 2.0 rule |
+| --- | --- | --- |
+| Version | A 1.x document can be stored as a bare tree or older envelope. | Set `astVersion: "2.0"` on the document and matching envelope; a 2.0 reader refuses another major version. |
+| Child traversal | `items`, `rows`, `cells`, inline special slots, and flat table rows occur in several types. | Walk only declared child slots. Lists and tables use `children`; tables have groups and `cell_paragraph`. |
+| Meaning and spelling | Some source spelling was stored in tree fields. | Keep semantic fields in the tree and ask for `parseWithLayout` for source spelling and ranges. |
+| Resolution | Generated ids and resolved targets could be mixed with authored fields. | Read the typed resolution result fields in the resolved tree. Do not copy them into authored attributes. |
+| Storage | 1.x JSON passed through a 1.x decoder. | Migrate it outside the current engine, validate the 2.0 tree, and then use `decodeTree`. |
+
+The table below combines the migration section of [ast.md](ast.md#migration), its node table, and field changes observed in both engines. `T-001` onward identify map rows. A row describing an earlier draft is included because stored draft trees may exist. A field marked “dropped” does not survive a tree-only migration. These tree changes are loud to the strict 2.0 decoder: it refuses the old shape. A permissive custom reader could still lose meaning, so validate before consuming.
+
+### Tree and field migration index
+
+| ID | Change | 1.x or draft form | 2.0 form | Rule |
+| --- | --- | --- | --- | --- |
+| T-001 | split | `critic_substitution` with `old` and `new` | a `delete` holding `old`, directly followed by an `insert` holding `new` | C2-A-178 |
+| T-002 | merge | `escaped_text` | `text` with the same `value`, then coalesced with its neighbors | C2-A-178 |
+| T-003 | merge | `cell_wrap` | a `text` node holding one space, then coalesced | C2-A-178 |
+| T-004 | drop | `cellWraps` on `code`, `math` and `raw_inline` | dropped | C2-A-178 |
+| T-005 | move | `rawRef` | dropped; 0.1 references become `collapsed` when `rawRef` ends in `[]` and `full` otherwise; 0.1 has no `shortcut` form; `key` is folded | C2-A-178 |
+| T-006 | merge | `key` on definitions and footnote references | folded | C2-A-178 |
+| T-007 | merge | `attrs.order` and the `keyValues` object | `keyValues` becomes a list of pairs, in the order `attrs.order` gives or else in member order; `order` is dropped; a key named `id` or `class` folds in | C2-A-178 |
+| T-008 | move | an `image` in a list of blocks | a `paragraph` with `role: "image"` that holds the image | C2-A-178 |
+| T-009 | split | a `line_block` with block children | `line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped | C2-A-178 |
+| T-010 | move | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated | C2-A-178 |
+| T-011 | move | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one and supplies the original source, and otherwise dropped | C2-A-178 |
+| T-012 | drop | `definition_list.spacing` | dropped | C2-A-178 |
+| T-013 | drop | `blockImagePromotion` in `stages` | dropped; `role: "image"` stays as the tree has it | C2-A-178 |
+| T-014 | drop | the task status `cancelled`, in a draft tree or a 1.2 tree | removed; status derives from the mark | C2-A-178 |
+| T-015 | rename | `link.form` and `image.form` | `refForm`; the name identifies reference spelling rather than xref display. | C2-A-178 |
+| T-016 | rename | `xref.form` | `display`; the name identifies generated display text rather than reference spelling. | C2-A-178 |
+| T-017 | rename | `link_reference_definition.title` | `tooltip`; all link target strings use one name, while visible titles stay inline lists. | C2-A-178 |
+| T-018 | merge | `paragraph.blockImage` and `paragraph.blockMath` | `role: "image"` and `role: "math"`; one field makes the two exclusive. | C2-A-178 |
+| T-019 | rename | `rubyPair` | `ruby_pair`; the type follows snake_case and carries common node fields. | C2-A-178 |
+| T-020 | rename | `citation.suppressAuthor` | `citation.mode: "suppress-author"`; one field determines the mode. | C2-A-178 |
+| T-021 | drop | `citation_group.mode` | removed; every item carries its own mode. | C2-A-178 |
+| T-022 | merge | `citation.locatorLabel` and `citation.locatorValue` | `locator` object with label and inline children; its parts cannot disagree. | C2-A-178 |
+| T-023 | drop | `task.status` | removed; the state derives from `task.mark`. | C2-A-178 |
+| T-024 | rename | `include.options` string pairs | decoded typed option object; source quoting is written to a source-layout sidecar as `optionSpelling` when the caller asks for one and supplies the original source, and otherwise dropped. | C2-A-178 |
+| T-025 | drop | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped | C2-A-178 |
+| T-026 | move | a definition inside a container | not produced by the draft, which moves it to the document; no change | C2-A-178 |
+| T-027 | move | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class | C2-A-178 |
+| T-028 | version | 1.x bare document or envelope | document.astVersion = "2.0" and matching envelope.astVersion; reject other major versions | C2-A-012 C2-A-176 C2-A-177 |
+| T-029 | add | common node fields | optional typed metadata, opaque data, dir, lang and segments; only declared child slots contain nodes | C2-A-027 C2-A-189 |
+| T-030 | rename | definition/ref label or abbr | key plus namespace; abbreviation.abbr becomes key | C2-A-050 C2-A-070 |
+| T-031 | rename | code_block.content, header and label | value, syntax, title and groupLabel; code_block language is syntax | C2-A-050 |
+| T-032 | rename | frontmatter/raw_block/raw_inline/literal_inline/math content; critic_comment.text | value | C2-A-050 |
+| T-033 | split | comment block, delimited and content | form and value | C2-A-050 |
+| T-034 | merge | list ordered, start, olType, delim, bareMarker, bulletChar; tight | marker object; spacing = tight or loose | C2-A-053 C2-A-054 |
+| T-035 | rename | list.items, definition_list.items, table.rows, table_row.cells, citation_group.items | children with typed child slots | C2-A-050 C2-A-051 |
+| T-036 | split | table.rows and rowGroups | table_head, table_body, table_foot children, one table_body for each entry of rowGroups.bodies, which keeps its rowHeadColumns and whose headRows rows hold header cells (C2-B-230); table columns move to table_column nodes | C2-A-050 C2-B-230 |
+| T-037 | split | table_cell inline children and blocks | cell_paragraph child for inline content; block children for other content | C2-A-050 |
+| T-038 | rename | figure.target and shortCaption | caption.short; the figure itself is unwrapped (T-051, T-052) | C2-A-050 |
+| T-039 | rename | mention.user | target, kind and optional label | C2-A-050 |
+| T-040 | rename | inline_footnote.inline | children | C2-A-050 |
+| T-041 | rename | inline_extension.content | children; declared props, slots, fallback, payload and resourceIds | C2-A-050 |
+| T-042 | rename | heading_ref | xref with key, namespace, href and display | C2-A-050 |
+| T-043 | split | substitution or critic_substitution | delete followed by insert | C2-A-178 |
+| T-044 | add | image alt and target fields | optional decorative, longDescription, targetKind and resourceId | C2-A-050 |
+| T-045 | add | table cell accessibility | optional scope and headerIds | C2-A-050 |
+| T-046 | add | resolution outputs | generatedId, number, resolvedAlign, resolvedValign, href or src, display and table span counts remain in resolved tree | C2-A-106 C2-A-162 |
+| T-047 | move | source spelling and physical layout | source-layout record from parseWithLayout; marker, fences, wraps, whitespace and quote choices | C2-L-003 |
+| T-048 | drop | 0.1 rawRef, sourceFormat and layout-only fields | use semantic fields; original spelling is unavailable without source/layout | C2-A-178 |
+| T-049 | add | include directive | include with path, section, typed valid options and the invalid options as written; no expansion in core tree | C2-A-181 |
+| T-050 | add | no extension source record; block extension deferred in an earlier draft | qualified `block_extension` and `inline_extension` may carry a typed `source` record; a block extension has a required core fallback | C2-A-122 C2-A-125 C2-X-024 |
+| T-051 | merge | a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, with the `caption` and the `attrs` of the figure in its own fields; the comments go where C2-A-082 places them; `kind` is dropped | C2-A-082 C2-A-178 |
+| T-052 | move | any other `figure` | a `figure_group` with the same children, `caption` and `attrs`; `kind` is dropped | C2-A-084 C2-A-178 |
+| T-053 | move | `table_body.headRows` | dropped; the groups hold the partition, and the count is written to a source-layout sidecar as `headerRows` when the caller asks for one and supplies the original source, and otherwise dropped | C2-A-088 C2-A-178 |
+
+### Reading and storing 2.0 trees
+
+A 2.0 document root has `type: "document"`, `astVersion: "2.0"`, and `children`. Storage or process exchange uses an envelope with the same version and a `document`; optional `vocabulary` and `extensions` declarations may follow. An in-memory handoff may use the bare tree. The reader rejects a mismatched envelope version, unknown core fields or types, and unknown required extensions. A later `2.MINOR` may add only optional declared extensions and namespaced `data`, not a new core node or core field.
+
+The tree holds meaning. The source-layout record holds spelling. Call `parseWithLayout(source)` to obtain `document`, `layout`, and `diagnostics`. The layout has version 2, the original source (in base64 when the input was bytes that are not well-formed UTF-8), line-ending form, byte-order-mark flag, and `nodes` addressed by JSON Pointers into that exact tree. Its ranges are byte offsets of the input. It records such facts as a bare-dot list marker, a fenced quote, a table's source format, the declared head count of a delimited table, a reference's exact spelling, and table continuation wraps. It cannot reconstruct an old spelling that was absent from stored 1.x JSON. Do not synthesize a layout fact from a semantic tree field.
+
+A resolution result is computed beside authored content. In the 0.2 schema, examples are `heading.generatedId`, `footnote_ref.number`, `inline_footnote.number`, `link.href` or `image.src` for a reference, `table_column.resolvedAlign`, `table_column.resolvedValign`, and some table span counts. The [result-field list](data/ast-results.json) identifies them. They stay in the resolved tree but are excluded from semantic equality as specified. Authored heading ids stay in `attrs.id`. The 0.1 and 0.2 engines were both run on the same heading, list, table, link, and footnote sources to check the shapes in the table. For `# A & B`, 0.1 put the generated `A-B` in `heading.attrs.id`; 0.2 put it in `heading.generatedId`.
+
+For stored 1.x JSON, first identify the producer's exact contract version. Map old fields and node types using the table, preserve the order of authored children, and add `astVersion: "2.0"` to the root and envelope. Turn `list.items`, `table.rows` and `table_row.cells` into typed `children`; derive list `marker` and `spacing`; fold definition and reference labels into `key` and `namespace`; convert retired nodes; move only known spelling into a layout record if the original source is available. Keep `pos` byte offsets only if they still match the original source. Then validate against [the 2.0 schema](data/ast-schema.json) and decode with `decodeTree`. A 1.2 tree takes the earlier draft migration first, then the rows under `C2-A-178`. `migrateTree` migrates a stored 1.x or draft tree (C2-A-178 to C2-A-180), and `carve migrate-ast` does the same on the command line (C2-T-036). `decodeTree` validates a 2.0 tree and refuses the older shapes.
+
+Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown optional data. Walk only declared child slots, including root metadata `headers`, `footers`, `abstract` and nested `fields` values. A metadata value tags a string, boolean, number, inline list, block list, ordered value list or named value map. The core HTML renderer ignores root metadata; the Carve writer reports `fields` when no frontmatter node preserves the raw source. The [0.2 extension interface](extensions.md) lets a registered matcher claim a core inline, div, or code-block node and transform it into a declared `inline_extension` or `block_extension`. Both need a valid same-role fallback containing only core nodes; qualified forms may carry a typed `source` record for the writer. Declarations on the root or envelope carry slot names in walk order. A tree-only reader checks annotation id shape and duplicates; a reader with the range sidecar also checks each referenced range. `carve.tabs` is the specified standard extension. An extension renderer is trusted host code and returns HTML unchanged; hosts use trusted renderers for untrusted documents. The interface is specified and the current engine exports it, including `tabsExtensions`. For unknown required extensions, refuse the tree; for unknown optional ones, use the valid fallback as the spec directs. Do not silently discard an extension's payload or `data` on storage round trips.
+
+## Tooling not yet shipped
+
+- Finish the loss and include reports, the include diagnostics cap and the categories of [tooling](tooling.md) that `carve` lacks. The `lint` command is shipped.
+- Resolve the rewrite tool's `U-114` fifth-input `upgrade-mismatch` and classify remaining corpus mismatches.
+- Align the engine's tree fields and task-item style with the current 0.2 schema and HTML rulings.

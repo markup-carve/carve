@@ -1,1 +1,0 @@
-The HTML (HyperText Markup Language) spec is essential reading.

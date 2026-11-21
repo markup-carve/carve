@@ -3,84 +3,29 @@ title: Terms used in this documentation
 description: Definitions for Carve-specific and markup-language terms.
 ---
 
-# Terms used in this documentation
+# Terms Used in This Documentation
 
-Most pages use the terms below. Pages about parser implementation use additional
-programming terms and define them where they appear.
+These terms follow the [0.2 specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/README.md).
 
-## Language and specification
+| Term | Meaning |
+|---|---|
+| Source | The authored `.crv` text. |
+| Block | A document part such as a paragraph, list, table, or div. |
+| Inline | Content inside a block, such as text, a link, or emphasis. |
+| Tree | The resolved 2.0 document structure; see the [AST contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md). |
+| Layout sidecar | Source spelling and placement facts stored beside a tree; see [source layout](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md). |
+| Canonical writer | The writer that spells a tree as canonical Carve source; see [writer](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md). |
+| Diagnostic | A structured finding in the parse, render loss, or lint channel; see [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#diagnostics-and-reports). |
+| Include resolver | Host code that reads an allowed included file; see [includes](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md). |
+| Extension | A registered transformation with a core fallback; see [extensions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md). |
 
-**Core syntax**
-: Syntax every Carve parser must support. It is available without enabling an
-optional feature.
+A syntax feature of the core language does not require an extension registration. A host option changes processing or output without changing the source grammar. An included file is authored source, while a layout sidecar is a record of how source was written.
 
-**Optional feature**
-: Behavior that an application must enable or provide. Citations and automatic
-links for `@mentions` are examples. The specification calls widely implemented
-optional features **Tier 2** and implementation-specific features **Tier 3**.
-Those tier names are used only where the distinction matters.
+## Established documentation terms
 
-**Specification**
-: The rules that define valid Carve input and its meaning. A page marked
-**normative** is part of those rules. Explanations, tutorials, and design notes
-are not normative.
-
-**Conformance tests**
-: Carve input paired with the exact output an implementation must produce. The
-repository sometimes calls the complete set a **conformance corpus**.
-
-**Standard form**
-: The spelling written by the formatter. The specification uses **canonical
-form** for the same concept.
-
-## Parsing and output
-
-**Abstract syntax tree (AST)**
-: The structured document produced by a parser. Application developers may use
-it to inspect or change a document before rendering it. Authors do not need to
-understand the AST to write Carve.
-
-**Render**
-: Convert a parsed Carve document to an output format such as HTML, Markdown,
-plain text, or ANSI terminal text.
-
-**Output warning**
-: A report that identifies content an output format cannot represent. API
-reference pages may call this a **render loss**.
-
-**Fallback output**
-: The non-interactive or simpler representation used when an output format
-cannot reproduce a feature. For example, a diagram may become its source text.
-Some specification pages call this **graceful degradation**.
-
-**Round trip**
-: Convert a document to another representation and back, then compare the
-result with the original.
-
-**Raw HTML passthrough**
-: The explicit `` ```=html `` block and `` `...`{=html} `` inline forms, whose
-contents may be emitted as HTML. Ordinary HTML tags are always text. Disable
-raw HTML passthrough when processing untrusted input.
-
-## Extensions
-
-**Extension**
-: Optional code that recognizes a named inline form or block and controls its
-output. Inline extensions use `:name[content]`; block extensions use
-`::: name`. If no extension handles the name, Carve keeps the content in an
-ordinary span or div.
-
-**Profile**
-: A set of content restrictions applied by an application. A profile can, for
-example, reject images in comments while allowing them in articles.
-
-**Host application**
-: The program that calls a Carve parser or renderer. It supplies configuration,
-optional extensions, and application-specific URLs.
-
-## Similar terms that are not interchangeable
-
-- **Parse** reads Carve and creates a structured document.
-- **Format** writes that document back as Carve source.
-- **Render** writes it in another output format.
-- **Convert** moves between Carve and another document format or editor model.
+- **Core syntax**: source forms every 0.2 parser recognizes without an extension.
+- **Optional feature**: behavior a host enables through an option or registered extension; the source alone does not require the host to provide it.
+- **Abstract syntax tree (AST)**: the typed 2.0 document tree after parsing and resolution.
+- **Output warning**: a diagnostic, usually in the render loss channel, that reports a representation problem; the record gives its code and severity.
+- **Fallback output**: the core rendering of an extension node's valid fallback when its extension renderer is unavailable.
+- **Raw HTML passthrough**: explicit raw source emitted only for HTML output when the host enables raw HTML.

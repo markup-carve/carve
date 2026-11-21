@@ -1,7 +1,0 @@
-Adjacent strong spans use HTML only where their delimiters merge
-
-```
-{*a*}{*b*}
-.
-<p><strong>a</strong><strong>b</strong></p>
-```

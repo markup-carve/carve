@@ -1,0 +1,308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 HTML import mapping",
+  "description": "The tables of import-html.md: the editor adapters, what an HTML importer makes of each element and attribute that no carrier covers, the Carve render conventions it reads, its diagnostic codes, and what a render without `roundtrip` loses. Every list is sorted by its first field, by code point.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "adapters",
+    "elements",
+    "attributes",
+    "conventions",
+    "codes",
+    "losses"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "schemas/import-html.schema.json"
+    },
+    "adapters": {
+      "type": "array",
+      "description": "C2-M-102: the values of the import option `adapter` and the pass each runs before the mapping.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "pass",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "enum": [
+              "generic",
+              "tiptap",
+              "prosemirror",
+              "ckeditor",
+              "tinymce",
+              "word",
+              "google-docs"
+            ],
+            "description": "The value of the option."
+          },
+          "pass": {
+            "enum": [
+              "none",
+              "notes"
+            ],
+            "description": "`none`: the mapping reads the parsed tree as it stands; `notes`: the note pass of C2-M-103 to C2-M-110 runs first."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The editor or export the value is for."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-M-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes."
+          }
+        }
+      }
+    },
+    "elements": {
+      "type": "array",
+      "description": "Every HTML element the mapping names, and the row `*`.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "treatment",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^([a-z][a-z0-9]*|\\*)$",
+            "description": "The lower-case tag name. `*` is every element with no row."
+          },
+          "treatment": {
+            "enum": [
+              "map",
+              "div",
+              "span",
+              "unwrap",
+              "raw",
+              "drop"
+            ],
+            "description": "C2-M-056: `map` gives the node of its clauses; `div` and `span` give that node with the element's attributes; `unwrap` reads the children in place; `raw` gives raw HTML; `drop` gives nothing."
+          },
+          "node": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The node or nodes the element gives. Absent for `unwrap` and `drop`."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A condition or exception that the clauses state."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILMNW]-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "attributes": {
+      "type": "array",
+      "description": "The attribute rows of C2-M-052. The row `*` applies only where no other row matches. Rows that a clause reads for one element are fields of its node (C2-M-053).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "match",
+          "on",
+          "treatment",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The attribute name, a name prefix, or `*`."
+          },
+          "match": {
+            "enum": [
+              "name",
+              "prefix",
+              "reserved",
+              "key"
+            ],
+            "description": "`name`: the whole name, without ASCII case. `prefix`: a name that starts with it. `reserved`: a reserved name of C2-H-115. `key`: every other name that is a key by C2-I-030."
+          },
+          "on": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The elements the row applies to, or `any`."
+          },
+          "treatment": {
+            "enum": [
+              "id",
+              "classes",
+              "lang",
+              "dir",
+              "key",
+              "field",
+              "drop",
+              "carrier"
+            ],
+            "description": "What the attribute becomes: `attrs.id`, `attrs.classes`, the node field `lang` or `dir`, a key of `attrs`, a field of the node, nothing (reported), or a carrier read by html.md."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILMNW]-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "conventions": {
+      "type": "array",
+      "description": "The render conventions that need no carrier and are read in every input (C2-M-010, C2-M-035).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "element",
+          "test",
+          "node",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z-]*$"
+          },
+          "element": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*$"
+          },
+          "test": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What the element must show."
+          },
+          "node": {
+            "type": "string",
+            "minLength": 1
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILMNW]-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "codes": {
+      "type": "array",
+      "description": "The diagnostic codes of an importer (C2-M-083).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "severity",
+          "channel",
+          "reports",
+          "clauses"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^import-[a-z-]+$"
+          },
+          "severity": {
+            "enum": [
+              "hint",
+              "warning",
+              "error"
+            ]
+          },
+          "channel": {
+            "const": "render-loss"
+          },
+          "reports": {
+            "type": "string",
+            "minLength": 1
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILMNW]-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "losses": {
+      "type": "array",
+      "description": "C2-M-091: the facts a carrier sets, and what a render without it gives back.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "comes_back",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^data-[a-z-]+$",
+            "description": "A reserved name of C2-H-115."
+          },
+          "comes_back": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What an import of a render without `roundtrip` gives where this carrier would stand."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILMNW]-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    }
+  }
+}

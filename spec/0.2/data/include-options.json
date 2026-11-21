@@ -1,0 +1,53 @@
+{
+  "$schema": "schemas/include-options.schema.json",
+  "options": [
+    {
+      "rank": 1,
+      "name": "code",
+      "kind": "mode",
+      "value": "language",
+      "needs_value": false,
+      "clauses": ["C2-B-204", "C2-B-205", "C2-B-206", "C2-W-058", "C2-N-042", "C2-N-043", "C2-N-044", "C2-N-045"]
+    },
+    {
+      "rank": 2,
+      "name": "lines",
+      "kind": "selection",
+      "value": "range",
+      "needs_value": true,
+      "clauses": ["C2-B-204", "C2-B-205", "C2-B-206", "C2-W-058", "C2-N-034", "C2-N-035", "C2-N-036"]
+    },
+    {
+      "rank": 3,
+      "name": "region",
+      "kind": "selection",
+      "value": "identifier",
+      "needs_value": true,
+      "clauses": ["C2-B-204", "C2-B-205", "C2-B-206", "C2-W-058", "C2-N-037", "C2-N-041"]
+    },
+    {
+      "rank": 4,
+      "name": "rows",
+      "kind": "selection",
+      "value": "range",
+      "needs_value": true,
+      "clauses": ["C2-B-204", "C2-B-205", "C2-B-206", "C2-W-058", "C2-N-024", "C2-N-046"]
+    },
+    {
+      "rank": 5,
+      "name": "cols",
+      "kind": "transform",
+      "value": "range_or_names",
+      "needs_value": true,
+      "clauses": ["C2-B-204", "C2-B-205", "C2-B-206", "C2-W-058", "C2-N-024", "C2-N-047"]
+    },
+    {
+      "rank": 6,
+      "name": "shift",
+      "kind": "transform",
+      "value": "signed_integer_or_auto",
+      "needs_value": true,
+      "clauses": ["C2-B-204", "C2-B-205", "C2-B-206", "C2-W-058", "C2-N-048", "C2-N-049", "C2-N-050", "C2-N-051"]
+    }
+  ]
+}

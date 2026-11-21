@@ -1,30 +1,19 @@
-name: Nightly fuzz differential
+name: Nightly fuzz differential (0.2)
 
-# Mutates corpus documents and compares the HTML of the spec model, carve-js,
-# carve-php and carve-rs on each mutant (scripts/fuzz-nightly.mjs). Every
-# disagreement is reduced, grouped by a cause signature, and filed by
-# scripts/fuzz-file-issues.mjs: one `bug` + `area:corpus` issue per new cause,
-# a comment on an open issue with the same signature or shape family, nothing
-# for a closed one or for an engine that renders what the model at its own spec
-# pin renders (lag behind a ruling), at most five new issues a night and three
-# per agreement pattern; the run summary lists the rest. The spec-pin models
-# load from the engines' spec submodules and resolve their packages through
-# this checkout's node_modules, which is why the engines are checked out inside it.
+# Fuzzes the Carve 0.2 engines at their next2 heads (scripts/fuzz-nightly.mjs): mutants of the 0.2 conformance
+# inputs, random documents, deep nesting and line-ending noise go through parse, render, format and lint in
+# carve-js, carve-php and carve-rs. The run compares the tree, the HTML, the fmt output and the lint findings across
+# the engines, checks the writer gates C2-W-002 and C2-W-003 per engine, imports the rendered HTML in every engine,
+# and times long inputs of each construct for superlinear growth. Every finding is reduced and grouped by a cause
+# signature; scripts/fuzz-file-issues.mjs files one issue per new signature, crashes, hangs and superlinear time
+# first, at most five a night. Lint splits are left to scripts/lint-parity.mjs.
 #
-# The seed is the UTC date unless a dispatch names one, and the run prints it.
-# Engines are built at the reviewed pins, as in ast-conformance.yml.
-#
-# Findings keep the run GREEN; the issues are the signal. The run goes red only
-# when the harness breaks: an engine fails to build, nothing was compared, too
-# few unmutated corpus documents agree, or gh cannot file.
-#
-# 0.1.x is frozen while 0.2 is built on `next2`: the scheduled run prints its
-# plan and files nothing. A dispatch with file-issues still files.
+# The seed is the UTC date unless a dispatch names one. Findings keep the run green; it goes red only when the
+# harness breaks: an engine fails to build, nothing was compared, or gh cannot file.
 
 on:
   schedule:
-    # 05:30 UTC, after ast-conformance's 04:00 run has had its slot.
-    - cron: '30 5 * * *'
+    - cron: '45 5 * * *'
   workflow_dispatch:
     inputs:
       seed:
@@ -34,7 +23,7 @@ on:
       budget-minutes:
         description: Minutes of fuzzing
         required: false
-        default: '20'
+        default: '30'
       file-issues:
         description: File and comment on issues (false prints the plan only)
         type: boolean
@@ -45,82 +34,76 @@ permissions:
   issues: write
 
 concurrency:
-  group: nightly-fuzz
+  group: nightly-fuzz-next2
   cancel-in-progress: false
 
 jobs:
   fuzz:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: 4
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.cargo-next2-target
+      CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+      CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+      CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+      CARVE_RS_READINESS_BIN: ${{ github.workspace }}/.cargo-next2-target/release/carve-next2-readiness
     steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: recursive
-
-      - uses: ./.github/actions/npm-ci
-        with:
-          node-version: 24.22.0
-
-      - name: Read the reviewed engine pins
-        id: pins
-        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
-
-      - uses: actions/checkout@v7
-        with:
-          repository: markup-carve/carve-js
-          ref: ${{ steps.pins.outputs.js }}
-          path: carve-js
-          submodules: recursive
-      - name: Build carve-js
-        working-directory: carve-js
-        run: npm ci && npm run build
-
-      - uses: actions/checkout@v7
-        with:
-          repository: markup-carve/carve-rs
-          ref: ${{ steps.pins.outputs.rs }}
-          path: carve-rs
-          submodules: recursive
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build carve-rs
-        working-directory: carve-rs
-        run: cargo build --release --bin carve
-
-      - uses: actions/checkout@v7
-        with:
-          repository: markup-carve/carve-php
-          ref: ${{ steps.pins.outputs.php }}
-          path: carve-php
-          submodules: recursive
-      # 8.4 for the reason ast-conformance.yml gives: below it carve-php's
-      # HTML importer takes the legacy libxml path.
+      - uses: actions/checkout@v6
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-      - name: Install carve-php
-        working-directory: carve-php
-        run: composer install --no-interaction --no-progress
-
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: next2
+          path: engines/carve-js
+          submodules: recursive
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          ref: next2
+          path: engines/carve-php
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          ref: next2
+          path: engines/carve-rs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engines/carve-js/package-lock.json
+      - name: Build the JavaScript 0.2 engine
+        working-directory: engines/carve-js
+        run: npm ci && npm run build
+      - name: Install the PHP 0.2 engine
+        working-directory: engines/carve-php
+        run: composer install --no-dev --no-interaction --no-progress
+      - uses: actions/cache@v6
+        with:
+          path: ${{ github.workspace }}/.cargo-next2-target
+          key: carve-nightly-fuzz-${{ runner.os }}-${{ hashFiles('scripts/next2-readiness-rs/Cargo.lock', 'scripts/next2-readiness-rs/src/main.rs', 'engines/carve-rs/Cargo.lock', 'engines/carve-rs/src/**') }}
+          restore-keys: carve-nightly-fuzz-${{ runner.os }}-
+      - name: Build the Rust 0.2 engine batch adapter (release)
+        run: cargo build --release --manifest-path scripts/next2-readiness-rs/Cargo.toml
+      - name: Unit tests of the harness
+        run: node --test tests/fuzz-nightly.test.mjs
       - name: Fuzz
         env:
-          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
-          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
-          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-          CARGO_TARGET_DIR: ${{ github.workspace }}/carve-rs/target
           SEED: ${{ inputs.seed }}
-          BUDGET: ${{ inputs.budget-minutes || '20' }}
+          BUDGET: ${{ inputs.budget-minutes || '30' }}
         run: |
-          node scripts/fuzz-nightly.mjs ${SEED:+--seed="$SEED"} --budget-minutes="$BUDGET" --report=/tmp/fuzz-nightly.json
-
-      - uses: actions/upload-artifact@v7
+          node scripts/fuzz-nightly.mjs ${SEED:+--seed="$SEED"} --budget-minutes="$BUDGET" \
+            --timing --timing-sizes=4000,16000,64000 --report=/tmp/fuzz-nightly.json
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: fuzz-nightly-report
           path: /tmp/fuzz-nightly.json
           if-no-files-found: ignore
-
       - name: File issues
         env:
           GH_TOKEN: ${{ github.token }}
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.file-issues && '' || '--dry-run' }}
+          DRY_RUN: ${{ (github.event_name == 'schedule' || inputs.file-issues) && '' || '--dry-run' }}
         run: node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz-nightly.json --repo="$GITHUB_REPOSITORY" $DRY_RUN

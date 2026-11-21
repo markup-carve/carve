@@ -1,0 +1,269 @@
+{
+  "$schema": "schemas/extensions.schema.json",
+  "extensions": [
+    {
+      "name": "carve.cite",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "cite"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-058"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.codeGroup",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "code-group"
+      },
+      "props": {},
+      "slots": {
+        "panels": {
+          "kind": "block",
+          "minItems": 1
+        }
+      },
+      "clauses": [
+        "C2-X-063"
+      ],
+      "slotOrder": [
+        "panels"
+      ]
+    },
+    {
+      "name": "carve.details",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "details"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-065"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.fencedRender.mermaid",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "mermaid"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.imgFence.image",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "image"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-059",
+        "C2-X-060"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.imgFence.img",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "img"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-059",
+        "C2-X-060"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.mathBlock",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "math"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-062"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.spoiler",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "spoiler"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-064"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.spoilerBlock",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "spoiler"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-064",
+        "C2-X-065"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.tab",
+      "version": "1",
+      "parent": {
+        "name": "carve.tabs",
+        "slot": "tabs"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-039",
+        "C2-X-041",
+        "C2-X-042",
+        "C2-X-046"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.tabs",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "tabs"
+      },
+      "props": {},
+      "slots": {
+        "tabs": {
+          "kind": "block_extension",
+          "name": "carve.tab",
+          "minItems": 1
+        }
+      },
+      "clauses": [
+        "C2-X-039",
+        "C2-X-040",
+        "C2-X-041",
+        "C2-X-042",
+        "C2-X-043",
+        "C2-X-044",
+        "C2-X-045",
+        "C2-X-046",
+        "C2-X-047",
+        "C2-X-048",
+        "C2-X-056"
+      ],
+      "slotOrder": [
+        "tabs"
+      ],
+      "rendererOptions": {
+        "mode": {
+          "values": [
+            "css",
+            "aria"
+          ],
+          "default": "css",
+          "clauses": [
+            "C2-X-043",
+            "C2-X-047",
+            "C2-X-048",
+            "C2-X-056"
+          ]
+        }
+      }
+    },
+    {
+      "name": "carve.wiki",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "wiki"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-057"
+      ],
+      "slotOrder": []
+    }
+  ]
+}
