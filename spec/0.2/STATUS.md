@@ -251,9 +251,9 @@ CC-1491 holds 10,000 copies of `x_a_ ` again (#6314); the three engines pass it 
 
 C2-W-133 gives the writer one repair budget per document, 24,000,000 characters or 1,000 times the document where that is more, summed over all groups; once it is spent, every later group that needs a repair parse is refused, and C2-W-010 calls the limit linear in the document (#6304). Clause cases CC-1492 and CC-1493.
 
-CC-1493 is engine-local (`engineLocal`): its refusals hold for a writer that repairs those quotes by parsing, and carve-php decides their escapes from tables with no repair parse, which C2-W-089 allows. CC-1492 passes.
+CC-1493 is engine-local (`engineLocal`): its revised expectation is no refusal for a writer that reparses each quote once per C2-W-088 round and escapes all reported constructs together. A writer that decides those escapes from tables can use no repair parse (C2-W-089); other repair strategies can spend a different amount of the budget. CC-1492 passes.
 
-- `carve-rs`: the repair limit is per group, so the second and third quote of CC-1493 are written without `writer-refused` (markup-carve/carve-rs#4538).
+- `carve-rs`: the repair limit is per group rather than per document (markup-carve/carve-rs#4538); CC-1492 still checks the shared limit.
 
 ## Engine gaps from the trailing-space ruling of 21 November
 
