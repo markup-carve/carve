@@ -68235,7 +68235,7 @@
     "C2-W-152"
    ],
    "why": "C2-W-152: A text run that would open a later typed metadata block is repaired under C2-W-088 and C2-W-092.",
-   "summary": "typed metadata: writer escaped typed",
+   "summary": "typed metadata: formatter preserves authored first-hyphen escape",
    "kind": "format",
    "input": "a\n\n\\---yaml\nk: v\n\\---\n",
    "options": {},
@@ -68335,6 +68335,46 @@
     "status": 0,
     "stdout": "x\n\n---yaml\nk: v\n---\n",
     "stderrCategory": null
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1612",
+   "clauses": [
+    "C2-W-152",
+    "C2-W-091"
+   ],
+   "why": "C2-W-152: For a literal `---yaml` in that position the canonical repaired spelling is `-\\--yaml`, as C2-W-091 keeps the repair after reparsing.",
+   "summary": "writer escapes a supplied plain-text typed opener canonically",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "---yaml"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\n\n-\\--yaml\n"
    },
    "from": []
   }

@@ -1,6 +1,6 @@
 # Carve 0.2: status
 
-**Freeze candidate 18.** The 21 November ruling on typed metadata blocks after line 1 (#6324) reopens the 0.2.0 syntax and tree contract before the tag. C2-B-231 to C2-B-233, C2-A-218 and C2-W-152 state the added rules; the conformance rows CC-1581 onward pin the cases. The JavaScript prototype is held while the engines port the final contract.
+**Freeze candidate 18.** The 21 November ruling on typed metadata blocks after line 1 (#6324) reopens the 0.2.0 syntax and tree contract before the tag. C2-B-231 to C2-B-233, C2-A-218 and C2-W-152 state the added rules; the conformance rows CC-1581 to CC-1612 pin the cases. The JavaScript prototype is held while the engines port the final contract.
 
 **Freeze candidate 17.** The candidate is the text of `spec/0.2/` on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
