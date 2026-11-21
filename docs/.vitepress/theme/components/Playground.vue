@@ -492,6 +492,45 @@ const exported = computed<{ text: string; losses: number } | null>(() => {
     return { text: error instanceof Error ? error.message : String(error), losses: 0 }
   }
 })
+const OUTPUT_FILES: Record<Output, { name: string; type: string }> = {
+  html: { name: 'document.html', type: 'text/html' },
+  tree: { name: 'document.json', type: 'application/json' },
+  lint: { name: 'lint.json', type: 'application/json' },
+  fmt: { name: 'formatted.crv', type: 'text/plain' },
+  markdown: { name: 'document.md', type: 'text/markdown' },
+  plain: { name: 'document.txt', type: 'text/plain' },
+  ansi: { name: 'document.ansi.txt', type: 'text/plain' },
+}
+const copied = ref<'source' | 'output' | null>(null)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
+// An export tab reads the tools entry, which may still be loading.
+async function settledOutput(): Promise<string> {
+  if (exportTargets.includes(output.value as ExportTarget)) {
+    await loadTools()
+    await nextTick()
+  }
+  return activeOutput.value
+}
+async function copyText(which: 'source' | 'output'): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(which === 'source' ? source.value : await settledOutput())
+    copied.value = which
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => { copied.value = null }, 1500)
+  } catch {
+    copied.value = null
+  }
+}
+async function download(which: 'source' | 'output'): Promise<void> {
+  const file = which === 'source' ? { name: 'document.crv', type: 'text/plain' } : OUTPUT_FILES[output.value]
+  const blob = new Blob([which === 'source' ? source.value : await settledOutput()], { type: `${file.type};charset=utf-8` })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = file.name
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 0)
+}
 const ansiHtml = computed(() => output.value === 'ansi' && exported.value ? ansiToHtml(exported.value.text) : '')
 const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : exported.value ? exported.value.text : formatted.value)
 const mounted = ref(false)
@@ -1078,6 +1117,25 @@ void mermaidInit
         <div class="pane-label-row">
           <label>Carve source</label>
           <span v-if="formatNote" class="pg-shared-note" role="status">{{ formatNote }}</span>
+          <span class="pg-pane-actions">
+          <button
+            class="pg-pane-btn"
+            type="button"
+            :aria-label="copied === 'source' ? 'Copied' : 'Copy the source'"
+            :title="copied === 'source' ? 'Copied' : 'Copy the source'"
+            @click="copyText('source')"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline v-if="copied === 'source'" points="20 6 9 17 4 12" />
+              <template v-else><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></template>
+            </svg>
+          </button>
+          <button class="pg-pane-btn" type="button" :aria-label="'Download the source as document.crv'" :title="'Download the source as document.crv'" @click="download('source')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11" /><polyline points="7 10 12 15 17 10" /><path d="M5 20h14" />
+            </svg>
+          </button>
+          </span>
         </div>
         <div
           class="carve-editor-wrap"
@@ -1130,6 +1188,25 @@ void mermaidInit
           <span v-if="output === 'ansi'" class="pg-shared-note">escape codes shown as styles</span>
           <span v-if="exported?.losses" class="pg-shared-note" :title="`The ${output} export cannot spell ${exported.losses} construct(s)`">{{ exported.losses }} {{ exported.losses === 1 ? 'loss' : 'losses' }}</span>
           <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
+          <span class="pg-pane-actions">
+          <button
+            class="pg-pane-btn"
+            type="button"
+            :aria-label="copied === 'output' ? 'Copied' : 'Copy this output'"
+            :title="copied === 'output' ? 'Copied' : 'Copy this output'"
+            @click="copyText('output')"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline v-if="copied === 'output'" points="20 6 9 17 4 12" />
+              <template v-else><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></template>
+            </svg>
+          </button>
+          <button class="pg-pane-btn" type="button" :aria-label="`Download as ${OUTPUT_FILES[output].name}`" :title="`Download as ${OUTPUT_FILES[output].name}`" @click="download('output')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11" /><polyline points="7 10 12 15 17 10" /><path d="M5 20h14" />
+            </svg>
+          </button>
+          </span>
         </div>
         <div v-if="output === 'lint'" class="raw pg-lint">
           <p v-if="lintResult.error" class="pg-lint-empty">{{ lintResult.error }}</p>
@@ -1563,6 +1640,10 @@ textarea:focus {
 .pg-ansi :deep(.ansi-fg-white), .pg-ansi :deep(.ansi-fg-bright-white), .pg-ansi :deep(.ansi-fg-bright-black) { color: var(--vp-c-text-2); }
 .pg-ansi :deep([class*="ansi-bg-"]) { background: var(--vp-c-default-soft); }
 .pg-select { appearance: auto; padding-right: .4rem; }
+.pg-pane-actions { display: inline-flex; gap: .2rem; margin-left: auto; }
+.pg-status + .pg-pane-actions { margin-left: 0; }
+.pg-pane-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); cursor: pointer; }
+.pg-pane-btn:hover, .pg-pane-btn:focus-visible { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
 .pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
 .pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
 .pg-lint-empty { margin: 0; }
