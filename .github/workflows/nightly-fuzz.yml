@@ -1,0 +1,109 @@
+name: Nightly fuzz differential (0.2)
+
+# Fuzzes the Carve 0.2 engines at their next2 heads (scripts/fuzz-nightly.mjs): mutants of the 0.2 conformance
+# inputs, random documents, deep nesting and line-ending noise go through parse, render, format and lint in
+# carve-js, carve-php and carve-rs. The run compares the tree, the HTML, the fmt output and the lint findings across
+# the engines, checks the writer gates C2-W-002 and C2-W-003 per engine, imports the rendered HTML in every engine,
+# and times long inputs of each construct for superlinear growth. Every finding is reduced and grouped by a cause
+# signature; scripts/fuzz-file-issues.mjs files one issue per new signature, crashes, hangs and superlinear time
+# first, at most five a night. Lint splits are left to scripts/lint-parity.mjs.
+#
+# The seed is the UTC date unless a dispatch names one. Findings keep the run green; it goes red only when the
+# harness breaks: an engine fails to build, nothing was compared, or gh cannot file.
+
+on:
+  schedule:
+    - cron: '45 5 * * *'
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: Seed (empty for the UTC date)
+        required: false
+        default: ''
+      budget-minutes:
+        description: Minutes of fuzzing
+        required: false
+        default: '30'
+      file-issues:
+        description: File and comment on issues (false prints the plan only)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: nightly-fuzz-next2
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: 4
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.cargo-next2-target
+      CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+      CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+      CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+      CARVE_RS_READINESS_BIN: ${{ github.workspace }}/.cargo-next2-target/release/carve-next2-readiness
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: next2
+          path: engines/carve-js
+          submodules: recursive
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          ref: next2
+          path: engines/carve-php
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          ref: next2
+          path: engines/carve-rs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engines/carve-js/package-lock.json
+      - name: Build the JavaScript 0.2 engine
+        working-directory: engines/carve-js
+        run: npm ci && npm run build
+      - name: Install the PHP 0.2 engine
+        working-directory: engines/carve-php
+        run: composer install --no-dev --no-interaction --no-progress
+      - uses: actions/cache@v6
+        with:
+          path: ${{ github.workspace }}/.cargo-next2-target
+          key: carve-nightly-fuzz-${{ runner.os }}-${{ hashFiles('scripts/next2-readiness-rs/Cargo.lock', 'scripts/next2-readiness-rs/src/main.rs', 'engines/carve-rs/Cargo.lock', 'engines/carve-rs/src/**') }}
+          restore-keys: carve-nightly-fuzz-${{ runner.os }}-
+      - name: Build the Rust 0.2 engine batch adapter (release)
+        run: cargo build --release --manifest-path scripts/next2-readiness-rs/Cargo.toml
+      - name: Unit tests of the harness
+        run: node --test tests/fuzz-nightly.test.mjs
+      - name: Fuzz
+        env:
+          SEED: ${{ inputs.seed }}
+          BUDGET: ${{ inputs.budget-minutes || '30' }}
+        run: |
+          node scripts/fuzz-nightly.mjs ${SEED:+--seed="$SEED"} --budget-minutes="$BUDGET" \
+            --timing --timing-sizes=4000,16000,64000 --report=/tmp/fuzz-nightly.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: fuzz-nightly-report
+          path: /tmp/fuzz-nightly.json
+          if-no-files-found: ignore
+      - name: File issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ (github.event_name == 'schedule' || inputs.file-issues) && '' || '--dry-run' }}
+        run: node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz-nightly.json --repo="$GITHUB_REPOSITORY" $DRY_RUN
