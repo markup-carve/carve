@@ -77,7 +77,7 @@ const EXCLUDED = {
 
   // 2. Need config / no zero-config visible effect.
   defaultAttributes: 'needs per-document default-attribute config',
-  headingLevelShift: 'needs a shift-amount option',
+  headingLevelShift: 'removed in 0.2, replaced by the core render option headingShift (C2-H-208); listed while the 0.1 package pin exports it',
   headingReference: 'needs config / overlaps core cross-references',
   tabNormalize: 'invisible whitespace transform, nothing to show',
   glossary: 'needs a ::: glossary definition block plus :term[…] uses, nothing to show zero-config',

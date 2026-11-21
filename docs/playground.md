@@ -38,7 +38,7 @@ The playground saves the document in your browser and restores it on the next vi
 
 ## Render options
 
-The **Options** button opens the 0.2 profile, heading ID, section, smart typography, and raw HTML controls. Raw HTML starts off. Turn it on only for source you trust. The **Tree JSON** tab shows the 0.2 parser result.
+The **Options** button opens the 0.2 profile, heading ID, heading shift, section, smart typography, and raw HTML controls. Heading shift also applies to the Markdown export. Raw HTML starts off. Turn it on only for source you trust. The **Tree JSON** tab shows the 0.2 parser result.
 
 ## Output tabs
 
