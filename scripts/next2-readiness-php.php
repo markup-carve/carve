@@ -276,7 +276,10 @@ function runCase(array $case): array
             case 'refused-tree':
             case 'supplied-tree':
                 $tree = $case['json'] ?? json_encode($case['tree'], JSON_THROW_ON_ERROR);
-                $doc = \MarkupCarve\Carve2\Json\TreeReader::read($tree);
+                $doc = \MarkupCarve\Carve2\Json\TreeReader::read($tree, [
+                    ...$options,
+                    ...(array_key_exists('annotations', $case) ? ['annotations' => $case['annotations']] : []),
+                ]);
                 return ['accepted' => true, 'tree' => (new TreeEncoder())->encode($doc, null)];
             case 'position':
                 if (!method_exists(Carve2::class, 'positionOf')) {

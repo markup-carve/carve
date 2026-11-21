@@ -285,7 +285,7 @@ function jsRun(c) {
   try { options = jsOptions(c) } catch (e) { return { accepted: false, error: e.name, message: e.message } }
   try {
     if (kind === 'refused-tree' || kind === 'supplied-tree' || kind === 'tree') {
-      const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree), undefined, options.extensions)
+      const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree), undefined, options.extensions, c.annotations)
       return { accepted: true, tree }
     }
     if (kind === 'layout-fixture') {
