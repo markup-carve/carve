@@ -30,6 +30,14 @@ node dist/cli.js import --from gfm page.md
 
 `--from gfm` converts tables, task lists, strikethrough, bare URLs and footnotes. `--from markdown` reads strict CommonMark and keeps a GFM table as escaped paragraph text. The 0.1 Markdown importer read GFM, so a 0.1 `migrate --from markdown` becomes `import --from gfm`. The library call is `importDocument(source, { from: 'gfm' })`; see [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).
 
+A folder of Markdown files converts in one run:
+
+```sh
+node dist/cli.js import --from gfm --directory docs --output docs-carve
+```
+
+Each `.md` or `.markdown` file becomes a `.crv` file at the same path, other files are copied, and a local link to a converted file is rewritten to its `.crv` name. The output directory must not exist yet and must lie outside the source. `docs-carve/migration-report.json` lists each file with its diagnostics and the state of each local link, and names the files that need review: a lost construct or a link the run could not check.
+
 ## Convert through HTML
 
 Render the Markdown with a trusted Markdown renderer, save the HTML, then run the reference engine:

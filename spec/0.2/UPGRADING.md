@@ -1110,6 +1110,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `migrate --from html` | `carve import --from html` |
 | `migrate --adapter NAME` | `carve import --adapter NAME` (C2-M-102) |
 | `migrate --from markdown` | `carve import --from gfm`; `--from markdown` reads CommonMark only and leaves tables as text |
+| `migrate --from markdown --directory SOURCE --output TARGET` | `carve import --from gfm --directory SOURCE --output TARGET`, the directory import of the engines (C2-T-003): it writes the converted tree, rewrites local `.md` links to `.crv`, copies the other files and writes `migration-report.json` |
 | `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
 | `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
 | `lint --rule ID`, `lint --platform NAME` | `carve lint --rules '{"ID":"on"}'`, `--platforms '["NAME"]'` (C2-T-010) |
