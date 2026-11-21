@@ -184,9 +184,9 @@
       "messages": [{"when": "the selected declaration has a value that is not dot-separated decimal digits", "text": "The declared Carve version \"${version}\" is not a dotted numeric version. Write `0.2` as the value of this declaration, or remove it."}, {"when": "the selected declaration has a dotted numeric version greater than 0.2", "text": "This engine implements 0.2; features of the declared ${version} version may be unsupported. Write `carve: 0.2` only if the source uses 0.2 features."}],
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${version}` of the second message is escaped as in a JSON string."],
-      "change": "it reads the frontmatter key `carve-version` of 0.1 and the key `carve`",
+      "change": "it reads the line-1 frontmatter key `carve-version` of 0.1 and the key `carve`; later blocks do not declare the document version",
       "reports": "a line `carve-version:` (and, by the row's change, `carve:`) in the line-1 frontmatter block, with only spaces and tabs around the key and a single value token, whose value is not dot-separated decimal digits, or is such a version greater than 0.2 compared part by part as numbers with missing parts as 0, so `9.9`, `0.2.1` and `next` are reported and `0.1`, `0.2` and `0.2.0` are not; with no such line in the line-1 block, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document; if more than one declaration meets this test, the first in source order supplies the report, `${version}` and the message condition; the range is that declaration's value token; once per document means one finding, not a document-wide range (C2-B-161, C2-B-231)",
-      "clauses": ["C2-B-161"]
+      "clauses": ["C2-B-161", "C2-B-231"]
     },
     {
       "id": "colon-fence-length-mismatch",
