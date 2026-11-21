@@ -6,7 +6,7 @@ import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, settle, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 import { verifyPreparedHeads } from './next2-readiness-heads.mjs'
 import { extensionFailures, extensionReport } from './next2-readiness-extensions.mjs'
@@ -403,7 +403,7 @@ const forbiddenReports = forbiddenCatalogReports(work, outputs, rules)
 const results = {}
 const extensionResults = {}
 for (const [engine, output] of Object.entries(outputs)) {
-  const rows = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, extension: c.extension, ...compare(c, output[i]) }))
+  const rows = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, extension: c.extension, ...settle(c, compare(c, output[i])) }))
   results[engine] = rows.filter(row => row.area !== 'extensions')
   // A failing extension case keeps the engine's HTML, so a ticket can quote it.
   extensionResults[engine] = rows.flatMap((row, i) => row.area !== 'extensions' ? []
@@ -525,7 +525,7 @@ for (const engine of ['js', 'php', 'rs']) {
 }
 const upgradeFail = upgradeBarFail(upgrade.originClasses)
 counts.js.upgrade = { pass: upgrade.originTotals.example - upgradeFail, fail: upgradeFail, unsupported: 0, excluded: 0, engineLocal: 0 }
-const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries([...rows, ...extensionResults[engine]].filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
+const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries([...rows, ...extensionResults[engine]].filter(row => row.status !== 'pass' && row.status !== 'engine-local').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
 const ready = (engine, areas) => Object.values(areas).every(row => row.fail + row.unsupported === 0) && !forbiddenReports.some(item => item.startsWith(`${engine}/`))

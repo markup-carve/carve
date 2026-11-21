@@ -23,6 +23,12 @@ export function caseFingerprint(c, ruleById = new Map()) {
   return digest({ input, rules: codes.map(code => [code, ruleById.get(code)?.messages ?? null]) })
 }
 
+// A case with engineLocal expects what only some implementations produce (conformance README, "Clause cases"): it is
+// still replayed, and an outcome other than pass counts as engine-local, never as a gap or a regression.
+export function settle(c, result) {
+  return c.engineLocal && result.status !== 'pass' ? { ...result, status: 'engine-local' } : result
+}
+
 export function classify({ baselineCases, baselineFailures = {}, currentCases, currentFailures = {}, listed = () => false }) {
   const out = { regressions: [], improved: [], known: [], gaps: { listed: [], unlisted: [] }, changed: 0, added: 0, removed: 0 }
   for (const [key, fingerprint] of Object.entries(currentCases)) {
