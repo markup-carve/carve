@@ -91,6 +91,19 @@ function formatSource(): void {
   }
 }
 watch(source, value => { if (value !== formattedText) formatNote.value = '' })
+// One undo step; the fragment goes too, so the address bar no longer offers the old document.
+function clearSource(): void {
+  editorRef.value?.replaceAll('')
+  source.value = ''
+  formattedText = ''
+  if (typeof window !== 'undefined' && window.location.hash) {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+  }
+  shareState.value = 'idle'
+  shareMessage.value = ''
+  formatNote.value = 'cleared (Ctrl+Z restores)'
+  editorRef.value?.focus()
+}
 
 const outputEl = ref<HTMLElement | null>(null)
 // Async so CodeMirror (~100 KB gzip) loads only on the playground page, not with
@@ -710,6 +723,15 @@ void mermaidInit
             </svg>
           </button>
         </div>
+        <button
+          class="pg-btn"
+          type="button"
+          title="Empty the editor (Ctrl+Z restores)"
+          aria-label="Clear the source"
+          @click="clearSource"
+        >
+          Clear
+        </button>
         <button class="pg-btn" type="button" :aria-expanded="optionsOpen" @click="optionsOpen = !optionsOpen">Options</button>
         <button
           class="pg-btn pg-icon-btn"
