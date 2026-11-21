@@ -11,11 +11,15 @@ import { encodeShare, decodeShare } from '../../share-link.js'
 import { render, parse, lint, format, fix, fixEdits } from '../../engine.js'
 import { applyByteEdits, byteToUtf16, type ByteEdit } from '../editor/offsets'
 import { isDiffPre } from '../../diff-fences.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { ansiToHtml } from '../../ansi-html.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 
 type Profile = 'full' | 'article' | 'comment' | 'minimal'
 type HeadingIds = 'off' | 'keep-case' | 'lower' | 'ascii' | 'ascii-lower' | 'ascii-strict' | 'ascii-strict-lower'
-type Output = 'html' | 'tree' | 'lint' | 'fmt'
+type Output = 'html' | 'tree' | 'lint' | 'fmt' | 'markdown' | 'plain' | 'ansi'
+type ExportTarget = 'markdown' | 'plain' | 'ansi'
+const exportTargets: ExportTarget[] = ['markdown', 'plain', 'ansi']
 type SharedOptions = { profile: Profile; headingIds: HeadingIds; sections: boolean; smartTypography: boolean; rawHtml: boolean }
 const profileValues: Profile[] = ['full', 'article', 'comment', 'minimal']
 const headingValues: HeadingIds[] = ['off', 'keep-case', 'lower', 'ascii', 'ascii-lower', 'ascii-strict', 'ascii-strict-lower']
@@ -39,6 +43,9 @@ const outputTabs: { id: Output; label: string }[] = [
   { id: 'tree', label: 'Tree JSON' },
   { id: 'lint', label: 'Lint' },
   { id: 'fmt', label: 'Formatted source' },
+  { id: 'markdown', label: 'Markdown' },
+  { id: 'plain', label: 'Plain text' },
+  { id: 'ansi', label: 'ANSI' },
 ]
 const options = computed<SharedOptions>(() => ({
   profile: profile.value, headingIds: headingIds.value, sections: sections.value,
@@ -419,7 +426,23 @@ const formatted = computed(() => {
   try { return format(source.value, { alignTables: alignTables.value }) }
   catch (error) { return error instanceof Error ? error.message : String(error) }
 })
-const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : formatted.value)
+const exported = computed<{ text: string; losses: number } | null>(() => {
+  const target = output.value as ExportTarget
+  if (!exportTargets.includes(target)) return null
+  const entry = tools.value
+  if (!entry) {
+    void loadTools()
+    return { text: 'Loading the export entry...', losses: 0 }
+  }
+  try {
+    const result = entry.exportDocument(target, parse(source.value, { headingIds: headingIds.value }))
+    return { text: result.output, losses: result.diagnostics?.length ?? 0 }
+  } catch (error) {
+    return { text: error instanceof Error ? error.message : String(error), losses: 0 }
+  }
+})
+const ansiHtml = computed(() => output.value === 'ansi' && exported.value ? ansiToHtml(exported.value.text) : '')
+const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : exported.value ? exported.value.text : formatted.value)
 const mounted = ref(false)
 const renderStatus = computed(() => {
   const ms = mounted.value ? rendered.value.ms : null
@@ -1029,6 +1052,8 @@ void mermaidInit
           <div class="pg-output-tabs" role="group" aria-label="Output type">
             <button v-for="tab in outputTabs" :key="tab.id" class="pg-output-tab" type="button" :aria-pressed="output === tab.id" @click="output = tab.id">{{ tab.label }}</button>
           </div>
+          <span v-if="output === 'ansi'" class="pg-shared-note">escape codes shown as styles</span>
+          <span v-if="exported?.losses" class="pg-shared-note" :title="`The ${output} export cannot spell ${exported.losses} construct(s)`">{{ exported.losses }} {{ exported.losses === 1 ? 'loss' : 'losses' }}</span>
           <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
         </div>
         <div v-if="output === 'lint'" class="raw pg-lint">
@@ -1076,6 +1101,7 @@ void mermaidInit
             </ul>
           </template>
         </div>
+        <pre v-else-if="output === 'ansi'" class="raw pg-ansi" aria-label="ANSI output, escape codes shown as styles" v-html="ansiHtml" />
         <pre v-else class="raw" aria-live="polite">{{ activeOutput }}</pre>
       </div>
     </div>
@@ -1445,6 +1471,22 @@ textarea:focus {
 .pg-confirm-text { margin-right: auto; align-self: center; font-size: .8rem; font-weight: 600; }
 .pg-btn:disabled { opacity: .5; cursor: not-allowed; }
 .pg-modal { max-height: calc(100vh - 2rem); overflow: auto; }
+.pg-ansi { color: var(--vp-c-text-1); }
+.pg-ansi :deep(.ansi-bold) { font-weight: 700; }
+.pg-ansi :deep(.ansi-dim) { opacity: .7; }
+.pg-ansi :deep(.ansi-italic) { font-style: italic; }
+.pg-ansi :deep(.ansi-underline) { text-decoration: underline; }
+.pg-ansi :deep(.ansi-strike) { text-decoration: line-through; }
+.pg-ansi :deep(.ansi-inverse) { background: var(--vp-c-text-1); color: var(--vp-c-bg); }
+.pg-ansi :deep(.ansi-fg-black) { color: #555; }
+.pg-ansi :deep(.ansi-fg-red), .pg-ansi :deep(.ansi-fg-bright-red) { color: #d64550; }
+.pg-ansi :deep(.ansi-fg-green), .pg-ansi :deep(.ansi-fg-bright-green) { color: #2f9e44; }
+.pg-ansi :deep(.ansi-fg-yellow), .pg-ansi :deep(.ansi-fg-bright-yellow) { color: #b8860b; }
+.pg-ansi :deep(.ansi-fg-blue), .pg-ansi :deep(.ansi-fg-bright-blue) { color: #3b6fd8; }
+.pg-ansi :deep(.ansi-fg-magenta), .pg-ansi :deep(.ansi-fg-bright-magenta) { color: #b04ec9; }
+.pg-ansi :deep(.ansi-fg-cyan), .pg-ansi :deep(.ansi-fg-bright-cyan) { color: #138a9e; }
+.pg-ansi :deep(.ansi-fg-white), .pg-ansi :deep(.ansi-fg-bright-white), .pg-ansi :deep(.ansi-fg-bright-black) { color: var(--vp-c-text-2); }
+.pg-ansi :deep([class*="ansi-bg-"]) { background: var(--vp-c-default-soft); }
 .pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
 .pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
 .pg-lint-empty { margin: 0; }
