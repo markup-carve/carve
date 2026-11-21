@@ -16,6 +16,7 @@
     "attribute_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an attribute record, one record per part of each attribute block that a node took (C2-W-148)." },
     "attribute_owner_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of the owner of an attribute record, the node that its attribute block attaches to (C2-W-148)." },
     "table_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The table fields of C2-W-149: layout facts of a table that the tree does not hold, which the line and block records they name carry beside their own fields." },
+    "id_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an id record, one record per distinct id that the tree carries, read by a lookup whose over is id (C2-W-150)." },
     "rules": {
       "type": "array",
       "items": {
@@ -67,7 +68,7 @@
           "clauses": { "$ref": "#/$defs/clauses" }
         }
       },
-      "description": "The rules stated as data, ordered by id."
+      "description": "The rules stated as data, ordered by id. A row may be stated by several rules, at most one per value of over (C2-W-150)."
     }
   },
   "$defs": {
@@ -86,7 +87,7 @@
       }
     },
     "expr": {
-      "description": "A literal, or an object with one operator key. `f` reads a field by a dotted path (`prev.body`, `owner.content_column`, `open_colon.0.width`, `item.width` inside `some`; a negative index counts from the end of a list, `node.children.-1`), `v` a value of `let`. Values: `len`, `add`, `sub`, `slice`, `concat`, `trim_end`, `words` (underscores to spaces), `if`, `match` (the start, or with `at: end` the end, of a named group of the last `matches`), `text_from` (the line from an offset, trailing spaces and tabs removed), `extend_left` and `skip_right` (an offset moved over the given characters of the line). Tests: `all`, `any`, `not`, `has` (the field path exists), `eq`, `ne`, `lt`, `le`, `gt`, `ge`, `in` (a list or a set name), `contains`, `starts`, `matches` (a pattern of the subset of C2-W-142, an optional flag `i`), `some` (`in` a list field, `from` an index, `where` a test on `item`).",
+      "description": "A literal, or an object with one operator key. `f` reads a field by a dotted path (`prev.body`, `owner.content_column`, `open_colon.0.width`, `item.width` inside `some`; a negative index counts from the end of a list, `node.children.-1`), `v` a value of `let`. Values: `len`, `add`, `sub`, `slice`, `concat`, `trim_end`, `words` (underscores to spaces), `if`, `match` (the start, or with `at: end` the end, of a named group of the last `matches`), `text_from` (the line from an offset, trailing spaces and tabs removed), `extend_left` and `skip_right` (an offset moved over the given characters of the line). Tests: `all`, `any`, `not`, `has` (the field path exists), `eq`, `ne`, `lt`, `le`, `gt`, `ge`, `in` (a list or a set name), `contains`, `starts`, `matches` (a pattern of the subset of C2-W-142, an optional flag `i`), `some` (`in` a list field, `from` an index, `where` a test on `item`). C2-W-150 adds the block fields `identity` and `layout`, `lookup` over `id`, with `all`, with `from` and with no `types`, a value as the `in` of `some` and `count`, and the values `lower`, `join`, `find` (`in` a list value, `where` a test on `item`), `percent_decode` and `run`, and the test `attribute_line`.",
       "anyOf": [
         { "type": "string" },
         { "type": "number" },
@@ -97,7 +98,8 @@
           "minProperties": 1,
           "propertyNames": {
             "enum": ["f", "v", "len", "add", "sub", "slice", "concat", "trim_end", "words", "if", "match", "at", "text_from", "extend_left", "skip_right",
-              "all", "any", "not", "has", "eq", "ne", "lt", "le", "gt", "ge", "in", "contains", "starts", "matches", "some", "count", "lookup", "index_of", "json_escape"]
+              "all", "any", "not", "has", "eq", "ne", "lt", "le", "gt", "ge", "in", "contains", "starts", "matches", "some", "count", "lookup", "index_of", "json_escape",
+              "lower", "join", "find", "percent_decode", "run", "attribute_line"]
           }
         }
       ]
