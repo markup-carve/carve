@@ -1,4 +1,5 @@
 import DefaultTheme from 'vitepress/theme'
+import { h } from 'vue'
 import { getScrollOffset } from 'vitepress'
 import type { Theme } from 'vitepress'
 import { defineAsyncComponent } from 'vue'
@@ -113,6 +114,11 @@ function realignHash(): void {
 
 export default {
   extends: DefaultTheme,
+  Layout: () => h(DefaultTheme.Layout, null, {
+    'layout-top': () => import.meta.env.VITE_DOCS_SERIES === 'dev'
+      ? h('div', { class: 'docs-dev-banner', role: 'status' }, 'Development version, not released')
+      : null,
+  }),
   enhanceApp({ app, router }) {
     app.component('Playground', Playground)
     app.component('DogfoodCarve', DogfoodCarve)
