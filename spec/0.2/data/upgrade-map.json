@@ -3320,6 +3320,16 @@
       "meaning02": "<blockquote><p>a\n+\n- b\nc</p></blockquote> With U-016 the item takes the quote mark, and a quote line that 0.1 read as a new paragraph below the item text is then a lazy line of the item (C2-B-012, C2-B-024). A blank line with the shared quote marks keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
       "toolEntry": "U-437",
       "silent": true
+    },
+    {
+      "id": "U-438",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "   1. inner\n1. outer\nlazy\n   2. sibling\n",
+      "to": "   1. inner\n1. outer\nlazy\n\n   2. sibling\n",
+      "meaning02": "<ol>\n  <li>inner</li>\n  <li>outer\nlazy\n2. sibling</li>\n</ol> C2-B-015 reads a nested ordered marker whose first value is not 1 as a lazy text line below an open item paragraph. A blank line before the marker closes that paragraph, so the nested list retains its 0.1 value and HTML. The tool writes this only after comparing the complete HTML.",
+      "toolEntry": "U-438",
+      "silent": true
     }
   ],
   "tree": [

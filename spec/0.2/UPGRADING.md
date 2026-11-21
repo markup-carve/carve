@@ -93,7 +93,7 @@ The explicit extension forms preserve their core fallback when no renderer is re
 
 ### Upgrade replay rows of 19 November
 
-The upgrade replay of the 0.1 conformance pack and examples found eight more changes with a preserving 0.2 spelling. Each is written only when the complete 0.1 and 0.2 HTML of the document compare equal.
+The upgrade replay of the 0.1 conformance pack and examples found nine more changes with a preserving 0.2 spelling. Each is written only when the complete 0.1 and 0.2 HTML of the document compare equal.
 
 | ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
 | --- | --- | --- | --- |
@@ -105,6 +105,7 @@ The upgrade replay of the 0.1 conformance pack and examples found eight more cha
 | U-435 | [^n]: a ⏎ ⏎    :: t ⏎    :  d ⏎     > q **SILENT** | A block indented past the description mark stays in the description (C2-B-076): `<dd>d &gt; q</dd>`. 0.1 ended the description there, and the quote followed the description list in the note. | Move the block to the column of the list that holds it (C2-B-067), with a blank line where it stood under text (U-002); in a list item the same; rewrite |
 | U-436 | - + ⏎   %% c ⏎ after **SILENT** | With U-017 the comment moves to the marker line, and no paragraph is open to take `after` as a lazy line (C2-B-012), so it follows the list. 0.1 read it into the item. | Indent the line to the item column, `- %% c` then `  after` (C2-B-025); rewrite |
 | U-437 | > a ⏎ + ⏎ - b ⏎ > c **SILENT** | With U-016 the item takes the quote mark, and `> c` is then a lazy line of the item (C2-B-012, C2-B-024). 0.1 read `c` as a new paragraph of the quote. | Write a quoted blank line above it; rewrite |
+| U-438 | 1. outer ⏎ lazy ⏎    2. sibling **SILENT** | C2-B-015 makes a nested ordered marker starting above 1 a lazy line of the open item paragraph: `<li>outer\nlazy\n2. sibling</li>`. 0.1 opened an ordered list starting at 2. | Write a blank line before the nested marker, preserving its value; rewrite |
 
 ### Source change index
 
