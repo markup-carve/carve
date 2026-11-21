@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
+import { ref, shallowRef, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { withBase } from 'vitepress'
 import { diffCodeTransformer } from '../../diff-transformer.js'
 // @ts-expect-error - local ESM helper without TS resolution context
@@ -91,6 +91,32 @@ function formatSource(): void {
   }
 }
 watch(source, value => { if (value !== formattedText) formatNote.value = '' })
+// The upgrade, import and export entries hold the 0.1 reader and the Markdown and Djot libraries, so they load on first use.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Tools = any
+const tools = shallowRef<Tools | null>(null)
+let toolsLoading: Promise<Tools> | null = null
+function loadTools(): Promise<Tools> {
+  toolsLoading ??= import('../../engine-tools.js').then((module) => (tools.value = module))
+  return toolsLoading
+}
+async function upgradeSource(): Promise<void> {
+  const before = source.value
+  formatNote.value = 'upgrading...'
+  try {
+    const { upgrade } = await loadTools()
+    const result = upgrade(before, { edits: true })
+    if (result.output === before) { formatNote.value = 'already 0.2'; return }
+    formattedText = result.output
+    editorRef.value?.replaceAll(result.output)
+    source.value = result.output
+    const count = result.edits?.length ?? 1
+    const changes = `${count} ${count === 1 ? 'change' : 'changes'}`
+    formatNote.value = result.check === 'mismatch' ? `upgraded: ${changes}, renders differently, review it` : `upgraded: ${changes}`
+  } catch (error) {
+    formatNote.value = `upgrade failed: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
 // One undo step; the fragment goes too, so the address bar no longer offers the old document.
 function clearSource(): void {
   editorRef.value?.replaceAll('')
@@ -723,6 +749,15 @@ void mermaidInit
             </svg>
           </button>
         </div>
+        <button
+          class="pg-btn"
+          type="button"
+          title="Rewrite Carve 0.1 source as Carve 0.2 (Ctrl+Z undoes it)"
+          aria-label="Upgrade 0.1 source to 0.2"
+          @click="upgradeSource"
+        >
+          Upgrade 0.1
+        </button>
         <button
           class="pg-btn"
           type="button"
