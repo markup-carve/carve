@@ -1387,26 +1387,14 @@
             "key": {
               "if": [
                 {
-                  "all": [
-                    {
-                      "eq": [
-                        {
-                          "f": "item.parent"
-                        },
-                        "paragraph"
-                      ]
-                    },
-                    {
-                      "not": {
-                        "eq": [
-                          {
-                            "f": "item.type"
-                          },
-                          "text"
-                        ]
-                      }
-                    }
-                  ]
+                  "not": {
+                    "eq": [
+                      {
+                        "f": "item.type"
+                      },
+                      "text"
+                    ]
+                  }
                 },
                 {
                   "f": "item.start"
