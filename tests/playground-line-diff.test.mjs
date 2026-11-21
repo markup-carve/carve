@@ -35,3 +35,19 @@ test('long unchanged runs fold, keeping context around changes', () => {
   assert.deepEqual(folded.map((e) => e.kind === 'skip' ? `skip${e.count}` : e.kind),
     ['skip8', 'same', 'same', 'del', 'add', 'same', 'same', 'skip7'])
 })
+
+test('a large, fully changed document falls back to one removed and one added block', () => {
+  const before = Array.from({ length: 3000 }, (_, i) => `line ${i}  `).join('\n') + '\n'
+  const after = before.replace(/ {2}\n/g, '\n')
+  const started = performance.now()
+  const entries = diffLines(before, after)
+  assert.ok(performance.now() - started < 2000)
+  assert.deepEqual(side(entries, 'del'), before.slice(0, -1).split('\n'))
+  assert.deepEqual(side(entries, 'add'), after.slice(0, -1).split('\n'))
+})
+
+test('a local change in a long document keeps the shared prefix and suffix unchanged', () => {
+  const before = Array.from({ length: 5000 }, (_, i) => `l${i}`).join('\n') + '\n'
+  const entries = diffLines(before, before.replace('l2500\n', 'L2500\n'))
+  assert.equal(entries.filter((e) => e.kind !== 'same').length, 2)
+})

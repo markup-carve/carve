@@ -159,6 +159,8 @@ async function upgradeSource(): Promise<void> {
   formatNote.value = 'upgrading...'
   try {
     const { upgrade } = await loadTools()
+    // The first click waits for the tools entry; edits typed meanwhile win over the upgrade.
+    if (source.value !== before) { formatNote.value = 'source changed, upgrade again'; return }
     const result = upgrade(before, { edits: true })
     if (result.output === before) { formatNote.value = 'already 0.2'; return }
     formattedText = result.output
@@ -203,9 +205,12 @@ watch([importText, importFormat], () => { importResult.value = null; importError
 async function convertImport(): Promise<void> {
   importError.value = ''
   importConfirm.value = false
+  const input = importText.value
+  const from = importFormat.value
   try {
     const { importDocument } = await loadTools()
-    const result = importDocument(importText.value, { from: importFormat.value })
+    if (input !== importText.value || from !== importFormat.value) return
+    const result = importDocument(input, { from })
     importResult.value = { source: result.source, diagnostics: [...(result.diagnostics ?? [])] }
   } catch (error) {
     importResult.value = null
