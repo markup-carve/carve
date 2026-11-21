@@ -65798,7 +65798,7 @@
     "C2-H-208",
     "C2-N-048"
    ],
-   "why": "C2-H-208: the headings of an expanded include among them after its own `shift` (C2-N-048), so the two add.",
+   "why": "C2-H-208: the headings of an expanded include among them after its own `shift` (C2-N-048), so the two add, with the include clamping to 1 to 6 first.",
    "summary": "an include shift and headingShift add; a level the include clamped to 6 rises to 7",
    "kind": "render",
    "input": "{{ a.crv @shift:1 }}\n",
