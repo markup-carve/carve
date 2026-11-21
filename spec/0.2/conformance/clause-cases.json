@@ -66721,6 +66721,90 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1557",
+   "clauses": [
+    "C2-B-090"
+   ],
+   "why": "C2-B-090: An attribute line is one or more glued brace blocks `{...}`, alone on its line, each a valid attribute block (C2-I-028 to C2-I-034). A line of braces that is no valid block, such as a braced inline form alone on its line, is text.",
+   "summary": "a braced underline that opens a line of a strong continued from the line above is no failed attribute line",
+   "kind": "lint",
+   "input": "*a\n{_x_}*\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "block-marker-as-text"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1558",
+   "clauses": [
+    "C2-B-090"
+   ],
+   "why": "C2-B-090: An attribute line is one or more glued brace blocks `{...}`, alone on its line, each a valid attribute block (C2-I-028 to C2-I-034). A line of braces that is no valid block, such as a braced inline form alone on its line, is text.",
+   "summary": "a braced underline that opens a line of a line block is no failed attribute line",
+   "kind": "lint",
+   "input": "::: |\n{_x_} y\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "block-marker-as-text"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1559",
+   "clauses": [
+    "C2-B-090"
+   ],
+   "why": "C2-B-090: An attribute line is one or more glued brace blocks `{...}`, alone on its line, each a valid attribute block (C2-I-028 to C2-I-034). A line of braces that is no valid block, such as a braced inline form alone on its line, is text.",
+   "summary": "near miss: an unclosed braced underline inside a continued strong is reported",
+   "kind": "lint",
+   "input": "*a\n{_x y*\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-marker-as-text",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 2,
+      "endColumn": 7
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1560",
+   "clauses": [
+    "C2-B-090"
+   ],
+   "why": "C2-B-090: An attribute line is one or more glued brace blocks `{...}`, alone on its line, each a valid attribute block (C2-I-028 to C2-I-034). A line of braces that is no valid block, such as a braced inline form alone on its line, is text.",
+   "summary": "near miss: an invalid brace block that opens a line of a line block is reported",
+   "kind": "lint",
+   "input": "::: |\n{a=} x\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-marker-as-text",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 2,
+      "endColumn": 7
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
