@@ -14,6 +14,8 @@ import { isDiffPre } from '../../diff-fences.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { ansiToHtml } from '../../ansi-html.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { SNIPPETS } from '../../examples/snippets.js'
 
 type Profile = 'full' | 'article' | 'comment' | 'minimal'
 type HeadingIds = 'off' | 'keep-case' | 'lower' | 'ascii' | 'ascii-lower' | 'ascii-strict' | 'ascii-strict-lower'
@@ -172,6 +174,14 @@ function applyImport(): void {
   const label = importFormats.find(f => f.id === importFormat.value)?.label ?? importFormat.value
   formatNote.value = `imported from ${label} (Ctrl+Z restores)`
   closeImport()
+}
+const exampleChoice = ref('')
+function loadExample(id: string): void {
+  exampleChoice.value = ''
+  const snippet = (SNIPPETS as { id: string; label: string; source: string }[]).find(s => s.id === id)
+  if (!snippet) return
+  replaceSource(snippet.source)
+  formatNote.value = `example: ${snippet.label} (Ctrl+Z restores)`
 }
 // One undo step; the fragment goes too, so the address bar no longer offers the old document.
 function clearSource(): void {
@@ -875,6 +885,16 @@ void mermaidInit
             </svg>
           </button>
         </div>
+        <select
+          class="pg-btn pg-select"
+          :value="exampleChoice"
+          aria-label="Load an example"
+          title="Replace the source with a short example (Ctrl+Z restores)"
+          @change="loadExample(($event.target as HTMLSelectElement).value)"
+        >
+          <option value="" disabled>Examples</option>
+          <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+        </select>
         <button
           ref="importButton"
           class="pg-btn"
@@ -1487,6 +1507,7 @@ textarea:focus {
 .pg-ansi :deep(.ansi-fg-cyan), .pg-ansi :deep(.ansi-fg-bright-cyan) { color: #138a9e; }
 .pg-ansi :deep(.ansi-fg-white), .pg-ansi :deep(.ansi-fg-bright-white), .pg-ansi :deep(.ansi-fg-bright-black) { color: var(--vp-c-text-2); }
 .pg-ansi :deep([class*="ansi-bg-"]) { background: var(--vp-c-default-soft); }
+.pg-select { appearance: auto; padding-right: .4rem; }
 .pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
 .pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
 .pg-lint-empty { margin: 0; }
