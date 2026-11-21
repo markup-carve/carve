@@ -65474,6 +65474,922 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1505",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-026"
+   ],
+   "why": "C2-H-208: The render adds N to the level of every heading of the render view, at every depth",
+   "summary": "headingShift 1 renders = as h2 and == as h3, nested by the shifted levels",
+   "kind": "render",
+   "input": "= A\n\n== B\n",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "html": "<section id=\"A\">\n  <h2>A</h2>\n  <section id=\"B\">\n    <h3>B</h3>\n  </section>\n</section>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1506",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: The render adds N to the level of every heading of the render view, at every depth",
+   "summary": "a heading in a quote shifts",
+   "kind": "render",
+   "input": "> = A\n>\n> text\n",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "html": "<blockquote>\n  <h2 id=\"A\">A</h2>\n  <p>text</p>\n</blockquote>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1507",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: The render adds N to the level of every heading of the render view, at every depth",
+   "summary": "a heading in a div shifts",
+   "kind": "render",
+   "input": ":::\n= A\n:::\n",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "html": "<div>\n  <h2 id=\"A\">A</h2>\n</div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1508",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: The render adds N to the level of every heading of the render view, at every depth",
+   "summary": "a heading in a list item shifts",
+   "kind": "render",
+   "input": "- = A\n",
+   "options": {
+    "headingShift": 2
+   },
+   "expected": {
+    "html": "<ul>\n  <li>\n    <h3 id=\"A\">A</h3>\n  </li>\n</ul>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1509",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: The render adds N to the level of every heading of the render view, at every depth",
+   "summary": "with sections off the headings shift and carry their ids",
+   "kind": "render",
+   "input": "= A\n\n== B\n",
+   "options": {
+    "headingShift": 1,
+    "sections": false
+   },
+   "expected": {
+    "html": "<h2 id=\"A\">A</h2>\n<h3 id=\"B\">B</h3>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1510",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-021"
+   ],
+   "why": "C2-H-208: It changes no text and no id: a generated id is the slug of the unchanged text (C2-H-022), so a cross-reference into a shifted heading still resolves. A shifted level above 6 is written as C2-H-021 states, `<div role=\"heading\" aria-level=\"N\">`.",
+   "summary": "the ids and the cross-reference stay; a shifted level 7 is a div with aria-level 7",
+   "kind": "render",
+   "input": "= Chapter\n\nSee </#Detail>.\n\n== Section\n\n====== Detail\n",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "html": "<section id=\"Chapter\">\n  <h2>Chapter</h2>\n  <p>See <a href=\"#Detail\">Detail</a>.</p>\n  <section id=\"Section\">\n    <h3>Section</h3>\n    <section id=\"Detail\">\n      <div role=\"heading\" aria-level=\"7\">Detail</div>\n    </section>\n  </section>\n</section>",
+    "diagnostics": [
+     {
+      "code": "heading-shift-above-6",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 7,
+      "column": 1
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1511",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: When N is not 0 and at least one shifted level is above 6, the render reports `heading-shift-above-6` once, at the first such heading in document order.",
+   "summary": "three headings above 6 give one entry, at the first of them",
+   "kind": "render",
+   "input": "===== A\n\n====== B\n\n====== C\n",
+   "options": {
+    "headingShift": 2
+   },
+   "expected": {
+    "html": "<section id=\"A\">\n  <div role=\"heading\" aria-level=\"7\">A</div>\n  <section id=\"B\">\n    <div role=\"heading\" aria-level=\"8\">B</div>\n  </section>\n  <section id=\"C\">\n    <div role=\"heading\" aria-level=\"8\">C</div>\n  </section>\n</section>",
+    "diagnostics": [
+     {
+      "code": "heading-shift-above-6",
+      "line": 1,
+      "column": 1
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1512",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: Its value N is a count from 0 to 5, and the default is 0",
+   "summary": "headingShift 0 renders as without the option",
+   "kind": "render",
+   "input": "====== A\n",
+   "options": {
+    "headingShift": 0
+   },
+   "expected": {
+    "html": "<section id=\"A\">\n  <h6>A</h6>\n</section>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1513",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-021"
+   ],
+   "why": "C2-H-208: When N is not 0 and at least one shifted level is above 6, the render reports `heading-shift-above-6` once",
+   "summary": "a supplied heading of level 7 with headingShift 0 is written by C2-H-021 and not reported",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "heading",
+      "level": 7,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "headingShift": 0
+   },
+   "expected": {
+    "html": "<section id=\"A\">\n  <div role=\"heading\" aria-level=\"7\">A</div>\n</section>",
+    "notReported": [
+     "heading-shift-above-6"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1514",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: When N is not 0 and at least one shifted level is above 6, the render reports `heading-shift-above-6` once",
+   "summary": "a supplied tree shifts like source: level 6 with headingShift 1 is level 7 and reported",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "heading",
+      "level": 6,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "html": "<section id=\"A\">\n  <div role=\"heading\" aria-level=\"7\">A</div>\n</section>",
+    "diagnostics": [
+     "heading-shift-above-6"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1515",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-137"
+   ],
+   "why": "C2-H-208: Its value N is a count from 0 to 5, and the default is 0; any other value is refused with an option error before the render starts.",
+   "summary": "a negative headingShift is refused",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": -1
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1516",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-137"
+   ],
+   "why": "C2-H-208: Its value N is a count from 0 to 5, and the default is 0; any other value is refused with an option error before the render starts.",
+   "summary": "a value above 5 headingShift is refused",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 6
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1517",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-137"
+   ],
+   "why": "C2-H-208: Its value N is a count from 0 to 5, and the default is 0; any other value is refused with an option error before the render starts.",
+   "summary": "a fractional headingShift is refused",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1.5
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1518",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-137"
+   ],
+   "why": "C2-H-208: Its value N is a count from 0 to 5, and the default is 0; any other value is refused with an option error before the render starts.",
+   "summary": "a string headingShift is refused",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": "1"
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1519",
+   "clauses": [
+    "C2-H-208",
+    "C2-N-048"
+   ],
+   "why": "C2-H-208: the headings of an expanded include among them after its own `shift` (C2-N-048), so the two add, with the include clamping to 1 to 6 first.",
+   "summary": "an include shift and headingShift add; a level the include clamped to 6 rises to 7",
+   "kind": "render",
+   "input": "{{ a.crv @shift:1 }}\n",
+   "files": {
+    "a.crv": {
+     "text": "= A\n\n====== Deep\n"
+    }
+   },
+   "options": {
+    "headingShift": 1,
+    "includes": {
+     "file": "main.crv"
+    }
+   },
+   "expected": {
+    "html": "<section id=\"A\">\n  <h3>A</h3>\n  <section id=\"Deep\">\n    <div role=\"heading\" aria-level=\"7\">Deep</div>\n  </section>\n</section>",
+    "diagnostics": [
+     {
+      "code": "include-heading-clamp",
+      "file": "a.crv",
+      "line": 3,
+      "column": 1
+     },
+     {
+      "code": "heading-shift-above-6",
+      "file": "a.crv",
+      "line": 3,
+      "column": 1
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1520",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-114"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "summary": "under roundtrip each shifted heading carries its source level",
+   "kind": "render",
+   "input": "= A\n\n== B\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true
+   },
+   "expected": {
+    "html": "<section data-carve-generated-id id=\"A\">\n  <h2 data-carve-source-level=\"1\">A</h2>\n  <section data-carve-generated-id id=\"B\">\n    <h3 data-carve-source-level=\"2\">B</h3>\n  </section>\n</section>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1521",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-010"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "summary": "with sections off the source level follows the id carrier and precedes the id",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true,
+    "sections": false
+   },
+   "expected": {
+    "html": "<h2 data-carve-generated-id data-carve-source-level=\"1\" id=\"A\">A</h2>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1522",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-009"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "summary": "a heading shifted above 6 carries the source level before role and aria-level",
+   "kind": "render",
+   "input": "====== A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true
+   },
+   "expected": {
+    "html": "<section data-carve-generated-id id=\"A\">\n  <div data-carve-source-level=\"6\" role=\"heading\" aria-level=\"7\">A</div>\n</section>",
+    "diagnostics": [
+     "heading-shift-above-6"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1523",
+   "clauses": [
+    "C2-H-208"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "summary": "headingShift 0 under roundtrip writes no source level",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 0,
+    "roundtrip": true
+   },
+   "expected": {
+    "html": "<section data-carve-generated-id id=\"A\">\n  <h1>A</h1>\n</section>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1524",
+   "clauses": [
+    "C2-H-116",
+    "C2-H-115"
+   ],
+   "why": "C2-H-116: An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`.",
+   "summary": "an authored data-carve-source-level is dropped and reported",
+   "kind": "render",
+   "input": "{data-carve-source-level=3}\n= A\n",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"A\">\n  <h1>A</h1>\n</section>",
+    "diagnostics": [
+     "carrier-attribute-dropped"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1525",
+   "clauses": [
+    "C2-H-186",
+    "C2-H-208"
+   ],
+   "why": "C2-H-186: An importer never keeps a reserved name as an authored attribute, whether it reads the carrier or ignores it.",
+   "summary": "importing a shifted roundtrip render gives back the authored levels",
+   "kind": "import",
+   "html": "<section data-carve-generated-id id=\"A\">\n  <h2 data-carve-source-level=\"1\">A</h2>\n  <section data-carve-generated-id id=\"B\">\n    <h3 data-carve-source-level=\"2\">B</h3>\n  </section>\n</section>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     },
+     {
+      "type": "heading",
+      "level": 2,
+      "children": [
+       {
+        "type": "text",
+        "value": "B"
+       }
+      ]
+     }
+    ],
+    "carve": "= A\n\n== B\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1526",
+   "clauses": [
+    "C2-H-186",
+    "C2-H-208"
+   ],
+   "why": "C2-H-186: An importer never keeps a reserved name as an authored attribute, whether it reads the carrier or ignores it.",
+   "summary": "the source level is read beside the generated-id carrier on a heading that opens no section",
+   "kind": "import",
+   "html": "<h2 data-carve-generated-id data-carve-source-level=\"1\" id=\"A\">A</h2>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ],
+    "carve": "= A\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1527",
+   "clauses": [
+    "C2-H-186",
+    "C2-M-024"
+   ],
+   "why": "C2-M-024: `<div role=\"heading\" aria-level=\"N\">` with an integer N above 6 is a heading of level N (C2-H-021), and `role` and `aria-level` are not kept.",
+   "summary": "the source level of a heading written as a div is read",
+   "kind": "import",
+   "html": "<div data-carve-source-level=\"6\" role=\"heading\" aria-level=\"7\">A</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "heading",
+      "level": 6,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ],
+    "carve": "====== A\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1528",
+   "clauses": [
+    "C2-M-009",
+    "C2-H-186"
+   ],
+   "why": "C2-M-009: A carrier that `html.md` ignores is reported with `import-carrier-ignored`, with the element as the locator.",
+   "summary": "a source level that is not lower than the level of the element is ignored",
+   "kind": "import",
+   "html": "<h2 data-carve-source-level=\"2\">A</h2>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "heading",
+      "level": 2,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ],
+    "carve": "== A\n",
+    "diagnostics": [
+     {
+      "code": "import-carrier-ignored",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1529",
+   "clauses": [
+    "C2-M-009",
+    "C2-H-186"
+   ],
+   "why": "C2-M-009: A carrier that `html.md` ignores is reported with `import-carrier-ignored`, with the element as the locator.",
+   "summary": "a source level with a leading zero is ignored",
+   "kind": "import",
+   "html": "<h3 data-carve-source-level=\"01\">A</h3>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "heading",
+      "level": 3,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ],
+    "carve": "=== A\n",
+    "diagnostics": [
+     "import-carrier-ignored"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1530",
+   "clauses": [
+    "C2-M-009",
+    "C2-H-184"
+   ],
+   "why": "C2-H-184: A carrier is read only on an element that the importer reads as structure: an element of the kind and at the place the table of C2-H-186 names. On any other element the carrier is ignored.",
+   "summary": "a source level on a paragraph is ignored",
+   "kind": "import",
+   "html": "<p data-carve-source-level=\"1\">a</p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ],
+    "carve": "a\n",
+    "diagnostics": [
+     "import-carrier-ignored"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1531",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-165"
+   ],
+   "why": "C2-H-208: The degraded mark of a heading (C2-H-165) counts the shifted level.",
+   "summary": "under the comment profile a shifted heading degrades behind two hashes",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1,
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>## A</p>",
+    "diagnostics": [
+     "profile-construct-degraded"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1532",
+   "clauses": [
+    "C2-T-005",
+    "C2-H-208"
+   ],
+   "why": "C2-T-005: Each reads the options of `data/options.json` whose `read_by` names a stage the call runs and refuses the others (C2-H-137).",
+   "summary": "a parse call refuses headingShift",
+   "kind": "parse",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1533",
+   "clauses": [
+    "C2-T-005",
+    "C2-H-208"
+   ],
+   "why": "C2-T-005: Each reads the options of `data/options.json` whose `read_by` names a stage the call runs and refuses the others (C2-H-137).",
+   "summary": "a format call refuses headingShift",
+   "kind": "format",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1534",
+   "clauses": [
+    "C2-H-209",
+    "C2-T-003"
+   ],
+   "why": "C2-H-209: The Markdown export (C2-T-003) reads `headingShift` as the render does",
+   "summary": "the Markdown export shifts headings",
+   "kind": "export",
+   "input": "= A\n\n== B\n\ntext\n",
+   "to": "markdown",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "output": "## A\n\n### B\n\ntext\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1535",
+   "clauses": [
+    "C2-H-209"
+   ],
+   "why": "C2-H-209: Markdown spells only the levels 1 to 6, so a shifted level above 6 is written as 6, as an include clamps it (C2-N-048). When N is not 0 and at least one shifted level is above 6, the export reports `heading-shift-above-6` once, at the first such heading in document order.",
+   "summary": "the Markdown export clamps a shifted level above 6 to 6 and reports it once",
+   "kind": "export",
+   "input": "===== A\n\n====== B\n",
+   "to": "markdown",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "output": "###### A\n\n###### B\n",
+    "diagnostics": [
+     {
+      "code": "heading-shift-above-6",
+      "line": 3,
+      "column": 1
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1536",
+   "clauses": [
+    "C2-H-209",
+    "C2-T-003"
+   ],
+   "why": "C2-H-209: The plain-text and ANSI exports refuse the option, whatever its value, with an option error.",
+   "summary": "the plain-text export refuses headingShift",
+   "kind": "export",
+   "input": "= A\n",
+   "to": "plain",
+   "options": {
+    "headingShift": 1
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1537",
+   "clauses": [
+    "C2-H-209",
+    "C2-T-003"
+   ],
+   "why": "C2-H-209: The plain-text and ANSI exports refuse the option, whatever its value, with an option error.",
+   "summary": "the ANSI export refuses headingShift, also with the value 0",
+   "kind": "export",
+   "input": "= A\n",
+   "to": "ansi",
+   "options": {
+    "headingShift": 0
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveOptionError",
+     "path": "/headingShift"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1538",
+   "clauses": [
+    "C2-T-010",
+    "C2-H-208"
+   ],
+   "why": "C2-T-010: a `count` option takes a decimal integer, so `--heading-shift=1`",
+   "summary": "--heading-shift=1 shifts the render",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= A\n"
+    }
+   },
+   "args": [
+    "render",
+    "--heading-shift=1",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<section id=\"A\">\n  <h2>A</h2>\n</section>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1539",
+   "clauses": [
+    "C2-T-010",
+    "C2-H-208"
+   ],
+   "why": "C2-T-010: A value the option refuses is refused with the category `usage`.",
+   "summary": "--heading-shift=6 is refused with usage",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= A\n"
+    }
+   },
+   "args": [
+    "render",
+    "--heading-shift=6",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1540",
+   "clauses": [
+    "C2-T-010",
+    "C2-H-208"
+   ],
+   "why": "C2-T-010: A value the option refuses is refused with the category `usage`.",
+   "summary": "--heading-shift=-1 is refused with usage",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= A\n"
+    }
+   },
+   "args": [
+    "render",
+    "--heading-shift=-1",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1541",
+   "clauses": [
+    "C2-T-008",
+    "C2-H-208"
+   ],
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "summary": "ast does not take --heading-shift",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= A\n"
+    }
+   },
+   "args": [
+    "ast",
+    "--heading-shift=1",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
   }
  ]
 }

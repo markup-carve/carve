@@ -37,6 +37,7 @@
         },
         "extensions": { "type": "array", "items": { "type": "string" } },
         "headingIds": { "type": "string" },
+        "headingShift": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
         "includes": {
           "type": "object",
           "description": "The include settings: file, the id of the top-level document, and the lowered limits depth and bytes. A case with files is parsed with a resolver over them, and a case without files with no resolver.",
@@ -137,7 +138,7 @@
         "clauses": { "$ref": "#/$defs/clauses" },
         "why": { "type": "string", "description": "The deciding sentence, quoted from the first clause it names: CLAUSE-ID, a colon, a space, the sentence; ' ... ' joins two pieces." },
         "summary": { "type": "string" },
-        "kind": { "enum": ["render", "parse", "lint", "format", "tree", "migrate", "layout", "write", "import", "cli", "position", "diff", "patch", "fingerprint"], "description": "The call the case runs; absent is a render whose expected html and children are both stated. See README.md." },
+        "kind": { "enum": ["render", "parse", "lint", "format", "tree", "migrate", "layout", "write", "import", "cli", "position", "diff", "patch", "fingerprint", "export"], "description": "The call the case runs; absent is a render whose expected html and children are both stated. See README.md." },
         "input": { "type": "string" },
         "inputBytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$", "description": "The input as bytes in hex, for a source that is not a string." },
         "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" }, "description": "The files a resolver serves, each under its name, which is also its id." },
@@ -148,6 +149,7 @@
         "html": { "type": "string", "description": "The HTML an import case reads." },
         "args": { "type": "array", "items": { "type": "string" }, "description": "The arguments of a command line case, after the program name (C2-T-007)." },
         "stdin": { "type": "string", "description": "What a command line case reads on standard input; absent is empty." },
+        "to": { "enum": ["markdown", "plain", "ansi"], "description": "The export an export case runs on the tree of its input (C2-T-003, C2-H-209)." },
         "offset": { "type": "integer", "description": "The UTF-8 byte offset a position case gives positionOf (C2-T-041)." },
         "inputAfter": { "type": "string", "description": "The second source of a diff case; both are parsed with positions off (C2-T-043)." },
         "patch": { "type": "array", "description": "The JSON Patch a patch case gives applyPatch (C2-T-044)." },
@@ -161,6 +163,7 @@
             "html": { "type": "string" },
             "children": { "type": "array" },
             "carve": { "type": "string" },
+            "output": { "type": "string", "description": "The text an export case returns, byte for byte." },
             "diagnostics": { "$ref": "#/$defs/diagnostics" },
             "diagnosticsComplete": { "type": "boolean", "description": "true: the record holds these entries and no other; false or absent: it holds at least these." },
             "notReported": { "type": "array", "items": { "$ref": "#/$defs/code" }, "description": "Codes the record holds no entry of." },
@@ -209,6 +212,7 @@
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["position"] } } }, "then": { "required": ["offset"], "properties": { "offset": true }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["diff"] } } }, "then": { "required": ["input", "inputAfter"], "properties": { "input": true, "inputAfter": true, "expected": { "type": "object", "required": ["applies"], "properties": { "applies": true } } } } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["patch"] } } }, "then": { "required": ["input", "patch"], "properties": { "input": true, "patch": true } } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["export"] } } }, "then": { "required": ["input", "to"], "properties": { "input": true, "to": true } } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["fingerprint"] } } }, "then": { "properties": { "expected": { "type": "object", "required": ["fingerprint"], "properties": { "fingerprint": true } } }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } }
       ],
       "additionalProperties": false

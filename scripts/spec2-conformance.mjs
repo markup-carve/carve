@@ -170,6 +170,7 @@ const OPTION_VALUE = {
   extensions: (value) => value.every(name => matchers.has(name)),
   includes: (value) => (value.depth === undefined || (value.depth >= 0 && value.depth <= 16)) && (value.bytes === undefined || (value.bytes >= 0 && value.bytes <= 8388608)),
   maxLosses: (value) => Number.isInteger(value) && value >= 0,
+  headingShift: (value) => Number.isInteger(value) && value >= 0 && value <= optionRows.get('headingShift').maximum,
   labels: (value) => Object.keys(value).every(key => Object.hasOwn(optionRows.get('labels').default, key)),
   platforms: (value) => value.every(name => optionRows.get('platforms').values.includes(name)),
   renderers: (value) => Object.entries(value).every(([name, renderer]) => extensionNames.has(name) &&
@@ -242,6 +243,7 @@ const REFUSALS = {
   patch: ['CarvePatchError'],
   diff: [],
   fingerprint: [],
+  export: ['CarveOptionError'],
 }
 const CATEGORY_ERRORS = new Set(readJson(join(spec, 'data/cli.json')).categories.flatMap(row => row.errors))
 function refusalProblems(entry) {
@@ -364,6 +366,18 @@ function treeCallProblems(entry) {
   return problems
 }
 
+// An export case names its export and expects its output, its diagnostics or a refusal; only it does.
+function exportProblems(entry) {
+  const problems = []
+  if (entry.kind !== 'export') {
+    if (entry.to !== undefined) problems.push('names an export, but is no export case')
+    if (entry.expected.output !== undefined) problems.push('expects output from a call that is no export')
+    return problems
+  }
+  for (const field of Object.keys(entry.expected)) if (!['output', 'diagnostics', 'diagnosticsComplete', 'notReported', 'refusal'].includes(field)) problems.push(`expects ${field} from an export`)
+  return problems
+}
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -399,6 +413,7 @@ for (const entry of cases.cases) {
   for (const problem of commandProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of positionProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of treeCallProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of exportProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }
