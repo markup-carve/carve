@@ -1106,10 +1106,6 @@ void mermaidInit
   text-decoration: none;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
-.pg-engine:hover {
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-brand-1);
-}
 .pg-engine.active {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
@@ -1144,10 +1140,6 @@ void mermaidInit
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.pg-btn:hover {
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-brand-1);
-}
 /* Share button: icon only, so the toolbar keeps the one-row layout it had
    before. It is square, and the success/failure states only recolor it - a
    state that changed the button's width would shift the whole row. */
@@ -1164,6 +1156,7 @@ void mermaidInit
   display: flex;
   flex-direction: column;
 }
+.pg-btn[aria-pressed="true"],
 .pg-icon-btn.active {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
@@ -1219,19 +1212,27 @@ void mermaidInit
   cursor: not-allowed;
   opacity: 0.5;
 }
-.pg-engine:disabled:hover {
-  border-color: var(--vp-c-divider);
-  color: inherit;
-}
 .pg-btn-primary {
   background: var(--vp-c-brand-1);
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-white, #fff);
 }
-.pg-btn-primary:hover {
-  background: var(--vp-c-brand-2);
-  border-color: var(--vp-c-brand-2);
-  color: var(--vp-c-white, #fff);
+.pg-engine:focus-visible,
+.pg-btn:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .pg-engine:not(:disabled):hover,
+  .pg-btn:not(:disabled):not(.is-error):hover {
+    border-color: var(--vp-c-brand-1);
+    color: var(--vp-c-brand-1);
+  }
+  .pg-btn-primary:hover {
+    background: var(--vp-c-brand-2);
+    border-color: var(--vp-c-brand-2);
+    color: var(--vp-c-white, #fff);
+  }
 }
 /* HTML-source pane header: label on the left, live render status on the
    right. Moving the status here frees the toolbar so Import Markdown fits
