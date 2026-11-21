@@ -1436,10 +1436,6 @@ void mermaidInit
   text-decoration: none;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
-.pg-engine:hover {
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-brand-1);
-}
 .pg-engine.active {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
@@ -1474,10 +1470,6 @@ void mermaidInit
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.pg-btn:hover {
-  border-color: var(--vp-c-brand-1);
-  color: var(--vp-c-brand-1);
-}
 /* Share button: icon only, so the toolbar keeps the one-row layout it had
    before. It is square, and the success/failure states only recolor it - a
    state that changed the button's width would shift the whole row. */
@@ -1494,6 +1486,7 @@ void mermaidInit
   display: flex;
   flex-direction: column;
 }
+.pg-btn[aria-pressed="true"],
 .pg-icon-btn.active {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
@@ -1549,19 +1542,27 @@ void mermaidInit
   cursor: not-allowed;
   opacity: 0.5;
 }
-.pg-engine:disabled:hover {
-  border-color: var(--vp-c-divider);
-  color: inherit;
-}
 .pg-btn-primary {
   background: var(--vp-c-brand-1);
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-white, #fff);
 }
-.pg-btn-primary:hover {
-  background: var(--vp-c-brand-2);
-  border-color: var(--vp-c-brand-2);
-  color: var(--vp-c-white, #fff);
+.pg-engine:focus-visible,
+.pg-btn:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .pg-engine:not(:disabled):hover,
+  .pg-btn:not(:disabled):hover {
+    border-color: var(--vp-c-brand-1);
+    color: var(--vp-c-brand-1);
+  }
+  .pg-btn-primary:hover {
+    background: var(--vp-c-brand-2);
+    border-color: var(--vp-c-brand-2);
+    color: var(--vp-c-white, #fff);
+  }
 }
 /* HTML-source pane header: label on the left, live render status on the
    right. Moving the status here frees the toolbar so Import Markdown fits
@@ -1792,7 +1793,7 @@ textarea:focus {
 .pg-pane-actions { display: inline-flex; gap: .2rem; margin-left: auto; }
 .pg-status + .pg-pane-actions { margin-left: 0; }
 .pg-pane-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); cursor: pointer; }
-.pg-pane-btn:hover, .pg-pane-btn:focus-visible { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+.pg-pane-btn:focus-visible { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
 .pg-diff { display: flex; flex-direction: column; gap: .4rem; }
 .pg-diff-lines { display: flex; flex-direction: column; }
 .pg-diff-lines > div { display: flex; gap: .5rem; white-space: pre-wrap; padding: 0 .3rem; }
@@ -1810,7 +1811,7 @@ textarea:focus {
 .pg-lint-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .2rem; }
 .pg-lint-list li { display: flex; align-items: center; gap: .4rem; }
 .pg-lint-item { flex: 1; display: grid; grid-template-columns: 4.5rem minmax(8rem, max-content) 1fr auto; gap: .6rem; align-items: baseline; min-width: 0; padding: .3rem .45rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--vp-c-text-1); font: inherit; text-align: left; cursor: pointer; }
-.pg-lint-item:hover, .pg-lint-item:focus-visible { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+.pg-lint-item:focus-visible { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
 .pg-lint-sev { font-weight: 700; text-transform: uppercase; font-size: .68rem; }
 .pg-sev-error .pg-lint-sev { color: var(--vp-c-danger-1, #d64550); }
 .pg-sev-warning .pg-lint-sev { color: var(--vp-c-warning-1, #b8860b); }
@@ -1825,5 +1826,9 @@ textarea:focus {
 .pg-output-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
 .pg-output-tab { padding: .18rem .4rem; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--vp-c-text-2); font: 600 .72rem/1.2 var(--vp-font-family-base); cursor: pointer; }
 .pg-output-tab[aria-pressed="true"] { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
-.pg-output-tab:hover { color: var(--vp-c-brand-1); }
+@media (hover: hover) {
+  .pg-pane-btn:hover { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+  .pg-lint-item:hover { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+  .pg-output-tab:hover { color: var(--vp-c-brand-1); }
+}
 </style>
