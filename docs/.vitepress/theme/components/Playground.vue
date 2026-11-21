@@ -17,6 +17,8 @@ import { ansiToHtml } from '../../ansi-html.js'
 import { diffLines, foldDiff } from '../../line-diff.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 // @ts-expect-error - local ESM helper without TS resolution context
+import { upgradeVerdict } from '../../upgrade-check.js'
+// @ts-expect-error - local ESM helper without TS resolution context
 import { SNIPPETS } from '../../examples/snippets.js'
 
 type Profile = 'full' | 'article' | 'comment' | 'minimal'
@@ -163,15 +165,25 @@ function loadTools(): Promise<Tools> {
   })
   return toolsLoading
 }
+// A second click on the same source upgrades it even when it reads as 0.2 already.
+let upgradeAnyway: string | null = null
 async function upgradeSource(): Promise<void> {
   const before = source.value
+  const force = upgradeAnyway === before
+  upgradeAnyway = null
   formatNote.value = 'upgrading...'
   try {
     const { upgrade } = await loadTools()
     // The first click waits for the tools entry; edits typed meanwhile win over the upgrade.
     if (source.value !== before) { formatNote.value = 'source changed, upgrade again'; return }
     const result = upgrade(before, { edits: true })
-    if (result.output === before) { formatNote.value = 'already 0.2'; return }
+    const verdict = upgradeVerdict(before, result)
+    if (verdict === 'unchanged') { formatNote.value = 'nothing to upgrade'; return }
+    if (verdict === 'already-0.2' && !force) {
+      upgradeAnyway = before
+      formatNote.value = 'looks like 0.2 already, nothing to upgrade (click again to upgrade anyway)'
+      return
+    }
     formattedText = result.output
     editorRef.value?.replaceAll(result.output)
     source.value = result.output
