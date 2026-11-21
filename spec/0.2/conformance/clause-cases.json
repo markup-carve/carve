@@ -66914,5 +66914,38 @@
    },
    "from": []
   }
+,
+  {
+   "id": "CC-1564",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-186"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N ... the importer ignores values below 1 under C2-H-186",
+   "summary": "a heading lowered to level 1 carries zero and the importer ignores it",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true,
+    "sections": false,
+    "headingIds": "off"
+   },
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.heading-change",
+      "after": "/children/0",
+      "setLevel": 1
+     }
+    ]
+   },
+   "expected": {
+    "html": "<h1 data-carve-source-level=\"0\">A</h1>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  }
  ]
 }
