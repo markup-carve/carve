@@ -66,10 +66,50 @@ function flashShareStatus(state: 'copied' | 'error', message: string): void {
   clearTimeout(shareStatusTimer)
   shareStatusTimer = setTimeout(() => { shareState.value = 'idle'; shareMessage.value = '' }, 2500)
 }
-async function applyShareLink(): Promise<void> {
-  if (typeof window === 'undefined') return
+// The draft keeps the shared flag, so a document that came from a link keeps raw HTML off after a reload.
+const DRAFT_KEY = 'carve-playground-draft'
+let draftReady = false
+let draftTimer: ReturnType<typeof setTimeout> | undefined
+function readDraft(): { source: string; shared: boolean } | null {
+  try {
+    const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? 'null')
+    if (!draft || typeof draft !== 'object' || typeof draft.source !== 'string') return null
+    return { source: draft.source, shared: draft.shared !== false }
+  } catch {
+    return null
+  }
+}
+function saveDraft(): void {
+  if (!draftReady) return
+  clearTimeout(draftTimer)
+  draftTimer = setTimeout(() => {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, source: source.value, shared: fromSharedLink.value })) }
+    catch { /* Storage blocked or full: the draft is not kept. */ }
+  }, 400)
+}
+watch([source, fromSharedLink], saveDraft)
+// A share link in the URL wins over the saved draft.
+async function restoreState(): Promise<void> {
+  if (await applyShareLink()) return
+  const draft = readDraft()
+  if (!draft || draft.source === source.value) return
+  fromSharedLink.value = draft.shared
+  rawHtmlEnabled.value = false
+  formattedText = draft.source
+  source.value = draft.source
+  formatNote.value = 'draft restored'
+}
+function resetToDemo(): void {
+  clearTimeout(draftTimer)
+  draftReady = false
+  try { localStorage.removeItem(DRAFT_KEY) } catch { /* nothing stored */ }
+  // A reload, not an edit: undo could otherwise bring a shared document back into an untainted session.
+  window.location.replace(`${window.location.pathname}${window.location.search}`)
+}
+async function applyShareLink(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
   const state = await decodeShare(window.location.hash)
-  if (!state) return
+  if (!state) return false
   fromSharedLink.value = true
   source.value = state.source
   const saved = state.options ?? {}
@@ -78,6 +118,7 @@ async function applyShareLink(): Promise<void> {
   sections.value = saved.sections === undefined ? true : saved.sections === true
   smartTypography.value = saved.smartTypography === undefined ? true : saved.smartTypography === true
   rawHtmlEnabled.value = false
+  return true
 }
 async function copyShareLink(): Promise<void> {
   const encoded = await encodeShare({ source: source.value, options: options.value })
@@ -748,7 +789,11 @@ onMounted(() => {
   mounted.value = true
   // Before the first post-process, so a shared document is what gets
   // highlighted, mermaid-rendered and math-rendered.
-  void applyShareLink().then(() => nextTick(postProcessOutput))
+  void restoreState().then(() => {
+    draftReady = true
+    saveDraft()
+    return nextTick(postProcessOutput)
+  })
   window.addEventListener('keydown', onKeydown)
   try {
     wrapLines.value = localStorage.getItem(WRAP_KEY) === '1'
@@ -758,6 +803,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   clearTimeout(shareStatusTimer)
+  clearTimeout(draftTimer)
   window.removeEventListener('keydown', onKeydown)
   clearTimeout(debounce)
 })
@@ -923,6 +969,15 @@ void mermaidInit
           @click="clearSource"
         >
           Clear
+        </button>
+        <button
+          class="pg-btn"
+          type="button"
+          title="Discard the saved draft and reload the demo document"
+          aria-label="Reset to the demo document"
+          @click="resetToDemo"
+        >
+          Reset to demo
         </button>
         <button class="pg-btn" type="button" :aria-expanded="optionsOpen" @click="optionsOpen = !optionsOpen">Options</button>
         <button
