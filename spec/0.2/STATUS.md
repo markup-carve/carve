@@ -267,3 +267,11 @@ Spaces and tabs that a writer would leave at the end of a source line in text ar
 
 - All three engines: the option, its carrier and its import, the code `heading-shift-above-6`, the Markdown export reading and the plain-text and ANSI refusals are not offered yet (CC-1505 to CC-1541); `headingLevelShift()` is still exported. carve-js leads; carve-php and carve-rs port once it is proven.
 - No clause case pins `headingNumbers` after the shift, since that extension is not in `data/extensions.json`; C2-H-208 states that every transform sees the shifted levels.
+
+## Engine gaps from the pinned lint cases of 21 November
+
+The `definition-term-block-folded` row of `data/lint-model.json` reports the quote mark or list marker alone, as its catalog row states, and the `github-alert-marker` row skips a line whose first `>` is glued to a character other than the `[` of the alert mark (C2-B-031, #6333). Clause cases CC-1542 to CC-1549. Measured on the engine `next2` heads of 21 November: carve-js `1c2f784`, carve-php `d1d573c`, carve-rs `5620cee`.
+
+- `carve-js`: CC-1543, CC-1544, CC-1548 and CC-1549 pass once it pins these rows; its rules read them from the data.
+- `carve-php`: CC-1542 (`bare-html-tag` on `<x]>`), CC-1544 (only the `1` of `12.`), CC-1546 and CC-1547 (`caption-looking-paragraph` on term text).
+- `carve-rs`: CC-1542, CC-1546, CC-1547 and CC-1549 (`github-alert-marker` behind `>[x]:`).

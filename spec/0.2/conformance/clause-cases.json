@@ -66391,6 +66391,176 @@
     "stderrCategory": "usage"
    },
    "from": []
+  },
+  {
+   "id": "CC-1542",
+   "clauses": [
+    "C2-I-073",
+    "C2-I-124"
+   ],
+   "why": "Catalog bare-html-tag: `<`, an optional `/`, an ASCII letter, then ASCII letters, digits, `_`, `:` and `-`, optionally whitespace and characters other than `<` and `>`, an optional `/`, and `>`",
+   "summary": "a `<`, a name and a `>` with a bracket between the name and the `>` is not a tag shape",
+   "kind": "lint",
+   "input": "[a <x]> b](u)\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "bare-html-tag"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1543",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-075",
+    "C2-B-031"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog definition-term-block-folded: once per term, the range is the quote mark or the list marker",
+   "summary": "a folded quote mark after a term mark is reported on the quote mark alone",
+   "kind": "lint",
+   "input": ":: > x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-term-block-folded",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 5
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1544",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-075",
+    "C2-B-036"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog definition-term-block-folded: once per term, the range is the quote mark or the list marker",
+   "summary": "a folded ordered marker after a term mark is reported on the marker alone",
+   "kind": "lint",
+   "input": ":: 12. a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-term-block-folded",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 7
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1545",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-031"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog blockquote-marker-without-space: the line from its `>` to its last character that is not a space or a tab, for both messages",
+   "summary": "a quote mark glued to a tab is reported on the `>` alone",
+   "kind": "lint",
+   "input": ">\t",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 2
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1546",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-146"
+   ],
+   "why": "C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text. Catalog caption-looking-paragraph: a paragraph line whose text",
+   "summary": "a caption-looking line that continues a term is term text, not a paragraph line",
+   "kind": "lint",
+   "input": " :: term\n: | A | B |\n  | x | y |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "caption-looking-paragraph"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1547",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-146"
+   ],
+   "why": "C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text. Catalog caption-looking-paragraph: a paragraph line whose text",
+   "summary": "a caption-looking term continuation below a tab-indented term is not a paragraph line",
+   "kind": "lint",
+   "input": "\t:: t\n: ## H #\n | 1 | 2 |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "caption-looking-paragraph"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1548",
+   "clauses": [
+    "C2-B-031",
+    "C2-I-072"
+   ],
+   "why": "C2-B-031: The quote mark is `>` followed by a space or by the end of the line, so `>a` is text. Catalog github-alert-marker: on a line whose first non-space character is a quote mark",
+   "summary": "an alert mark after a `>` glued to a list marker is not reported",
+   "kind": "lint",
+   "input": ">* > [!NOTE]\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "github-alert-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1549",
+   "clauses": [
+    "C2-B-031",
+    "C2-I-072"
+   ],
+   "why": "C2-B-031: The quote mark is `>` followed by a space or by the end of the line, so `>a` is text. Catalog github-alert-marker: on a line whose first non-space character is a quote mark",
+   "summary": "an alert mark after a `>` glued to a reference label is not reported",
+   "kind": "lint",
+   "input": ">[x]: > [!NOTE]\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "github-alert-marker"
+    ]
+   },
+   "from": []
   }
  ]
 }
