@@ -23,6 +23,7 @@ const groups = {
     intro: 'The 0.2 host controls rendering. Each example names the options passed to the renderer. Raw HTML is off by default.',
     ids: ['html-81', 'html-25', 'html-11', 'html-31', 'html-32', 'html-34'],
     variants: [
+      { id: 'html-81', options: { headingIds: 'ascii', headingShift: 1 } },
       { id: 'syntax-blocks-173', options: { sections: true } },
       { id: 'syntax-inline-94', options: { smartTypography: true } },
       { id: 'html-11', options: { rawHtml: true } },

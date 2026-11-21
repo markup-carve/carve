@@ -9,6 +9,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { format, lint as lintSource, render } from '../docs/.vitepress/engine.js'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const docs = join(root, 'docs')
@@ -61,6 +62,22 @@ function checkSample(page, line, source, options = {}) {
     return
   }
   const includeFlags = ['--includes', '--include-root', includeRoot]
+  // The generated pages use this same pinned 0.2 engine. Keep the CLI for file-backed includes.
+  if (!options.includes && !source.includes('{{')) {
+    try {
+      const findings = lintSource(source)
+      if (findings.length && !options.lint) fail(page, line, `lint: ${findings.map((entry) => `${entry.code}: ${entry.message}`).join('; ')}`)
+      if (!findings.length && options.lint) fail(page, line, 'marked as a lint demonstration but has no finding')
+      if (!options.fmtSkip && format(source) !== source) fail(page, line, 'fmt --check: source is not canonical')
+      if (options.html !== undefined) {
+        const html = render(source, options.render ?? {})
+        if (options.html.replace(/\r\n/g, '\n').trimEnd() !== html.replace(/\r\n/g, '\n').trimEnd()) {
+          fail(page, line, difference(options.html, html))
+        }
+      }
+    } catch (error) { fail(page, line, `0.2 engine failed: ${error.message}`) }
+    return
+  }
   // Lint must report every parse finding of the expansion (C2-N-085), but the pinned lint drops
   // those of included files and unresolved targets, so the diagnostics command supplies them.
   const lint = run(['lint', '--json', ...includeFlags], source)
