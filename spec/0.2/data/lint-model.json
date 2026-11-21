@@ -20,6 +20,14 @@
   ],
   "line_fields": [
     {
+      "name": "ancestor_ids",
+      "type": "list",
+      "means": "the identities of the blocks of ancestors, item by item, as block records give them in identity",
+      "clauses": [
+        "C2-W-150"
+      ]
+    },
+    {
       "name": "ancestors",
       "type": "list",
       "means": "the types of the blocks that hold the leaf block of the line, innermost first; empty for a line of no leaf block",
@@ -3890,6 +3898,379 @@
       ]
     },
     {
+      "id": "description-separator-below-content-column",
+      "over": "line",
+      "let": {
+        "depth": {
+          "if": [
+            {
+              "in": [
+                {
+                  "f": "leaf"
+                },
+                [
+                  "caption",
+                  "definition_term",
+                  "heading",
+                  "line",
+                  "paragraph",
+                  "table_cell",
+                  "table_row"
+                ]
+              ]
+            },
+            {
+              "f": "quote_depth"
+            },
+            0
+          ]
+        },
+        "content": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "^[ \\t]*(?:> [ \\t]*)*(?<c>.*?)[ \\t]*$"
+              ]
+            },
+            {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "c"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "c",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            },
+            ""
+          ]
+        },
+        "content_start": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "^[ \\t]*(?:> [ \\t]*)*(?<c>.*?)[ \\t]*$"
+              ]
+            },
+            {
+              "match": "c"
+            },
+            {
+              "f": "start"
+            }
+          ]
+        },
+        "host_index": {
+          "index_of": [
+            {
+              "lookup": {
+                "over": "line",
+                "key": {
+                  "if": [
+                    {
+                      "matches": [
+                        {
+                          "f": "item.text"
+                        },
+                        "\\S"
+                      ]
+                    },
+                    {
+                      "if": [
+                        {
+                          "in": [
+                            {
+                              "f": "item.leaf"
+                            },
+                            [
+                              "caption",
+                              "definition_term",
+                              "heading",
+                              "line",
+                              "paragraph",
+                              "table_cell",
+                              "table_row"
+                            ]
+                          ]
+                        },
+                        {
+                          "f": "item.quote_depth"
+                        },
+                        0
+                      ]
+                    },
+                    false
+                  ]
+                },
+                "value": {
+                  "v": "depth"
+                },
+                "before": true,
+                "field": "ancestors"
+              }
+            },
+            "definition_list"
+          ]
+        },
+        "host_list": {
+          "if": [
+            {
+              "ge": [
+                {
+                  "v": "host_index"
+                },
+                0
+              ]
+            },
+            {
+              "nth": [
+                {
+                  "lookup": {
+                    "over": "line",
+                    "key": {
+                      "if": [
+                        {
+                          "matches": [
+                            {
+                              "f": "item.text"
+                            },
+                            "\\S"
+                          ]
+                        },
+                        {
+                          "if": [
+                            {
+                              "in": [
+                                {
+                                  "f": "item.leaf"
+                                },
+                                [
+                                  "caption",
+                                  "definition_term",
+                                  "heading",
+                                  "line",
+                                  "paragraph",
+                                  "table_cell",
+                                  "table_row"
+                                ]
+                              ]
+                            },
+                            {
+                              "f": "item.quote_depth"
+                            },
+                            0
+                          ]
+                        },
+                        false
+                      ]
+                    },
+                    "value": {
+                      "v": "depth"
+                    },
+                    "before": true,
+                    "field": "ancestor_ids"
+                  }
+                },
+                {
+                  "v": "host_index"
+                }
+              ]
+            },
+            ""
+          ]
+        },
+        "host_column": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "definition_list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "v": "host_list"
+            },
+            "field": "column"
+          }
+        },
+        "column": {
+          "column": [
+            {
+              "v": "content_start"
+            },
+            {
+              "v": "depth"
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "not": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "v": "depth"
+                    },
+                    0
+                  ]
+                },
+                {
+                  "matches": [
+                    {
+                      "f": "text"
+                    },
+                    "^[ \\t]*>"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "block",
+                    "types": [
+                      "definition_description"
+                    ],
+                    "key": {
+                      "f": "item.line.number"
+                    },
+                    "value": {
+                      "f": "number"
+                    },
+                    "field": "start"
+                  }
+                },
+                0
+              ]
+            }
+          },
+          {
+            "matches": [
+              {
+                "v": "content"
+              },
+              "^::?(?:[ \\t]|$)"
+            ]
+          },
+          {
+            "not": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "f": "leaf"
+                    },
+                    "definition_term"
+                  ]
+                },
+                {
+                  "f": "leaf_first"
+                }
+              ]
+            }
+          },
+          {
+            "gt": [
+              {
+                "v": "host_column"
+              },
+              {
+                "v": "column"
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "v": "content_start"
+          },
+          "end": {
+            "add": [
+              {
+                "v": "content_start"
+              },
+              {
+                "len": {
+                  "v": "content"
+                }
+              }
+            ]
+          },
+          "values": {
+            "name": {
+              "if": [
+                {
+                  "starts": [
+                    {
+                      "v": "content"
+                    },
+                    "::"
+                  ]
+                },
+                "term",
+                "description"
+              ]
+            },
+            "column": {
+              "add": [
+                {
+                  "v": "column"
+                },
+                1
+              ]
+            },
+            "host.column": {
+              "add": [
+                {
+                  "v": "host_column"
+                },
+                1
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-067",
+        "C2-B-071",
+        "C2-B-074",
+        "C2-W-150"
+      ]
+    },
+    {
       "id": "description-term-multi-line",
       "over": "block",
       "types": [
@@ -7149,6 +7530,379 @@
         "C2-B-022",
         "C2-B-034",
         "C2-B-036"
+      ]
+    },
+    {
+      "id": "markdown-definition-paragraph",
+      "over": "line",
+      "let": {
+        "depth": {
+          "if": [
+            {
+              "in": [
+                {
+                  "f": "leaf"
+                },
+                [
+                  "caption",
+                  "definition_term",
+                  "heading",
+                  "line",
+                  "paragraph",
+                  "table_cell",
+                  "table_row"
+                ]
+              ]
+            },
+            {
+              "f": "quote_depth"
+            },
+            0
+          ]
+        },
+        "content": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "^[ \\t]*(?:> [ \\t]*)*(?<c>.*?)[ \\t]*$"
+              ]
+            },
+            {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "c"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "c",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            },
+            ""
+          ]
+        },
+        "content_start": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "^[ \\t]*(?:> [ \\t]*)*(?<c>.*?)[ \\t]*$"
+              ]
+            },
+            {
+              "match": "c"
+            },
+            {
+              "f": "start"
+            }
+          ]
+        },
+        "host_index": {
+          "index_of": [
+            {
+              "lookup": {
+                "over": "line",
+                "key": {
+                  "if": [
+                    {
+                      "matches": [
+                        {
+                          "f": "item.text"
+                        },
+                        "\\S"
+                      ]
+                    },
+                    {
+                      "if": [
+                        {
+                          "in": [
+                            {
+                              "f": "item.leaf"
+                            },
+                            [
+                              "caption",
+                              "definition_term",
+                              "heading",
+                              "line",
+                              "paragraph",
+                              "table_cell",
+                              "table_row"
+                            ]
+                          ]
+                        },
+                        {
+                          "f": "item.quote_depth"
+                        },
+                        0
+                      ]
+                    },
+                    false
+                  ]
+                },
+                "value": {
+                  "v": "depth"
+                },
+                "before": true,
+                "field": "ancestors"
+              }
+            },
+            "definition_list"
+          ]
+        },
+        "host_list": {
+          "if": [
+            {
+              "ge": [
+                {
+                  "v": "host_index"
+                },
+                0
+              ]
+            },
+            {
+              "nth": [
+                {
+                  "lookup": {
+                    "over": "line",
+                    "key": {
+                      "if": [
+                        {
+                          "matches": [
+                            {
+                              "f": "item.text"
+                            },
+                            "\\S"
+                          ]
+                        },
+                        {
+                          "if": [
+                            {
+                              "in": [
+                                {
+                                  "f": "item.leaf"
+                                },
+                                [
+                                  "caption",
+                                  "definition_term",
+                                  "heading",
+                                  "line",
+                                  "paragraph",
+                                  "table_cell",
+                                  "table_row"
+                                ]
+                              ]
+                            },
+                            {
+                              "f": "item.quote_depth"
+                            },
+                            0
+                          ]
+                        },
+                        false
+                      ]
+                    },
+                    "value": {
+                      "v": "depth"
+                    },
+                    "before": true,
+                    "field": "ancestor_ids"
+                  }
+                },
+                {
+                  "v": "host_index"
+                }
+              ]
+            },
+            ""
+          ]
+        },
+        "host_column": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "definition_list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "v": "host_list"
+            },
+            "field": "column"
+          }
+        },
+        "column": {
+          "column": [
+            {
+              "v": "content_start"
+            },
+            {
+              "v": "depth"
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "paragraph"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "prev.leaf_id"
+              },
+              {
+                "f": "leaf_id"
+              }
+            ]
+          },
+          {
+            "starts": [
+              {
+                "f": "body"
+              },
+              ": "
+            ]
+          },
+          {
+            "not": {
+              "starts": [
+                {
+                  "f": "prev.body"
+                },
+                ":: "
+              ]
+            }
+          },
+          {
+            "not": {
+              "all": [
+                {
+                  "not": {
+                    "all": [
+                      {
+                        "eq": [
+                          {
+                            "v": "depth"
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        "matches": [
+                          {
+                            "f": "text"
+                          },
+                          "^[ \\t]*>"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "not": {
+                    "ge": [
+                      {
+                        "lookup": {
+                          "over": "block",
+                          "types": [
+                            "definition_description"
+                          ],
+                          "key": {
+                            "f": "item.line.number"
+                          },
+                          "value": {
+                            "f": "number"
+                          },
+                          "field": "start"
+                        }
+                      },
+                      0
+                    ]
+                  }
+                },
+                {
+                  "matches": [
+                    {
+                      "v": "content"
+                    },
+                    "^::?(?:[ \\t]|$)"
+                  ]
+                },
+                {
+                  "not": {
+                    "all": [
+                      {
+                        "eq": [
+                          {
+                            "f": "leaf"
+                          },
+                          "definition_term"
+                        ]
+                      },
+                      {
+                        "f": "leaf_first"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "gt": [
+                    {
+                      "v": "host_column"
+                    },
+                    {
+                      "v": "column"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "body_start"
+          },
+          "end": {
+            "f": "body_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-074",
+        "C2-B-067",
+        "C2-W-150"
       ]
     },
     {
