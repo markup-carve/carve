@@ -64685,6 +64685,86 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1480",
+   "clauses": [
+    "C2-W-005",
+    "C2-B-024"
+   ],
+   "why": "C2-W-005: Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree C2-B-024: These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line",
+   "summary": "an attribute line of an ordered list of another style keeps the blank line that closes the list above",
+   "kind": "format",
+   "input": "v. x\n\n{x}\nvi. y\n",
+   "options": {},
+   "expected": {
+    "carve": "v. x\n\n{x}\nvi. y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1481",
+   "clauses": [
+    "C2-W-005",
+    "C2-B-024"
+   ],
+   "why": "C2-W-005: Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree C2-B-024: These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line",
+   "summary": "an attribute line of a numbered list below a lettered list keeps the blank line",
+   "kind": "format",
+   "input": "a. x\n\n\n{x}\n1. y\n",
+   "options": {},
+   "expected": {
+    "carve": "a. x\n\n{x}\n1. y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1482",
+   "clauses": [
+    "C2-W-005",
+    "C2-B-024"
+   ],
+   "why": "C2-W-005: Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree C2-B-024: These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line",
+   "summary": "in a quote the blank line before the attribute line of the second list is a bare quote mark",
+   "kind": "format",
+   "input": "> v. x\n>\n> {x}\n> vi. y\n",
+   "options": {},
+   "expected": {
+    "carve": "> v. x\n>\n> {x}\n> vi. y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1483",
+   "clauses": [
+    "C2-W-005",
+    "C2-B-024"
+   ],
+   "why": "C2-W-005: Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree C2-B-024: These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line",
+   "summary": "in an item the blank line before the attribute line of the second list stays inside the item",
+   "kind": "format",
+   "input": "- q\n\n  v. x\n\n  {x}\n  vi. y\n",
+   "options": {},
+   "expected": {
+    "carve": "- q\n\n  v. x\n\n  {x}\n  vi. y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1484",
+   "clauses": [
+    "C2-W-005",
+    "C2-B-024"
+   ],
+   "why": "C2-W-005: Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree C2-B-024: These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line",
+   "summary": "two attribute lines of the second list merge below the blank line",
+   "kind": "format",
+   "input": "v. x\n\n{#i}\n{.c}\nvi. y\n",
+   "options": {},
+   "expected": {
+    "carve": "v. x\n\n{#i .c}\nvi. y\n"
+   },
+   "from": []
   }
  ]
 }
