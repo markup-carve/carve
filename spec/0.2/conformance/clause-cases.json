@@ -66670,6 +66670,57 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1555",
+   "clauses": [
+    "C2-B-031"
+   ],
+   "why": "Catalog blockquote-marker-without-space: a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text",
+   "summary": "a `>` followed by a tab and text is reported to the end of the text",
+   "kind": "lint",
+   "input": ">\tx\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 4,
+      "messageWhen": "the line is paragraph, heading, cell, term, caption or line-block text outside frontmatter"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1556",
+   "clauses": [
+    "C2-B-031"
+   ],
+   "why": "Catalog blockquote-marker-without-space: a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text",
+   "summary": "a `>` followed by a tab and a `>` is reported",
+   "kind": "lint",
+   "input": ">\t>\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 4
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
