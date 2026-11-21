@@ -238,3 +238,9 @@ The `link-gap-before-destination` row of `data/lint-model.json` states a pattern
 C2-W-005 with C2-B-024: where the second of two adjacent lists that C2-W-028 writes without blank lines carries attribute lines, one blank line stands above them, or they would be lazy lines of the last paragraph of the first list (#6308). Clause cases CC-1480 to CC-1484.
 
 - All three engines write the attribute line directly below the first list (CC-1480 to CC-1484).
+
+## Engine gaps from the linear lint rows of 21 November
+
+The `bare-html-tag`, `empty-reference-definition` and pair rows of `data/lint-model.json` state patterns a backtracking engine runs in linear time, and the pair scan gives the group `backslashes` (#6305). Clause cases CC-1485 to CC-1491. Measured on the engine heads of `scripts/next2-readiness-baseline.json`.
+
+- `carve-rs`: `djot-emphasis-underscore` reports an opener that follows a letter, as in `x_a_` (CC-1491, markup-carve/carve-rs#4549).
