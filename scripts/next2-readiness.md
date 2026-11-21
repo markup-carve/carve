@@ -28,7 +28,7 @@ Only real example sources (`tests/upgrade-replay/examples/`) in (b) or (d) count
 
 Aggregate counts, per-rule catalog percentages and lint agreement are reported in the summary but do not fail the job: adding a case moves them without anything regressing.
 
-Catalog rows with status `obsolete` or `void` remain in the historical data but are excluded from the shared trigger denominator. The report counts them separately as "Excluded: obsolete/void". The job fails if an engine emits either kind on a clause case. A rule with status `engine-local`, such as the C2-W-133 `writer-refused` repair guard, is counted separately and verified by engine implementation tests rather than a shared clause case.
+Catalog rows with status `obsolete` or `void` remain in the historical data but are excluded from the shared trigger denominator. The report counts them separately as "Excluded: obsolete/void". The job fails if an engine emits either kind on a clause case. A rule with status `engine-local`, such as the C2-W-133 `writer-refused` repair guard, is counted separately and verified by engine implementation tests; the shared document budget of C2-W-133 also has the clause cases CC-1492 and CC-1493.
 
 ## Extensions
 
