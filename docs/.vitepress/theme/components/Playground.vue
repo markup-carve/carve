@@ -1224,7 +1224,7 @@ void mermaidInit
 }
 @media (hover: hover) {
   .pg-engine:not(:disabled):hover,
-  .pg-btn:not(:disabled):hover {
+  .pg-btn:not(:disabled):not(.is-error):hover {
     border-color: var(--vp-c-brand-1);
     color: var(--vp-c-brand-1);
   }
