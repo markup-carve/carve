@@ -150,8 +150,17 @@ watch(source, value => { if (value !== formattedText) formatNote.value = '' })
 type Tools = any
 const tools = shallowRef<Tools | null>(null)
 let toolsLoading: Promise<Tools> | null = null
+const toolsError = ref('')
 function loadTools(): Promise<Tools> {
-  toolsLoading ??= import('../../engine-tools.js').then((module) => (tools.value = module))
+  toolsLoading ??= import('../../engine-tools.js').then((module) => {
+    toolsError.value = ''
+    return (tools.value = module)
+  }, (error) => {
+    // Forget the failure so a later action can retry.
+    toolsLoading = null
+    toolsError.value = error instanceof Error ? error.message : String(error)
+    throw error
+  })
   return toolsLoading
 }
 async function upgradeSource(): Promise<void> {
@@ -510,7 +519,8 @@ const exported = computed<{ text: string; losses: number } | null>(() => {
   if (!exportTargets.includes(target)) return null
   const entry = tools.value
   if (!entry) {
-    void loadTools()
+    if (toolsError.value) return { text: `Could not load the export entry: ${toolsError.value}`, losses: 0 }
+    loadTools().catch(() => {})
     return { text: 'Loading the export entry...', losses: 0 }
   }
   try {
@@ -532,16 +542,19 @@ const OUTPUT_FILES: Record<Output, { name: string; type: string }> = {
 const copied = ref<'source' | 'output' | null>(null)
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
 // An export tab reads the tools entry, which may still be loading.
-async function settledOutput(): Promise<string> {
-  if (exportTargets.includes(output.value as ExportTarget)) {
+// Null when the tab changed while the entry loaded, so a file never gets another tab's content.
+async function settledOutput(tab: Output): Promise<string | null> {
+  if (exportTargets.includes(tab as ExportTarget)) {
     await loadTools()
     await nextTick()
   }
-  return activeOutput.value
+  return output.value === tab ? activeOutput.value : null
 }
 async function copyText(which: 'source' | 'output'): Promise<void> {
   try {
-    await navigator.clipboard.writeText(which === 'source' ? source.value : await settledOutput())
+    const text = which === 'source' ? source.value : await settledOutput(output.value)
+    if (text === null) return
+    await navigator.clipboard.writeText(text)
     copied.value = which
     clearTimeout(copiedTimer)
     copiedTimer = setTimeout(() => { copied.value = null }, 1500)
@@ -550,8 +563,11 @@ async function copyText(which: 'source' | 'output'): Promise<void> {
   }
 }
 async function download(which: 'source' | 'output'): Promise<void> {
-  const file = which === 'source' ? { name: 'document.crv', type: 'text/plain' } : OUTPUT_FILES[output.value]
-  const blob = new Blob([which === 'source' ? source.value : await settledOutput()], { type: `${file.type};charset=utf-8` })
+  const tab = output.value
+  const file = which === 'source' ? { name: 'document.crv', type: 'text/plain' } : OUTPUT_FILES[tab]
+  const text = which === 'source' ? source.value : await settledOutput(tab).catch(() => null)
+  if (text === null) return
+  const blob = new Blob([text], { type: `${file.type};charset=utf-8` })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -559,6 +575,8 @@ async function download(which: 'source' | 'output'): Promise<void> {
   link.click()
   setTimeout(() => URL.revokeObjectURL(url), 0)
 }
+// Choosing a tab again retries a failed load.
+watch(output, () => { if (!tools.value) toolsError.value = '' })
 const ansiHtml = computed(() => output.value === 'ansi' && exported.value ? ansiToHtml(exported.value.text) : '')
 const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : exported.value ? exported.value.text : formatted.value)
 const mounted = ref(false)
