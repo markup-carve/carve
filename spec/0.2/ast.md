@@ -512,7 +512,7 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 
 **C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`.
 
-**C2-A-135** The root `stages` list names the resolution stages that ran: `includeExpansion` (C2-N-006), `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete. A renderer runs reference resolution and table alignment on every tree it is given and overwrites every result field of `data/ast-results.json` except the fields of `include`: it never reads such a field from the tree, and `stages` lets it skip no stage. The fields of an expanded include are kept (C2-N-075).
+**C2-A-135** The root `stages` list names the resolution stages that ran: `includeExpansion` (C2-N-006), `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete. An `abbreviation` that carries no `expansion` because the budget of C2-I-098 is spent leaves `referenceResolution` complete. A renderer runs reference resolution and table alignment on every tree it is given and overwrites every result field of `data/ast-results.json` except the fields of `include`: it never reads such a field from the tree, and `stages` lets it skip no stage. The fields of an expanded include are kept (C2-N-075).
 
 **C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The `role` is a tree fact used by equality.
 

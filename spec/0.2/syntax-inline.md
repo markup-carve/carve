@@ -2037,7 +2037,7 @@ See </#intro> and </#Intro> and </#intro>{.c}
 
 An abbreviation definition is a block line (C2-B-084). Its effect is inline.
 
-**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion.
+**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. One parse has a budget for these copies, with the numbers of C2-H-201: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the length of the source it parsed in UTF-8 bytes, whichever is more. The nodes draw on it in document order, each costing the UTF-8 byte length of its expansion. A node whose cost is more than what remains draws nothing and carries no `expansion`; a later node that fits what remains still draws on it. The definition holds the expansion once (C2-A-079), and the parse reports nothing for a node without it. The budget is the parse's own: a render resolves the expansion again under the budget of C2-H-201.
 
 **C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. An atom is a boundary, and so are the edges of an inline footnote; a braced comment is transparent (C2-I-026), so in `HTML{%x%}s` the term does not match.
 
