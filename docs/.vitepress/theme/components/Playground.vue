@@ -181,7 +181,7 @@ async function upgradeSource(): Promise<void> {
     if (verdict === 'unchanged') { formatNote.value = 'nothing to upgrade'; return }
     if (verdict === 'already-0.2' && !force) {
       upgradeAnyway = before
-      formatNote.value = 'looks like 0.2 already, nothing to upgrade (click again to upgrade anyway)'
+      formatNote.value = 'looks like 0.2 already, nothing to upgrade (click again to force)'
       return
     }
     formattedText = result.output
