@@ -68378,5 +68378,77 @@
    },
    "from": []
   }
+,
+  {
+   "id": "CC-1613",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: A column-0 opener after a list closes the list before this test; the blank line still has to stand above the opener or its attribute lines.",
+   "summary": "column-zero typed opener closes a list even without blank separation",
+   "input": "- a\n---yaml\nk: v\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a</li>\n</ul>\n<p>—yaml\nk: v\n—</p>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  }
  ]
 }
