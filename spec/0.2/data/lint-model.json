@@ -10471,7 +10471,7 @@
                           {
                             "eq": [
                               {
-                                "f": "item.ancestors.0"
+                                "f": "item.parent.type"
                               },
                               "list_item"
                             ]
