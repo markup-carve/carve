@@ -8,7 +8,8 @@ import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../../playgro
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
-import { render, parse, lint, format } from '../../engine.js'
+import { render, parse, lint, format, fix, fixEdits } from '../../engine.js'
+import { applyByteEdits, byteToUtf16, type ByteEdit } from '../editor/offsets'
 import { isDiffPre } from '../../diff-fences.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 
@@ -140,6 +141,7 @@ const previewSource = ref<string | null>(null)
 const editorRef = ref<{
   focus: () => void
   replaceAll: (text: string) => void
+  select: (from: number, to: number) => void
   scroller: () => HTMLElement | null
   topLine: () => number
   lineOffset: (line: number) => number
@@ -309,15 +311,67 @@ const tree = computed(() => {
   try { return JSON.stringify(parse(source.value, { headingIds: headingIds.value }), null, 2) }
   catch (error) { return error instanceof Error ? error.message : String(error) }
 })
-const findings = computed(() => {
-  try { const entries = lint(source.value); return entries.length ? JSON.stringify(entries, null, 2) : 'No lint findings.' }
-  catch (error) { return error instanceof Error ? error.message : String(error) }
+type LintDiagnostic = { code: string; severity: string; message: string; range: { startOffset: number; endOffset: number } }
+type Finding = { diagnostic: LintDiagnostic; from: number; to: number; line: number; column: number; edits: ByteEdit[] | null }
+const lintResult = computed<{ findings: Finding[]; error: string | null }>(() => {
+  const text = source.value
+  try {
+    const toUtf16 = byteToUtf16(text)
+    const findings = (lint(text) as LintDiagnostic[]).map((diagnostic): Finding => {
+      const from = toUtf16(diagnostic.range.startOffset)
+      const to = Math.max(from, toUtf16(diagnostic.range.endOffset))
+      const lineStart = text.lastIndexOf('\n', from - 1) + 1
+      const line = text.slice(0, lineStart).split('\n').length
+      // Columns count characters, so an emoji is one column as a reader sees it.
+      const column = Array.from(text.slice(lineStart, from)).length + 1
+      let edits: ByteEdit[] | null = null
+      try { edits = fixEdits(text, diagnostic) } catch { edits = null }
+      return { diagnostic, from, to, line, column, edits }
+    })
+    return { findings, error: null }
+  } catch (error) {
+    return { findings: [], error: error instanceof Error ? error.message : String(error) }
+  }
 })
+const fixableCount = computed(() => lintResult.value.findings.filter(f => f.edits?.length).length)
+const findingsJson = computed(() => lintResult.value.error ?? JSON.stringify(lintResult.value.findings.map(f => f.diagnostic), null, 2))
+const lintNote = ref('')
+function selectFinding(finding: Finding): void {
+  editorRef.value?.select(finding.from, finding.to)
+}
+function replaceSource(next: string): void {
+  formattedText = next
+  editorRef.value?.replaceAll(next)
+  source.value = next
+}
+function fixFinding(finding: Finding): void {
+  if (!finding.edits?.length) return
+  replaceSource(applyByteEdits(source.value, finding.edits).text)
+  lintNote.value = `fixed ${finding.diagnostic.code}`
+}
+// fix() applies what it can prove; findings it leaves get their own quick-fix edits, one undo step in all.
+function fixAll(): void {
+  const before = source.value
+  try {
+    let next = fix(before).output as string
+    const leftover = (lint(next) as LintDiagnostic[]).flatMap((diagnostic) => {
+      try { return fixEdits(next, diagnostic) ?? [] } catch { return [] }
+    })
+    if (leftover.length) next = applyByteEdits(next, leftover).text
+    if (next === before) { lintNote.value = 'nothing to fix'; return }
+    const remaining = lint(next).length
+    replaceSource(next)
+    lintNote.value = remaining ? `fixed, ${remaining} left` : 'fixed all'
+  } catch (error) {
+    lintNote.value = `fix failed: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
+watch(source, value => { if (value !== formattedText) lintNote.value = '' })
 const formatted = computed(() => {
   try { return format(source.value, { alignTables: alignTables.value }) }
   catch (error) { return error instanceof Error ? error.message : String(error) }
 })
-const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findings.value : formatted.value)
+const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : formatted.value)
 const mounted = ref(false)
 const renderStatus = computed(() => {
   const ms = mounted.value ? rendered.value.ms : null
@@ -884,7 +938,52 @@ void mermaidInit
           </div>
           <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
         </div>
-        <pre class="raw" aria-live="polite">{{ activeOutput }}</pre>
+        <div v-if="output === 'lint'" class="raw pg-lint">
+          <p v-if="lintResult.error" class="pg-lint-empty">{{ lintResult.error }}</p>
+          <p v-else-if="!lintResult.findings.length" class="pg-lint-empty">No lint findings.</p>
+          <template v-else>
+            <div class="pg-lint-head">
+              <span>{{ lintResult.findings.length }} {{ lintResult.findings.length === 1 ? 'finding' : 'findings' }}</span>
+              <span v-if="lintNote" role="status">{{ lintNote }}</span>
+              <button
+                v-if="fixableCount"
+                class="pg-btn pg-btn-small"
+                type="button"
+                :title="`Apply every available fix (${fixableCount}); Ctrl+Z undoes it`"
+                aria-label="Fix all lint findings"
+                @click="fixAll"
+              >
+                Fix all ({{ fixableCount }})
+              </button>
+            </div>
+            <ul class="pg-lint-list">
+              <li v-for="(finding, index) in lintResult.findings" :key="index" :class="`pg-sev-${finding.diagnostic.severity}`">
+                <button
+                  class="pg-lint-item"
+                  type="button"
+                  :title="`Select line ${finding.line}, column ${finding.column} in the editor`"
+                  @click="selectFinding(finding)"
+                >
+                  <span class="pg-lint-sev">{{ finding.diagnostic.severity }}</span>
+                  <code class="pg-lint-code">{{ finding.diagnostic.code }}</code>
+                  <span class="pg-lint-msg">{{ finding.diagnostic.message }}</span>
+                  <span class="pg-lint-pos">{{ finding.line }}:{{ finding.column }}</span>
+                </button>
+                <button
+                  v-if="finding.edits?.length"
+                  class="pg-btn pg-btn-small"
+                  type="button"
+                  :aria-label="`Fix ${finding.diagnostic.code} at ${finding.line}:${finding.column}`"
+                  title="Apply this fix (Ctrl+Z undoes it)"
+                  @click="fixFinding(finding)"
+                >
+                  Fix
+                </button>
+              </li>
+            </ul>
+          </template>
+        </div>
+        <pre v-else class="raw" aria-live="polite">{{ activeOutput }}</pre>
       </div>
     </div>
 
@@ -1242,6 +1341,26 @@ textarea:focus {
 .pg-options label { display: inline-flex; align-items: center; gap: .25rem; font-size: .8rem; }
 .pg-options select { max-width: 10rem; border: 1px solid var(--vp-c-divider); border-radius: 4px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); }
 .pg-options input { margin: 0; }
+.pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
+.pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
+.pg-lint-empty { margin: 0; }
+.pg-lint-head { display: flex; align-items: center; gap: .75rem; font-family: var(--vp-font-family-base); font-weight: 600; }
+.pg-lint-head > button { margin-left: auto; }
+.pg-lint-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .2rem; }
+.pg-lint-list li { display: flex; align-items: center; gap: .4rem; }
+.pg-lint-item { flex: 1; display: grid; grid-template-columns: 4.5rem minmax(8rem, max-content) 1fr auto; gap: .6rem; align-items: baseline; min-width: 0; padding: .3rem .45rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--vp-c-text-1); font: inherit; text-align: left; cursor: pointer; }
+.pg-lint-item:hover, .pg-lint-item:focus-visible { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+.pg-lint-sev { font-weight: 700; text-transform: uppercase; font-size: .68rem; }
+.pg-sev-error .pg-lint-sev { color: var(--vp-c-danger-1, #d64550); }
+.pg-sev-warning .pg-lint-sev { color: var(--vp-c-warning-1, #b8860b); }
+.pg-sev-hint .pg-lint-sev, .pg-sev-info .pg-lint-sev { color: var(--vp-c-text-2); }
+.pg-lint-code { font-size: .72rem; overflow-wrap: anywhere; }
+.pg-lint-msg { min-width: 0; overflow-wrap: anywhere; }
+.pg-lint-pos { font-variant-numeric: tabular-nums; color: var(--vp-c-text-2); }
+@media (max-width: 640px) {
+  .pg-lint-item { grid-template-columns: auto 1fr auto; }
+  .pg-lint-msg { grid-column: 1 / -1; }
+}
 .pg-output-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
 .pg-output-tab { padding: .18rem .4rem; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--vp-c-text-2); font: 600 .72rem/1.2 var(--vp-font-family-base); cursor: pointer; }
 .pg-output-tab[aria-pressed="true"] { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
