@@ -1,33 +1,49 @@
 #!/usr/bin/env node
-// Build the browser entry from a carve-js checkout at the docs pin.
+// Build the playground's browser entries from a carve-js checkout at ENGINE_REVISION.
 // Usage: node docs/.vitepress/build-engine.mjs ../carve-js
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 
+// Ahead of the package pin: upgrade, fix and the import and export entries landed on carve-js next2 after it.
+const ENGINE_REVISION = '62638cf5a21f3f43cf95c5be16d6c92f0aba8773'
+
 const checkout = resolve(process.argv[2] ?? '../carve-js')
-const packageFile = JSON.parse(readFileSync(resolve('package.json'), 'utf8'))
-const revision = packageFile.devDependencies['@markup-carve/carve'].split('#')[1]
 const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: checkout, encoding: 'utf8' }).trim()
-if (revision !== actual) throw new Error(`carve-js checkout ${actual} differs from docs pin ${revision}`)
-// Checkouts from before the 0.2 rename keep the engine under v2/.
-const entry = existsSync(resolve(checkout, 'v2/src/index.ts')) ? './v2/src/index.ts' : './src/index.ts'
+if (ENGINE_REVISION !== actual) throw new Error(`carve-js checkout ${actual} differs from ENGINE_REVISION ${ENGINE_REVISION}`)
+if (!existsSync(resolve(checkout, 'public/index.ts'))) throw new Error('carve-js checkout has no public/ entry')
 const { build } = await import(pathToFileURL(resolve(checkout, 'node_modules/esbuild/lib/main.js')).href)
-const result = await build({
-  stdin: {
-    contents: `export { parse, render, lint, format } from '${entry}'\n`,
-    resolveDir: checkout,
-    sourcefile: 'docs-engine-entry.ts',
-    loader: 'ts',
+
+// The core entry loads with the playground; the tools entry (0.1 reader, Markdown and Djot libraries) on first use.
+const bundles = [
+  {
+    file: 'engine.js',
+    names: 'parse, render, lint, format, fix, fixEdits',
+    contents: `export { parse, render, lint, format, fix, fixEdits } from './public/index.ts'\n`,
   },
-  bundle: true,
-  platform: 'browser',
-  format: 'esm',
-  minify: true,
-  write: false,
-  logLevel: 'silent',
-})
-const banner = `/*! Carve 0.2 browser API from markup-carve/carve-js ${revision} (MIT). Bundled with esbuild: parse, render, lint, format. */\n`
-writeFileSync(resolve('docs/.vitepress/engine.js'), banner + result.outputFiles[0].text)
-console.log(`Built docs/.vitepress/engine.js from ${revision}`)
+  {
+    file: 'engine-tools.js',
+    names: 'upgrade, importDocument, exportDocument',
+    contents: [
+      `export { upgrade } from './public/upgrade.ts'`,
+      `export { importDocument } from './public/formats.ts'`,
+      `export { exportDocument } from './public/export.ts'`,
+      '',
+    ].join('\n'),
+  },
+]
+for (const bundle of bundles) {
+  const result = await build({
+    stdin: { contents: bundle.contents, resolveDir: checkout, sourcefile: `docs-${bundle.file}.ts`, loader: 'ts' },
+    bundle: true,
+    platform: 'browser',
+    format: 'esm',
+    minify: true,
+    write: false,
+    logLevel: 'silent',
+  })
+  const banner = `/*! Carve 0.2 browser API from markup-carve/carve-js ${ENGINE_REVISION} (MIT). Bundled with esbuild: ${bundle.names}. */\n`
+  writeFileSync(resolve('docs/.vitepress', bundle.file), banner + result.outputFiles[0].text)
+  console.log(`Built docs/.vitepress/${bundle.file} from ${ENGINE_REVISION}`)
+}
