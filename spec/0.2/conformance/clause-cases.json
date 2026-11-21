@@ -64285,6 +64285,33 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1473",
+  "clauses": [
+   "C2-W-138",
+   "C2-B-031",
+   "C2-I-002"
+  ],
+  "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog blockquote-marker-without-space: the line from its `>` to its last character that is not a space or a tab, for both messages C2-I-002: Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others",
+  "summary": "a quote mark glued to text before a code span that goes on to the next line ends at its last character that is not a space or tab",
+  "kind": "lint",
+  "input": ">a `x\t\ny`\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "blockquote-marker-without-space",
+     "line": 1,
+     "column": 1,
+     "channel": "lint",
+     "severity": "warning",
+     "endLine": 1,
+     "endColumn": 6
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

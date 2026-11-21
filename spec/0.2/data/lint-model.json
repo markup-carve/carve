@@ -259,7 +259,7 @@
     {
       "name": "after_quote_mark",
       "type": "boolean",
-      "means": "the text before start on its line ends with a quote mark and its space",
+      "means": "the text before opener_start on its line ends with a quote mark and its space",
       "clauses": [
         "C2-B-031"
       ]
@@ -1987,13 +1987,11 @@
           "end": {
             "add": [
               {
-                "f": "start"
+                "f": "body_start"
               },
               {
                 "len": {
-                  "trim_end": {
-                    "f": "text"
-                  }
+                  "f": "raw_body"
                 }
               }
             ]
@@ -2002,9 +2000,7 @@
             "text": {
               "slice": [
                 {
-                  "trim_end": {
-                    "f": "text"
-                  }
+                  "f": "raw_body"
                 },
                 1
               ]
@@ -2027,13 +2023,11 @@
           "end": {
             "add": [
               {
-                "f": "start"
+                "f": "body_start"
               },
               {
                 "len": {
-                  "trim_end": {
-                    "f": "text"
-                  }
+                  "f": "raw_body"
                 }
               }
             ]
@@ -2042,9 +2036,7 @@
             "text": {
               "slice": [
                 {
-                  "trim_end": {
-                    "f": "text"
-                  }
+                  "f": "raw_body"
                 },
                 1
               ]
