@@ -10,7 +10,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-002** The program is `carve`.
 
-**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import of its `import` command (C2-M-100), and its scanner and event helpers. Every engine also offers Markdown, plain-text and ANSI export renderers through its library API and `carve render --to markdown`, `--to plain` and `--to ansi`. Their output, options and export-only loss codes are engine behavior outside this specification; those codes are outside `data/lint-rules.json` (C2-W-106). An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
+**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import of its `import` command (C2-M-100), and its scanner and event helpers. Every engine also offers Markdown, plain-text and ANSI export renderers through its library API and `carve render --to markdown`, `--to plain` and `--to ansi`. Their output, options and export-only loss codes are engine behavior outside this specification, except the option `headingShift`, which the Markdown export reads and the plain-text and ANSI exports refuse (C2-H-209); those codes are outside `data/lint-rules.json` (C2-W-106). An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
 
 **C2-T-004** `data/cli.json` holds the commands, flags, failure categories, calls and entry fields of this document. A row is normative together with the clauses it cites; where a row and its clause disagree, the clause wins.
 
@@ -74,7 +74,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value. `--ignore` collects every value too.
 
-**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `allowLosses` and `maxLosses` keep the 0.1 flags: `--allow-loss` gives one code per instance (C2-T-027) and `--max-render-losses` the count (C2-T-029). `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag: they are options of the library calls only (C2-T-005). `codeBlockRenderer` takes host code as well and has no flag either. A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
+**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, a `count` option takes a decimal integer, so `--heading-shift=1`, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `allowLosses` and `maxLosses` keep the 0.1 flags: `--allow-loss` gives one code per instance (C2-T-027) and `--max-render-losses` the count (C2-T-029). `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag: they are options of the library calls only (C2-T-005). `codeBlockRenderer` takes host code as well and has no flag either. A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
 
 ## Input and output
 
@@ -140,6 +140,7 @@ This document defines what every engine offers a caller: the library calls and t
 | Flag | Value | Meaning |
 |---|---|---|
 | `--heading-ids` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower` | the option `headingIds` |
+| `--heading-shift` | count, 0 | the option `headingShift` (C2-H-208, C2-H-209) |
 | `--labels` | JSON | the option `labels` |
 | `--mode` | `interactive`, `static` | the option `mode` |
 | `--profile` | `full`, `article`, `comment`, `minimal` | the option `profile` |

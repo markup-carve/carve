@@ -578,7 +578,7 @@ for (const part of tooling.split(/^### /m).slice(1)) {
   }
 }
 const optionRowsByName = new Map((data.options?.options ?? []).map(row => [row.name, row]))
-const FLAG_KINDS = { boolean: 'switch', enum: 'enum', list: 'json', map: 'json', structure: 'json' }
+const FLAG_KINDS = { boolean: 'switch', count: 'count', enum: 'enum', list: 'json', map: 'json', structure: 'json' }
 for (const row of cli.flags ?? []) {
   const where = `cli.json flags ${row.name}`
   const shown = [...(listed.get(row.name) ?? [])].sort()
@@ -604,7 +604,7 @@ const valueCell = row => {
   if (row.kind === 'switch') return row.default === true ? 'switch, on' : 'switch'
   if (row.kind === 'enum') return row.values.map(value => tick + value + tick).join(', ')
   if (row.kind === 'json') return 'JSON'
-  if (row.kind === 'count') return `count, ${row.default}`
+  if (row.kind === 'count') return `count, ${row.default ?? optionRowsByName.get(row.option)?.default}`
   if (row.kind === 'code' || row.kind === 'file') return row.repeatable ? `${row.kind}, repeatable` : row.kind
   return row.kind
 }

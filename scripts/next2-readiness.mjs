@@ -6,7 +6,7 @@ import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, settle, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 import { verifyPreparedHeads } from './next2-readiness-heads.mjs'
 import { extensionFailures, extensionReport } from './next2-readiness-extensions.mjs'
@@ -145,6 +145,7 @@ function compare(c, actual) {
   if (expected.html !== undefined && actual.html !== expected.html) fields.push('html')
   if (expected.htmlIncludes !== undefined && !actual.html?.includes(expected.htmlIncludes)) fields.push('htmlIncludes')
   if (expected.carve !== undefined && actual.carve !== expected.carve) fields.push('carve')
+  if (expected.output !== undefined && actual.output !== expected.output) fields.push('output')
   if (expected.children !== undefined && !matchTree(actual.tree?.children, expected.children)) fields.push('children')
   if (expected.tree !== undefined && !matchTree(actual.tree, expected.tree)) fields.push('tree')
   if (expected.layout !== undefined && !layoutMatches(actual.layout, expected.layout)) fields.push('layout')
@@ -204,6 +205,8 @@ const standard = await import(pathToFileURL(resolve(jsDir, 'public/extensions.ts
 const importer = await import(pathToFileURL(resolve(jsDir, 'import/src/index.ts')))
 // diffTree, applyPatch and the fingerprints (C2-T-043 to C2-T-046) are not exported from src/index.ts.
 const treePatch = existsSync(resolve(jsDir, 'src/tree-patch.ts')) ? await import(pathToFileURL(resolve(jsDir, 'src/tree-patch.ts'))) : null
+// The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209).
+const exporter = existsSync(resolve(jsDir, 'src/export/index.ts')) ? await import(pathToFileURL(resolve(jsDir, 'src/export/index.ts'))) : null
 const bundles = [standard.mermaid, standard.imgFence, standard.mathBlock, standard.codeGroup, standard.details,
   standard.spoiler].filter(Boolean).map(create => create())
 const standardDefinitions = new Map([
@@ -297,6 +300,11 @@ function jsRun(c) {
       catch (e) { return { accepted: false, error: e.name, path: e.path } }
     }
     if (kind === 'cli') return { unsupported: 'CLI replay is measured separately from the library runner' }
+    if (kind === 'export') {
+      if (!exporter) return { unsupported: 'the exports are not offered' }
+      const r = exporter.exportTo(c.to, js.parse(input), options)
+      return { output: r.output, diagnostics: r.diagnostics }
+    }
     if (kind === 'migrate') { const r = js.migrateTree(c.tree, options); return { tree: r.document, diagnostics: r.diagnostics } }
     if (kind === 'import') { const r = importer.importDocument(c.html, { from: 'html', ...options }); return { tree: r.document, carve: r.source, diagnostics: r.diagnostics, suppressed: r.suppressedDiagnostics } }
     if (kind === 'position') {
@@ -395,7 +403,7 @@ const forbiddenReports = forbiddenCatalogReports(work, outputs, rules)
 const results = {}
 const extensionResults = {}
 for (const [engine, output] of Object.entries(outputs)) {
-  const rows = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, extension: c.extension, ...compare(c, output[i]) }))
+  const rows = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, extension: c.extension, ...settle(c, compare(c, output[i])) }))
   results[engine] = rows.filter(row => row.area !== 'extensions')
   // A failing extension case keeps the engine's HTML, so a ticket can quote it.
   extensionResults[engine] = rows.flatMap((row, i) => row.area !== 'extensions' ? []
@@ -517,7 +525,7 @@ for (const engine of ['js', 'php', 'rs']) {
 }
 const upgradeFail = upgradeBarFail(upgrade.originClasses)
 counts.js.upgrade = { pass: upgrade.originTotals.example - upgradeFail, fail: upgradeFail, unsupported: 0, excluded: 0, engineLocal: 0 }
-const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries([...rows, ...extensionResults[engine]].filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
+const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries([...rows, ...extensionResults[engine]].filter(row => row.status !== 'pass' && row.status !== 'engine-local').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
 const ready = (engine, areas) => Object.values(areas).every(row => row.fail + row.unsupported === 0) && !forbiddenReports.some(item => item.startsWith(`${engine}/`))
