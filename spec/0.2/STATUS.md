@@ -225,3 +225,10 @@ C2-W-145 writes a span count that no mark cell gives with span marks, and C2-W-1
 
 - All three engines: an imported or supplied span count is written short and reported as `field-unspellable` (CC-1450 to CC-1457); a bare mark pair is written bare, and lint reports the output (CC-1458 to CC-1463). CC-1464 passes.
 - All three engines: the `deprecated-bare-*` rules report a pair whose opening mark a combining mark or a zero-width joiner follows (CC-1465 to CC-1467, #6275).
+
+## Engine gaps from the linear link-gap row of 21 November
+
+The `link-gap-before-destination` row of `data/lint-model.json` states a pattern a backtracking engine runs in linear time, and its report reads the destination alone, as the catalog row says (#6297). Clause cases CC-1476 to CC-1479. Measured on the engine heads of `scripts/next2-readiness-baseline.json`.
+
+- `carve-js`: the baseline head passes. The `next2` head (`8f233a3`) runs the old row from its copy of the lint model, so the label `(` of `[a(] ( )` makes a finding (CC-1479) until that copy takes the new row.
+- `carve-rs`: a run of `[` in front of one label is reported from its last `[`, not its first (CC-1477, markup-carve/carve-rs#4547).
