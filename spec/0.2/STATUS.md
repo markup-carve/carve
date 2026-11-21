@@ -56,6 +56,8 @@ After candidate 17, the spec batch of 19 November: a fallback that is the claime
 
 The upgrade replay of 19 November adds U-430, a delimiter that 0.2 pairs across a braced opener or an attribute block and 0.1 kept as text, and U-431, a hyphen run that C2-I-111 splits into other dashes than 0.1 (#6164). Source upgrade rows rose from 324 to 326. The second replay pass adds U-432, a line comment that 0.1 ended at a closer or read after an opener, written as a braced comment, and U-433, a blank line above a comment line that ended a 0.1 block; source upgrade rows rose from 326 to 328. The third replay pass adds U-434, one space between a bullet and a task box; U-435, a block moved out of a description to the column of its list; U-436, a line indented to the item column that 0.1 read into the item; and U-437, a blank line between item text and a paragraph 0.1 started outside the item. Source upgrade rows rose from 328 to 332. The fourth replay pass adds U-438 for a nested ordered list beginning above 1 after open item text; source upgrade rows rose to 333.
 
+The ruling of 21 November on `headingShift` (#6325) makes the heading shift a core render option and removes the `headingLevelShift()` extension from 0.2. C2-H-208 adds a count from 0 to 5 to every heading level of the render view before the first document transform; a level above 6 is written by C2-H-021 and reported once with `heading-shift-above-6`; the degraded mark counts the shifted level; under `roundtrip` the new carrier `data-carve-source-level` holds the level before the shift and the importer reads it (C2-H-114, C2-H-186). C2-H-209 lets the Markdown export read the option, clamped to 6 with the same code, while the plain-text and ANSI exports refuse it (C2-T-003). The options grow from 25 to 26, the reserved names from 18 to 19, `--heading-shift` joins the render flags (C2-T-010), the option schema gains the stage `export-markdown` and the field `maximum`, and the corpus gains the case kind `export`. html.md clauses rose from 199 to 201, clause cases from 1,447 to 1,484 (CC-1505 to CC-1541).
+
 ## Documents
 
 Clauses are the paragraphs that start with a clause id. Rules and exceptions are counted by one rubric for all documents (an atomic normative statement that decides the tree, the output, the source written, a refusal or a report; an exception is a carve-out or a named interaction). *Labeled* is the number of clauses that start with the word "Exception", which each document counts at its end. The syntax chapters were counted construct by construct; the other documents were read more finely, so their rule counts are not comparable with the two chapters.
@@ -65,14 +67,14 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `syntax-blocks.md` | C2-B | 209 | 217 | 31 | 8 | 289 |
 | `syntax-inline.md` | C2-I | 109 | 136 | 30 | 14 | 131 |
 | `ast.md` | C2-A | 199 | 422 | 65 | 3 | 0 |
-| `html.md` | C2-H | 199 | 470 | 98 | 6 | 86 |
+| `html.md` | C2-H | 201 | 470 | 98 | 6 | 86 |
 | `writer.md` | C2-W | 131 | 295 | 87 | 6 | 46 |
 | `source-layout.md` | C2-L | 54 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 41 |
 | `extensions.md` | C2-X | 69 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 85 | 239 | 46 | 1 | 64 |
 | `tooling.md` | C2-T | 46 | 105 | 7 | 0 | 0 |
-| **Total** | | **1,189** | **2,287** | **450** | **40** | **657** |
+| **Total** | | **1,191** | **2,287** | **450** | **40** | **657** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule other clauses state or give; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay. Candidate 8 recounts the row of `tooling.md`: one rule per sentence of its clauses and one exception per carve-out (C2-T-002, C2-T-009, C2-T-010, C2-T-016, C2-T-031, C2-T-032, C2-T-038), which corrects the author's count of candidate 7. Candidate 9 adds C2-W-138 and C2-L-059 and amends other clauses; it moves the column Clauses, and Rules and Exceptions wait for a recount.
 
@@ -256,3 +258,10 @@ C2-W-133 gives the writer one repair budget per document, 24,000,000 characters 
 Spaces and tabs that a writer would leave at the end of a source line in text are insignificant (C2-W-151, C2-W-002, #6319). Clause cases CC-1494 to CC-1504.
 
 - All three engines: CC-1494 to CC-1502 report `structure-unspellable` or `field-unspellable` for the dropped spaces and tabs; each engine stops reporting them.
+
+## Engine gaps from the headingShift ruling of 21 November
+
+`headingShift` is a core render option (C2-H-208, C2-H-209, #6325). Clause cases CC-1505 to CC-1541.
+
+- All three engines: the option, its carrier and its import, the code `heading-shift-above-6`, the Markdown export reading and the plain-text and ANSI refusals are not offered yet (CC-1505 to CC-1541); `headingLevelShift()` is still exported. carve-js leads; carve-php and carve-rs port once it is proven.
+- No clause case pins `headingNumbers` after the shift, since that extension is not in `data/extensions.json`; C2-H-208 states that every transform sees the shifted levels.

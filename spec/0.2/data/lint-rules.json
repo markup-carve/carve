@@ -985,6 +985,16 @@
       "clauses": ["C2-B-155"]
     },
     {
+      "id": "heading-shift-above-6",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["The heading shift of ${shift} raises a heading above level 6: the render writes it as a div with the role heading, the Markdown export at level 6."],
+      "message_origin": "data_file",
+      "reports": "a render or a Markdown export with a `headingShift` other than 0 that raises at least one heading above level 6; once, at the first such heading in document order (C2-H-208, C2-H-209)",
+      "clauses": ["C2-H-208", "C2-H-209"]
+    },
+    {
       "id": "heading-trailing-attribute",
       "severity": "warning",
       "channel": "lint",

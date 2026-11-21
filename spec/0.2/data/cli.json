@@ -238,6 +238,19 @@
       ]
     },
     {
+      "name": "heading-shift",
+      "commands": [
+        "render"
+      ],
+      "kind": "count",
+      "option": "headingShift",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-208",
+        "C2-H-209"
+      ]
+    },
+    {
       "name": "help",
       "commands": [
         "ast",

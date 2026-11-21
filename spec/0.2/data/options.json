@@ -55,6 +55,15 @@
       "clauses": ["C2-H-131", "C2-H-137", "C2-T-005"]
     },
     {
+      "name": "headingShift",
+      "kind": "render",
+      "read_by": ["export-markdown", "render"],
+      "type": "count",
+      "maximum": 5,
+      "default": 0,
+      "clauses": ["C2-H-137", "C2-H-208", "C2-H-209", "C2-T-010"]
+    },
+    {
       "name": "includes",
       "kind": "parse",
       "read_by": "parse",

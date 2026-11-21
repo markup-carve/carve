@@ -145,6 +145,7 @@ function compare(c, actual) {
   if (expected.html !== undefined && actual.html !== expected.html) fields.push('html')
   if (expected.htmlIncludes !== undefined && !actual.html?.includes(expected.htmlIncludes)) fields.push('htmlIncludes')
   if (expected.carve !== undefined && actual.carve !== expected.carve) fields.push('carve')
+  if (expected.output !== undefined && actual.output !== expected.output) fields.push('output')
   if (expected.children !== undefined && !matchTree(actual.tree?.children, expected.children)) fields.push('children')
   if (expected.tree !== undefined && !matchTree(actual.tree, expected.tree)) fields.push('tree')
   if (expected.layout !== undefined && !layoutMatches(actual.layout, expected.layout)) fields.push('layout')
@@ -204,6 +205,8 @@ const standard = await import(pathToFileURL(resolve(jsDir, 'public/extensions.ts
 const importer = await import(pathToFileURL(resolve(jsDir, 'import/src/index.ts')))
 // diffTree, applyPatch and the fingerprints (C2-T-043 to C2-T-046) are not exported from src/index.ts.
 const treePatch = existsSync(resolve(jsDir, 'src/tree-patch.ts')) ? await import(pathToFileURL(resolve(jsDir, 'src/tree-patch.ts'))) : null
+// The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209).
+const exporter = existsSync(resolve(jsDir, 'src/export/index.ts')) ? await import(pathToFileURL(resolve(jsDir, 'src/export/index.ts'))) : null
 const bundles = [standard.mermaid, standard.imgFence, standard.mathBlock, standard.codeGroup, standard.details,
   standard.spoiler].filter(Boolean).map(create => create())
 const standardDefinitions = new Map([
@@ -297,6 +300,11 @@ function jsRun(c) {
       catch (e) { return { accepted: false, error: e.name, path: e.path } }
     }
     if (kind === 'cli') return { unsupported: 'CLI replay is measured separately from the library runner' }
+    if (kind === 'export') {
+      if (!exporter) return { unsupported: 'the exports are not offered' }
+      const r = exporter.exportTo(c.to, js.parse(input), options)
+      return { output: r.output, diagnostics: r.diagnostics }
+    }
     if (kind === 'migrate') { const r = js.migrateTree(c.tree, options); return { tree: r.document, diagnostics: r.diagnostics } }
     if (kind === 'import') { const r = importer.importDocument(c.html, { from: 'html', ...options }); return { tree: r.document, carve: r.source, diagnostics: r.diagnostics, suppressed: r.suppressedDiagnostics } }
     if (kind === 'position') {

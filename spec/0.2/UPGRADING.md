@@ -958,7 +958,7 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `formatProfileViolation` | A construct outside the profile is a diagnostic `profile-construct-degraded` of `renderWithDiagnostics`, with its catalog message (C2-H-129); `strictLosses` makes it an error. |
 | `glossary` | The `glossary` factory in `@markup-carve/carve/extensions`. |
 | `graphviz` | The `graphviz` fenced-render preset in `@markup-carve/carve/extensions`. |
-| `headingLevelShift` | The `headingLevelShift()` navigation extension in `@markup-carve/carve/extensions`. Moves headings down; `shift` is 0 to 5 and defaults to 1. |
+| `headingLevelShift` | Removed: the core render option `headingShift`, a count from 0 to 5 with the default 0, and `--heading-shift` (C2-H-208). It shifts before every document transform, so `headingNumbers()` and `tableOfContents()` see the shifted levels. A level above 6 is no longer merged into 6: it is written as `<div role="heading" aria-level="N">` and reported with `heading-shift-above-6`. The Markdown export reads the option too (C2-H-209). The `headingLevelShift()` export is gone from every engine. |
 | `headingNumbers` | The `headingNumbers()` navigation extension in `@markup-carve/carve/extensions`. Numbers headings; options are `minLevel`, `label`, and `crossref` (`number`, `number-title`, or `title`). |
 | `headingPermalinks` | The `headingPermalinks()` navigation extension in `@markup-carve/carve/extensions`. Adds heading anchors; options are `symbol`, `cssClass`, `ariaLabel`, `levels`, `prepend`, `showOnHover`, and `copyToClipboard`. |
 | `headingReference` | The `headingReference()` navigation extension in `@markup-carve/carve/extensions`. Styles heading reference links; `cssClass` defaults to `heading-ref`. |

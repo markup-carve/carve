@@ -1893,6 +1893,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-explicit-id` | `<section>` or heading | the heading id was authored | stays |
 | `data-carve-id-slot` | `<section>` | the place of the id among the heading's attributes | goes: `attrs.order` is deleted (C2-A-033) |
 | `data-carve-generated-id` | `<section>` or heading | the heading id was generated | stays |
+| `data-carve-source-level` | heading | the level of the heading before `headingShift` | new in 0.2 (C2-H-208); the 0.1 PHP engine wrote it for its heading shift |
 | `data-carve-ref` | `<a>`, `<img>` | the key of a reference | stays; its value is the folded `key` |
 | `data-carve-ref-collapsed` | `<a>`, `<img>` | the reference was written in the collapsed form | new in 0.2 (C2-H-140) |
 | `data-carve-ref-shortcut` | `<a>`, `<img>` | the reference was written in the shortcut form | new in 0.2 (C2-H-140) |
@@ -1914,7 +1915,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data-carve-col-widths` and `data-carve-substitution`.
 
-**C2-H-115** The reserved names are the 18 names of this table that stay, are new or stay reserved: 15 stay, 2 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
+**C2-H-115** The reserved names are the 19 names of this table that stay, are new or stay reserved: 15 stay, 3 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
 
 **C2-H-116** An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. The attribute line of a definition inside an abbreviation template (C2-H-179) is text and not an attribute of an element: it keeps every key it holds, a reserved name included.
 
@@ -1940,7 +1941,7 @@ Reported: `carrier-attribute-dropped`.
 
 **C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form, the declared head count of a delimited table and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023, C2-L-057) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
-**C2-H-120** The HTML importer is part of 0.2.0. It reads the 17 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
+**C2-H-120** The HTML importer is part of 0.2.0. It reads the 18 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
 
 The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
 
@@ -2135,7 +2136,7 @@ Reported: `profile-construct-degraded`.
 
 ## Import
 
-**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 18 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as `import-html.md` maps that element (C2-M-007). Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
+**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 19 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as `import-html.md` maps that element (C2-M-007). Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
 
 **C2-H-197** A carrier sets only the facts its row of C2-H-186 names. How the importer reads an element that carries no carrier does not depend on carriers elsewhere in the document, except a carrier of an ancestor whose row names that reading, as `data-carve-line-block` does for the lines it holds. So `<p>a&nbsp;b</p>` imports to the same tree alone and beside `<ul data-carve-tight>`, and a render with `roundtrip` that holds no carrier imports as every other render does.
 
@@ -2153,6 +2154,7 @@ Reported: `profile-construct-degraded`.
 | `data-carve-tight` | `<ul>`, `<ol>` | `list.spacing` is `tight` | an item's first block is a `<p>` with no attribute, which a tight list writes bare (C2-H-034, C2-H-018) |
 | `data-carve-explicit-id` | the `<section>` of a heading (C2-H-027), or an `<h1>` to `<h6>` that opens no section | the `id` of the element is the heading's authored `attrs.id` | the element has no `id`; it carries `data-carve-generated-id`; a `<section>` whose first child is no heading element |
 | `data-carve-generated-id` | as `data-carve-explicit-id` | the `id` of the element is generated: the heading has no `attrs.id`, and resolution computes `generatedId` again (C2-A-134) | the element has no `id`; it carries `data-carve-explicit-id`; a `<section>` whose first child is no heading element |
+| `data-carve-source-level` | an `<h1>` to `<h6>`, or a `<div role="heading">` that C2-M-024 reads as a heading | the heading's `level` is the value, in place of the level of the element (C2-H-208) | the value is not a decimal integer of at least 1 without a leading zero; it is not lower than the level of the element |
 | `data-carve-ref` | `<a>`, `<img>` | the link or image is a reference: `key` is the value, `namespace` is `link` and `refForm` is `full` | the value is empty or differs from its folded form (C2-A-104); the element carries `data-carve-autolink` or `data-carve-xref` |
 | `data-carve-ref-collapsed` | an `<a>` or `<img>` whose `data-carve-ref` is read | `refForm` is `collapsed` | the element carries `data-carve-ref-shortcut` |
 | `data-carve-ref-shortcut` | an `<a>` or `<img>` whose `data-carve-ref` is read | `refForm` is `shortcut` | the element carries `data-carve-ref-collapsed` |
@@ -2289,7 +2291,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 ## Options
 
-**C2-H-121** Eighteen of the 25 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
+**C2-H-121** Nineteen of the 26 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
@@ -2648,9 +2650,13 @@ Reported: `profile-construct-degraded`.
 
 **C2-H-205** `maxLosses` caps the render-loss entries the record keeps: the first `maxLosses` of them in the order they occur stay, and the number of the others is added to `suppressedDiagnostics` of the result (C2-T-024). The value is a count, a decimal integer of at least 0, and its default is 100, the default of the 0.1 cap `maxRenderLosses`; any other value is refused with an option error. Entries of the parse and lint channels and allowed entries (C2-H-204) are not counted. The cap changes no output: `strictLosses` counts every loss that is not allowed, kept or not, so a render under `strictLosses` with `maxLosses` 0 still fails on a loss. The HTML importer reads the option in the same way. The command line sets it with `--max-render-losses` (C2-T-029).
 
+**C2-H-208** `headingShift` moves headings down, for a page that writes its own title above the document. Its value N is a count from 0 to 5, and the default is 0; any other value is refused with an option error before the render starts. The render adds N to the level of every heading of the render view, at every depth, the headings of an expanded include among them after its own `shift` (C2-N-048), so the two add. The shift is applied after includes and resolution and before the first document transform (C2-X-053), so every transform and the sections (C2-H-026) see the shifted levels, and an option of an extension that names heading levels names the shifted ones. It changes no text and no id: a generated id is the slug of the unchanged text (C2-H-022), so a cross-reference into a shifted heading still resolves. A shifted level above 6 is written as C2-H-021 states, `<div role="heading" aria-level="N">`. When N is not 0 and at least one shifted level is above 6, the render reports `heading-shift-above-6` once, at the first such heading in document order. The degraded mark of a heading (C2-H-165) counts the shifted level. With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift (C2-H-114, C2-H-186), so an import gives back that level. Parsing, lint, the formatter and the writer do not read the option (C2-T-005): the tree and its source keep their levels.
+
+**C2-H-209** The Markdown export (C2-T-003) reads `headingShift` as the render does, with one difference: Markdown spells only the levels 1 to 6, so a shifted level above 6 is written as 6, as an include clamps it (C2-N-048). When N is not 0 and at least one shifted level is above 6, the export reports `heading-shift-above-6` once, at the first such heading in document order. The plain-text and ANSI exports refuse the option, whatever its value, with an option error. On the command line `--heading-shift` sets the option for `render`, also with `--to markdown`; with `--to plain` or `--to ansi` the flag is refused with the category `usage`.
+
 ## The option list
 
-**C2-H-137** These are the 25 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
+**C2-H-137** These are the 26 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
 
 | Option | Kind | Type | Default | Defined in |
 |---|---|---|---|---|
@@ -2674,13 +2680,14 @@ Reported: `profile-construct-degraded`.
 | `maxLosses` | render, import | count | 100 | C2-H-205 |
 | `softBreak` | render | `newline`, `space` or `br` | `newline` | C2-H-203 |
 | `codeBlockRenderer` | render | host function for code blocks | none | C2-H-206, C2-H-207 |
+| `headingShift` | render | count from 0 to 5 | 0 | C2-H-208, C2-H-209 |
 | `alignTables` | format | boolean | off | C2-W-068 |
 | `normalize` | format | boolean | off | C2-W-127 |
 | `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
 | `adapter` | import | `generic`, `tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word` or `google-docs` | `generic` | C2-M-102 |
 
-Eighteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options, two are lint options and one, `adapter`, is an option of the HTML importer alone. `rawHtml`, `strictLosses`, `allowLosses`, `maxLosses` and `labels` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205, C2-M-101), and `headingIds` by lint (C2-T-042). `codeBlockRenderer`, like `extensions` and `renderers`, takes host code and has no flag (C2-T-010).
+Nineteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options, two are lint options and one, `adapter`, is an option of the HTML importer alone. `rawHtml`, `strictLosses`, `allowLosses`, `maxLosses` and `labels` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205, C2-M-101), `headingIds` by lint (C2-T-042) and `headingShift` by the Markdown export (C2-H-209). `codeBlockRenderer`, like `extensions` and `renderers`, takes host code and has no flag (C2-T-010).
 
 ## The clauses of PART 10
 
@@ -2789,9 +2796,9 @@ ab
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 27 | 0 | 3 | 11 |
+| Options | 29 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 3 |
-| **Total** | **199** | **6** | **33** | **53** |
+| **Total** | **201** | **6** | **33** | **53** |
 
-The document has 199 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 201 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
