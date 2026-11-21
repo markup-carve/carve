@@ -66793,6 +66793,170 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1573",
+   "clauses": [
+    "C2-W-147",
+    "C2-I-046"
+   ],
+   "why": "C2-W-147: `backslashes` (the run of backslashes directly before the opener, empty where there is none)",
+   "summary": "markdown-strong-double-star skips an escaped opener",
+   "kind": "lint",
+   "input": "a \\**b** c\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "markdown-strong-double-star"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1574",
+   "clauses": [
+    "C2-W-147",
+    "C2-I-046"
+   ],
+   "why": "C2-W-147: `backslashes` (the run of backslashes directly before the opener, empty where there is none)",
+   "summary": "markdown-strikethrough-double-tilde skips an escaped opener",
+   "kind": "lint",
+   "input": "a \\~~b~~ c\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "markdown-strikethrough-double-tilde"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1575",
+   "clauses": [
+    "C2-W-147",
+    "C2-I-046"
+   ],
+   "why": "C2-W-147: `backslashes` (the run of backslashes directly before the opener, empty where there is none)",
+   "summary": "djot-emphasis-underscore skips an escaped opener",
+   "kind": "lint",
+   "input": "a \\_b_ c\n",
+   "options": {
+    "rules": {
+     "djot-emphasis-underscore": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-emphasis-underscore"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1576",
+   "clauses": [
+    "C2-W-147",
+    "C2-I-046"
+   ],
+   "why": "C2-W-147: `backslashes` (the run of backslashes directly before the opener, empty where there is none)",
+   "summary": "djot-subscript-tilde skips an escaped opener",
+   "kind": "lint",
+   "input": "a \\~b~ c\n",
+   "options": {
+    "rules": {
+     "djot-subscript-tilde": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-subscript-tilde"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1577",
+   "clauses": [
+    "C2-W-147",
+    "C2-I-046"
+   ],
+   "why": "C2-W-147: `backslashes` (the run of backslashes directly before the opener, empty where there is none)",
+   "summary": "djot-superscript-caret skips an escaped opener",
+   "kind": "lint",
+   "input": "a \\^b^ c\n",
+   "options": {
+    "rules": {
+     "djot-superscript-caret": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-superscript-caret"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1578",
+   "clauses": [
+    "C2-B-137",
+    "C2-W-140"
+   ],
+   "why": "C2-B-137: a pending attribute line waits across it C2-W-140: An engine computes the fields from its parse; the clause cases pin them.",
+   "summary": "an attributed heading starts after an indented comment-only line",
+   "kind": "lint",
+   "input": "{.a}\n  %% x\n# h\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "block-opener-overindented"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1579",
+   "clauses": [
+    "C2-B-137",
+    "C2-W-140"
+   ],
+   "why": "C2-B-137: a pending attribute line waits across it C2-W-140: An engine computes the fields from its parse; the clause cases pin them.",
+   "summary": "multiple comment-only lines leave the attributed heading at column zero",
+   "kind": "lint",
+   "input": "{.a}\n    %% one\n%% two\n  %% three\n# h\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "block-opener-overindented"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1580",
+   "clauses": [
+    "C2-B-137",
+    "C2-W-138"
+   ],
+   "why": "C2-B-137: a pending attribute line waits across it C2-W-138: a block opener range is the opening mark only, without indentation or following content.",
+   "summary": "an indented attributed heading reports its own mark after a comment",
+   "kind": "lint",
+   "input": "{.a}\n%% x\n  # h\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-overindented",
+      "line": 3,
+      "column": 3,
+      "endLine": 3,
+      "endColumn": 4,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
 ,
   {

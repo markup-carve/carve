@@ -394,9 +394,10 @@
     {
       "name": "opener_start",
       "type": "offset",
-      "means": "where the opening mark of the block starts: start, or for an attributed block the first character after its attribute lines, the spaces, tabs and the quote marks of the quotes that hold the block before it skipped",
+      "means": "where the opening mark of the block starts: start, or for an attributed block the first character after its attribute lines and any comment-only lines between them and the block, the spaces, tabs and the quote marks of the quotes that hold the block before it skipped",
       "clauses": [
         "C2-B-090",
+        "C2-B-137",
         "C2-W-138"
       ]
     },
@@ -744,9 +745,10 @@
     {
       "name": "opener_start",
       "type": "offset",
-      "means": "for a block: where its own text starts behind its attribute lines, behind the indent and the quote marks of the quotes that hold it; for an item, a cell or an inline node, its start",
+      "means": "for a block: where its own text starts behind its attribute lines and any comment-only lines between them and the block, behind the indent and the quote marks of the quotes that hold it; for an item, a cell or an inline node, its start",
       "clauses": [
         "C2-B-090",
+        "C2-B-137",
         "C2-A-148"
       ]
     },
