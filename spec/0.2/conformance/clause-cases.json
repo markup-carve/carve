@@ -66561,6 +66561,50 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1550",
+   "clauses": [
+    "C2-B-031",
+    "C2-I-072"
+   ],
+   "why": "C2-B-031: The quote mark is `>` followed by a space or by the end of the line, so `>a` is text. Catalog github-alert-marker: on a line whose first non-space character is a quote mark",
+   "summary": "an alert mark after a `>` glued to a bracket that is no alert tag is not reported",
+   "kind": "lint",
+   "input": ">[!x]: > [!NOTE]\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "github-alert-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1551",
+   "clauses": [
+    "C2-B-031",
+    "C2-I-072"
+   ],
+   "why": "C2-B-031: The quote mark is `>` followed by a space or by the end of the line, so `>a` is text. Catalog github-alert-marker: on a line whose first non-space character is a quote mark",
+   "summary": "a glued alert tag is reported on the first tag of the line",
+   "kind": "lint",
+   "input": ">[!NOTE] > [!TIP]\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "github-alert-marker",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 9
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
