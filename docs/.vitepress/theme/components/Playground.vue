@@ -120,10 +120,11 @@ async function applyShareLink(): Promise<boolean> {
   sections.value = saved.sections === undefined ? true : saved.sections === true
   smartTypography.value = saved.smartTypography === undefined ? true : saved.smartTypography === true
   rawHtmlEnabled.value = false
+  output.value = safeValue(state.output, outputTabs.map(tab => tab.id), 'html')
   return true
 }
 async function copyShareLink(): Promise<void> {
-  const encoded = await encodeShare({ source: source.value, options: options.value })
+  const encoded = await encodeShare({ source: source.value, options: options.value, output: output.value })
   if (!encoded) { flashShareStatus('error', 'Too long to share as a link'); return }
   const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${encoded}`
   window.history.replaceState(null, '', url)
