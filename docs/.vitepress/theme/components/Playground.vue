@@ -13,6 +13,8 @@ import { applyByteEdits, byteToUtf16, type ByteEdit } from '../editor/offsets'
 import { isDiffPre } from '../../diff-fences.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { ansiToHtml } from '../../ansi-html.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { diffLines, foldDiff } from '../../line-diff.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { SNIPPETS } from '../../examples/snippets.js'
@@ -473,9 +475,18 @@ function fixAll(): void {
   }
 }
 watch(source, value => { if (value !== formattedText) lintNote.value = '' })
-const formatted = computed(() => {
-  try { return format(source.value, { alignTables: alignTables.value }) }
-  catch (error) { return error instanceof Error ? error.message : String(error) }
+const formatResult = computed<{ text: string; error: boolean }>(() => {
+  try { return { text: format(source.value, { alignTables: alignTables.value }), error: false } }
+  catch (error) { return { text: error instanceof Error ? error.message : String(error), error: true } }
+})
+const formatted = computed(() => formatResult.value.text)
+type DiffEntry = { kind: 'same' | 'add' | 'del'; text: string } | { kind: 'skip'; count: number }
+const formatDiff = computed<{ entries: DiffEntry[]; added: number; removed: number } | null>(() => {
+  if (output.value !== 'fmt' || formatResult.value.error) return null
+  const entries = diffLines(source.value, formatResult.value.text) as DiffEntry[]
+  const added = entries.filter(e => e.kind === 'add').length
+  const removed = entries.filter(e => e.kind === 'del').length
+  return { entries: foldDiff(entries, 3), added, removed }
 })
 const exported = computed<{ text: string; losses: number } | null>(() => {
   const target = output.value as ExportTarget
@@ -1253,6 +1264,34 @@ void mermaidInit
             </ul>
           </template>
         </div>
+        <div v-else-if="output === 'fmt' && formatDiff" class="raw pg-diff">
+          <div class="pg-lint-head">
+            <span v-if="formatDiff.added || formatDiff.removed">
+              <span class="pg-diff-count-add">+{{ formatDiff.added }}</span> <span class="pg-diff-count-del">-{{ formatDiff.removed }}</span> lines against the current source
+            </span>
+            <span v-else-if="source === formatted">Already formatted.</span>
+            <span v-else>Only the final newline differs.</span>
+            <button
+              v-if="source !== formatted"
+              class="pg-btn pg-btn-small"
+              type="button"
+              title="Replace the source with the formatted source (Ctrl+Z undoes it)"
+              aria-label="Apply the formatted source"
+              @click="formatSource"
+            >
+              Apply
+            </button>
+          </div>
+          <div v-if="formatDiff.added || formatDiff.removed" class="pg-diff-lines" role="table" aria-label="Changes the formatter makes">
+            <template v-for="(entry, index) in formatDiff.entries" :key="index">
+              <div v-if="entry.kind === 'skip'" class="pg-diff-skip" role="row"><span role="cell">... {{ entry.count }} unchanged {{ entry.count === 1 ? 'line' : 'lines' }}</span></div>
+              <div v-else :class="`pg-diff-${entry.kind}`" role="row">
+                <span class="pg-diff-sign" role="cell" :aria-label="entry.kind === 'add' ? 'added' : entry.kind === 'del' ? 'removed' : 'unchanged'">{{ entry.kind === 'add' ? '+' : entry.kind === 'del' ? '-' : ' ' }}</span>
+                <span role="cell">{{ entry.text || ' ' }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
         <pre v-else-if="output === 'ansi'" class="raw pg-ansi" aria-label="ANSI output, escape codes shown as styles" v-html="ansiHtml" />
         <pre v-else class="raw" aria-live="polite">{{ activeOutput }}</pre>
       </div>
@@ -1644,6 +1683,15 @@ textarea:focus {
 .pg-status + .pg-pane-actions { margin-left: 0; }
 .pg-pane-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); cursor: pointer; }
 .pg-pane-btn:hover, .pg-pane-btn:focus-visible { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+.pg-diff { display: flex; flex-direction: column; gap: .4rem; }
+.pg-diff-lines { display: flex; flex-direction: column; }
+.pg-diff-lines > div { display: flex; gap: .5rem; white-space: pre-wrap; padding: 0 .3rem; }
+.pg-diff-sign { flex: none; width: 1ch; user-select: none; }
+.pg-diff-add { background: rgba(46, 160, 67, .16); color: var(--vp-c-text-1); }
+.pg-diff-del { background: rgba(248, 81, 73, .16); color: var(--vp-c-text-1); }
+.pg-diff-skip { color: var(--vp-c-text-3); font-style: italic; }
+.pg-diff-count-add { color: #2f9e44; }
+.pg-diff-count-del { color: #d64550; }
 .pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
 .pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
 .pg-lint-empty { margin: 0; }
