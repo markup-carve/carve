@@ -247,6 +247,6 @@ The `bare-html-tag`, `empty-reference-definition` and pair rows of `data/lint-mo
 
 ## Engine gaps from the writer budget ruling of 21 November
 
-C2-W-133 gives the writer one repair budget per document, at least 24,000,000 characters or 1,000 times the document, summed over all groups; once it is spent, every later group that needs a repair parse is refused, and C2-W-010 calls the limit linear in the document (#6304). Clause cases CC-1492 and CC-1493.
+C2-W-133 gives the writer one repair budget per document, 24,000,000 characters or 1,000 times the document where that is more, summed over all groups; once it is spent, every later group that needs a repair parse is refused, and C2-W-010 calls the limit linear in the document (#6304). Clause cases CC-1492 and CC-1493.
 
 - All three engines: the repair limit is per group, so the second and third quote of CC-1493 are written without `writer-refused` (markup-carve/carve-js#5283, markup-carve/carve-rs#4538). CC-1492 passes.
