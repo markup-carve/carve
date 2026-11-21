@@ -14,7 +14,8 @@
       "value": 1000000,
       "unit": "bytes",
       "clauses": [
-        "C2-H-201"
+        "C2-H-201",
+        "C2-I-098"
       ]
     },
     {
@@ -22,7 +23,8 @@
       "value": 8,
       "unit": "bytes_per_source_byte",
       "clauses": [
-        "C2-H-201"
+        "C2-H-201",
+        "C2-I-098"
       ]
     },
     {

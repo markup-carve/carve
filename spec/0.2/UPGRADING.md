@@ -538,6 +538,14 @@ A ruling of 18 November decides #6055: the ids of notes and their marks take par
 | An authored id that a note id would take: `a^[x] and b[^n]{#fn1}` | Two `id="fn1"`; the first reference jumps to the second. | The authored id stays; the first note is `fn1-2`. | C2-H-202 |
 | An authored id that a later reference id would take: `a^[x]{#fnref2} b^[y]` | Two `id="fnref2"`; the second note's backlink goes to the first reference. | The second reference is `fnref2-2`. | C2-H-202 |
 
+### Rulings of 21 November 2026
+
+A ruling of 21 November decides #6306: a parse bounds the copies of abbreviation expansions in its tree by the derived-text budget that HTML already has (C2-I-098, C2-H-201). The HTML does not change, and neither does tree equality, which skips `expansion` on a use (C2-A-162).
+
+| What you wrote | 0.1 and early 0.2 | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A long abbreviation expansion used very often, for tree consumers: `*[A]: ` and 99,999 `x`, then `A` 11 times | Every `abbreviation` node carried the expansion, so the tree JSON grew with the square of the source. | The uses draw on 1,000,000 bytes or 8 times the source bytes; the eleventh `A` carries no `expansion`. Resolve it from the `abbreviation_def` of its key. | C2-I-098, C2-A-117 |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
