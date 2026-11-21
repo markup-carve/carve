@@ -267,12 +267,14 @@ function jsOptions(c) {
   }
   return options
 }
-// conformance/schema.json `host.documentTransforms`: insert a node after the node at a pointer.
+// conformance/schema.json `host.documentTransforms`: insert after a pointer or set a heading level.
 function hostTransforms(host) {
-  return (host?.documentTransforms ?? []).map(({ name, after, insert }) => ({ name, transform: view => {
+  return (host?.documentTransforms ?? []).map(({ name, after, insert, setLevel }) => ({ name, transform: view => {
     const steps = after.split('/').slice(1)
     const index = Number(steps.pop())
-    steps.reduce((node, step) => node[step], view).splice(index + 1, 0, structuredClone(insert))
+    const siblings = steps.reduce((node, step) => node[step], view)
+    if (setLevel !== undefined) siblings[index].level = setLevel
+    else siblings.splice(index + 1, 0, structuredClone(insert))
     return view
   } }))
 }

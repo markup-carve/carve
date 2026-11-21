@@ -116,7 +116,7 @@ function optionsOf(array $case): array
 }
 
 /**
- * conformance/schema.json `host.documentTransforms`: insert a node after the node at a pointer.
+ * conformance/schema.json `host.documentTransforms`: insert after a pointer or set a heading level.
  */
 function hostTransforms(array $host): array
 {
@@ -129,7 +129,11 @@ function hostTransforms(array $host): array
             foreach ($steps as $step) {
                 $list = &$list[$step];
             }
-            array_splice($list, $index + 1, 0, [$entry['insert']]);
+            if (isset($entry['setLevel'])) {
+                $list[$index]['level'] = $entry['setLevel'];
+            } else {
+                array_splice($list, $index + 1, 0, [$entry['insert']]);
+            }
             unset($list);
 
             return TreeReader::read(json_encode($tree, JSON_THROW_ON_ERROR));

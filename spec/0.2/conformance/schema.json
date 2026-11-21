@@ -156,7 +156,7 @@
         "fingerprintOf": { "type": "string", "description": "A source whose tree, parsed with positions off, gives the fingerprint a patch case passes to applyPatch (C2-T-045)." },
         "of": { "enum": ["source", "tree"], "description": "What a fingerprint case hashes: the source with sourceFingerprint, the default, or its tree parsed with positions off with treeFingerprint (C2-T-046)." },
         "options": { "$ref": "#/$defs/options" },
-        "host": { "type": "object", "description": "Conformance harness registrations, not a Carve option.", "properties": { "documentTransforms": { "type": "array", "items": { "type": "object", "required": ["name", "after", "insert"], "properties": { "name": { "type": "string" }, "after": { "type": "string" }, "insert": { "type": "object" } }, "additionalProperties": false } } }, "additionalProperties": false },
+        "host": { "type": "object", "description": "Conformance harness registrations, not a Carve option.", "properties": { "documentTransforms": { "type": "array", "items": { "type": "object", "required": ["name", "after"], "oneOf": [{ "properties": { "insert": { "type": "object" } }, "required": ["insert"] }, { "properties": { "setLevel": { "type": "integer", "minimum": 1 } }, "required": ["setLevel"] }], "properties": { "name": { "type": "string" }, "after": { "type": "string" }, "insert": { "type": "object" }, "setLevel": { "type": "integer", "minimum": 1 } }, "additionalProperties": false } } }, "additionalProperties": false },
         "expected": {
           "type": "object",
           "properties": {

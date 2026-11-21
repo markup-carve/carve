@@ -65840,7 +65840,7 @@
     "C2-H-208",
     "C2-H-114"
    ],
-   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
    "summary": "under roundtrip each shifted heading carries its source level",
    "kind": "render",
    "input": "= A\n\n== B\n",
@@ -65861,7 +65861,7 @@
     "C2-H-208",
     "C2-H-010"
    ],
-   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
    "summary": "with sections off the source level follows the id carrier and precedes the id",
    "kind": "render",
    "input": "= A\n",
@@ -65881,7 +65881,7 @@
     "C2-H-208",
     "C2-H-009"
    ],
-   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
    "summary": "a heading shifted above 6 carries the source level before role and aria-level",
    "kind": "render",
    "input": "====== A\n",
@@ -65903,7 +65903,7 @@
    "clauses": [
     "C2-H-208"
    ],
-   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with the level of the heading before the shift",
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
    "summary": "headingShift 0 under roundtrip writes no source level",
    "kind": "render",
    "input": "= A\n",
@@ -66803,6 +66803,147 @@
       "endColumn": 7
      }
     ]
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1561",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-114"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
+   "summary": "a transform lowers a shifted heading and its carrier follows the rendered level",
+   "kind": "render",
+   "input": "====== A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true,
+    "sections": false,
+    "headingIds": "off"
+   },
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.heading-change",
+      "after": "/children/0",
+      "setLevel": 2
+     }
+    ]
+   },
+   "expected": {
+    "html": "<h2 data-carve-source-level=\"1\">A</h2>",
+    "diagnostics": [
+     "heading-shift-above-6"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1562",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-114"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
+   "summary": "a transform raises a shifted heading and its carrier follows the rendered level",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true,
+    "sections": false,
+    "headingIds": "off"
+   },
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.heading-change",
+      "after": "/children/0",
+      "setLevel": 7
+     }
+    ]
+   },
+   "expected": {
+    "html": "<div data-carve-source-level=\"6\" role=\"heading\" aria-level=\"7\">A</div>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1563",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-114"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N",
+   "summary": "a transform adds a heading and its carrier follows the rendered level",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true,
+    "sections": false,
+    "headingIds": "off"
+   },
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.heading-change",
+      "after": "/children/0",
+      "insert": {
+       "type": "heading",
+       "level": 3,
+       "children": [
+        {
+         "type": "text",
+         "value": "B"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "expected": {
+    "html": "<h2 data-carve-source-level=\"1\">A</h2>\n<h3 data-carve-source-level=\"2\">B</h3>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1564",
+   "clauses": [
+    "C2-H-208",
+    "C2-H-186"
+   ],
+   "why": "C2-H-208: With `roundtrip` on and N not 0, every heading element carries `data-carve-source-level` with its rendered element level minus N ... the importer ignores values below 1 under C2-H-186",
+   "summary": "a heading lowered to level 1 carries zero and the importer ignores it",
+   "kind": "render",
+   "input": "= A\n",
+   "options": {
+    "headingShift": 1,
+    "roundtrip": true,
+    "sections": false,
+    "headingIds": "off"
+   },
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.heading-change",
+      "after": "/children/0",
+      "setLevel": 1
+     }
+    ]
+   },
+   "expected": {
+    "html": "<h1 data-carve-source-level=\"0\">A</h1>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
    },
    "from": []
   }
