@@ -232,3 +232,9 @@ The `link-gap-before-destination` row of `data/lint-model.json` states a pattern
 
 - `carve-js`: the baseline head passes. The `next2` head (`8f233a3`) runs the old row from its copy of the lint model, so the label `(` of `[a(] ( )` makes a finding (CC-1479) until that copy takes the new row.
 - `carve-rs`: a run of `[` in front of one label is reported from its last `[`, not its first (CC-1477, markup-carve/carve-rs#4547).
+
+## Engine gaps from the attribute line between two lists of 21 November
+
+C2-W-005 with C2-B-024: where the second of two adjacent lists that C2-W-028 writes without blank lines carries attribute lines, one blank line stands above them, or they would be lazy lines of the last paragraph of the first list (#6308). Clause cases CC-1480 to CC-1484.
+
+- All three engines write the attribute line directly below the first list (CC-1480 to CC-1484).
