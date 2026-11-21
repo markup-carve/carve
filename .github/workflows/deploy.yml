@@ -39,13 +39,11 @@ jobs:
 
       - uses: actions/configure-pages@v6
 
-      - run: npm ci
-
-      - run: npm run docs:build
+      - run: bash scripts/build-versioned-docs.sh
 
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: docs/.vitepress/dist
+          path: docs/.vitepress/dist-versioned
 
   deploy:
     needs: build

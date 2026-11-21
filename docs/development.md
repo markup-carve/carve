@@ -16,6 +16,27 @@ npm run docs:build
 
 See [MAINTAINING.md](https://github.com/markup-carve/carve/blob/main/MAINTAINING.md)
 for release and cross-implementation work.
+
+## Versioned documentation deployment
+
+The Pages workflow on `main` runs `scripts/build-versioned-docs.sh`. It builds
+`main` at `/carve/`, checks out `origin/next2` in a separate worktree, installs
+that ref's own dependencies, builds it at `/carve/0.2/`, and combines only the
+finished site files. A push to `next2` dispatches the `main` workflow. A plain
+`npm run docs:build` still builds one site at `/carve/` without a version menu.
+
+After 0.2 becomes the latest release, cut a `0.1.x` branch from the last 0.1
+documentation commit. Change the defaults in `scripts/build-versioned-docs.sh`:
+set `DOCS_LATEST_LABEL` to `0.2 (latest)`, `DOCS_SECONDARY_REF` to
+`origin/0.1.x`, `DOCS_SECONDARY_BASE` to `/carve/0.1/`,
+`DOCS_SECONDARY_LABEL` to `0.1 (legacy)`,
+`DOCS_SECONDARY_EDIT_BRANCH` to `0.1.x`, and `DOCS_SECONDARY_SERIES` to an
+empty value. Keep `DOCS_LATEST_BASE=/carve/`. Update the secondary branch's
+push trigger to dispatch this workflow. Each branch continues to use its own
+config, theme, playground, WASM files, package files and engine pin.
+
+For a local combined build before `next2` is merged, use
+`DOCS_SECONDARY_REF=docs/versioned-next2 bash scripts/build-versioned-docs.sh`.
 The [container ownership map](./ownership-procedure) connects current rules
 to collector phases, helpers and proof evidence.
 
