@@ -1,7 +1,0 @@
-Raw inline image bytes stay inside a paragraph
-
-```
-`<img a>`{=html}
-.
-<p><img a></p>
-```

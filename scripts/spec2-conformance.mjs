@@ -20,6 +20,7 @@ const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
 
 const rules = readJson(join(spec, 'data/lint-rules.json')).rules
 const codes = new Set(rules.map(rule => rule.id))
+const ruleChannel = new Map(rules.map(rule => [rule.id, rule.channel]))
 const optionRows = new Map(readJson(join(spec, 'data/options.json')).options.map(row => [row.name, row]))
 const extensionRows = readJson(join(spec, 'data/extensions.json')).extensions
 const fixtureTrees = new Map()
@@ -41,6 +42,7 @@ const FLAGS = [
   [/^sourceLines on$/, () => ({ sourceLines: true })],
   [/^with the depth limit lowered to (\d+)$/, (m) => ({ includes: { depth: Number(m[1]) } })],
   [/^import option rawHtml on$/, () => ({ rawHtml: true })],
+  [/^import option adapter set to ([\w-]+)$/, (m) => ({ adapter: m[1] })],
 ]
 function optionsOf(example) {
   const options = {}
@@ -161,12 +163,17 @@ for (const name of optionRows.keys()) if (!schemaOptions.includes(name)) fail(`s
 for (const name of schemaOptions) if (!optionRows.has(name)) fail(`schema.json: options names ${name}, which data/options.json does not list`)
 const matchers = new Set(extensionRows.filter(row => row.matcher).map(row => row.name))
 const extensionNames = new Set(extensionRows.map(row => row.name))
+const rendererOptions = new Map(extensionRows.map(row => [row.name, row.rendererOptions ?? {}]))
 const OPTION_VALUE = {
+  allowLosses: (value) => value.every(code => ruleChannel.get(code) === 'render-loss'),
+  codeBlockRenderer: (value) => typeof value.result !== 'number' || Number.isFinite(value.result),
   extensions: (value) => value.every(name => matchers.has(name)),
   includes: (value) => (value.depth === undefined || (value.depth >= 0 && value.depth <= 16)) && (value.bytes === undefined || (value.bytes >= 0 && value.bytes <= 8388608)),
+  maxLosses: (value) => Number.isInteger(value) && value >= 0,
   labels: (value) => Object.keys(value).every(key => Object.hasOwn(optionRows.get('labels').default, key)),
   platforms: (value) => value.every(name => optionRows.get('platforms').values.includes(name)),
-  renderers: (value) => Object.keys(value).every(name => extensionNames.has(name)),
+  renderers: (value) => Object.entries(value).every(([name, renderer]) => extensionNames.has(name) &&
+    (renderer === 'standard' || Object.entries(renderer.standard).every(([key, setting]) => rendererOptions.get(name)?.[key]?.values.includes(setting)))),
   rules: (value) => Object.keys(value).every(code => codes.has(code)),
   social: (value) => Object.keys(value).every(key => ['mentionUrl', 'tagUrl', 'context'].includes(key)),
   urlPolicy: (value) => Object.keys(value).every(key => ['allow', 'deny'].includes(key) && Array.isArray(value[key])) && !(value.allow && value.deny),
@@ -199,7 +206,8 @@ function diagnosticProblems(entry) {
     if (['obsolete', 'void'].includes(rule.status)) problems.push(`expects ${diagnostic.code}, which is ${rule.status}`)
     if (diagnostic.messageWhen !== undefined && !rule.messages?.some(message => typeof message === 'object' && message.when === diagnostic.messageWhen)) problems.push(`expects ${diagnostic.code} message condition ${diagnostic.messageWhen}, which the catalog does not list`)
     if (diagnostic.channel && rule.channel !== diagnostic.channel) problems.push(`gives ${diagnostic.code} the channel ${diagnostic.channel}, the catalog ${rule.channel}`)
-    if (diagnostic.severity && (rule.severity ?? 'warning') !== diagnostic.severity) problems.push(`gives ${diagnostic.code} the severity ${diagnostic.severity}, the catalog ${rule.severity ?? 'warning'}`)
+    const severity = entry.options?.strictLosses && rule.channel === 'render-loss' ? 'error' : rule.severity ?? 'warning'
+    if (diagnostic.severity && severity !== diagnostic.severity) problems.push(`gives ${diagnostic.code} the severity ${diagnostic.severity}, expected ${severity}`)
     if (diagnostic.file !== undefined && !entry.files?.[diagnostic.file]) problems.push(`names the file ${diagnostic.file}, which files does not hold`)
     const text = textOf(entry, diagnostic.file)
     for (const [line, column] of [[diagnostic.line, diagnostic.column], [diagnostic.endLine, diagnostic.endColumn]]) {
@@ -230,6 +238,10 @@ const REFUSALS = {
   tree: ['CarveTreeError'],
   migrate: ['CarveTreeError'],
   import: ['ImportInputError', 'CarveRenderError', 'CarveOptionError'],
+  position: ['CarveOptionError'],
+  patch: ['CarvePatchError'],
+  diff: [],
+  fingerprint: [],
 }
 const CATEGORY_ERRORS = new Set(readJson(join(spec, 'data/cli.json')).categories.flatMap(row => row.errors))
 function refusalProblems(entry) {
@@ -244,7 +256,7 @@ function refusalProblems(entry) {
   if (entry.tree && kind !== 'migrate') {
     const isEnvelope = entry.tree.type === undefined && entry.tree.document !== undefined
     const schemaAccepts = validateTree(entry.tree)
-    const found = schemaAccepts ? (isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree }) : readerProblems(entry.tree)) : []
+    const found = schemaAccepts ? (isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree, annotations: entry.annotations }) : readerProblems(entry.tree, { annotations: entry.annotations })) : []
     const refused = !schemaAccepts || found.length > 0
     if (refusal?.error === 'CarveTreeError') {
       if (!refused) problems.push('expects a tree refusal, but neither the schema nor a reader check of the gate refuses the tree')
@@ -257,9 +269,12 @@ function refusalProblems(entry) {
 
 // A sidecar a case gives or expects passes the layout schema (a supplied one unless the case expects its
 // refusal); an expected one holds the input as its source, and its ranges lie inside it (C2-L-012).
+const validateAnnotations = new Ajv2020({ strict: true, allErrors: false }).compile(readJson(join(spec, 'data/annotation-ranges.schema.json')))
 const validateLayout = new Ajv2020({ strict: true, allErrors: false }).compile(readJson(join(spec, 'data/layout-schema.json')))
 function layoutProblems(entry) {
   const problems = []
+  if (entry.annotations && entry.kind !== 'tree') problems.push('gives annotation ranges to a call that reads none')
+  if (entry.annotations && entry.expected.refusal?.error !== 'CarveTreeError' && !validateAnnotations(entry.annotations)) problems.push(`gives annotation ranges the schema refuses at ${validateAnnotations.errors[0].instancePath || '/'}`)
   if (entry.layout && entry.expected.refusal?.error !== 'CarveLayoutError' && !validateLayout(entry.layout)) problems.push(`gives a sidecar the layout schema refuses at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`)
   if (entry.layout && entry.kind !== 'write') problems.push('gives a sidecar to a call that reads none')
   const expected = entry.expected.layout
@@ -305,15 +320,47 @@ function commandProblems(entry) {
     for (const arg of entry.args.slice(commands.has(entry.args[0]) ? 1 : 0)) {
       if (arg === '--') break
       if (!arg.startsWith('-') || arg === '-') continue
-      const name = arg === '-w' ? 'write' : arg.replace(/^--(no-)?/, '').split('=')[0]
+      const name = cli.flags.find(row => row.short === arg)?.name ?? arg.replace(/^--(no-)?/, '').split('=')[0]
       const flag = cli.flags.find(row => row.name === name)
-      if (!flag || !flag.commands.includes(command)) problems.push(`passes ${arg}, which data/cli.json does not list for ${command}`)
+      const flagsOf = cli.commands.find(row => row.name === command)?.flags_of ?? command
+      if (!flag || !flag.commands.includes(flagsOf)) problems.push(`passes ${arg}, which data/cli.json does not list for ${command}`)
     }
   }
   for (const list of [entry.expected.stdoutDiagnostics ?? [], entry.expected.stderrDiagnostics ?? []]) {
     for (const item of list) if (typeof item === 'object' && item.channel) problems.push(`states the channel of the line of ${item.code}, which a diagnostic line does not carry (C2-T-019)`)
     for (const item of list) if (!codes.has(typeof item === 'string' ? item : item.code)) problems.push(`expects the line of ${typeof item === 'string' ? item : item.code}, which data/lint-rules.json does not list`)
   }
+  return problems
+}
+
+// A position case gives an offset and expects a line and a column or a refusal (C2-T-041); only it states them.
+function positionProblems(entry) {
+  const problems = []
+  const fields = ['line', 'column'].filter(field => entry.expected[field] !== undefined)
+  if (entry.kind !== 'position') {
+    if (fields.length) problems.push(`expects ${fields.join(', ')} from a call that is no positionOf`)
+    if (entry.offset !== undefined) problems.push('gives an offset to a call that is no positionOf')
+    return problems
+  }
+  if (Object.keys(entry.options).length) problems.push('sets options, which positionOf does not read')
+  if (!entry.expected.refusal && fields.length !== 2) problems.push('expects neither a refusal nor a line and a column')
+  for (const field of Object.keys(entry.expected)) if (!['line', 'column', 'refusal'].includes(field)) problems.push(`expects ${field} from positionOf`)
+  return problems
+}
+
+// diff, patch and fingerprint cases (C2-T-043 to C2-T-046) state only their own fields and read no option.
+const TREE_CALL_FIELDS = { diff: ['applies', 'patch'], patch: ['children', 'refusal'], fingerprint: ['fingerprint'] }
+const TREE_CALL_INPUTS = { diff: ['inputAfter'], patch: ['patch', 'fingerprintOf'], fingerprint: ['of'] }
+function treeCallProblems(entry) {
+  const problems = []
+  for (const [kind, inputs] of Object.entries(TREE_CALL_INPUTS)) for (const field of inputs) if (entry[field] !== undefined && entry.kind !== kind) problems.push(`gives ${field} to a call that is no ${kind}`)
+  for (const [kind, fields] of Object.entries(TREE_CALL_FIELDS)) for (const field of fields) if (entry.expected[field] !== undefined && field !== 'children' && field !== 'refusal' && entry.kind !== kind) problems.push(`expects ${field} from a call that is no ${kind}`)
+  const own = TREE_CALL_FIELDS[entry.kind]
+  if (!own) return problems
+  if (Object.keys(entry.options).length) problems.push(`sets options, which a ${entry.kind} case does not read`)
+  for (const field of Object.keys(entry.expected)) if (!own.includes(field)) problems.push(`expects ${field} from a ${entry.kind} case`)
+  if (entry.kind === 'patch' && !entry.expected.children === !entry.expected.refusal) problems.push('expects exactly one of children and refusal')
+  if (entry.kind === 'diff' && entry.expected.patch !== undefined && entry.expected.patch.length !== 0) problems.push('pins a patch other than the empty one, which C2-T-043 does not fix')
   return problems
 }
 
@@ -330,7 +377,7 @@ for (const entry of cases.cases) {
   if (ids.has(entry.id)) fail(`clause-cases.json ${entry.id}: duplicate id`)
   ids.add(entry.id)
   for (const clause of entry.clauses) if (!clauseText.has(clause)) fail(`clause-cases.json ${entry.id}: cites ${clause}, which no document defines`)
-  // `why` quotes clauses and, when a catalog trigger decides the case, a reports fragment.
+  // `why` quotes clauses and, when a catalog trigger decides the case, a fragment of its range or reports.
   const quotes = entry.why.split(/ (?=C2-[A-Z]-\d{3}: |Catalog [a-z0-9/-]+: )/)
   const norm = (text) => text.replaceAll(/\s+/g, ' ').trim()
   for (const part of quotes) {
@@ -340,7 +387,7 @@ for (const entry of cases.cases) {
       if (!entry.clauses.includes(clause[1])) fail(`clause-cases.json ${entry.id}: why quotes ${clause[1]}, which clauses does not list`)
       else if (!clause[2].split(' ... ').map(norm).every(piece => norm(clauseText.get(clause[1]) ?? '').includes(piece))) fail(`clause-cases.json ${entry.id}: why is not text of ${clause[1]}`)
     } else if (catalog) {
-      const report = ruleOf.get(catalog[1])?.reports ?? ''
+      const report = [ruleOf.get(catalog[1])?.range, ruleOf.get(catalog[1])?.reports].filter(Boolean).join(' ')
       if (!catalog[2].split(' ... ').map(norm).every(piece => norm(report).includes(piece))) fail(`clause-cases.json ${entry.id}: why is not reports text of ${catalog[1]}`)
     } else fail(`clause-cases.json ${entry.id}: why does not start with a clause or Catalog id`)
   }
@@ -350,6 +397,8 @@ for (const entry of cases.cases) {
   for (const problem of refusalProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of layoutProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of commandProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of positionProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of treeCallProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }

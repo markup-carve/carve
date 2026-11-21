@@ -1,3 +1,7 @@
+---
+description: What a host implements for the provisional Carve 0.2 extension interface.
+---
+
 # Extension contract
 
 This page maps host implementations to the provisional [Carve 0.2 extension specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md). The extension interface and standard catalog are not frozen with the core. Pin the spec and reference engine revision when building against them.

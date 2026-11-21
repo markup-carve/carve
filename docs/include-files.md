@@ -1,3 +1,8 @@
+---
+title: Include files
+description: Bring another Carve or text file into a document when the processor supports file inclusion.
+---
+
 # Include Files
 
 An include directive refers to another file. The host supplies a resolver and an allowed root; a plain render without access to the file cannot expand it. See [0.2 includes](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md) for path, selection, failure, and security rules.

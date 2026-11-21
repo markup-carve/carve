@@ -10,7 +10,7 @@ This case study records early influences, design goals, and syntax proposals.
 It is **not the normative specification** and is not kept in lockstep with the
 language. For current rules, read the
 [formal grammar](../grammar), the [extensions contract](../extensions), and the
-[conformance corpus](https://github.com/markup-carve/carve/tree/main/tests/corpus).
+[conformance corpus](https://github.com/markup-carve/carve/tree/0.1/tests/corpus).
 :::
 
 The chapters cover the original design from background through implementation.

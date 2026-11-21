@@ -1,9 +1,0 @@
-A non-ASCII letter does not block a bare delimiter
-
-```
-é*x* y and a*x* y
-y *x*é and y *x*a
-.
-<p>é*x* y and a*x* y
-y *x*é and y *x*a</p>
-```

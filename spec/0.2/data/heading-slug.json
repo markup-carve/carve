@@ -41,5 +41,27 @@
     { "glyph": "≠", "ascii": "!=", "clauses": ["C2-H-145"] },
     { "glyph": "≤", "ascii": "<=", "clauses": ["C2-H-145"] },
     { "glyph": "≥", "ascii": ">=", "clauses": ["C2-H-145"] }
-  ]
+  ],
+  "transliteration": {
+    "folds": [
+      { "letter": "Æ", "ascii": "AE", "clauses": ["C2-H-147"] },
+      { "letter": "Ð", "ascii": "D", "clauses": ["C2-H-147"] },
+      { "letter": "Ø", "ascii": "O", "clauses": ["C2-H-147"] },
+      { "letter": "Þ", "ascii": "Th", "clauses": ["C2-H-147"] },
+      { "letter": "ß", "ascii": "ss", "clauses": ["C2-H-147"] },
+      { "letter": "æ", "ascii": "ae", "clauses": ["C2-H-147"] },
+      { "letter": "ð", "ascii": "d", "clauses": ["C2-H-147"] },
+      { "letter": "ø", "ascii": "o", "clauses": ["C2-H-147"] },
+      { "letter": "þ", "ascii": "th", "clauses": ["C2-H-147"] },
+      { "letter": "Đ", "ascii": "D", "clauses": ["C2-H-147"] },
+      { "letter": "đ", "ascii": "d", "clauses": ["C2-H-147"] },
+      { "letter": "ı", "ascii": "i", "clauses": ["C2-H-147"] },
+      { "letter": "Ł", "ascii": "L", "clauses": ["C2-H-147"] },
+      { "letter": "ł", "ascii": "l", "clauses": ["C2-H-147"] },
+      { "letter": "Œ", "ascii": "OE", "clauses": ["C2-H-147"] },
+      { "letter": "œ", "ascii": "oe", "clauses": ["C2-H-147"] },
+      { "letter": "ẞ", "ascii": "SS", "clauses": ["C2-H-147"] }
+    ],
+    "marks": { "first": "U+0300", "last": "U+036F", "clauses": ["C2-H-147"] }
+  }
 }

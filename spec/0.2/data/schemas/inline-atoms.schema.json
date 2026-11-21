@@ -107,9 +107,9 @@
           },
           "at": {
             "type": "array",
-            "items": { "enum": ["line_start", "after_whitespace", "glued_to_closing_bracket_of_pair", "content_start"] },
+            "items": { "enum": ["line_start", "after_whitespace", "glued_to_closing_bracket_of_pair"] },
             "uniqueItems": true,
-            "description": "Where the opener must stand. One of the entries is enough. content_start: at the start of the content of a bracket or a braced opener (C2-I-023)."
+            "description": "Where the opener must stand. One of the entries is enough."
           },
           "content": {
             "enum": ["verbatim", "literal", "hidden", "id", "url_or_email", "destination_and_title"],
@@ -488,9 +488,9 @@
           },
           "ends_at": {
             "type": "array",
-            "items": { "enum": ["line_end", "cell_end", "innermost_open_closer"] },
+            "items": { "enum": ["line_end", "cell_end"] },
             "uniqueItems": true,
-            "description": "Where the atom ends, whichever comes first. innermost_open_closer: before the closer of the innermost bracket or braced opener open at the atom, on the same line (C2-I-024)."
+            "description": "Where the atom ends, whichever comes first; cell content is split before inline parsing (C2-B-169)."
           },
           "file": { "type": "string", "description": "The data file of this directory that defines the shape." }
         }

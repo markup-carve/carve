@@ -1,3 +1,7 @@
+---
+description: Claim an inline extension form and render it in static HTML.
+---
+
 # Writing an extension: a badge
 
 This example claims an existing inline extension form and renders it in static HTML. It runs with Node.js 26 from a `carve-js` `next2` checkout. The interface is provisional; pin a reference revision before using it in production. See [registration and matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching) and [extension status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md).
@@ -8,10 +12,10 @@ The source is a core inline extension before registration:
 :badge[Ready]
 ```
 
-Save the following as `badge.mjs` at the root of the `carve-js` checkout and run `node badge.mjs`:
+Save the following as `badge.mjs` in a project that installs `@markup-carve/carve` and run `node badge.mjs`:
 
 ```js
-import { render } from './v2/src/index.ts'
+import { render } from '@markup-carve/carve'
 
 const badge = {
   name: 'org.example.badge',

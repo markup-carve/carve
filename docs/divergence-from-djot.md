@@ -1,3 +1,7 @@
+---
+description: Every place Carve deliberately parses differently from Djot - the reference for porting a Djot parser.
+---
+
 # Divergence from Djot
 
 Carve and Djot share some visible forms but have different parsing and output contracts. Treat a Djot document as input to a conversion workflow, then review the result. The [0.2 block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md), [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md), and [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md) chapters define Carve behavior.
@@ -22,4 +26,4 @@ Carve header cells use `|=`. A GFM-style separator row is data in 0.2. HTML outp
 
 ## Porting
 
-Convert Djot to HTML with a trusted tool, then import the HTML into Carve with `carve2 import --from html`. Inspect diagnostics and compare the rendered page. The [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) contract describes what can be represented. The [Markdown migration guide](./migrate-from-markdown) explains the same hub workflow for Markdown.
+Convert Djot to HTML with a trusted tool, then import the HTML into Carve with `carve import --from html`. Inspect diagnostics and compare the rendered page. The [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) contract describes what can be represented. The [Markdown migration guide](./migrate-from-markdown) explains the same hub workflow for Markdown.

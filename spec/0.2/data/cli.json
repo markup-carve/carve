@@ -19,6 +19,25 @@
       ]
     },
     {
+      "name": "fix",
+      "specified": true,
+      "expands": true,
+      "flags_of": "lint",
+      "clauses": [
+        "C2-T-049",
+        "C2-T-050"
+      ]
+    },
+    {
+      "name": "flatten",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-T-047",
+        "C2-T-048"
+      ]
+    },
+    {
       "name": "fmt",
       "specified": true,
       "expands": false,
@@ -76,6 +95,27 @@
   ],
   "flags": [
     {
+      "name": "adapter",
+      "commands": [
+        "import"
+      ],
+      "kind": "enum",
+      "values": [
+        "generic",
+        "tiptap",
+        "prosemirror",
+        "ckeditor",
+        "tinymce",
+        "word",
+        "google-docs"
+      ],
+      "option": "adapter",
+      "clauses": [
+        "C2-T-010",
+        "C2-M-102"
+      ]
+    },
+    {
       "name": "align-tables",
       "commands": [
         "fmt"
@@ -97,7 +137,8 @@
       "channel": "render-loss",
       "repeatable": true,
       "clauses": [
-        "C2-T-027"
+        "C2-T-027",
+        "C2-H-204"
       ]
     },
     {
@@ -136,6 +177,18 @@
       ]
     },
     {
+      "name": "fix",
+      "commands": [
+        "lint"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-049",
+        "C2-T-050"
+      ]
+    },
+    {
       "name": "from",
       "commands": [
         "import"
@@ -165,6 +218,7 @@
     {
       "name": "heading-ids",
       "commands": [
+        "lint",
         "render"
       ],
       "kind": "enum",
@@ -188,6 +242,8 @@
       "commands": [
         "ast",
         "diagnostics",
+        "fix",
+        "flatten",
         "fmt",
         "import",
         "lint",
@@ -201,10 +257,23 @@
       ]
     },
     {
+      "name": "ignore",
+      "commands": [
+        "lint"
+      ],
+      "kind": "file",
+      "repeatable": true,
+      "clauses": [
+        "C2-T-009",
+        "C2-T-052"
+      ]
+    },
+    {
       "name": "include-root",
       "commands": [
         "ast",
         "diagnostics",
+        "flatten",
         "lint",
         "render"
       ],
@@ -262,7 +331,8 @@
       "kind": "count",
       "default": 100,
       "clauses": [
-        "C2-T-029"
+        "C2-T-029",
+        "C2-H-205"
       ]
     },
     {
@@ -291,6 +361,20 @@
       "clauses": [
         "C2-T-010",
         "C2-W-127"
+      ]
+    },
+    {
+      "name": "output",
+      "commands": [
+        "flatten",
+        "fmt",
+        "import",
+        "render"
+      ],
+      "kind": "path",
+      "short": "-o",
+      "clauses": [
+        "C2-T-053"
       ]
     },
     {
@@ -432,6 +516,23 @@
       ]
     },
     {
+      "name": "soft-break",
+      "commands": [
+        "render"
+      ],
+      "kind": "enum",
+      "values": [
+        "newline",
+        "space",
+        "br"
+      ],
+      "option": "softBreak",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-203"
+      ]
+    },
+    {
       "name": "source-lines",
       "commands": [
         "render"
@@ -441,6 +542,18 @@
       "clauses": [
         "C2-T-010",
         "C2-H-137"
+      ]
+    },
+    {
+      "name": "strict",
+      "commands": [
+        "lint",
+        "render"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-051"
       ]
     },
     {
@@ -486,6 +599,8 @@
       "commands": [
         "ast",
         "diagnostics",
+        "fix",
+        "flatten",
         "fmt",
         "import",
         "lint",
@@ -501,14 +616,16 @@
     {
       "name": "write",
       "commands": [
-        "fmt"
+        "fmt",
+        "lint"
       ],
       "kind": "switch",
       "default": false,
       "short": "-w",
       "clauses": [
         "C2-T-016",
-        "C2-T-030"
+        "C2-T-030",
+        "C2-T-050"
       ]
     }
   ],
@@ -518,12 +635,22 @@
       "status": 2,
       "errors": [
         "CarveLayoutError",
+        "CarvePatchError",
         "CarveTreeError"
       ],
       "clauses": [
         "C2-W-101",
         "C2-A-188",
-        "C2-T-040"
+        "C2-T-040",
+        "C2-T-045"
+      ]
+    },
+    {
+      "name": "flatten-changed",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-048"
       ]
     },
     {
@@ -543,6 +670,14 @@
       "errors": [],
       "clauses": [
         "C2-T-035"
+      ]
+    },
+    {
+      "name": "include-unresolved",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-048"
       ]
     },
     {
@@ -570,7 +705,8 @@
       "status": 2,
       "errors": [],
       "clauses": [
-        "C2-T-040"
+        "C2-T-040",
+        "C2-T-053"
       ]
     },
     {
@@ -609,9 +745,22 @@
   ],
   "library": [
     {
+      "name": "applyPatch",
+      "clauses": [
+        "C2-T-044",
+        "C2-T-045"
+      ]
+    },
+    {
       "name": "decodeTree",
       "clauses": [
         "C2-A-188"
+      ]
+    },
+    {
+      "name": "diffTree",
+      "clauses": [
+        "C2-T-043"
       ]
     },
     {
@@ -623,7 +772,8 @@
     {
       "name": "encodeTree",
       "clauses": [
-        "C2-A-012"
+        "C2-A-012",
+        "C2-A-217"
       ]
     },
     {
@@ -644,7 +794,9 @@
       "clauses": [
         "C2-M-001",
         "C2-M-066",
-        "C2-M-082"
+        "C2-M-082",
+        "C2-M-100",
+        "C2-M-102"
       ]
     },
     {
@@ -658,7 +810,8 @@
       "clauses": [
         "C2-W-103",
         "C2-W-109",
-        "C2-N-085"
+        "C2-N-085",
+        "C2-T-042"
       ]
     },
     {
@@ -689,6 +842,13 @@
       ]
     },
     {
+      "name": "positionOf",
+      "clauses": [
+        "C2-T-019",
+        "C2-T-041"
+      ]
+    },
+    {
       "name": "render",
       "clauses": [
         "C2-H-137"
@@ -699,6 +859,18 @@
       "clauses": [
         "C2-A-172",
         "C2-H-130"
+      ]
+    },
+    {
+      "name": "sourceFingerprint",
+      "clauses": [
+        "C2-T-046"
+      ]
+    },
+    {
+      "name": "treeFingerprint",
+      "clauses": [
+        "C2-T-046"
       ]
     },
     {
@@ -760,6 +932,15 @@
       "library": true,
       "clauses": [
         "C2-M-081"
+      ]
+    },
+    {
+      "name": "includedBy",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-N-063",
+        "C2-T-020"
       ]
     },
     {

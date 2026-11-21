@@ -1,7 +1,0 @@
-An unresolved cross-reference strips a bidi control
-
-```
-</#a‮>
-.
-<p>&lt;/#a&gt;</p>
-```

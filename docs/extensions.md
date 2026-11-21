@@ -1,3 +1,7 @@
+---
+description: How extensions claim existing Carve forms without adding new syntax.
+---
+
 # Optional features and extensions
 
 Carve 0.2 keeps core syntax fixed. An extension claims an existing inline `:name[content]`, a named div, or a fenced code block after core parsing. It cannot add a new delimiter or line shape. The [extension specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching) defines registration, transformation, fallbacks, and rendering.

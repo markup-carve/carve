@@ -1,7 +1,0 @@
-A cross-reference ID is atomic inside a forced span
-
-```
-{^</#{^>^}
-.
-<p><sup>&lt;/#{^&gt;</sup></p>
-```

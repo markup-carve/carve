@@ -15,7 +15,7 @@ A document with the core constructs in one place. Edit a line to see the preview
 {#section .featured}
 === A heading with an id and a class
 
-Headings can also be written with hash markers:
+A heading may also use `#` markers in place of `=`; the Format button rewrites them to `=`:
 
 ```carve
 {#setup .lead}
@@ -68,9 +68,9 @@ Editorial marks can show {+inserted words+} and {-deleted words-}.
 == Tables
 
 |= Fruit |={>} Price |={~} Stock |
-| Apple  | 1.20      | In        |
-| Banana | 0.50      | In        |
-| Pear   | 2.00      | Out       |
+| Apple | 1.20 | In |
+| Banana | 0.50 | In |
+| Pear | 2.00 | Out |
 ^ A compact table with aligned columns.
 
 A CSV fence can also provide tabular data:

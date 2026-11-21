@@ -32,6 +32,8 @@
             "enum": [
               "ast",
               "diagnostics",
+              "fix",
+              "flatten",
               "fmt",
               "import",
               "lint",
@@ -40,6 +42,12 @@
               "upgrade"
             ],
             "description": "The command as it is typed after the program name (C2-T-007)."
+          },
+          "flags_of": {
+            "enum": [
+              "lint"
+            ],
+            "description": "A command that takes the flags of the table of another command and lists none of its own (C2-T-049)."
           },
           "specified": {
             "type": "boolean",
@@ -87,6 +95,8 @@
               "enum": [
                 "ast",
                 "diagnostics",
+                "fix",
+                "flatten",
                 "fmt",
                 "import",
                 "lint",
@@ -104,9 +114,10 @@
               "json",
               "path",
               "count",
-              "code"
+              "code",
+              "file"
             ],
-            "description": "`switch`: no value, `--no-` turns it off (C2-T-008); `enum`: one of `values`; `json`: JSON text; `path`: a file path or `-` (C2-T-015); `count`: a decimal integer of at least 0; `code`: a code of data/lint-rules.json."
+            "description": "`switch`: no value, `--no-` turns it off (C2-T-008); `enum`: one of `values`; `json`: JSON text; `path`: a file path or `-` (C2-T-015); `count`: a decimal integer of at least 0; `code`: a code of data/lint-rules.json; `file`: a file id (C2-N-009) or a file name as given (C2-T-013)."
           },
           "channel": {
             "enum": ["parse", "render-loss", "lint"],

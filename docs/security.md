@@ -1,6 +1,10 @@
+---
+description: How Carve treats untrusted source, raw HTML and URLs.
+---
+
 # Security
 
-Carve 0.2 treats untrusted source as data. Bare HTML tags are escaped as text. Explicit raw HTML is disabled by default and requires `rawHtml: true` or `carve2 render --raw-html`. Only enable that option for trusted input and output contexts. See [raw HTML rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content) and [options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
+Carve 0.2 treats untrusted source as data. Bare HTML tags are escaped as text. Explicit raw HTML is disabled by default and requires `rawHtml: true` or `carve render --raw-html`. Only enable that option for trusted input and output contexts. See [raw HTML rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content) and [options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
 ## URL and attribute policy
 

@@ -1,4 +1,0 @@
-> ~~~
-> git bisect run ./check
-> ~~~
-^ The release runbook

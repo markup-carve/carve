@@ -1,3 +1,7 @@
+---
+description: A feature-by-feature comparison against Markdown, Djot and MDX, for choosing between them.
+---
+
 # Carve, Markdown, Djot, and MDX
 
 The languages solve different authoring problems. This comparison is about Carve 0.2 as specified on `next2`; its development status is recorded in [STATUS.md](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md).

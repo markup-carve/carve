@@ -1,6 +1,6 @@
 # Conformance corpus of Carve 0.2
 
-One corpus for every engine. Three plain JSON files, one schema (`schema.json`, JSON Schema 2020-12). Each file has `$schema`, `kind` and `description`, and one list.
+One corpus for every engine. Three plain JSON files, one schema (`schema.json`, JSON Schema 2020-12). Each file has `$schema`, `kind` and `description`, and one list. A fourth file, `extensions.json`, holds the standard extension corpus (see "Extensions"); it is outside the schema and is part of the readiness gate.
 
 | File | `kind` | List | Made by |
 |---|---|---|---|
@@ -61,8 +61,14 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `migrate` | `tree`, a 1.x or draft tree | `migrateTree` | `tree`, diagnostics, `refusal` |
 | `import` | `html` | `importDocument` with `from: "html"` | `children`, `carve`, diagnostics, `refusal` |
 | `cli` | `args`, `stdin`, `files` | the program `carve` | `status`, `stdout`, `stdoutJson`, `stdoutDiagnostics`, `stderrCategory`, `stderrDiagnostics`, `filesAfter` |
+| `position` | `input` or `inputBytes`, `offset` | `positionOf` | `line`, `column`, `refusal` |
+| `diff` | `input` and `inputAfter`, both parsed with positions off | `diffTree`, then `applyPatch` | `applies`: the patch applied to the first tree gives the second; `patch` only where C2-T-043 fixes it, the empty list for two equal trees |
+| `patch` | `input`, parsed with positions off, `patch`, and `fingerprintOf`, a source whose tree gives the `fingerprint` | `applyPatch` | `children`, `refusal` |
+| `fingerprint` | `input` or `inputBytes`; `of: "tree"` hashes its tree parsed with positions off | `sourceFingerprint`, or `treeFingerprint` | `fingerprint` |
 
-`inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options").
+`inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options"). A file entry with `{"error":"outside_root"}` or `{"error":"unreadable"}` makes the resolver return that cause for the path, so include failure cases do not depend on filesystem permissions or the runner's directory.
+
+`expected.children` and `expected.tree` are compared field by field, unlike the tree equality of C2-A-162: the resolution fields of `data/ast-results.json` count too, so a case pins a field such as `abbreviation.expansion` by stating it and pins its absence by leaving it out. Only `pos` and `segments` are skipped where the expected value holds no `pos`, `srcByteLength` where it states none, and the `children` and `file` of an `include`.
 
 ### Diagnostics
 
@@ -85,6 +91,8 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 The check fails a code that `data/lint-rules.json` does not list or lists as obsolete or void, a `channel` or `severity` that differs from the catalog, a position outside the text it is counted in, and a code that is both expected and excluded.
 
 ### Layout and writing
+
+A `tree` case may give `annotations` beside its tree. The reader checks the supplied annotation-range sidecar under C2-A-203, C2-A-207 and C2-A-214; without it, only the tree checks run.
 
 A `layout` case compares the sidecar that `parseWithLayout` returns with `expected.layout`. Each root field the expected sidecar states is equal, and each node entry it states is an entry of the result with the same `path`, compared as C2-L-059 says: a required fact must be present and equal, and an optional fact the case states is compared only where the result records it. The result may hold more entries and more facts; `expected.layoutAbsent` names, for a path, the facts its entry must not hold. A `write` case gives the writer a `tree` and, where it has one, the sidecar `layout`, and compares the source with `expected.carve` and the losses of the record with `expected.diagnostics`.
 
@@ -114,7 +122,7 @@ The check fails a sidecar the layout schema refuses (a supplied one, unless the 
 
 ### Command lines
 
-A `cli` case runs the program (`tooling.md`; the reference engine names it `carve2`, C2-T-002) with `args`, the arguments after the program name, in a directory that holds exactly `files`, with `stdin` on standard input (empty where absent). Its `options` are `{}`: a command line sets options with flags. `expected.status` is the exit status and is always stated. `stdout` is standard output byte for byte, and `stdoutJson` the same output read as one JSON document and compared as a JSON value (C2-T-023). `stdoutDiagnostics` and `stderrDiagnostics` are the diagnostic lines of C2-T-019 on each stream, in order, as diagnostic objects whose `file` is the FILE of the line; the message is not compared, and a line carries no `channel`. `stderrCategory` is the CATEGORY of the failure line `carve[CATEGORY]:` that opens standard error (C2-T-039), and `null` where standard error holds no failure line. `filesAfter` gives files of the directory after the run: `{ "text": ... }`, `{ "json": ... }` for a report compared as a JSON value, or `null` for a file that must not exist.
+A `cli` case runs the program (`tooling.md`, C2-T-002) with `args`, the arguments after the program name, in a directory that holds exactly `files`, with `stdin` on standard input (empty where absent). Its `options` are `{}`: a command line sets options with flags. `expected.status` is the exit status and is always stated. `stdout` is standard output byte for byte, and `stdoutJson` the same output read as one JSON document and compared as a JSON value (C2-T-023). `stdoutDiagnostics` and `stderrDiagnostics` are the diagnostic lines of C2-T-019 on each stream, in order, as diagnostic objects whose `file` is the FILE of the line; the message is not compared, and a line carries no `channel`. `stderrCategory` is the CATEGORY of the failure line `carve[CATEGORY]:` that opens standard error (C2-T-039), and `null` where standard error holds no failure line. `filesAfter` gives files of the directory after the run: `{ "text": ... }`, `{ "json": ... }` for a report compared as a JSON value, or `null` for a file that must not exist.
 
 ```json
 {
@@ -127,6 +135,22 @@ A `cli` case runs the program (`tooling.md`; the reference engine names it `carv
 ```
 
 The check fails a command or a flag that `data/cli.json` does not list for the command, unless the case expects the category `usage`; a category whose status differs from the one `data/cli.json` gives it; and a field of a command line expected from a library call, or the other way round.
+
+### Positions
+
+A `position` case calls `positionOf` (C2-T-041) with the input and `offset`, a UTF-8 byte offset into it, and compares `expected.line` and `expected.column` with the result, or expects the refusal `CarveOptionError` with the path `/offset`. Its `options` are `{}`.
+
+```json
+{
+  "kind": "position",
+  "input": "a\nbé c",
+  "offset": 6,
+  "options": {},
+  "expected": { "line": 2, "column": 4 }
+}
+```
+
+The check fails `line`, `column` or `offset` on a case of another kind, and a position case that sets options or expects anything else.
 
 ### Refusals
 
@@ -145,11 +169,21 @@ The check fails an error that no category of `data/cli.json` names or that the c
 
 ## Options
 
-`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Two options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, also for `decodeTree` and `validateTree`, and `renderers` maps such a name to `"standard"`, its standard renderer. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
+`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Three options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, also for `decodeTree` and `validateTree`, and `renderers` maps such a name to `"standard"`, its standard renderer, which under the `mode` `static` is its build-time renderer (C2-X-052), or to `{ "standard": { ... } }`, that renderer created with the host options in the inner object, which the `rendererOptions` of its row in `data/extensions.json` name: `{ "carve.tabs": { "standard": { "mode": "aria" } } }` is the tabs renderer in `aria` mode (C2-X-056). The top-level `mode` stays the render option of C2-H-122. `codeBlockRenderer` (C2-H-206) is an object that the runner turns into a function: for a code block whose `syntax` is the field `syntax`, or for every code block where the field is absent, the function returns `result`, and for every other block it returns nothing. A string `result` is a template in which `{default}` stands for the default HTML and `{syntax}` for the language of the block, or the empty string where it has none, both replaced in one pass over the template; `null` returns nothing, and a number returns that number, a value that is not text. That object is a spelling of the corpus only, not an interface: an engine offers `codeBlockRenderer` as a function of its language, and a binding that crosses a JSON boundary passes a callback across it, not this object. `allowLosses` lists codes of the render-loss channel, and `maxLosses` is a count. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
 
 ```json
 { "rules": { "djot-plus-bullet": "on", "bare-html-tag": "off" }, "platforms": ["github"], "extensions": ["carve.tabs"], "renderers": { "carve.tabs": "standard" } }
 ```
+
+## Extensions
+
+`extensions.json` (`kind` `extensions`, list `cases`) checks the HTML of the standard extensions. Each extension has cases for its default use, its host options, a use inside a list item and inside a block quote, literal code text, and escaped user text, with its fallback where no renderer is selected. An entry has `id` (`EXT-nnn`), `extension`, `summary`, `clauses`, `expectedFrom`, `kind` (`render`), `input`, `options` and `expected` (`html`, `htmlIncludes`, diagnostics), read as in a clause case.
+
+`expectedFrom` says where the expected HTML comes from. `0.2` means the 0.2 clauses in `clauses` decide it. `0.1: ...` names the documented 0.1 output it follows, a row of `tests/corpus-optional` or an extension page, where 0.2 has no text for the renderer yet; `clauses` then lists only the 0.2 clauses the case also relies on, such as C2-H-047 for literal code text. No expectation is copied from an engine. Where the engines agree on a detail that neither 0.2 nor the 0.1 source decides, the case states only `htmlIncludes`.
+
+`options.extensions` names extensions of `data/extensions.json` as above, and also standard extensions outside that table by the name an engine selects them with, such as `carve.listTable` or `carve.fencedRender.dot`. The runner registers such an extension as its whole standard bundle, with its document transforms, and with its renderers where `renderers` maps the name to `"standard"`. A renderer with host options, as `{ "carve.codeGroup": { "standard": { "mode": "aria" } } }`, takes the options of the clause the case cites.
+
+`scripts/next2-readiness.mjs` replays the file in the section "Extensions" of its report, with pass, fail and unsupported per engine and extension. It counts toward Engine ready and is part of the per-case baseline. Any failing or unsupported extension case fails readiness. `node scripts/next2-readiness.mjs --extensions-only` replays only this file and fails on those cases too.
 
 ## Refused trees
 

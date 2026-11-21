@@ -1,7 +1,0 @@
-Mentions and tags
-
-```
-Hey @alice, see #release-1.0.
-.
-<p>Hey <span class="mention"><strong>@alice</strong></span>, see <span class="tag"><strong>#release-1.0</strong></span>.</p>
-```

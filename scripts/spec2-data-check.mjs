@@ -43,7 +43,7 @@ const FILES = {
   'include-options': { options: ['name', 'rank'] },
   includes: { causes: ['name', 'rank'], conflicts: ['name', 'name'] },
   'inline-atoms': { atoms: ['name', 'name'] },
-  'import-html': { elements: ['name', 'name'], attributes: ['name', 'name'], conventions: ['name', 'name'], codes: ['id', 'id'], losses: ['name', 'name'] },
+  'import-html': { adapters: ['name', 'name'], elements: ['name', 'name'], attributes: ['name', 'name'], conventions: ['name', 'name'], codes: ['id', 'id'], losses: ['name', 'name'] },
   'inline-braces': { order: ['name', 'rank'] },
   'inline-brackets': { brackets: ['name', 'name'] },
   'inline-scan': { steps: ['name', 'rank'], fallbacks: ['name', 'name'] },
@@ -53,6 +53,7 @@ const FILES = {
   limits: { limits: ['name', 'name'] },
   'ordered-styles': { styles: ['name', 'name'], delimiters: ['name', 'char'] },
   'line-shapes': { shapes: ['name', 'first'], refs: ['name', 'name'] },
+  'lint-model': { line_fields: ['name', 'name'], block_fields: ['name', 'name'], inline_fields: ['name', 'name'], table_fields: ['name', 'name'], rules: ['id', 'id'] },
   'lint-rules': { rules: ['id', 'id'] },
   options: { options: ['name', 'name'] },
   'smart-punctuation': { runs: ['source', 'source'], quotes: ['kind', 'kind'], dashes: ['kind', 'kind'] },
@@ -126,7 +127,8 @@ for (const [file, lists] of Object.entries(FILES)) {
     counts.push(`${file}.json ${list}: ${rows.length}`)
     const seen = new Set()
     for (const row of rows) {
-      const id = row[idKey]
+      // C2-W-150: a lint row may be stated by one rule per record kind.
+      const id = file === 'lint-model' && list === 'rules' ? `${row.id} ${row.over}` : row[idKey]
       if (seen.has(id)) fail(`${file}.json ${list}: "${id}" stands twice`)
       seen.add(id)
     }
@@ -252,6 +254,59 @@ for (const row of data['inline-braces']?.order ?? []) {
 }
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
+// lint-model.json: every rule states a catalog row, reads only fields of the line model, names known sets and
+// writes its patterns in the subset of C2-W-142.
+{
+  const model = data['lint-model'] ?? { line_fields: [], block_fields: [], inline_fields: [], rules: [] }
+  // C2-W-149: the table fields are fields of the line and block records they apply to.
+  const tableFields = (model.table_fields ?? []).map(field => field.name)
+  const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2'], tableFields))
+  const blockFields = new Set(model.block_fields.map(field => field.name).concat(tableFields))
+  const inlineFields = new Set((model.inline_fields ?? []).map(field => field.name))
+  const attributeFields = new Set((model.attribute_fields ?? []).map(field => field.name))
+  const attributeOwnerFields = new Set((model.attribute_owner_fields ?? []).map(field => field.name))
+  const idFields = new Set((model.id_fields ?? []).map(field => field.name))
+  const containerFields = new Set(['type', 'content_column', 'marker_column'])
+  const colonFields = new Set(['width', 'line', 'column', 'kind'])
+  const sets = new Set(['text_leaves', 'verbatim_leaves', 'row_leaves'])
+  const lineRecord = new Set(['prev', 'prev2', 'next', 'next2', 'leaf_next', 'leaf_head', 'line', 'last_line', 'table_above', 'table_below'])
+  const checkPath = (path, over, lets, where) => {
+    const [head, ...rest] = path.split('.')
+    if (head === 'item') return
+    const own = over === 'block' ? blockFields : over === 'inline' ? inlineFields : over === 'attribute' ? attributeFields : lineFields
+    if (!own.has(head)) return fail(`${where}: reads ${path}, which no field of a ${over} record names`)
+    if (rest.length === 0) return
+    // An attribute record's owner is the only record field it has; the owner's node is read by name (C2-W-148).
+    if (over === 'attribute') {
+      if (head !== 'owner' || !attributeOwnerFields.has(rest[0])) fail(`${where}: reads ${path}, which no attribute owner field names`)
+      else if (rest.length > 1 && rest[0] !== 'node') fail(`${where}: reads ${path}, which no attribute owner field names`)
+      return
+    }
+    if (lineRecord.has(head) && !lineFields.has(rest[0])) fail(`${where}: reads ${path}, which no line field names`)
+    if ((head === 'owner' || head === 'parent' || head === 'item_owner') && !containerFields.has(rest[0])) fail(`${where}: reads ${path}, which no owner field names`)
+    if (head === 'open_colon' && rest.length > 1 && !colonFields.has(rest[1])) fail(`${where}: reads ${path}, which no colon container field names`)
+  }
+  const walkExpr = (expr, over, lets, where) => {
+    if (Array.isArray(expr)) return expr.forEach(item => walkExpr(item, over, lets, where))
+    if (expr === null || typeof expr !== 'object') return
+    for (const [key, value] of Object.entries(expr)) {
+      if (key === 'f' || key === 'has') checkPath(String(value), over, lets, where)
+      else if (key === 'v' && !lets.has(value)) fail(`${where}: reads ${value}, which no let names`)
+      else if (key === 'in' && typeof value[1] === 'string' && !sets.has(value[1])) fail(`${where}: names the set ${value[1]}, which this file does not define`)
+      else if (key === 'matches' && /\(\?<?[=!]|\\[1-9]|\\k</.test(String(value[1]))) fail(`${where}: the pattern ${value[1]} uses lookaround or a backreference (C2-W-142)`)
+      else if (key === 'pairs' && value[2] !== undefined && value[2] !== 'strict') fail(`${where}: the pair scan option ${value[2]} is not strict (C2-W-147)`)
+      else if (key === 'lookup' && value?.over === 'id' && !idFields.has(String(value.field).split('.')[0])) fail(`${where}: reads the id field ${value.field}, which id_fields does not name (C2-W-150)`)
+      // A message value may be named `count`, as in table-column-arity: only a list read with `in` is the operator.
+      else if ((key === 'some' || key === 'count') && typeof value?.in === 'string') { checkPath(value.in, over, lets, where); walkExpr(value.where, over, lets, where); continue }
+      if (key !== 'f' && key !== 'has' && key !== 'v') walkExpr(value, over, lets, where)
+    }
+  }
+  for (const rule of model.rules) {
+    need(codes, rule.id, `lint-model.json ${rule.id}`, 'id of lint-rules.json')
+    const lets = new Set(Object.keys(rule.let ?? {}))
+    walkExpr([rule.let, rule.when, rule.each, rule.report, rule.range, rule.values], rule.over, lets, `lint-model.json ${rule.id}`)
+  }
+}
 const includeOptions = names('include-options', 'options')
 for (const row of [...(data.includes?.causes ?? []), ...(data.includes?.conflicts ?? [])]) {
   need(codes, row.code, `includes.json ${row.name}`, 'id of lint-rules.json')
@@ -431,9 +486,9 @@ for (const [name, text] of Object.entries(texts)) {
     }
   }
 }
-const importCounts = /holds (\d+) element rows, (\d+) attribute rows, (\d+) conventions, (\d+) codes and (\d+) loss rows/.exec(texts['import-html'])
+const importCounts = /holds (\d+) element rows, (\d+) attribute rows, (\d+) conventions, (\d+) codes, (\d+) loss rows and (\d+) adapter rows/.exec(texts['import-html'])
 if (!importCounts) fail('import-html.md counts: the sentence on the rows of data/import-html.json is missing')
-else ['elements', 'attributes', 'conventions', 'codes', 'losses'].forEach((list, at) => {
+else ['elements', 'attributes', 'conventions', 'codes', 'losses', 'adapters'].forEach((list, at) => {
   if (Number(importCounts[at + 1]) !== (data['import-html']?.[list] ?? []).length) fail(`import-html.md counts: ${list} says ${importCounts[at + 1]}, the data file holds ${(data['import-html']?.[list] ?? []).length}`)
 })
 
@@ -478,7 +533,7 @@ if (optionRows.length !== options.length) fail(`html.md C2-H-137: ${optionRows.l
 for (const [option, kind] of optionRows) {
   const row = options.find(entry => entry.name === option)
   const readers = row && (Array.isArray(row.read_by) ? row.read_by : [row.read_by])
-  const kinds = row && [row.kind, ...readers.filter(reader => reader === 'import')]
+  const kinds = row && [...new Set([row.kind, ...readers.filter(reader => reader === 'import')])]
   if (!row) fail(`html.md C2-H-137: ${option} is not in options.json`)
   else if (kind !== kinds.join(', ')) fail(`html.md C2-H-137: ${option} is of the kind ${kind}, options.json says ${kinds.join(', ')}`)
 }
@@ -550,7 +605,7 @@ const valueCell = row => {
   if (row.kind === 'enum') return row.values.map(value => tick + value + tick).join(', ')
   if (row.kind === 'json') return 'JSON'
   if (row.kind === 'count') return `count, ${row.default}`
-  if (row.kind === 'code') return row.repeatable ? 'code, repeatable' : 'code'
+  if (row.kind === 'code' || row.kind === 'file') return row.repeatable ? `${row.kind}, repeatable` : row.kind
   return row.kind
 }
 for (const cell of flagCells) {

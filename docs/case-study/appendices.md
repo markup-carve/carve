@@ -92,11 +92,11 @@ author: Jane Writer
 date: 2024-03-15
 ---
 
-# Welcome to Carve
+= Welcome to Carve
 
 This is a /simple/ demonstration of *Carve* markup.
 
-## Features
+== Features
 
 Carve includes:
 
@@ -108,14 +108,14 @@ Carve includes:
 Just write naturally and let Carve handle the rest.
 :::
 
-### Sample Table
+=== Sample Table
 
-|= Feature        |= Status    |= Notes              |
-| Visual syntax   | Done       | `/italic/` works    |
-| Link syntax     | Done       | Natural order       |
-| Tables          | Done       | Simpler than MD     |
+|= Feature |= Status |= Notes |
+| Visual syntax | Done | `/italic/` works |
+| Link syntax | Done | Natural order |
+| Tables | Done | Simpler than MD |
 
-### Sample Code
+=== Sample Code
 
 ```python
 def greet(name: str) -> str:
@@ -123,7 +123,7 @@ def greet(name: str) -> str:
     return f"Hello, {name}!"
 ```
 
-## Conclusion
+== Conclusion
 
 > The best markup is the one you don't have to think about.
 > -- Anonymous

@@ -1,16 +1,22 @@
+---
+description: Diagnostic codes, severities, channels and ranges in Carve 0.2.
+---
+
 # Validation
 
 Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a code, severity, channel, message, and optional byte range or JSON Pointer. The channels are `parse`, `lint`, and `render-loss`. See [diagnostics](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#diagnostics) and [writer and lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint).
 
 ## Command line
 
-`carve2 lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `carve2 diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
+`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
 
-`carve2 fmt --check FILE` checks canonical source without writing it. Use `carve2 fmt -w FILE` to write it and `--normalize` to discard measured spelling. Formatting is not automatic repair of a semantic error. See [formatter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#carve-fmt).
+`carve fmt --check FILE` checks canonical source without writing it. Use `carve fmt -w FILE` to write it and `--normalize` to discard measured spelling. Formatting is not automatic repair of a semantic error. See [formatter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#carve-fmt).
 
 ## Programmatic checks
 
 The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics`, `formatWithDiagnostics`, and `writeWithDiagnostics`. Rendering and writing can report losses that lint alone does not expose. Check the record before accepting a conversion. See [tooling calls](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library) and [diagnostic rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint).
+
+`allowLosses` lists render-loss codes a host accepts: they leave the record and never fail `strictLosses`. `maxLosses` (default 100) caps the losses the record keeps and counts the rest in `suppressedDiagnostics`. The command line sets them with `--allow-loss` and `--max-render-losses`. `positionOf(source, offset)` turns a byte offset of an entry into the line and column the command line prints. See [render options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options) and [diagnostics and reports](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#diagnostics-and-reports).
 
 ## Lint rule catalog
 

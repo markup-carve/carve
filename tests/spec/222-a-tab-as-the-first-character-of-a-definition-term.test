@@ -1,9 +1,0 @@
-A tab as the first character of a definition term
-
-```
-:: 	x
-.
-<dl>
-  <dt>	x</dt>
-</dl>
-```

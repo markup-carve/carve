@@ -1,5 +1,14 @@
 {
   "$schema": "schemas/import-html.schema.json",
+  "adapters": [
+    {"name": "ckeditor", "pass": "none", "note": "CKEditor; its markup is read by the mapping alone", "clauses": ["C2-M-102"]},
+    {"name": "generic", "pass": "none", "note": "the default; any HTML", "clauses": ["C2-M-102"]},
+    {"name": "google-docs", "pass": "notes", "note": "Google Docs \"Download as HTML\"; the same pass as `word`", "clauses": ["C2-M-102", "C2-M-103", "C2-M-104", "C2-M-105", "C2-M-106", "C2-M-107", "C2-M-108", "C2-M-109", "C2-M-110"]},
+    {"name": "prosemirror", "pass": "none", "note": "ProseMirror; its markup is read by the mapping alone", "clauses": ["C2-M-102"]},
+    {"name": "tinymce", "pass": "none", "note": "TinyMCE; its markup is read by the mapping alone", "clauses": ["C2-M-102"]},
+    {"name": "tiptap", "pass": "none", "note": "Tiptap; its markup is read by the mapping alone", "clauses": ["C2-M-102"]},
+    {"name": "word", "pass": "notes", "note": "Word \"Save as Web Page\" and its filtered form; LibreOffice and Pandoc 1 exports pair by the same rule", "clauses": ["C2-M-102", "C2-M-103", "C2-M-104", "C2-M-105", "C2-M-106", "C2-M-107", "C2-M-108", "C2-M-109", "C2-M-110"]}
+  ],
   "elements": [
     {"name": "*", "treatment": "span", "node": "span", "note": "every element with no row, custom elements included", "clauses": ["C2-M-056", "C2-M-057"]},
     {"name": "a", "treatment": "map", "node": "link, or footnote reference", "clauses": ["C2-M-050", "C2-M-051", "C2-M-062"]},

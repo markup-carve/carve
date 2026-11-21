@@ -4,7 +4,6 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import container from 'markdown-it-container'
 import { carveMarkdown } from '@markup-carve/carve-grammars/shiki'
-import carve2Grammar from '@markup-carve/carve-grammars/textmate/carve2.tmLanguage.json' with { type: 'json' }
 import carve from '@markup-carve/vite-plugin-carve'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from './carve-extensions.js'
@@ -50,13 +49,6 @@ const docsLatestBase = process.env.DOCS_LATEST_BASE ?? '/carve/'
 const docsOtherBase = process.env.DOCS_OTHER_BASE ?? '/carve/0.2/'
 const siteUrl = (base: string) => `https://markup-carve.github.io${base}`
 
-// These docs describe Carve 0.2, so `carve` and `crv` fences take the 0.2 grammar; the shared helper still ships 0.1 under those names.
-function carve02Markdown() {
-  const md = carveMarkdown({ languages: [ebnfGrammar, orgGrammar, textileGrammar] })
-  const carve2 = { ...carve2Grammar, name: 'carve', aliases: ['crv', 'Carve'] } as never
-  return { ...md, languages: [carve2, ...md.languages.filter((l: { name?: string }) => l.name !== 'carve')] }
-}
-
 export default defineConfig({
   title: 'Carve',
   description: 'A markup language for structured documents.',
@@ -75,7 +67,7 @@ export default defineConfig({
   },
 
   markdown: {
-    ...carve02Markdown(),
+    ...carveMarkdown({ languages: [ebnfGrammar, orgGrammar, textileGrammar] }),
     config(md) {
       // VitePress renders every page for the client and the server bundle, so
       // each fence was highlighted ~3 times; Shiki was ~90% of the build.
@@ -126,6 +118,8 @@ export default defineConfig({
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] })
 })()`,
     ],
+    // The unreleased series must not compete with the released docs in search results.
+    ...(process.env.VITE_DOCS_SERIES === 'dev' ? [['meta', { name: 'robots', content: 'noindex' }] as [string, Record<string, string>]] : []),
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${docsBase}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
     ['meta', { property: 'og:type', content: 'website' }],
@@ -286,19 +280,7 @@ export default defineConfig({
                 { text: 'Development', link: '/development' },
                 { text: 'Rule Coverage', link: '/rule-coverage' },
                 { text: 'Formal Grammar', link: '/grammar' },
-              {
-                text: 'Specification Rules',
-                collapsed: true,
-                items: [
-                  { text: 'Overview', link: '/rules/' },
-                  { text: 'Parsing', link: '/rules/parsing' },
-                  { text: 'References & Output', link: '/rules/resolution-rendering' },
-                  { text: 'Parsed Document JSON', link: '/rules/ast-interchange' },
-                  { text: 'Standard Formatting', link: '/rules/canonical-writing' },
-                  { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
-                  { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
-                ],
-              },
+              { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
               ],
             },
             { text: 'Feature Design Notes', link: '/native-features-analysis' },

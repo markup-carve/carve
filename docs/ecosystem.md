@@ -4,7 +4,7 @@ description: Projects that work with Carve, with their version boundaries.
 
 # Ecosystem
 
-This directory links projects that parse, display, edit or convert Carve. Most existing integrations target released 0.1 engines. A link here does not claim 0.2 support. Check each project's branch and engine pin before using it with 0.2 documents. The 0.2 reference implementation is [carve-js on `next2`](https://github.com/markup-carve/carve-js/tree/next2/v2), and its portable contract is in the [0.2 specification](./grammar).
+This directory links projects that parse, display, edit or convert Carve. Most existing integrations target released 0.1 engines. A link here does not claim 0.2 support. Check each project's branch and engine pin before using it with 0.2 documents. The 0.2 reference implementation is [carve-js on `next2`](https://github.com/markup-carve/carve-js/tree/next2), and its portable contract is in the [0.2 specification](./grammar).
 
 ## Parsers
 

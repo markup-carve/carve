@@ -2843,13 +2843,13 @@
     },
     {
       "id": "U-390",
-      "kind": "rewrite",
+      "kind": "none",
       "group": "editorial comments",
       "from": "{-%% b-}\n",
-      "to": "{-\\%\\% b-}\n",
-      "meaning02": "<p><del></del></p> A comment marker inside a deletion removes its following text under C2-I-023 and C2-I-024. Escape both percent signs to keep the old text. Rewrite the source range from the two percent signs in the deletion.",
+      "to": "{-%% b-}\n",
+      "meaning02": "<p><del>%% b</del></p> Under C2-I-023 `%%` directly after a braced opener is text, as in 0.1. No source edit is needed.",
       "toolEntry": "U-390",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-391",
@@ -2877,7 +2877,7 @@
       "group": "inline comments",
       "from": "{~a %% b~>c~} d\n",
       "to": "",
-      "meaning02": "<p><s>a</s> d</p> A comment marker inside a substitution changes which arrow and closer survive under C2-I-023 and C2-I-062. Report the source range from the substitution opener through its closing brace.",
+      "meaning02": "<p>{~a</p> C2-I-024 makes the line comment take the rest of its line, the substitution arrow, the closer and ` d` included; 0.1 ended the comment at the first raw closer of its frame and wrote `{~a d`. A line comment in any bracket or braced frame whose closer follows on its line changes the same way; U-399 to U-402 rewrite only their own verified sources. Report the source range from the comment marker through the end of its line.",
       "toolEntry": "U-393",
       "silent": true
     },
@@ -2909,6 +2909,426 @@
       "to": "",
       "meaning02": "<p>a $`</p> C2-I-017 reads a backtick run with no closer of its length as text, and 0.1 wrote an empty math span. An adjacent closer joins the opener into a wider run, and a separator changes the empty value, so no spelling keeps the empty span. Report the parsed math range, `$` or `$$` with its backticks, at the end of inline content; do not rewrite.",
       "toolEntry": "U-396",
+      "silent": true
+    },
+    {
+      "id": "U-397",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "v.  x\nvi.  y\n",
+      "to": "",
+      "meaning02": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol> C2-B-042 fixes the first marker as alphabetic; C2-B-044 splits at `vi.`. Report the two-list boundary for review.",
+      "toolEntry": "U-397",
+      "silent": false
+    },
+    {
+      "id": "U-398",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "i.  x\nj.  y\n",
+      "to": "",
+      "meaning02": "<ol type=\"i\">\n  <li>x</li>\n</ol>\n<ol type=\"a\" start=\"10\">\n  <li>y</li>\n</ol> C2-B-042 fixes the first marker as roman; C2-B-044 splits at `j.`. Report the two-list boundary for review.",
+      "toolEntry": "U-398",
+      "silent": false
+    },
+    {
+      "id": "U-399",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "[a %% b](/u) c\n",
+      "to": "[a{% b %}](/u) c\n",
+      "meaning02": "<p>[a</p> C2-I-024 takes the closing bracket and link tail. The proposed braced comment restores the 0.1 link HTML.",
+      "toolEntry": "U-399",
+      "silent": true
+    },
+    {
+      "id": "U-400",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "^[a %% c] d\n",
+      "to": "^[a{% c %}] d\n",
+      "meaning02": "<p>^[a</p> C2-I-024 takes the closing bracket and following text. The proposed braced comment restores the 0.1 footnote HTML.",
+      "toolEntry": "U-400",
+      "silent": true
+    },
+    {
+      "id": "U-401",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "{_a %% b_} y\n",
+      "to": "{_a{% b %}_} y\n",
+      "meaning02": "<p>{_a</p> C2-I-024 takes the closing brace. The proposed braced comment restores the 0.1 underline HTML.",
+      "toolEntry": "U-401",
+      "silent": true
+    },
+    {
+      "id": "U-402",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": ":foo[a %% c] d\n",
+      "to": ":foo[a{% c %}] d\n",
+      "meaning02": "<p>:foo[a</p> C2-I-024 takes the closing bracket. The proposed braced comment restores the 0.1 extension HTML.",
+      "toolEntry": "U-402",
+      "silent": true
+    },
+    {
+      "id": "U-403",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "i) one\nj) two\n",
+      "to": "",
+      "meaning02": "<ol type=\"i\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"a\" start=\"10\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `i)` as roman; C2-B-044 splits at `j)`. Report the two-list boundary for review.",
+      "toolEntry": "U-403",
+      "silent": false
+    },
+    {
+      "id": "U-404",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "v) one\nvi) two\n",
+      "to": "",
+      "meaning02": "<ol type=\"a\" start=\"22\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `v)` as alphabetic; C2-B-044 splits at `vi)`. Report the two-list boundary for review.",
+      "toolEntry": "U-404",
+      "silent": false
+    },
+    {
+      "id": "U-405",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "[%% c] d\n",
+      "to": "[{% c %}] d\n",
+      "meaning02": "<p>[%% c] d</p> C2-I-023 keeps `%%` directly after a bracket as text; 0.1 read it as a line comment that ended before the bracket. The proposed braced comment restores the 0.1 HTML.",
+      "toolEntry": "U-405",
+      "silent": true
+    },
+    {
+      "id": "U-406",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "^[%% c] d\n",
+      "to": "^[{% c %}] d\n",
+      "meaning02": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>%% c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> C2-I-023 keeps `%%` at the start of an inline footnote as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 footnote HTML.",
+      "toolEntry": "U-406",
+      "silent": true
+    },
+    {
+      "id": "U-407",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": ":f[%%]\n",
+      "to": ":f[{% %}]\n",
+      "meaning02": "<p><span class=\"ext-f\">%%</span></p> C2-I-023 keeps `%%` at the start of extension content as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 extension HTML.",
+      "toolEntry": "U-407",
+      "silent": true
+    },
+    {
+      "id": "U-408",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [Page][].\n",
+      "to": "",
+      "meaning02": "A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A reference may instead be a core reference, so report and choose from its resolved target.",
+      "toolEntry": "U-408",
+      "silent": true
+    },
+    {
+      "id": "U-409",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [Page](#Page).\n",
+      "to": "",
+      "meaning02": "A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label.",
+      "toolEntry": "U-409",
+      "silent": true
+    },
+    {
+      "id": "U-410",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "Visit https://example.test.\n",
+      "to": "",
+      "meaning02": "Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and the original link target before rewriting.",
+      "toolEntry": "U-410",
+      "silent": true
+    },
+    {
+      "id": "U-411",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [cite doe, p. 4].\n",
+      "to": "",
+      "meaning02": "A citation uses `:cite[doe]{locator=\"p. 4\"}` and its definition belongs in a named bibliography or references directive (C2-X-058). Report because the old integration may have interpreted the locator differently.",
+      "toolEntry": "U-411",
+      "silent": true
+    },
+    {
+      "id": "U-412",
+      "kind": "rewrite",
+      "group": "tabs labels",
+      "from": ":::: tabs\n::: tab [Install]\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "The bracket label becomes the only tab label when moved to a nonempty quoted title (C2-X-040, C2-X-056); this source has no other tab label.",
+      "toolEntry": "U-412",
+      "silent": true
+    },
+    {
+      "id": "U-413",
+      "kind": "rewrite",
+      "group": "tabs labels",
+      "from": ":::: tabs\n{label=Install}\n::: tab\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "The sole `label` attribute is moved to the quoted title (C2-X-056); inspect any other attribute before applying the rewrite.",
+      "toolEntry": "U-413",
+      "silent": true
+    },
+    {
+      "id": "U-414",
+      "kind": "report",
+      "group": "tabs labels",
+      "from": ":::: tabs\n::: tab\n# Install\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A first heading is content, not a tab label (C2-X-056). Report because changing it to a title would also change the body.",
+      "toolEntry": "U-414",
+      "silent": true
+    },
+    {
+      "id": "U-415",
+      "kind": "report",
+      "group": "tabs labels",
+      "from": ":::: tabs\n{.install}\n::: tab\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A class alone supplies no quoted title (C2-X-056). Report to choose a title without guessing from the class.",
+      "toolEntry": "U-415",
+      "silent": true
+    },
+    {
+      "id": "U-416",
+      "kind": "none",
+      "group": "tabs modes",
+      "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">Install</button>… The 0.1 host setting `mode: 'aria'` maps onto the option `mode: 'aria'` of the 0.2 tabs renderer (C2-X-043, C2-X-056), which writes the same WAI-ARIA tab pattern and leaves the switching script to the host. The ids are `tabs-N-K` and `tabs-N-K-panel` (C2-X-048), not `tabset-N-tab-K` and `tabset-N-panel-K`, and a tab id does not supply them; the buttons carry no class, the panels the class `tab-panel`, and no line break separates the elements. No source edit; set the option and check host scripts and styles that select the 0.1 ids or classes.",
+      "toolEntry": "U-416",
+      "silent": true
+    },
+    {
+      "id": "U-417",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": "{.custom-tabs}\n:::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer.",
+      "toolEntry": "U-417",
+      "silent": true
+    },
+    {
+      "id": "U-418",
+      "kind": "none",
+      "group": "tabs selection",
+      "from": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+      "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\"><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\" checked><label for=\"tabs-1-1\">B</label>… C2-X-056 keeps `selected`: the first marked tab is the initially selected tab and with no mark the first tab is, as in 0.1. No source edit is needed; the renderer markup around it is a host matter (U-416, U-419).",
+      "toolEntry": "U-418",
+      "silent": false
+    },
+    {
+      "id": "U-419",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section></div> Static mode keeps the 0.1 static elements and classes (C2-X-043) but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. Report so a host that processes static HTML can check it.",
+      "toolEntry": "U-419",
+      "silent": true
+    },
+    {
+      "id": "U-420",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 PHP render option softBreakMode)",
+      "to": "(render option softBreak)",
+      "meaning02": "A soft break is a line break unless `softBreak` is `space`, one space, or `br`, `<br>` and a line break (C2-H-203). The 0.1 values `Newline`, `Space` and `Break` are `newline`, `space` and `br`.",
+      "toolEntry": "U-420",
+      "silent": false
+    },
+    {
+      "id": "U-421",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 command line --allow-loss CODE)",
+      "to": "(option allowLosses)",
+      "meaning02": "`--allow-loss` stays and sets `allowLosses`, which the render and the HTML importer read: an allowed code is left out of the record and never fails `strictLosses` (C2-H-204, C2-T-027).",
+      "toolEntry": "U-421",
+      "silent": false
+    },
+    {
+      "id": "U-422",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 maxRenderLosses and --max-render-losses)",
+      "to": "(option maxLosses)",
+      "meaning02": "`--max-render-losses` stays and sets `maxLosses`, default 100 as in 0.1: the record keeps the first losses and counts the others in `suppressedDiagnostics` (C2-H-205, C2-T-029).",
+      "toolEntry": "U-422",
+      "silent": false
+    },
+    {
+      "id": "U-423",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "See [[Main Page]].\n",
+      "to": "See :wiki[Main Page].\n",
+      "meaning02": "The 0.1 wikilinks extension read `[[Page]]`; 0.2 adds no delimiter for an extension, and the wiki form is `:wiki[Page]` (C2-X-013, C2-X-057). Rewrite only where the 0.1 host registered wikilinks.",
+      "toolEntry": "U-423",
+      "silent": true
+    },
+    {
+      "id": "U-424",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "See [[Main Page|home]].\n",
+      "to": "See :wiki[Main Page|home].\n",
+      "meaning02": "The display text after the first `|` stays the display text and the fallback (C2-X-057). Rewrite only where the 0.1 host registered wikilinks.",
+      "toolEntry": "U-424",
+      "silent": true
+    },
+    {
+      "id": "U-425",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "Type :samp[ls -l].\n",
+      "to": "Type [ls -l]{samp}.\n",
+      "meaning02": "Sample output is a span with the key `samp`, which a registered semantic span extension writes as `<samp>`; the key is an ordinary attribute of the core (C2-X-066). Rewrite only where the 0.1 host registered the `samp` extension.",
+      "toolEntry": "U-425",
+      "silent": true
+    },
+    {
+      "id": "U-426",
+      "kind": "report",
+      "group": "inline comments",
+      "from": "[%% hidden](/u)\n",
+      "to": "",
+      "meaning02": "<p><a href=\"/u\">%% hidden</a></p> C2-I-023 keeps `%%` directly after the opener of a bracket, an inline note or extension content as text; 0.1 read it as a line comment that ended at the closer and wrote an empty link. U-405 to U-407 rewrite only their own verified sources. Report the source range from the `%%` through the closer of its frame.",
+      "toolEntry": "U-426",
+      "silent": true
+    },
+    {
+      "id": "U-427",
+      "kind": "rewrite",
+      "group": "tabs structure",
+      "from": "{.tabs}\n::::\n{.tab}\n::: [Install]\nRun it.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun it.\n:::\n::::\n",
+      "meaning02": "The 0.2 tabs extension matches the div names `tabs` and `tab`, not the classes (C2-X-039, C2-X-040), so a class-form group or tab stays a core div. Write the class as the div name; the label moves to the quoted title as in U-412. A class beside `tabs` or `tab` stays in the attribute block.",
+      "toolEntry": "U-427",
+      "silent": true
+    },
+    {
+      "id": "U-428",
+      "kind": "report",
+      "group": "tabs structure",
+      "from": ":::: tabs\n::: tab \"A\"\na\n:::\n\nstray\n::::\n",
+      "to": "",
+      "meaning02": "0.1 left a block that is not a tab out of the tabs output; 0.2 claims a group only when every block in it is a tab (C2-X-040), so the whole group stays a core div and its default render does not change. Report the block: moving it out of the group or into a tab changes the document.",
+      "toolEntry": "U-428",
+      "silent": true
+    },
+    {
+      "id": "U-429",
+      "kind": "rewrite",
+      "group": "case-only references",
+      "from": "# Intro\n\nSee </#intro>.\n",
+      "to": "# Intro\n\nSee </#Intro>.\n",
+      "meaning02": "Under `carve upgrade --migrate`, a cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the `fmt --migrate` repair of 0.1. An id is matched exactly, without case folding (C2-I-097). A reference with several candidates is left for `lint`.",
+      "toolEntry": "U-429",
+      "silent": true
+    },
+    {
+      "id": "U-430",
+      "kind": "escape",
+      "group": "upgrade replay",
+      "from": "a /b {+c/ d+}\n",
+      "to": "a \\/b {+c/ d+}\n",
+      "meaning02": "<p>a <em>b {+c</em> d+}</p> 0.2 pairs a bare delimiter wherever it can open and close (C2-I-046 to C2-I-051), across a braced opener or an attribute block, where 0.1 kept it text. A backslash keeps it text (C2-I-010). The tool escapes one or two delimiters on the line of the difference and keeps the escape only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-430",
+      "silent": true
+    },
+    {
+      "id": "U-431",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "a ----------- b\n",
+      "to": "a ———– b\n",
+      "meaning02": "<p>a —–––– b</p> C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again; 0.1 wrote as many em dashes as leave an even rest. The dash characters 0.1 wrote keep its HTML; the tool writes them only when the complete HTML compares equal.",
+      "toolEntry": "U-431",
+      "silent": true
+    },
+    {
+      "id": "U-432",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "/*a %% b*/ y\n",
+      "to": "*/a{% b%}/* y\n",
+      "meaning02": "<p>/*a</p> A line comment takes the rest of its line, every closer on it included (C2-I-024), and starts only at a line start or after whitespace (C2-I-023); 0.1 ended it at the closer of an open span and also read it directly after an opener. A braced comment in its place (C2-I-025) keeps the 0.1 HTML, with the spaces before it removed as 0.1 removed them. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-399 to U-402 name the frame where it stands in one.",
+      "toolEntry": "U-432",
+      "silent": true
+    },
+    {
+      "id": "U-433",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": ":: t\n %% c\n   more\n",
+      "to": ":: t\n\n %% c\n   more\n",
+      "meaning02": "<dl>\n  <dt>t\nmore</dt>\n</dl> 0.2 skips a comment-only line (C2-B-137), so the line under it continues the paragraph or term above; 0.1 ended that block at the comment line. A blank line above the comment line keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-379 reports the rest.",
+      "toolEntry": "U-433",
+      "silent": true
+    },
+    {
+      "id": "U-434",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "-   [ ] a\n",
+      "to": "- [ ] a\n",
+      "meaning02": "<ul>\n  <li>[ ] a</li>\n</ul> C2-B-046 reads a task box only directly after the one space a bullet requires; 0.1 also read it after more spaces. One space keeps the box. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-163 reports the shapes it does not verify.",
+      "toolEntry": "U-434",
+      "silent": true
+    },
+    {
+      "id": "U-435",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "[^n]: a\n\n   :: t\n   :  d\n    > q\n\nsee[^n]\n",
+      "to": "[^n]: a\n\n   :: t\n   :  d\n\n   > q\n\nsee[^n]\n",
+      "meaning02": "<p>see<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a</p>\n      <dl>\n        <dt>t</dt>\n        <dd>d\n&gt; q</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> C2-B-076 keeps a block indented past a description mark in the description; 0.1 ended the description where the block stood left of the description content. The block moves to the column of the list that holds it (C2-B-067), so it stays after the description list, in a note body or a list item too. U-199 and U-236 cover the same move for their own shapes. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-435",
+      "silent": true
+    },
+    {
+      "id": "U-436",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "- +\n  %% c\nafter\n",
+      "to": "- %% c\n  after\n",
+      "meaning02": "<ul>\n  <li>+\nafter</li>\n</ul> With U-017 the comment moves to the marker line. Only an open paragraph takes lazy lines (C2-B-012), so a line that 0.1 read into the item left of the item column then starts a paragraph after the list. Indented to the item column it stays in the item (C2-B-025). The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-436",
+      "silent": true
+    },
+    {
+      "id": "U-437",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "> a\n+\n- b\n> c\n",
+      "to": "> a\n>\n> - b\n>\n> c\n",
+      "meaning02": "<blockquote><p>a\n+\n- b\nc</p></blockquote> With U-016 the item takes the quote mark, and a quote line that 0.1 read as a new paragraph below the item text is then a lazy line of the item (C2-B-012, C2-B-024). A blank line with the shared quote marks keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-437",
+      "silent": true
+    },
+    {
+      "id": "U-438",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "   1. inner\n1. outer\nlazy\n   2. sibling\n",
+      "to": "   1. inner\n1. outer\nlazy\n\n   2. sibling\n",
+      "meaning02": "<ol>\n  <li>inner</li>\n  <li>outer\nlazy\n2. sibling</li>\n</ol> C2-B-015 reads a nested ordered marker whose first value is not 1 as a lazy text line below an open item paragraph. A blank line before the marker closes that paragraph, so the nested list retains its 0.1 value and HTML. The tool writes this only after comparing the complete HTML.",
+      "toolEntry": "U-438",
       "silent": true
     }
   ],

@@ -24,7 +24,7 @@ Conventions:
 
 **C2-A-002** Spelling that changes neither is not in the tree. It is recorded in the source-layout sidecar (`source-layout.md`).
 
-**C2-A-003** Source layout, node identity, annotation ranges and provenance are sidecars: each is returned only when the caller asks, validates against its own schema, addresses nodes by RFC 6901 pointers into the tree it came with, and is never placed inside the tree.
+**C2-A-003** Source layout and annotation ranges are sidecars: each validates against its own schema, addresses nodes by RFC 6901 pointers into the tree it came with, and is never placed inside the tree. `parseWithLayout` returns source layout when asked; a caller supplies annotation ranges to a tree reader when it wants their checks.
 
 **C2-A-004** Two documents that differ only in sidecar content are the same document.
 
@@ -58,6 +58,8 @@ Conventions:
 **C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve ast` without `--envelope` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-028).
 
 **C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
+
+**C2-A-217** `encodeTree` writes the JSON text of the JSON Canonicalization Scheme (RFC 8785): no whitespace, the members of every object in ascending order of their names compared as UTF-16 code units, and each string and number in the one spelling that scheme gives. So one tree has one encoding in every engine, and its `treeFingerprint` (C2-T-046) agrees across engines. A reader does not depend on that order: `decodeTree` reads the members of an object in any order (C2-A-188).
 
 ```json
 {
@@ -510,7 +512,7 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 
 **C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`.
 
-**C2-A-135** The root `stages` list names the resolution stages that ran: `includeExpansion` (C2-N-006), `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete. A renderer runs reference resolution and table alignment on every tree it is given and overwrites every result field of `data/ast-results.json` except the fields of `include`: it never reads such a field from the tree, and `stages` lets it skip no stage. The fields of an expanded include are kept (C2-N-075).
+**C2-A-135** The root `stages` list names the resolution stages that ran: `includeExpansion` (C2-N-006), `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete. An `abbreviation` that carries no `expansion` because the budget of C2-I-098 is spent leaves `referenceResolution` complete. A renderer runs reference resolution and table alignment on every tree it is given and overwrites every result field of `data/ast-results.json` except the fields of `include`: it never reads such a field from the tree, and `stages` lets it skip no stage. The fields of an expanded include are kept (C2-N-075).
 
 **C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The `role` is a tree fact used by equality.
 
@@ -598,7 +600,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-173** Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103). The channel is `parse`, `render-loss` or `lint`, and a code belongs to one channel (C2-W-104). The position is an optional range in UTF-8 bytes and an optional RFC 6901 path into the tree, so a finding on a tree with no source has the path alone. An entry of the HTML importer is positioned in the bytes of its HTML input and may also carry `foreignType`, the name of the HTML node it is about (C2-M-081).
 
-**C2-A-174** The record replaces the separate callbacks, warning lists and render-loss settings of 0.1.
+**C2-A-174** The record replaces the separate callbacks, warning lists and render-loss settings of 0.1. Two 0.1 loss settings stay as options of the render: the allow list `allowLosses` and the cap `maxLosses` (C2-H-204, C2-H-205).
 
 ## Shapes that Carve source cannot spell
 
@@ -709,7 +711,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-195** `carve.source` may stand on any node and records the foreign format, a locator with a part, element path or id, and the importer name and version.
 
-**C2-A-196** `carve.source` replaces the 1.x provenance sidecar's source-id graph and byte offsets with a local foreign locator; multi-source lineage and byte spans remain in a separate provenance sidecar.
+**C2-A-196** `carve.source` records a local foreign locator. The 1.x provenance sidecar's source-id graph and byte offsets have no 0.2 counterpart; multi-source lineage and byte spans are outside this contract.
 
 ```json
 {"type":"paragraph","children":[{"type":"text","value":"Hello"}],"data":{"carve.source":{"format":"docx","locator":{"part":"word/document.xml","path":"/document/body/p[1]"},"importer":{"name":"pandoc-carve","version":"2.0"}}}}
@@ -769,11 +771,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 163 | 2 |
+| Existing AST contract | 164 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **198** | **3** |
+| **Total** | **199** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-217; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 

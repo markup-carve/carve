@@ -1,3 +1,7 @@
+---
+description: "The img fence: rendering a sanitized inline SVG from a source block, and the bypasses it blocks."
+---
+
 # SVG Images
 
 Use an ordinary image reference for a trusted SVG asset:

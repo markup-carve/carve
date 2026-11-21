@@ -4692,7 +4692,7 @@
    "input": "v.  x\nvi.  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"5\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -4701,9 +4701,9 @@
        "type": "list",
        "marker": {
         "kind": "ordered",
-        "style": "i",
+        "style": "a",
         "delimiter": ".",
-        "start": 5
+        "start": 22
        },
        "spacing": "tight",
        "children": [
@@ -4744,7 +4744,27 @@
           "startOffset": 0,
           "endOffset": 5
          }
-        },
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 0,
+        "endOffset": 5
+       }
+      },
+      {
+       "type": "list",
+       "marker": {
+        "kind": "ordered",
+        "style": "i",
+        "delimiter": ".",
+        "start": 6
+       },
+       "spacing": "tight",
+       "children": [
         {
          "type": "list_item",
          "children": [
@@ -4785,11 +4805,11 @@
         }
        ],
        "pos": {
-        "startLine": 1,
+        "startLine": 2,
         "endLine": 2,
         "startColumn": 1,
         "endColumn": 7,
-        "startOffset": 0,
+        "startOffset": 6,
         "endOffset": 12
        }
       }
@@ -40772,7 +40792,7 @@
    "input": "a ^[see b %% check *this*] c",
    "options": {},
    "expected": {
-    "html": "<p>a <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> c</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>see b<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p>a ^[see b</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -40782,64 +40802,26 @@
        "children": [
         {
          "type": "text",
-         "value": "a ",
+         "value": "a ^[see b",
          "pos": {
           "startLine": 1,
           "endLine": 1,
           "startColumn": 1,
-          "endColumn": 3,
+          "endColumn": 10,
           "startOffset": 0,
-          "endOffset": 2
+          "endOffset": 9
          }
         },
         {
-         "type": "inline_footnote",
-         "children": [
-          {
-           "type": "text",
-           "value": "see b",
-           "pos": {
-            "startLine": 1,
-            "endLine": 1,
-            "startColumn": 5,
-            "endColumn": 10,
-            "startOffset": 4,
-            "endOffset": 9
-           }
-          },
-          {
-           "type": "comment",
-           "form": "line",
-           "value": "check *this*",
-           "pos": {
-            "startLine": 1,
-            "endLine": 1,
-            "startColumn": 10,
-            "endColumn": 26,
-            "startOffset": 9,
-            "endOffset": 25
-           }
-          }
-         ],
+         "type": "comment",
+         "form": "line",
+         "value": "check *this*] c",
          "pos": {
           "startLine": 1,
           "endLine": 1,
-          "startColumn": 3,
-          "endColumn": 27,
-          "startOffset": 2,
-          "endOffset": 26
-         },
-         "number": 1
-        },
-        {
-         "type": "text",
-         "value": " c",
-         "pos": {
-          "startLine": 1,
-          "endLine": 1,
-          "startColumn": 27,
+          "startColumn": 10,
           "endColumn": 29,
-          "startOffset": 26,
+          "startOffset": 9,
           "endOffset": 28
          }
         }
@@ -41091,7 +41073,7 @@
    "input": "[a %% b](/u) c",
    "options": {},
    "expected": {
-    "html": "<p><a href=\"/u\">a</a> c</p>",
+    "html": "<p>[a</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -41100,53 +41082,27 @@
        "type": "paragraph",
        "children": [
         {
-         "type": "link",
-         "href": "/u",
-         "children": [
-          {
-           "type": "text",
-           "value": "a",
-           "pos": {
-            "startLine": 1,
-            "endLine": 1,
-            "startColumn": 2,
-            "endColumn": 3,
-            "startOffset": 1,
-            "endOffset": 2
-           }
-          },
-          {
-           "type": "comment",
-           "form": "line",
-           "value": "b",
-           "pos": {
-            "startLine": 1,
-            "endLine": 1,
-            "startColumn": 3,
-            "endColumn": 8,
-            "startOffset": 2,
-            "endOffset": 7
-           }
-          }
-         ],
+         "type": "text",
+         "value": "[a",
          "pos": {
           "startLine": 1,
           "endLine": 1,
           "startColumn": 1,
-          "endColumn": 13,
+          "endColumn": 3,
           "startOffset": 0,
-          "endOffset": 12
+          "endOffset": 2
          }
         },
         {
-         "type": "text",
-         "value": " c",
+         "type": "comment",
+         "form": "line",
+         "value": "b](/u) c",
          "pos": {
           "startLine": 1,
           "endLine": 1,
-          "startColumn": 13,
+          "startColumn": 3,
           "endColumn": 15,
-          "startOffset": 12,
+          "startOffset": 2,
           "endOffset": 14
          }
         }
@@ -65996,7 +65952,9 @@
     "C2-H-052",
     "C2-H-053",
     "C2-H-054",
-    "C2-H-134"
+    "C2-H-134",
+    "C2-H-206",
+    "C2-H-207"
    ],
    "clauseScope": "section",
    "kind": "render",
@@ -66098,7 +66056,9 @@
     "C2-H-052",
     "C2-H-053",
     "C2-H-054",
-    "C2-H-134"
+    "C2-H-134",
+    "C2-H-206",
+    "C2-H-207"
    ],
    "clauseScope": "section",
    "kind": "render",
@@ -77591,6 +77551,7 @@
     "C2-W-033",
     "C2-W-123",
     "C2-W-034",
+    "C2-W-144",
     "C2-W-114"
    ],
    "clauseScope": "section",
@@ -77755,6 +77716,7 @@
     "C2-W-033",
     "C2-W-123",
     "C2-W-034",
+    "C2-W-144",
     "C2-W-114"
    ],
    "clauseScope": "section",
@@ -77922,6 +77884,7 @@
     "C2-W-033",
     "C2-W-123",
     "C2-W-034",
+    "C2-W-144",
     "C2-W-114"
    ],
    "clauseScope": "section",
@@ -78070,6 +78033,157 @@
       "referenceResolution",
       "tableAlignment"
      ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
+  },
+  {
+   "id": "writer-46",
+   "document": "writer.md",
+   "number": 46,
+   "section": "Layout",
+   "clauses": [
+    "C2-W-144",
+    "C2-W-059"
+   ],
+   "clauseScope": "example",
+   "kind": "write",
+   "input": "- a\n\n%% carve-lint-disable-next-line\n- [b]()",
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  %% carve-lint-disable-next-line\n- [b]()\n",
+    "tree": {
+     "astVersion": "2.0",
+     "children": [
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "children": [
+            {
+             "pos": {
+              "endColumn": 4,
+              "endLine": 1,
+              "endOffset": 3,
+              "startColumn": 3,
+              "startLine": 1,
+              "startOffset": 2
+             },
+             "type": "text",
+             "value": "a"
+            }
+           ],
+           "pos": {
+            "endColumn": 4,
+            "endLine": 1,
+            "endOffset": 3,
+            "startColumn": 3,
+            "startLine": 1,
+            "startOffset": 2
+           },
+           "type": "paragraph"
+          },
+          {
+           "form": "line",
+           "pos": {
+            "endColumn": 32,
+            "endLine": 3,
+            "endOffset": 36,
+            "startColumn": 1,
+            "startLine": 3,
+            "startOffset": 5
+           },
+           "type": "comment",
+           "value": "carve-lint-disable-next-line"
+          }
+         ],
+         "pos": {
+          "endColumn": 32,
+          "endLine": 3,
+          "endOffset": 36,
+          "startColumn": 1,
+          "startLine": 1,
+          "startOffset": 0
+         },
+         "type": "list_item"
+        },
+        {
+         "children": [
+          {
+           "children": [
+            {
+             "children": [
+              {
+               "pos": {
+                "endColumn": 5,
+                "endLine": 4,
+                "endOffset": 41,
+                "startColumn": 4,
+                "startLine": 4,
+                "startOffset": 40
+               },
+               "type": "text",
+               "value": "b"
+              }
+             ],
+             "href": "",
+             "pos": {
+              "endColumn": 8,
+              "endLine": 4,
+              "endOffset": 44,
+              "startColumn": 3,
+              "startLine": 4,
+              "startOffset": 39
+             },
+             "type": "link"
+            }
+           ],
+           "pos": {
+            "endColumn": 8,
+            "endLine": 4,
+            "endOffset": 44,
+            "startColumn": 3,
+            "startLine": 4,
+            "startOffset": 39
+           },
+           "type": "paragraph"
+          }
+         ],
+         "pos": {
+          "endColumn": 8,
+          "endLine": 4,
+          "endOffset": 44,
+          "startColumn": 1,
+          "startLine": 4,
+          "startOffset": 37
+         },
+         "type": "list_item"
+        }
+       ],
+       "marker": {
+        "char": "-",
+        "kind": "bullet"
+       },
+       "pos": {
+        "endColumn": 8,
+        "endLine": 4,
+        "endOffset": 44,
+        "startColumn": 1,
+        "startLine": 1,
+        "startOffset": 0
+       },
+       "spacing": "loose",
+       "type": "list"
+      }
+     ],
+     "srcByteLength": 44,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ],
+     "type": "document"
     }
    },
    "status": "unverified",
@@ -80027,7 +80141,7 @@
    "input": "{{ a.crv @code @lines:1-2 }}",
    "options": {},
    "expected": {
-    "carve": "{{ a.crv @lines:1-2 @code }}\n",
+    "carve": "{{ a.crv @code @lines:1-2 }}\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -80139,7 +80253,8 @@
     "C2-W-118",
     "C2-W-119",
     "C2-W-135",
-    "C2-W-136"
+    "C2-W-136",
+    "C2-W-145"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -80421,7 +80536,8 @@
     "C2-W-118",
     "C2-W-119",
     "C2-W-135",
-    "C2-W-136"
+    "C2-W-136",
+    "C2-W-145"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -80524,7 +80640,8 @@
     "C2-W-118",
     "C2-W-119",
     "C2-W-135",
-    "C2-W-136"
+    "C2-W-136",
+    "C2-W-145"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -80938,7 +81055,8 @@
     "C2-W-118",
     "C2-W-119",
     "C2-W-135",
-    "C2-W-136"
+    "C2-W-136",
+    "C2-W-145"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -81309,7 +81427,8 @@
     "C2-W-096",
     "C2-W-097",
     "C2-W-098",
-    "C2-W-099"
+    "C2-W-099",
+    "C2-W-146"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -81441,7 +81560,8 @@
     "C2-W-096",
     "C2-W-097",
     "C2-W-098",
-    "C2-W-099"
+    "C2-W-099",
+    "C2-W-146"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -82442,7 +82562,8 @@
    "section": "The lint topics of the rulings",
    "clauses": [
     "C2-W-137",
-    "C2-W-138"
+    "C2-W-138",
+    "C2-W-143"
    ],
    "clauseScope": "section",
    "kind": "lint",
@@ -88088,6 +88209,8 @@
     "C2-M-003",
     "C2-M-004",
     "C2-M-005",
+    "C2-M-100",
+    "C2-M-101",
     "C2-M-006"
    ],
    "clauseScope": "section",
@@ -91724,6 +91847,70 @@
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
+  },
+  {
+   "id": "import-html-65",
+   "document": "import-html.md",
+   "number": 65,
+   "section": "Editor adapters",
+   "clauses": [
+    "C2-M-102",
+    "C2-M-103",
+    "C2-M-104",
+    "C2-M-105",
+    "C2-M-106",
+    "C2-M-107",
+    "C2-M-108",
+    "C2-M-109",
+    "C2-M-110"
+   ],
+   "clauseScope": "section",
+   "kind": "import",
+   "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+   "options": {
+    "adapter": "word"
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Data"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " centre."
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "NCAS British Atmospheric Data Centre"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Data[^1] centre.\n\n[^1]: NCAS British Atmospheric Data Centre\n"
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
   }
  ]
 }

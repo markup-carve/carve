@@ -1,7 +1,0 @@
-Unresolved footnote literal escapes HTML text
-
-```
-[^&]
-.
-<p>[^&amp;]</p>
-```

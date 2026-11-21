@@ -4,10 +4,16 @@ The spec and three implementations move in lockstep:
 
 | Repo | Role |
 |------|------|
-| [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `resources/examples/*.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
+| [`carve`](https://github.com/markup-carve/carve) | Specification. The ten documents in [`spec/0.2/`](spec/0.2/README.md) are **normative**; [`spec/0.2/conformance/`](spec/0.2/conformance/README.md) is the **cross-impl conformance contract**. |
 | [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). `carve` pins an exact commit of it to render the docs and to run the tests the Core corpus cannot express. |
 | [`carve-php`](https://github.com/markup-carve/carve-php) | PHP implementation. Conforms to the same corpus. |
 | [`carve-rs`](https://github.com/markup-carve/carve-rs) | Rust implementation. Conforms to the same corpus. |
+
+The 0.1 oracle (`resources/grammar.ebnf`, the `scripts/spec` model and the
+`tests/corpus` pairs) lives on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1)
+and serves 0.1.x patch releases. The sections below that name those paths
+describe the 0.1 workflow and apply on that branch. For 0.2 checks, see the
+[development guide](docs/development.md).
 
 ## Output renderers
 

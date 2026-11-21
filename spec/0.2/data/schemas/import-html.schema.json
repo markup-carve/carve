@@ -1,11 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 HTML import mapping",
-  "description": "The tables of import-html.md: what an HTML importer makes of each element and attribute that no carrier covers, the Carve render conventions it reads, its diagnostic codes, and what a render without `roundtrip` loses. Every list is sorted by its first field, by code point.",
+  "description": "The tables of import-html.md: the editor adapters, what an HTML importer makes of each element and attribute that no carrier covers, the Carve render conventions it reads, its diagnostic codes, and what a render without `roundtrip` loses. Every list is sorted by its first field, by code point.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "$schema",
+    "adapters",
     "elements",
     "attributes",
     "conventions",
@@ -15,6 +16,55 @@
   "properties": {
     "$schema": {
       "const": "schemas/import-html.schema.json"
+    },
+    "adapters": {
+      "type": "array",
+      "description": "C2-M-102: the values of the import option `adapter` and the pass each runs before the mapping.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "pass",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "enum": [
+              "generic",
+              "tiptap",
+              "prosemirror",
+              "ckeditor",
+              "tinymce",
+              "word",
+              "google-docs"
+            ],
+            "description": "The value of the option."
+          },
+          "pass": {
+            "enum": [
+              "none",
+              "notes"
+            ],
+            "description": "`none`: the mapping reads the parsed tree as it stands; `notes`: the note pass of C2-M-103 to C2-M-110 runs first."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The editor or export the value is for."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-M-[0-9]{3}$"
+            },
+            "description": "The clauses that the row encodes."
+          }
+        }
+      }
     },
     "elements": {
       "type": "array",

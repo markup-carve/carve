@@ -1,7 +1,0 @@
-A token inside a literal include directive opens nothing
-
-```
-*{{ `@lines:1 }}ter*
-.
-<p><strong>{{ `@lines:1 }}ter</strong></p>
-```

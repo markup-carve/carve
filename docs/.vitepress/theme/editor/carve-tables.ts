@@ -5,7 +5,7 @@
 // whose render would change is left alone.
 import type { EditorState, Text } from '@codemirror/state'
 import type { Command, EditorView } from '@codemirror/view'
-import { render } from '../../engine-v2.js'
+import { render } from '../../engine.js'
 
 interface Cell {
   opener: string

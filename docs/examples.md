@@ -77,4 +77,4 @@ The title and body have different roles.
 </aside>
 ```
 
-Run `carve2 render` to inspect HTML and `carve2 fmt --check` to check canonical source. The [cheat sheet](./cheatsheet) covers more forms; [Upgrading from 0.1](./upgrade-0-2) covers sources that render differently in 0.2.
+Run `carve render` to inspect HTML and `carve fmt --check` to check canonical source. The [cheat sheet](./cheatsheet) covers more forms; [Upgrading from 0.1](./upgrade-0-2) covers sources that render differently in 0.2.

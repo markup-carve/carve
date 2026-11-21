@@ -531,6 +531,80 @@
     }
   },
   "extensions": {
+    "carve.cite": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.codeGroup": {
+      "version": "1",
+      "slotOrder": [
+        "panels"
+      ],
+      "slots": {
+        "panels": {
+          "kind": "block",
+          "minItems": 1
+        }
+      }
+    },
+    "carve.details": {
+      "version": "1",
+      "slotOrder": [
+        "title",
+        "body"
+      ],
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      }
+    },
+    "carve.fencedRender.mermaid": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.imgFence.image": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.imgFence.img": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.mathBlock": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.spoiler": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.spoilerBlock": {
+      "version": "1",
+      "slotOrder": [
+        "title",
+        "body"
+      ],
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      }
+    },
     "carve.tab": {
       "version": "1",
       "slotOrder": [
@@ -559,6 +633,11 @@
           "minItems": 1
         }
       }
+    },
+    "carve.wiki": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
     }
   }
 }

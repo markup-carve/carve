@@ -1,3 +1,7 @@
+---
+description: Which parts of the Carve 0.2 tree contract an integration task needs.
+---
+
 # Parsed document JSON contract
 
 This page maps integration tasks to the Carve 0.2 tree contract. The normative rules and examples are in the [AST specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md) and [JSON schema](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/ast-schema.json). The 0.1 contract does not describe a 2.0 tree.
@@ -18,7 +22,7 @@ Tree equality compares semantic fields after text coalescing. It ignores source 
 
 ## Reading, writing, and migration
 
-Schema validation alone is insufficient. `decodeTree` and `validateTree` also enforce cross-field checks, nesting limits, positions, references, extension declarations, and fallback validity. Refusals are typed errors with a JSON path. A writer reports unspellable interchange fields rather than inventing source. Use `migrateTree` or `carve2 migrate-ast` for 1.x and draft trees. See [reading a tree](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#reading-a-tree), [shapes source cannot spell](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#shapes-that-carve-source-cannot-spell), and [migration](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#migration).
+Schema validation alone is insufficient. `decodeTree` and `validateTree` also enforce cross-field checks, nesting limits, positions, references, extension declarations, and fallback validity. Refusals are typed errors with a JSON path. A writer reports unspellable interchange fields rather than inventing source. Use `migrateTree` or `carve migrate-ast` for 1.x and draft trees. See [reading a tree](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#reading-a-tree), [shapes source cannot spell](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#shapes-that-carve-source-cannot-spell), and [migration](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#migration).
 
 ## Changed in 0.2
 

@@ -1,7 +1,0 @@
-Unquoted attribute values may contain dots and colons
-
-```
-[a]{k=v.w}
-.
-<p><span k="v.w">a</span></p>
-```

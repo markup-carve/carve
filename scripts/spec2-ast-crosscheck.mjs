@@ -1,6 +1,6 @@
 // Compare the 0.2 schema with every available v2 source tree and with mutations
 // of the engine's example trees. Usage: node scripts/spec2-ast-crosscheck.mjs PATH_TO_CARVE_JS
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { gzipSync } from 'node:zlib'
@@ -9,7 +9,9 @@ import { Ajv2020 } from 'ajv/dist/2020.js'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const engineRoot = resolve(process.argv[2] ?? '')
 if (!process.argv[2]) throw new Error('pass the path of a carve-js next2 checkout')
-const engine = await import(pathToFileURL(join(engineRoot, 'v2/src/index.ts')).href)
+// Checkouts from before the 0.2 rename keep the engine under v2/.
+const engineBase = existsSync(join(engineRoot, 'v2/src/index.ts')) ? join(engineRoot, 'v2') : engineRoot
+const engine = await import(pathToFileURL(join(engineBase, 'src/index.ts')).href)
 const { parse, encodeTree, decodeTree } = engine
 const schema = JSON.parse(readFileSync(join(root, 'spec/0.2/data/ast-schema.json'), 'utf8'))
 const validate = new Ajv2020({ strict: true, allErrors: false, inlineRefs: false }).compile(schema)
@@ -38,8 +40,8 @@ function localError(value) {
   }
   return null
 }
-const examples = JSON.parse(readFileSync(join(engineRoot, 'v2/data/examples.json'), 'utf8'))
-const tickets = JSON.parse(readFileSync(join(engineRoot, 'v2/test/fixtures/superseded-tickets.json'), 'utf8'))
+const examples = JSON.parse(readFileSync(join(engineBase, 'data/examples.json'), 'utf8'))
+const tickets = JSON.parse(readFileSync(join(engineBase, 'test/fixtures/superseded-tickets.json'), 'utf8'))
 const errors = []
 const tree = (input, positions) => JSON.parse(encodeTree(parse(input, { positions })))
 function filePaths(folder, out = []) {
@@ -71,7 +73,7 @@ for (const [group, inputs] of [
   }
 }
 
-// The same single-mutation families as v2/scripts/fuzz-tree.ts: object field
+// The same single-mutation families as scripts/fuzz-tree.ts in carve-js: object field
 // changes, list changes, type swaps, enum swaps, and deep self nesting.
 const TYPES = Object.keys(schema.$defs).concat('escaped_text', 'unknown')
 const COMMON = ['attrs', 'data', 'pos', 'segments', 'metadata', 'dir', 'lang']

@@ -378,9 +378,9 @@ Example 15 (generated)
 
 Carve has three comment forms. The block form `%%%` is defined in the block chapter. The line form and the braced form are inline atoms.
 
-**C2-I-023** `%%` at the start of a line of the content, at the start of the content of a bracket or a braced opener (C2-I-024), or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
+**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text, also directly after the opener of a bracket or a braced form: the start of their content is neither a line start nor whitespace.
 
-**C2-I-024** A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment. Every other form that is open at the comment can only close on a later line. As in 0.1.
+**C2-I-024** A line comment takes the rest of its line, every closer on it included. A form that is open at the comment stays open: a matching closer on a later line of the same paragraph closes it, and an opener that never closes is text.
 
 Example 128 (unverified)
 
@@ -391,15 +391,7 @@ a ^[see b %% check *this*] c
 ```
 
 ```html
-<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> c</p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>see b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>a ^[see b</p>
 ```
 
 :::
@@ -444,7 +436,7 @@ c</strong> d</p>
 
 :::
 
-The comment ends before the closing bracket, so the link forms (C2-I-024).
+The comment takes the closing bracket, so the link does not form (C2-I-024).
 
 Example 18 (unverified)
 
@@ -455,7 +447,7 @@ Example 18 (unverified)
 ```
 
 ```html
-<p><a href="/u">a</a> c</p>
+<p>[a</p>
 ```
 
 :::
@@ -2045,7 +2037,7 @@ See </#intro> and </#Intro> and </#intro>{.c}
 
 An abbreviation definition is a block line (C2-B-084). Its effect is inline.
 
-**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion.
+**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. One parse has a budget for these copies, with the numbers of C2-H-201: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the length of the source it parsed in UTF-8 bytes, whichever is more. The nodes draw on it in document order, each costing the UTF-8 byte length of its expansion. A node whose cost is more than what remains draws nothing and carries no `expansion`; a later node that fits what remains still draws on it. The definition holds the expansion once (C2-A-079), and the parse reports nothing for a node without it. The budget is the parse's own: a render resolves the expansion again under the budget of C2-H-201.
 
 **C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. An atom is a boundary, and so are the edges of an inline footnote; a braced comment is transparent (C2-I-026), so in `HTML{%x%}s` the term does not match.
 

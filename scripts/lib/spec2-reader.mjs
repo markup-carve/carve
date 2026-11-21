@@ -16,6 +16,7 @@ export function readerChecks (spec) {
   const smartKinds = new Map()
   for (const rows of Object.values(smart)) if (Array.isArray(rows)) for (const row of rows) if (row.kind) smartKinds.set(row.kind, row)
   const standard = new Map(load(spec, 'extensions.json').extensions.map(ext => [ext.name, ext]))
+  const slots = load(spec, 'node-slots.json').nodes
   const limits = Object.fromEntries(load(spec, 'limits.json').limits.map(limit => [limit.name, limit.value]))
   const isNode = (value) => value !== null && typeof value === 'object' && !Array.isArray(value) && NODE_TYPES.has(value.type)
   const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -35,7 +36,7 @@ export function readerChecks (spec) {
     return Object.values(value).some(nodeShaped)
   }
 
-  return function readerProblems (tree, { envelope } = {}) {
+  return function readerProblems (tree, { envelope, annotations } = {}) {
     const problems = []
     const add = (path, clause, what) => problems.push({ path: path || '/', clause, what })
     const declarations = [...(tree.extensions ?? []), ...(envelope?.extensions ?? [])]
@@ -64,6 +65,7 @@ export function readerChecks (spec) {
     }
     let resourceReferences = 0
     const annotationIds = new Set()
+    const annotationOwners = new Map()
     const headerIds = new Map()
     const cellsWithHeaderIds = []
     let metadataFields = 0
@@ -93,7 +95,7 @@ export function readerChecks (spec) {
               if (seen.has(id) || annotationIds.has(id)) add(`${path}/data/${name}`, 'C2-A-203', `the annotation id ${id} occurs twice`)
               seen.add(id)
             }
-            for (const id of seen) annotationIds.add(id)
+            for (const id of seen) { annotationIds.add(id); annotationOwners.set(id, path) }
           }
         }
       }
@@ -243,6 +245,53 @@ export function readerChecks (spec) {
     for (const [path, ids] of cellsWithHeaderIds) for (const id of ids) if (headerIds.get(id) !== true) add(`${path}/headerIds`, 'C2-A-092', `${id} names no header cell`)
     if (resourceReferences > limits.extension_resource_references) add('/', 'C2-A-132', 'more than 4096 resource references')
     if (metadataFields > limits.metadata_fields) add('/metadata', 'C2-A-212', 'more than 256 named metadata entries')
+    if (annotations) {
+      const ranges = new Map()
+      const nodeAt = pointer => {
+        if (typeof pointer !== 'string' || !/^(?:|\/(?:[^~/]|~[01])*)*$/.test(pointer)) return null
+        let value = tree
+        for (const token of pointer.split('/').slice(1)) value = value?.[token.replaceAll('~1', '/').replaceAll('~0', '~')]
+        return isNode(value) ? value : null
+      }
+      const annotationText = node => {
+        let own = node.type === 'soft_break' || node.type === 'hard_break' ? '\n' : node.type === 'non_breaking_space' ? '\u00a0' :
+          node.type === 'smart_punctuation' ? node.source : node.value ?? node.alt ?? ''
+        const childText = value => Array.isArray(value) ? value.map(childText).join('') : isNode(value) ? annotationText(value) : isObject(value) ? Object.values(value).map(childText).join('') : ''
+        for (const slot of slots[node.type] ?? []) {
+          let value = node
+          for (const key of slot.split('.')) {
+            if (key === '*') {
+              value = (declared.get(node.name)?.slots ?? []).map(name => value?.[name])
+              continue
+            }
+            value = value?.[key]
+          }
+          own += childText(value)
+        }
+        return own
+      }
+      for (const [index, range] of (annotations.ranges ?? []).entries()) {
+        if (ranges.has(range.id)) add(`/ranges/${index}/id`, 'C2-A-203', `range id ${range.id} occurs twice`)
+        ranges.set(range.id, range)
+        for (const side of ['start', 'end']) {
+          const endpoint = range[side]
+          const path = `/ranges/${index}/${side}`
+          const node = nodeAt(endpoint?.path)
+          if (!node) { add(`${path}/path`, 'C2-A-214', 'endpoint names no node'); continue }
+          const text = annotationText(node)
+          const boundaries = new Set([0]); let bytes = 0
+          for (const char of text) { bytes += Buffer.byteLength(char); boundaries.add(bytes) }
+          if (!boundaries.has(endpoint.offset)) add(`${path}/offset`, 'C2-A-207', 'offset is not a character boundary of annotation text')
+        }
+      }
+      for (const [id, path] of annotationOwners) {
+        const range = ranges.get(id)
+        if (!range) add(`${path}/data/carve.annotation`, 'C2-A-203', `annotation ${id} has no range`)
+        else if (![range.start.path, range.end.path].some(endpoint => endpoint === path || endpoint.startsWith(`${path}/`)))
+          add(`${path}/data/carve.annotation`, 'C2-A-203', `annotation ${id} has no endpoint on its node or a descendant`)
+      }
+    }
+
     return problems
   }
 }
@@ -253,7 +302,7 @@ export function readerChecks (spec) {
  */
 export function refusedNodePath (entry, readerProblems) {
   const isEnvelope = entry.tree.type === undefined && entry.tree.document !== undefined
-  const found = isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree }) : readerProblems(entry.tree)
+  const found = isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree, annotations: entry.annotations }) : readerProblems(entry.tree, { annotations: entry.annotations })
   const problem = found.find(item => entry.clauses.includes(item.clause))
   if (!problem) return undefined
   const path = problem.path === '/' ? '' : problem.path

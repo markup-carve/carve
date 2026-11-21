@@ -1,6 +1,10 @@
+---
+description: Attach comments or revisions to text ranges in a sidecar beside the parsed document tree.
+---
+
 # Annotation ranges in parsed document JSON
 
-Annotation ranges let a host attach comments or revisions to text without changing the semantic tree. The range record is a sidecar, returned only when requested. It belongs to one tree and uses RFC 6901 paths into that tree. See [tree and sidecars](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#tree-and-sidecars) and [the range rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#extension-nodes-foreign-data-and-resources).
+Annotation ranges let a host attach comments or revisions to text without changing the semantic tree. The range record is a sidecar that a caller supplies to `validateTree` or `decodeTree` for reader checks. It belongs to one tree and uses RFC 6901 paths into that tree. See [tree and sidecars](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#tree-and-sidecars) and [the range rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#extension-nodes-foreign-data-and-resources).
 
 ## Anchors
 
