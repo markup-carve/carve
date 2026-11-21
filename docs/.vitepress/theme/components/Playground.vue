@@ -197,7 +197,7 @@ function openImport(): void {
 function closeImport(): void {
   importOpen.value = false
   importConfirm.value = false
-  void nextTick(() => importButton.value?.focus())
+  void nextTick(() => (importButton.value?.offsetParent ? importButton.value : moreButton.value)?.focus())
 }
 watch([importText, importFormat], () => { importResult.value = null; importError.value = ''; importConfirm.value = false })
 async function convertImport(): Promise<void> {
@@ -226,6 +226,17 @@ function loadExample(id: string): void {
   if (!snippet) return
   replaceSource(snippet.source)
   formatNote.value = `example: ${snippet.label} (Ctrl+Z restores)`
+}
+// Narrow screens move the secondary actions into this menu.
+const moreOpen = ref(false)
+const moreEl = ref<HTMLElement | null>(null)
+const moreButton = ref<HTMLButtonElement | null>(null)
+function closeMore(refocus = false): void {
+  moreOpen.value = false
+  if (refocus) moreButton.value?.focus()
+}
+function onDocumentPointer(event: PointerEvent): void {
+  if (moreOpen.value && moreEl.value && !moreEl.value.contains(event.target as Node)) moreOpen.value = false
 }
 // One undo step; the fragment goes too, so the address bar no longer offers the old document.
 function clearSource(): void {
@@ -846,6 +857,7 @@ onMounted(() => {
     return nextTick(postProcessOutput)
   })
   window.addEventListener('keydown', onKeydown)
+  document.addEventListener('pointerdown', onDocumentPointer)
   try {
     wrapLines.value = localStorage.getItem(WRAP_KEY) === '1'
   } catch {
@@ -856,6 +868,7 @@ onBeforeUnmount(() => {
   clearTimeout(shareStatusTimer)
   clearTimeout(draftTimer)
   window.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('pointerdown', onDocumentPointer)
   clearTimeout(debounce)
 })
 
@@ -888,7 +901,6 @@ void mermaidInit
       <div class="pg-engines" role="group" aria-label="Rendering engine">
         <span class="pg-engines-label">Engine</span>
         <button class="pg-engine active" type="button" aria-pressed="true" title="Carve 0.2 JavaScript engine">JS</button>
-        <button class="pg-engine" type="button" disabled title="Rust WASM is 0.1 only">Rust (WASM, 0.1 only)</button>
         <a
           class="pg-engine pg-engine-link"
           :href="PHP_SANDBOX_URL"
@@ -982,55 +994,88 @@ void mermaidInit
             </svg>
           </button>
         </div>
-        <select
-          class="pg-btn pg-select"
-          :value="exampleChoice"
-          aria-label="Load an example"
-          title="Replace the source with a short example (Ctrl+Z restores)"
-          @change="loadExample(($event.target as HTMLSelectElement).value)"
-        >
-          <option value="" disabled>Examples</option>
-          <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
-        </select>
-        <button
-          ref="importButton"
-          class="pg-btn"
-          type="button"
-          title="Import Markdown, GFM, Djot, BBCode or HTML as Carve"
-          aria-label="Import a document from another format"
-          aria-haspopup="dialog"
-          @click="openImport"
-        >
-          Import
-        </button>
-        <button
-          class="pg-btn"
-          type="button"
-          title="Rewrite Carve 0.1 source as Carve 0.2 (Ctrl+Z undoes it)"
-          aria-label="Upgrade 0.1 source to 0.2"
-          @click="upgradeSource"
-        >
-          Upgrade 0.1
-        </button>
-        <button
-          class="pg-btn"
-          type="button"
-          title="Empty the editor (Ctrl+Z restores)"
-          aria-label="Clear the source"
-          @click="clearSource"
-        >
-          Clear
-        </button>
-        <button
-          class="pg-btn"
-          type="button"
-          title="Discard the saved draft and reload the demo document"
-          aria-label="Reset to the demo document"
-          @click="resetToDemo"
-        >
-          Reset to demo
-        </button>
-        <button class="pg-btn" type="button" :aria-expanded="optionsOpen" @click="optionsOpen = !optionsOpen">Options</button>
+        <div class="pg-secondary">
+          <select
+            class="pg-btn pg-select"
+            :value="exampleChoice"
+            aria-label="Load an example"
+            title="Replace the source with a short example (Ctrl+Z restores)"
+            @change="loadExample(($event.target as HTMLSelectElement).value)"
+          >
+            <option value="" disabled>Examples</option>
+            <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+          </select>
+          <button
+            ref="importButton"
+            class="pg-btn"
+            type="button"
+            title="Import Markdown, GFM, Djot, BBCode or HTML as Carve"
+            aria-label="Import a document from another format"
+            aria-haspopup="dialog"
+            @click="openImport"
+          >
+            Import
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Rewrite Carve 0.1 source as Carve 0.2 (Ctrl+Z undoes it)"
+            aria-label="Upgrade 0.1 source to 0.2"
+            @click="upgradeSource"
+          >
+            Upgrade 0.1
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Empty the editor (Ctrl+Z restores)"
+            aria-label="Clear the source"
+            @click="clearSource"
+          >
+            Clear
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Discard the saved draft and reload the demo document"
+            aria-label="Reset to the demo document"
+            @click="resetToDemo"
+          >
+            Reset to demo
+          </button>
+        </div>
+        <div ref="moreEl" class="pg-more" @keydown.esc.stop="closeMore(true)">
+          <button
+            ref="moreButton"
+            class="pg-btn"
+            type="button"
+            :aria-expanded="moreOpen"
+            aria-controls="pg-more-menu"
+            aria-label="More actions"
+            title="Examples, import, upgrade, clear and reset"
+            @click="moreOpen = !moreOpen"
+          >
+            More
+          </button>
+          <div v-if="moreOpen" id="pg-more-menu" class="pg-more-menu" role="group" aria-label="More actions">
+            <select
+              class="pg-btn pg-select"
+              :value="exampleChoice"
+              aria-label="Load an example"
+              title="Replace the source with a short example (Ctrl+Z restores)"
+              @change="closeMore(); loadExample(($event.target as HTMLSelectElement).value)"
+            >
+              <option value="" disabled>Examples</option>
+              <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+            </select>
+            <button class="pg-btn" type="button" aria-label="Import a document from another format" aria-haspopup="dialog" @click="closeMore(); openImport()">Import</button>
+            <button class="pg-btn" type="button" aria-label="Upgrade 0.1 source to 0.2" @click="closeMore(); upgradeSource()">Upgrade 0.1</button>
+            <button class="pg-btn" type="button" aria-label="Clear the source" @click="closeMore(); clearSource()">Clear</button>
+            <button class="pg-btn" type="button" aria-label="Reset to the demo document" @click="resetToDemo">Reset to demo</button>
+            <button class="pg-btn pg-more-narrow" type="button" :aria-expanded="optionsOpen" aria-controls="pg-options" @click="closeMore(); optionsOpen = !optionsOpen">Options</button>
+          </div>
+        </div>
+        <button class="pg-btn pg-options-btn" type="button" :aria-expanded="optionsOpen" aria-controls="pg-options" title="Render options" @click="optionsOpen = !optionsOpen">Options</button>
         <button
           class="pg-btn pg-icon-btn"
           type="button"
@@ -1083,7 +1128,7 @@ void mermaidInit
         </button>
       </div>
     </div>
-    <fieldset v-if="optionsOpen" class="pg-options">
+    <fieldset v-if="optionsOpen" id="pg-options" class="pg-options">
       <legend>Render options</legend>
       <label>Profile <select v-model="profile"><option v-for="value in profileValues" :key="value" :value="value">{{ value }}</option></select></label>
       <label>Heading IDs <select v-model="headingIds"><option v-for="value in headingValues" :key="value" :value="value">{{ value }}</option></select></label>
@@ -1679,7 +1724,20 @@ textarea:focus {
 .pg-ansi :deep(.ansi-fg-cyan), .pg-ansi :deep(.ansi-fg-bright-cyan) { color: #138a9e; }
 .pg-ansi :deep(.ansi-fg-white), .pg-ansi :deep(.ansi-fg-bright-white), .pg-ansi :deep(.ansi-fg-bright-black) { color: var(--vp-c-text-2); }
 .pg-ansi :deep([class*="ansi-bg-"]) { background: var(--vp-c-default-soft); }
-.pg-select { appearance: auto; padding-right: .4rem; }
+.pg-select { appearance: auto; width: 8.5rem; padding-right: .4rem; }
+.pg-secondary { display: contents; }
+.pg-more { position: relative; display: none; }
+.pg-more-menu { position: absolute; right: 0; top: calc(100% + .3rem); z-index: 20; display: flex; flex-direction: column; gap: .3rem; min-width: 11rem; padding: .4rem; border: 1px solid var(--vp-c-divider); border-radius: 10px; background: var(--vp-c-bg); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.pg-more-menu > * { width: 100%; justify-content: flex-start; }
+@media (max-width: 900px) {
+  .pg-secondary { display: none; }
+  .pg-more { display: inline-block; }
+}
+.pg-more-narrow { display: none; }
+@media (max-width: 480px) {
+  .pg-options-btn { display: none; }
+  .pg-more-menu > .pg-more-narrow { display: inline-flex; }
+}
 .pg-pane-actions { display: inline-flex; gap: .2rem; margin-left: auto; }
 .pg-status + .pg-pane-actions { margin-left: 0; }
 .pg-pane-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); cursor: pointer; }
