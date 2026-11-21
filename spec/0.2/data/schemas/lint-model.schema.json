@@ -96,7 +96,7 @@
           "propertyNames": {
             "enum": ["f", "v", "len", "add", "sub", "slice", "concat", "trim_end", "words", "if", "match", "at", "text_from", "extend_left", "skip_right",
               "all", "any", "not", "has", "eq", "ne", "lt", "le", "gt", "ge", "in", "contains", "starts", "matches", "some", "count", "lookup", "index_of", "json_escape",
-              "lower", "join", "find", "percent_decode", "run", "attribute_line"]
+              "lower", "join", "find", "percent_decode", "run", "attribute_line", "nth", "column"]
           }
         }
       ]
