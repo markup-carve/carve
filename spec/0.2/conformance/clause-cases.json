@@ -68703,6 +68703,48 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1626",
+  "clauses": [
+   "C2-I-084",
+   "C2-I-079"
+  ],
+  "why": "C2-I-084: The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, folds both by C2-I-079 and normalizes both to NFC, as a cross-reference is matched (C2-I-097).",
+  "summary": "case-only heading hint folds runs of whitespace",
+  "kind": "lint",
+  "input": "# A  B\n\n[x][a b]\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "unresolved-reference-link",
+     "messageWhen": "the unresolved reference is a link and a label or heading differs from its key only in case"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1627",
+  "clauses": [
+   "C2-I-066",
+   "C2-W-139"
+  ],
+  "why": "Catalog broken-fragment-link: a link whose destination starts with `#` and whose fragment, the part before any `:~:` and tested both as written and percent-decoded",
+  "summary": "normalization-only fragment miss gets generic advice",
+  "kind": "lint",
+  "input": "{id=\"Café\"}\n# H\n\n[x](#Café)\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "broken-fragment-link",
+     "messageWhen": "no rendered id differs only in case from either the fragment as written or percent-decoded"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

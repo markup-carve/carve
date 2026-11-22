@@ -2127,14 +2127,7 @@
             "key": {
               "if": [
                 {
-                  "in": [
-                    {
-                      "f": "item.xref"
-                    },
-                    [
-                      true
-                    ]
-                  ]
+                  "f": "item.xref"
                 },
                 {
                   "fold": {
@@ -2157,17 +2150,17 @@
           "lookup": {
             "over": "id",
             "key": {
-              "nfc": {
-                "if": [
-                  {
-                    "f": "item.xref"
-                  },
-                  {
+              "if": [
+                {
+                  "f": "item.xref"
+                },
+                {
+                  "nfc": {
                     "f": "item.id"
-                  },
-                  false
-                ]
-              }
+                  }
+                },
+                false
+              ]
             },
             "value": {
               "nfc": {
@@ -2379,7 +2372,25 @@
             "key": {
               "if": [
                 {
-                  "f": "item.rendered"
+                  "all": [
+                    {
+                      "f": "item.rendered"
+                    },
+                    {
+                      "ne": [
+                        {
+                          "nfc": {
+                            "f": "item.id"
+                          }
+                        },
+                        {
+                          "nfc": {
+                            "v": "fragment"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   "fold": {
@@ -2403,7 +2414,25 @@
             "key": {
               "if": [
                 {
-                  "f": "item.rendered"
+                  "all": [
+                    {
+                      "f": "item.rendered"
+                    },
+                    {
+                      "ne": [
+                        {
+                          "nfc": {
+                            "f": "item.id"
+                          }
+                        },
+                        {
+                          "nfc": {
+                            "v": "decoded"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   "fold": {
@@ -2465,7 +2494,25 @@
                 "key": {
                   "if": [
                     {
-                      "f": "item.rendered"
+                      "all": [
+                        {
+                          "f": "item.rendered"
+                        },
+                        {
+                          "ne": [
+                            {
+                              "nfc": {
+                                "f": "item.id"
+                              }
+                            },
+                            {
+                              "nfc": {
+                                "v": "fragment"
+                              }
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "fold": {
@@ -2499,7 +2546,25 @@
                     "key": {
                       "if": [
                         {
-                          "f": "item.rendered"
+                          "all": [
+                            {
+                              "f": "item.rendered"
+                            },
+                            {
+                              "ne": [
+                                {
+                                  "nfc": {
+                                    "f": "item.id"
+                                  }
+                                },
+                                {
+                                  "nfc": {
+                                    "v": "decoded"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "fold": {
@@ -12040,13 +12105,25 @@
           "lookup": {
             "over": "id",
             "key": {
-              "fold": {
-                "f": "item.heading_text"
-              }
+              "if": [
+                {
+                  "has": "item.heading_text"
+                },
+                {
+                  "fold": {
+                    "fold_space": {
+                      "f": "item.heading_text"
+                    }
+                  }
+                },
+                false
+              ]
             },
             "value": {
               "fold": {
-                "f": "key_text"
+                "fold_space": {
+                  "f": "key_text"
+                }
               }
             },
             "all": true,
