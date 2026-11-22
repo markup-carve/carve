@@ -96,6 +96,10 @@
             },
             "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
           },
+          "run_not_followed_by": {
+            "enum": ["unicode_letter_number_or_mark"],
+            "description": "The longest run of `chars` and `joiner` behind the sigil, taken before `not_last` is applied, must not be directly followed by a character of the Unicode general category L, N or M; where it is, the sigil starts no form and the sigil and the run are text."
+          },
           "host": { "type": "boolean", "description": "True when an attribute block glued to the end attaches to it." },
           "clauses": {
             "type": "array",
