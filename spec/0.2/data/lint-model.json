@@ -8296,7 +8296,6 @@
             "value": {
               "f": "ancestor_ids.0"
             },
-            "before": true,
             "field": "layout.markerColumn"
           }
         },
@@ -8472,11 +8471,14 @@
                 ]
               },
               {
-                "eq": [
+                "in": [
                   {
                     "v": "list_prev"
                   },
-                  "list"
+                  [
+                    "list",
+                    "paragraph"
+                  ]
                 ]
               },
               {
