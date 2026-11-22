@@ -1798,6 +1798,14 @@
                     {
                       "matches": [
                         {
+                          "f": "body"
+                        },
+                        "^> [^ \\x00]"
+                      ]
+                    },
+                    {
+                      "matches": [
+                        {
                           "f": "prev.text"
                         },
                         "^[ \t]*> "
@@ -3305,7 +3313,6 @@
                 "f": "leaf"
               },
               [
-                "caption",
                 "definition_term",
                 "line",
                 "paragraph"
