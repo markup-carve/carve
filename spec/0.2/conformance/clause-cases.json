@@ -68487,6 +68487,264 @@
     ]
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-1616",
+  "clauses": [
+   "C2-B-019",
+   "C2-B-031",
+   "C2-W-139"
+  ],
+  "why": "Catalog block-opener-without-blank-line: each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
+  "summary": "bare nested quote mark after paragraph text is a block opener candidate",
+  "kind": "lint",
+  "input": "> para\n> >\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 2,
+     "column": 3,
+     "endLine": 2,
+     "endColumn": 4
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1617",
+  "clauses": [
+   "C2-B-148",
+   "C2-B-149",
+   "C2-B-166",
+   "C2-B-081",
+   "C2-W-139"
+  ],
+  "why": "C2-B-148: A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.",
+  "summary": "indented caption continuation is not a definition",
+  "kind": "lint",
+  "input": " | w | w |\n ^ w\n [^w]: %%\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "definition-in-container"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1618",
+  "clauses": [
+   "C2-I-096",
+   "C2-I-097",
+   "C2-B-207",
+   "C2-H-022"
+  ],
+  "why": "Catalog broken-crossref: a cross-reference whose id, normalized to NFC, matches no heading id",
+  "summary": "case-only cross-reference to numbered table id",
+  "kind": "lint",
+  "input": "{#tab}\n| a |\n^ #: Cap\n\nSee </#TAB>.",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "broken-crossref",
+     "messageWhen": "no qualifying id matches exactly, but one or more qualifying ids differ only in case"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1619",
+  "clauses": [
+   "C2-I-066",
+   "C2-H-088",
+   "C2-H-089"
+  ],
+  "why": "Catalog broken-fragment-link: a link whose destination starts with `#`",
+  "summary": "footnote and note mark ids are rendered fragment targets",
+  "kind": "lint",
+  "input": "Text[^n].\n\n[^n]: note\n\n[x](#fn1) [y](#fnref1)\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "broken-fragment-link"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1620",
+  "clauses": [
+   "C2-I-084"
+  ],
+  "why": "Catalog unresolved-reference-link: a full or collapsed reference, link or image",
+  "summary": "heading text gives the reference near miss, not its id",
+  "kind": "lint",
+  "input": "{#foo}\n# Heading\n\n[x][HEADING]\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "unresolved-reference-link",
+     "messageWhen": "the unresolved reference is a link and a label or heading differs from its key only in case"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1621",
+  "clauses": [
+   "C2-I-084"
+  ],
+  "why": "Catalog unresolved-reference-link: a full or collapsed reference, link or image",
+  "summary": "heading id alone gives no reference near miss",
+  "kind": "lint",
+  "input": "{#foo}\n# Heading\n\n[y][FOO]\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "unresolved-reference-link",
+     "messageWhen": "the unresolved reference is a link with no label or heading that differs only in case"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1622",
+  "clauses": [
+   "C2-I-097"
+  ],
+  "why": "Catalog broken-crossref: a cross-reference whose id, normalized to NFC, matches no heading id",
+  "summary": "Unicode case fold finds a cross-reference near miss",
+  "kind": "lint",
+  "input": "{id=\"Straße\"}\n# H\n\n</#STRASSE>\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "broken-crossref",
+     "messageWhen": "no qualifying id matches exactly, but one or more qualifying ids differ only in case"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1623",
+  "clauses": [
+   "C2-B-019",
+   "C2-B-031",
+   "C2-W-139"
+  ],
+  "why": "Catalog block-opener-without-blank-line: each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
+  "summary": "nested quote candidate after quoted paragraph text",
+  "kind": "lint",
+  "input": "> para\n> > x\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 2,
+     "column": 3,
+     "endLine": 2,
+     "endColumn": 4
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1624",
+  "clauses": [
+   "C2-B-019",
+   "C2-B-031",
+   "C2-W-139"
+  ],
+  "why": "Catalog block-opener-without-blank-line: each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
+  "summary": "nested quote candidate after quoted paragraph text",
+  "kind": "lint",
+  "input": "> para\n> > >\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 2,
+     "column": 3,
+     "endLine": 2,
+     "endColumn": 4
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1625",
+  "clauses": [
+   "C2-I-097",
+   "C2-W-150"
+  ],
+  "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+  "summary": "NFC-equivalent id is an exact cross-reference match",
+  "kind": "lint",
+  "input": "{id=\"Café\"}\n# H\n\n</#Café>\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "broken-crossref"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1626",
+  "clauses": [
+   "C2-I-084",
+   "C2-I-079"
+  ],
+  "why": "C2-I-084: The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, folds both by C2-I-079 and normalizes both to NFC, as a cross-reference is matched (C2-I-097).",
+  "summary": "case-only heading hint folds runs of whitespace",
+  "kind": "lint",
+  "input": "# A  B\n\n[x][a b]\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "unresolved-reference-link",
+     "messageWhen": "the unresolved reference is a link and a label or heading differs from its key only in case"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1627",
+  "clauses": [
+   "C2-I-066",
+   "C2-W-139"
+  ],
+  "why": "Catalog broken-fragment-link: a link whose destination starts with `#` and whose fragment, the part before any `:~:` and tested both as written and percent-decoded",
+  "summary": "normalization-only fragment miss gets generic advice",
+  "kind": "lint",
+  "input": "{id=\"Café\"}\n# H\n\n[x](#Café)\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "broken-fragment-link",
+     "messageWhen": "no rendered id differs only in case from either the fragment as written or percent-decoded"
+    }
+   ]
+  },
+  "from": []
+ }
  ]
 }
