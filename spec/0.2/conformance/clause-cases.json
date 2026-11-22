@@ -68745,6 +68745,68 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1628",
+  "clauses": [
+   "C2-B-055",
+   "C2-W-106"
+  ],
+  "why": "C2-B-055: A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list: it joins that list when it matches, and otherwise C2-B-050 closes that list and opens a new one, whatever its value, in the container of the closed list.",
+  "summary": "a marker after an intervening paragraph is still between open list columns",
+  "kind": "lint",
+  "input": "- a\n  - deep\n\n  para\n - shallow\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "list-item-body-below-content-column",
+     "line": 5,
+     "column": 2,
+     "channel": "lint",
+     "severity": "hint"
+    },
+    {
+     "code": "list-marker-below-content-column",
+     "line": 5,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1629",
+  "clauses": [
+   "C2-B-055",
+   "C2-W-106"
+  ],
+  "why": "C2-B-055: A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list: it joins that list when it matches, and otherwise C2-B-050 closes that list and opens a new one, whatever its value, in the container of the closed list.",
+  "summary": "each shifted marker under the same list item is reported",
+  "kind": "lint",
+  "input": "- a\n    - x\n   - y\n   - z\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "list-marker-below-content-column",
+     "line": 3,
+     "column": 4,
+     "channel": "lint",
+     "severity": "warning"
+    },
+    {
+     "code": "list-marker-below-content-column",
+     "line": 4,
+     "column": 4,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

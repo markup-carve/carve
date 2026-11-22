@@ -8296,7 +8296,6 @@
             "value": {
               "f": "ancestor_ids.0"
             },
-            "before": true,
             "field": "layout.markerColumn"
           }
         },
@@ -8328,21 +8327,6 @@
               "f": "ancestor_ids.0"
             },
             "field": "index"
-          }
-        },
-        "list_prev": {
-          "lookup": {
-            "over": "block",
-            "types": [
-              "list"
-            ],
-            "key": {
-              "f": "item.identity"
-            },
-            "value": {
-              "f": "ancestor_ids.0"
-            },
-            "field": "prev_type"
           }
         },
         "prev_list": {
@@ -8469,14 +8453,6 @@
                     "v": "list_index"
                   },
                   1
-                ]
-              },
-              {
-                "eq": [
-                  {
-                    "v": "list_prev"
-                  },
-                  "list"
                 ]
               },
               {
