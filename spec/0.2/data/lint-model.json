@@ -2093,10 +2093,14 @@
           "lookup": {
             "over": "id",
             "key": {
-              "f": "item.id"
+              "nfc": {
+                "f": "item.id"
+              }
             },
             "value": {
-              "f": "node.key"
+              "nfc": {
+                "f": "node.key"
+              }
             },
             "field": "index"
           }
@@ -2105,10 +2109,14 @@
           "lookup": {
             "over": "id",
             "key": {
-              "f": "item.id"
+              "nfc": {
+                "f": "item.id"
+              }
             },
             "value": {
-              "f": "node.key"
+              "nfc": {
+                "f": "node.key"
+              }
             },
             "field": "owner"
           }
@@ -2149,18 +2157,22 @@
           "lookup": {
             "over": "id",
             "key": {
-              "if": [
-                {
-                  "f": "item.xref"
-                },
-                {
-                  "f": "item.id"
-                },
-                false
-              ]
+              "nfc": {
+                "if": [
+                  {
+                    "f": "item.xref"
+                  },
+                  {
+                    "f": "item.id"
+                  },
+                  false
+                ]
+              }
             },
             "value": {
-              "f": "node.key"
+              "nfc": {
+                "f": "node.key"
+              }
             },
             "field": "xref"
           }

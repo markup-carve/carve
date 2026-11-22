@@ -68685,6 +68685,24 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1625",
+  "clauses": [
+   "C2-I-097",
+   "C2-W-150"
+  ],
+  "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+  "summary": "NFC-equivalent id is an exact cross-reference match",
+  "kind": "lint",
+  "input": "{id=\"Café\"}\n# H\n\n</#Café>\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "broken-crossref"
+   ]
+  },
+  "from": []
  }
  ]
 }
