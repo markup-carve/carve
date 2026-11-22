@@ -5342,7 +5342,7 @@ text
 
 :::
 
-**C2-B-232** After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it, or when one or more pending top-level attribute lines stand directly above it. It does not interrupt a paragraph without that separation. Indent or an enclosing quote, list item, description, footnote or div leaves it as text. A column-0 opener after a list does not close the list: without that separation it is a lazy line of the open paragraph, like a heading or a quote (C2-B-024). The block is frontmatter (C2-A-049) and its payload is opaque.
+**C2-B-232** After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it, or when one or more pending top-level attribute lines stand directly above it. It does not interrupt a paragraph without that separation. Indent or an enclosing quote, list item, description, footnote or div leaves it as text. A column-0 opener after a list does not close the list while a paragraph is open: without that separation it is a lazy line of that paragraph, like a heading or a quote (C2-B-024). With no paragraph open, the list closes as for any column-0 line (C2-B-026), and the opener still needs that separation. The block is frontmatter (C2-A-049) and its payload is opaque.
 
 **C2-B-233** Pending top-level attribute lines immediately above a typed opener attach to the frontmatter node (C2-B-090). When those lines start on line 1, the opener is document frontmatter even though it stands on a later line; no preceding blank line is needed. Without pending attributes, C2-B-232 requires a preceding blank line. A key on the block is for lookup, not a link or cross-reference target (C2-A-218).
 

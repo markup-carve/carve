@@ -68388,7 +68388,7 @@
     "C2-B-232",
     "C2-B-024"
    ],
-   "why": "C2-B-232: A column-0 opener after a list does not close the list: without that separation it is a lazy line of the open paragraph, like a heading or a quote (C2-B-024).",
+   "why": "C2-B-232: A column-0 opener after a list does not close the list while a paragraph is open: without that separation it is a lazy line of that paragraph, like a heading or a quote (C2-B-024).",
    "summary": "column-zero typed opener after a list is a lazy line of its paragraph",
    "input": "- a\n---yaml\nk: v\n---\n",
    "options": {},
@@ -69415,6 +69415,73 @@
      "type": "frontmatter",
      "format": "yaml",
      "value": "k: v\n"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1655",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: With no paragraph open, the list closes as for any column-0 line (C2-B-026), and the opener still needs that separation.",
+  "summary": "typed opener after a list ending in a fence closes the list and stays text",
+  "input": "- ```\n  x\n  ```\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>\n<p>—yaml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "code_block",
+         "value": "x\n"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
     }
    ]
   },

@@ -301,7 +301,7 @@ The `github-alert-marker` row skips a line whose first `>` is glued to a `[!` th
 
 ## Engine gaps from the typed opener separation ruling of 22 November
 
-The ruling on #6389 drops the list close before a column-0 typed opener: without a blank line or pending attribute lines above it, the opener is a lazy line of the open paragraph, also in a list (C2-B-232, C2-B-024). C2-W-154 writes a top-level paragraph whose first line would read as a typed opener with that line indented by one space. CC-1613 is re-pinned; clause cases CC-1653 and CC-1654 are added. Measured on `carve-js` `next2` `b52c31a2` with the list close removed: conformance differs only in CC-1613.
+The ruling on #6389 drops the list close before a column-0 typed opener: without a blank line or pending attribute lines above it, the opener is a lazy line of the open paragraph, also in a list (C2-B-232, C2-B-024). C2-W-154 writes a top-level paragraph whose first line would read as a typed opener with that line indented by one space. CC-1613 is re-pinned; clause cases CC-1653 to CC-1655 are added. Measured on `carve-js` `next2` `b52c31a2` with the list close removed: conformance differs only in CC-1613.
 
 - `carve-js`: drop the list close before a typed opener (CC-1613) and write the indent of C2-W-154 (CC-1653); it reports `structure-unspellable` there today.
 - `carve-php` and `carve-rs`: the same two rules, with their ports of #6324.
