@@ -253,9 +253,17 @@ CC-1491 holds 10,000 copies of `x_a_ ` again (#6314); the three engines pass it 
 
 C2-W-133 gives the writer one repair budget per document, 24,000,000 characters or 1,000 times the document where that is more, summed over all groups; once it is spent, every later group that needs a repair parse is refused, and C2-W-010 calls the limit linear in the document (#6304). Clause cases CC-1492 and CC-1493.
 
-CC-1493 is engine-local (`engineLocal`): its revised expectation is no refusal for a writer that reparses each quote once per C2-W-088 round and escapes all reported constructs together. A writer that decides those escapes from tables can use no repair parse (C2-W-089); other repair strategies can spend a different amount of the budget. CC-1492 passes.
+CC-1493 is engine-local (`engineLocal`): its revised expectation is no refusal for a writer that reparses each quote once per C2-W-088 round and escapes every opener of each reported kind in that round. A writer that decides those escapes from tables can use no repair parse (C2-W-089); other repair strategies can spend a different amount of the budget.
 
 - `carve-rs`: the repair limit is per group rather than per document (markup-carve/carve-rs#4538); CC-1492 still checks the shared limit.
+
+## Engine gaps from the writer kind ruling of 22 November
+
+A C2-W-088 repair round now escapes every potential opener of each reported kind in the block, not only the reported openers, and a group whose kind rounds leave a node unread is written again by rounds of the reported openers only (markup-carve/carve-js#5283, option B). The rounds of a block are bounded by the number of kinds, so the writer stays linear on escape-dense text. CC-1492, CC-1566 and CC-1568 moved; CC-1565, CC-1567 and CC-1493 keep their bytes; CC-1631 to CC-1633 are new.
+
+- `carve-js`: the round escapes the reported openers only (markup-carve/carve-js#5334).
+- `carve-php`: the round escapes the reported openers only (markup-carve/carve-php#5589).
+- `carve-rs`: the round escapes the reported openers only (markup-carve/carve-rs#4579).
 
 ## Engine gaps from the trailing-space ruling of 21 November
 

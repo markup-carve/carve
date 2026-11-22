@@ -4,7 +4,7 @@ description: How the canonical writer decides where an escape is needed.
 
 # Writer escaping strategy
 
-The 0.2 canonical writer chooses escapes by parsing a candidate spelling in its actual context. It starts with bare text, escapes every construct in the read-back parse that the intended tree does not contain, and parses again. It also handles the small set of cases where a bare character prevents an intended node from forming. The procedure defines the canonical bytes; a fixed list of punctuation characters does not. See [writer escaping](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#escaping).
+The 0.2 canonical writer chooses escapes by parsing a candidate spelling in its actual context. It starts with bare text and parses it. For each kind of construct in the read-back parse that the intended tree does not contain, it escapes every opener of that kind in the same block, then parses again, so the number of rounds depends on the kinds of construct, not on the number of escapes. It also handles the small set of cases where a bare character prevents an intended node from forming. The procedure defines the canonical bytes; a fixed list of punctuation characters does not. See [writer escaping](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#escaping).
 
 A canonical pipe table uses header cell marks rather than a separator row:
 
