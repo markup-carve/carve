@@ -24,6 +24,7 @@
         "not_last": ["-", "."],
         "min": 1
       },
+      "run_not_followed_by": "unicode_letter_number_or_mark",
       "host": false,
       "clauses": ["C2-I-036", "C2-I-090", "C2-I-091", "C2-I-092", "C2-I-095"]
     },
@@ -47,6 +48,7 @@
         "not_last": ["-", "."],
         "min": 1
       },
+      "run_not_followed_by": "unicode_letter_number_or_mark",
       "host": false,
       "clauses": ["C2-I-036", "C2-I-090", "C2-I-091", "C2-I-092", "C2-I-095"]
     }

@@ -1886,7 +1886,7 @@ These four forms start with a sigil: the at-sign for a mention, `#` for a tag, `
 
 **C2-I-091** The name is ASCII and is the longest run that fits its shape. A sigil with no such name is text, and so is whatever follows a name.
 
-**C2-I-092** The name of a mention or a tag is one or more runs of letters, digits, `_` and `-`, joined by single dots, and holds at least one letter. It does not end with a dot or a hyphen: a trailing one is text behind the name.
+**C2-I-092** The name of a mention or a tag is one or more runs of letters, digits, `_` and `-`, joined by single dots, and holds at least one letter. It does not end with a dot or a hyphen: a trailing one is text behind the name. Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text. So `#größe`, `#tag-é` and `@josé` hold no tag and no mention, and a decomposed accent is never cut from its letter; an emoji is in none of the three classes, so `#tag😀` is the tag `#tag`.
 
 **C2-I-093** A symbol is `:`, a name and `:`. The name is a letter, a digit, `+` or `-`, then letters, digits, `_`, `+` and `-`. It does not end with a hyphen.
 

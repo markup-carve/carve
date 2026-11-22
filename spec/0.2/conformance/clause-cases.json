@@ -68872,6 +68872,336 @@
    "carve": "{*\\`\n*}~\\`*`*\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-1634",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "a tag glued to a Latin-1 letter is text, the ASCII tag beside it forms",
+  "input": "Tag #café and #cafe here, #größe.",
+  "options": {},
+  "expected": {
+   "html": "<p>Tag #café and <span class=\"tag\"><strong>#cafe</strong></span> here, #größe.</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "Tag #café and "
+      },
+      {
+       "type": "tag",
+       "name": "cafe"
+      },
+      {
+       "type": "text",
+       "value": " here, #größe."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1635",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "a tag before a decomposed accent is text, so the mark stays with its letter",
+  "input": "#café x",
+  "options": {},
+  "expected": {
+   "html": "<p>#café x</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "#café x"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1636",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "a tag glued to a CJK letter is text",
+  "input": "#tag漢字 and #漢字",
+  "options": {},
+  "expected": {
+   "html": "<p>#tag漢字 and #漢字</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "#tag漢字 and #漢字"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1637",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "a tag glued to a number outside ASCII is text",
+  "input": "#tag٣ and #tag²",
+  "options": {},
+  "expected": {
+   "html": "<p>#tag٣ and #tag²</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "#tag٣ and #tag²"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1638",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "an emoji is no letter, number or mark, so the tag before it forms",
+  "input": "#tag😀 x",
+  "options": {},
+  "expected": {
+   "html": "<p><span class=\"tag\"><strong>#tag</strong></span>😀 x</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "tag",
+       "name": "tag"
+      },
+      {
+       "type": "text",
+       "value": "😀 x"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1639",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "the guard reads the run before the trailing hyphen or dot is removed",
+  "input": "#tag-é #tag.é #tag- é",
+  "options": {},
+  "expected": {
+   "html": "<p>#tag-é #tag.é <span class=\"tag\"><strong>#tag</strong></span>- é</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "#tag-é #tag.é "
+      },
+      {
+       "type": "tag",
+       "name": "tag"
+      },
+      {
+       "type": "text",
+       "value": "- é"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1640",
+  "clauses": [
+   "C2-I-092"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "a mention glued to a letter outside ASCII is text",
+  "input": "@josé and @jose",
+  "options": {},
+  "expected": {
+   "html": "<p>@josé and <span class=\"mention\"><strong>@jose</strong></span></p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "@josé and "
+      },
+      {
+       "type": "mention",
+       "target": "jose",
+       "kind": "user"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1641",
+  "clauses": [
+   "C2-I-092",
+   "C2-I-030"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text.",
+  "summary": "a tag inside a brace run that is no attribute block is text before a letter outside ASCII",
+  "input": "[s]{#café}",
+  "options": {},
+  "expected": {
+   "html": "<p>[s]{#café}</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "[s]{#café}"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1642",
+  "clauses": [
+   "C2-I-092",
+   "C2-W-095"
+  ],
+  "why": "C2-I-092: Where the longest run of letters, digits, `_`, `-` and `.` behind the sigil, taken before a trailing dot or hyphen is removed, is directly followed by a character of the Unicode letter, number or mark class, the sigil starts no form: the sigil and the run are text. C2-W-095: A sigil is tested for forming: `@` and `#` before a name after a boundary (C2-I-090)",
+  "summary": "a sigil run that the guard keeps from forming takes no backslash",
+  "kind": "format",
+  "input": "#café and @josé and #tag-é\n",
+  "options": {},
+  "expected": {
+   "carve": "#café and @josé and #tag-é\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1643",
+  "clauses": [
+   "C2-W-125",
+   "C2-I-092"
+  ],
+  "why": "C2-W-125: A text character behind a mention or a tag that would make its sigil start no form (C2-I-092) is such a character too: a tag `#a` followed by the text `-é` is written `#a\\-é`.",
+  "summary": "a hyphen between a tag and a letter outside ASCII takes the backslash",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "tag",
+       "name": "a"
+      },
+      {
+       "type": "text",
+       "value": "-é"
+      },
+      {
+       "type": "text",
+       "value": " "
+      },
+      {
+       "type": "mention",
+       "target": "b",
+       "kind": "user"
+      },
+      {
+       "type": "text",
+       "value": ".é"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": "#a\\-é @b\\.é\n",
+   "diagnosticsComplete": true,
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1644",
+  "clauses": [
+   "C2-W-117",
+   "C2-I-092"
+  ],
+  "why": "C2-W-117: For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node. ... a mention or a tag directly followed by text that starts with a character of the Unicode letter, number or mark class outside ASCII, which no backslash keeps apart (C2-I-092);",
+  "summary": "a tag directly followed by a letter outside ASCII is reported as a loss",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "tag",
+       "name": "gr"
+      },
+      {
+       "type": "text",
+       "value": "öße"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "structure-unspellable",
+     "path": "/children/0/children/0"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

@@ -15,9 +15,9 @@ const SOURCE = `https://www.unicode.org/Public/${VERSION}/ucd/UnicodeData.txt`
 // Category group -> the general category values it joins, and the clauses that read it.
 const GROUPS = [
   { name: 'Cf', values: ['Cf'], clauses: ['C2-I-122', 'C2-I-127'] },
-  { name: 'L', values: ['Lu', 'Ll', 'Lt', 'Lm', 'Lo'], clauses: ['C2-I-047', 'C2-I-048', 'C2-I-090', 'C2-I-099', 'C2-I-127'] },
-  { name: 'M', values: ['Mn', 'Mc', 'Me'], clauses: ['C2-I-050', 'C2-I-127'] },
-  { name: 'N', values: ['Nd', 'Nl', 'No'], clauses: ['C2-I-047', 'C2-I-048', 'C2-I-090', 'C2-I-099', 'C2-I-127', 'C2-H-148'] },
+  { name: 'L', values: ['Lu', 'Ll', 'Lt', 'Lm', 'Lo'], clauses: ['C2-I-047', 'C2-I-048', 'C2-I-090', 'C2-I-092', 'C2-I-099', 'C2-I-127'] },
+  { name: 'M', values: ['Mn', 'Mc', 'Me'], clauses: ['C2-I-050', 'C2-I-092', 'C2-I-127'] },
+  { name: 'N', values: ['Nd', 'Nl', 'No'], clauses: ['C2-I-047', 'C2-I-048', 'C2-I-090', 'C2-I-092', 'C2-I-099', 'C2-I-127', 'C2-H-148'] },
 ]
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')

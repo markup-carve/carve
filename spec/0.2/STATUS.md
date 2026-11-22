@@ -298,3 +298,9 @@ The `github-alert-marker` row skips a line whose first `>` is glued to a `[!` th
 - `carve-js`: the prototype in carve-js#5302 covers top-level openers, containers, attributes, unclosed blocks and writer round-trips, but needs the final lint, include and flatten rules and the spec pin. CC-1613 also closes a list before a column-zero typed opener with no blank line; the prototype keeps that line in the list.
 - `carve-php`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
 - `carve-rs`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
+
+## Engine gaps from the tag and mention end guard of 21 November
+
+The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
+
+- All three engines: the tag or mention ends at the last ASCII name character, so `#größe` gives the tag `#gr` (CC-1634 to CC-1637, CC-1639 to CC-1641); the writer writes the hyphen or dot behind a tag bare (CC-1643) and reports no loss for a tag glued to a letter outside ASCII (CC-1644). The emoji boundary (CC-1638) and the format case (CC-1642) pass.
