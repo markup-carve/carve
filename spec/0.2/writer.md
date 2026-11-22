@@ -1012,6 +1012,8 @@ Written:
 
 **C2-W-152** A text run that would open a later typed metadata block is repaired under C2-W-088 and C2-W-092. For a literal `---yaml` in that position the canonical repaired spelling is `-\--yaml`, as C2-W-091 keeps the repair after reparsing.
 
+**C2-W-154** A top-level paragraph whose first line would read as a typed opener, as an em dash node with the source `---` followed by a format name does, cannot be kept by an escape, since a backslash would turn the dash into text (C2-W-152). Its first line is written indented by one space, which C2-B-232 leaves as text: the paragraph `---yaml`, `k: v`, `---` after a paragraph `a` is written `a`, a blank line, ` ---yaml`, `k: v`, `---`. After a list this shape no longer comes from source, since without a blank line the opener is a lazy line of the paragraph in the list (C2-B-232).
+
 **C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). Where the first block of the document would read as another tree on line 1 and reads as itself below a blank line, as a paragraph that holds only an em dash node with the source `---` does (C2-B-161), the output starts with one blank line. Formatting that output again gives the same bytes.
 
 Example 1 (generated)
@@ -1590,9 +1592,9 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Canonical forms: tables | 13 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 2 |
 | The sidecar | 6 | 0 | 0 | 1 |
-| Escaping | 15 | 0 | 1 | 1 |
+| Escaping | 16 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 22 | 0 | 0 | 2 |
-| **Total** | **144** | **6** | **6** | **40** |
+| **Total** | **145** | **6** | **6** | **40** |
 
-The document has 144 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 145 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.

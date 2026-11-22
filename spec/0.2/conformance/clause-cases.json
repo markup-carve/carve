@@ -67621,7 +67621,7 @@
    "clauses": [
     "C2-B-232"
    ],
-   "why": "C2-B-232: A column-0 opener after a list closes the list before this test; the blank line still has to stand above the opener or its attribute lines.",
+   "why": "C2-B-232: After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it",
    "summary": "typed metadata: list closes",
    "input": "- a\n- b\n\n---toml\nk = 1\n---\n\nx\n",
    "options": {},
@@ -68385,14 +68385,15 @@
   {
    "id": "CC-1613",
    "clauses": [
-    "C2-B-232"
+    "C2-B-232",
+    "C2-B-024"
    ],
-   "why": "C2-B-232: A column-0 opener after a list closes the list before this test; the blank line still has to stand above the opener or its attribute lines.",
-   "summary": "column-zero typed opener closes a list even without blank separation",
+   "why": "C2-B-232: A column-0 opener after a list does not close the list: without that separation it is a lazy line of the open paragraph, like a heading or a quote (C2-B-024).",
+   "summary": "column-zero typed opener after a list is a lazy line of its paragraph",
    "input": "- a\n---yaml\nk: v\n---\n",
    "options": {},
    "expected": {
-    "html": "<ul>\n  <li>a</li>\n</ul>\n<p>—yaml\nk: v\n—</p>",
+    "html": "<ul>\n  <li>a\n—yaml\nk: v\n—</li>\n</ul>",
     "children": [
      {
       "type": "list",
@@ -68411,41 +68412,39 @@
            {
             "type": "text",
             "value": "a"
+           },
+           {
+            "type": "soft_break"
+           },
+           {
+            "type": "smart_punctuation",
+            "kind": "em_dash",
+            "glyph": "—",
+            "source": "---"
+           },
+           {
+            "type": "text",
+            "value": "yaml"
+           },
+           {
+            "type": "soft_break"
+           },
+           {
+            "type": "text",
+            "value": "k: v"
+           },
+           {
+            "type": "soft_break"
+           },
+           {
+            "type": "smart_punctuation",
+            "kind": "em_dash",
+            "glyph": "—",
+            "source": "---"
            }
           ]
          }
         ]
-       }
-      ]
-     },
-     {
-      "type": "paragraph",
-      "children": [
-       {
-        "type": "smart_punctuation",
-        "kind": "em_dash",
-        "glyph": "—",
-        "source": "---"
-       },
-       {
-        "type": "text",
-        "value": "yaml"
-       },
-       {
-        "type": "soft_break"
-       },
-       {
-        "type": "text",
-        "value": "k: v"
-       },
-       {
-        "type": "soft_break"
-       },
-       {
-        "type": "smart_punctuation",
-        "kind": "em_dash",
-        "glyph": "—",
-        "source": "---"
        }
       ]
      }
@@ -69355,6 +69354,67 @@
      "column": 4,
      "channel": "lint",
      "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1653",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: Its first line is written indented by one space, which C2-B-232 leaves as text",
+  "summary": "writer indents a paragraph whose first line would read as a typed opener",
+  "kind": "format",
+  "input": "a\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "a\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1654",
+  "clauses": [
+   "C2-B-232"
+  ],
+  "why": "C2-B-232: After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it",
+  "summary": "typed opener after a list and a blank line opens a metadata block",
+  "input": "- a\n\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>a</li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "frontmatter",
+     "format": "yaml",
+     "value": "k: v\n"
     }
    ]
   },
