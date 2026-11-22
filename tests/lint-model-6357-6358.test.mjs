@@ -20,7 +20,7 @@ test('continuation marker row admits only quote prefixes or a final item marker'
   }
   assert.deepEqual(cases.find(({ id }) => id === 'CC-1615')?.expected.notReported, ['deprecated-continuation-marker'])
   let checked = 0
-  const markers = ['-', '*', '1.', '9)', 'a.', 'I)']
+  const markers = ['-', '*', '1.', '9)', 'a.', 'I)', 'II.', 'iv)', '.']
   for (const marker of markers) {
     for (let depth = 0; depth < 8; depth++) {
       for (const task of ['', '[ ] ', '[x] ']) {
@@ -34,7 +34,7 @@ test('continuation marker row admits only quote prefixes or a final item marker'
       }
     }
   }
-  assert.equal(checked, 2304)
+  assert.equal(checked, 3456)
 })
 
 test('case-only message notes use the diagnostic phrase without quotes', () => {
