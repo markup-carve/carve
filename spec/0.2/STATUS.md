@@ -295,9 +295,16 @@ The `github-alert-marker` row skips a line whose first `>` is glued to a `[!` th
 
 ## Engine gaps from typed metadata blocks, 21 November
 
-- `carve-js`: the prototype in carve-js#5302 covers top-level openers, containers, attributes, unclosed blocks and writer round-trips, but needs the final lint, include and flatten rules and the spec pin. CC-1613 also closes a list before a column-zero typed opener with no blank line; the prototype keeps that line in the list.
+- `carve-js`: the prototype in carve-js#5302 covers top-level openers, containers, attributes, unclosed blocks and writer round-trips, but needs the final lint, include and flatten rules and the spec pin.
 - `carve-php`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
 - `carve-rs`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
+
+## Engine gaps from the typed opener separation ruling of 22 November
+
+The ruling on #6389 drops the list close before a column-0 typed opener: without a blank line or pending attribute lines above it, the opener is a lazy line of the open paragraph, also in a list (C2-B-232, C2-B-024). C2-W-154 writes a top-level paragraph whose first line would read as a typed opener with that line indented by one space. CC-1613 is re-pinned; clause cases CC-1653 to CC-1655 are added. Measured on `carve-js` `next2` `b52c31a2` with the list close removed: conformance differs only in CC-1613.
+
+- `carve-js`: drop the list close before a typed opener (CC-1613) and write the indent of C2-W-154 (CC-1653); it reports `structure-unspellable` there today.
+- `carve-php` and `carve-rs`: the same two rules, with their ports of #6324.
 
 ## Engine gaps from the tag and mention end guard of 21 November
 
