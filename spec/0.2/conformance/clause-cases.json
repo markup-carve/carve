@@ -68266,6 +68266,9 @@
      {
       "type": "include",
       "path": "a.crv",
+     "options": {
+      "lines": "2-7"
+     },
       "file": "a.crv",
       "children": [
        {
@@ -68446,6 +68449,24 @@
        }
       ]
      }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1614",
+   "clauses": [
+    "C2-A-218",
+    "C2-W-153"
+   ],
+   "why": "C2-A-218: An id in `frontmatter.attrs` participates in the duplicate-id check, but is a lookup key only. C2-W-153: A cross-reference to an id carried by frontmatter reports `frontmatter-crossref` with severity error, at that reference.",
+   "summary": "typed metadata: unrelated cross-reference is not a metadata key cross-reference",
+   "kind": "lint",
+   "input": "a\n\n{#m}\n---yaml\nk: v\n---\n\nSee </#other>.\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "frontmatter-crossref"
     ]
    },
    "from": []
