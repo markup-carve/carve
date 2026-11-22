@@ -68470,6 +68470,23 @@
     ]
    },
    "from": []
+  },
+ {
+   "id": "CC-1615",
+   "clauses": [
+    "C2-B-059"
+   ],
+   "why": "Catalog deprecated-continuation-marker: a line whose content behind its quote marks and indentation is a single `+`, with only spaces and tabs before and after it, and a list item, with or without a task box, whose text on its marker line is a single `+`, both text in 0.2 where 0.1 read a list continuation marker (C2-B-059); `++`, `+a` and a table cell holding `+` are not reported; once per line, the range is the `+` (C2-B-059)",
+   "summary": "plus after a list marker and quote marks is not a continuation marker",
+   "kind": "lint",
+   "input": "* > > +\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-continuation-marker"
+    ]
+   },
+   "from": []
   }
  ]
 }
