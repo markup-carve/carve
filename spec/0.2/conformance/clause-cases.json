@@ -68808,5 +68808,23 @@
   },
   "from": []
  }
+ ,
+ {
+  "id": "CC-1630",
+  "clauses": [
+   "C2-B-055"
+  ],
+  "why": "C2-B-055: A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list: it joins that list when it matches, and otherwise C2-B-050 closes that list and opens a new one, whatever its value, in the container of the closed list.",
+  "summary": "a heading closes the deeper list before a shifted later marker",
+  "kind": "lint",
+  "input": "- a\n    - x\n\n  # heading\n\n   - y\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "list-marker-below-content-column"
+   ]
+  },
+  "from": []
+ }
  ]
 }

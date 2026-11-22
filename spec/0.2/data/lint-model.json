@@ -8329,6 +8329,21 @@
             "field": "index"
           }
         },
+        "list_prev": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "prev_type"
+          }
+        },
         "prev_list": {
           "lookup": {
             "over": "block",
@@ -8453,6 +8468,17 @@
                     "v": "list_index"
                   },
                   1
+                ]
+              },
+              {
+                "in": [
+                  {
+                    "v": "list_prev"
+                  },
+                  [
+                    "list",
+                    "paragraph"
+                  ]
                 ]
               },
               {
