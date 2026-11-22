@@ -474,6 +474,15 @@
       ]
     },
     {
+      "name": "key_text",
+      "type": "text",
+      "means": "for a link reference, the plain text of its stored key read as inline content as C2-I-084 requires; absent otherwise",
+      "clauses": [
+        "C2-I-084",
+        "C2-W-140"
+      ]
+    },
+    {
       "name": "leaf",
       "type": "text",
       "means": "the type of the leaf block whose inline content holds the node",
@@ -780,12 +789,23 @@
   ],
   "id_fields": [
     {
+      "name": "heading_text",
+      "type": "text",
+      "means": "for a heading id, the plain text of that heading read as C2-I-084 reads it; absent for every other id",
+      "clauses": [
+        "C2-I-084",
+        "C2-W-150"
+      ]
+    },
+    {
       "name": "id",
       "type": "text",
-      "means": "the id: an authored id of any node, or the id generated for a heading",
+      "means": "an id carried by the tree or an id or name in the rendered HTML, including authored ids, generated heading ids, footnote or note mark ids, and raw HTML anchors",
       "clauses": [
         "C2-A-032",
         "C2-A-134",
+        "C2-H-088",
+        "C2-H-089",
         "C2-W-150"
       ]
     },
@@ -807,11 +827,32 @@
       ]
     },
     {
+      "name": "rendered",
+      "type": "boolean",
+      "means": "some occurrence of this id or name is present in the rendered HTML under the options of the run",
+      "clauses": [
+        "C2-H-022",
+        "C2-H-088",
+        "C2-H-089",
+        "C2-W-150"
+      ]
+    },
+    {
       "name": "start",
       "type": "offset",
       "means": "the start in the source of the first node that carries the id, 0 when that node has no position",
       "clauses": [
         "C2-A-141",
+        "C2-W-150"
+      ]
+    },
+    {
+      "name": "xref",
+      "type": "boolean",
+      "means": "the id is a cross-reference target: a heading or a numbered caption owner, including a table, figure, figure group or numbered panel",
+      "clauses": [
+        "C2-I-096",
+        "C2-B-207",
         "C2-W-150"
       ]
     }
@@ -2113,16 +2154,15 @@
                 {
                   "in": [
                     {
-                      "f": "item.owner"
+                      "f": "item.xref"
                     },
                     [
-                      "caption",
-                      "heading"
+                      true
                     ]
                   ]
                 },
                 {
-                  "lower": {
+                  "fold": {
                     "f": "item.id"
                   }
                 },
@@ -2130,18 +2170,47 @@
               ]
             },
             "value": {
-              "lower": {
+              "fold": {
                 "f": "node.key"
               }
             },
             "all": true,
             "field": "id"
           }
+        },
+        "exact_xref": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "if": [
+                {
+                  "f": "item.xref"
+                },
+                {
+                  "f": "item.id"
+                },
+                false
+              ]
+            },
+            "value": {
+              "f": "node.key"
+            },
+            "field": "xref"
+          }
         }
       },
       "when": {
         "all": [
-          { "not": { "eq": [{ "v": "exact_owner" }, "frontmatter"] } },
+          {
+            "not": {
+              "eq": [
+                {
+                  "v": "exact_owner"
+                },
+                "frontmatter"
+              ]
+            }
+          },
           {
             "eq": [
               {
@@ -2171,15 +2240,7 @@
               },
               {
                 "not": {
-                  "in": [
-                    {
-                      "v": "exact_owner"
-                    },
-                    [
-                      "caption",
-                      "heading"
-                    ]
-                  ]
+                  "v": "exact_xref"
                 }
               }
             ]
@@ -2240,12 +2301,9 @@
                   "concat": [
                     "the id ",
                     {
-                      "join": [
-                        {
-                          "v": "case_ids"
-                        },
-                        ", "
-                      ]
+                      "quoted_list": {
+                        "v": "case_ids"
+                      }
                     },
                     " differs only in case"
                   ]
@@ -2254,12 +2312,9 @@
                   "concat": [
                     "the ids ",
                     {
-                      "join": [
-                        {
-                          "v": "case_ids"
-                        },
-                        ", "
-                      ]
+                      "quoted_list": {
+                        "v": "case_ids"
+                      }
                     },
                     " differ only in case"
                   ]
@@ -2343,12 +2398,20 @@
           "lookup": {
             "over": "id",
             "key": {
-              "lower": {
-                "f": "item.id"
-              }
+              "if": [
+                {
+                  "f": "item.rendered"
+                },
+                {
+                  "fold": {
+                    "f": "item.id"
+                  }
+                },
+                false
+              ]
             },
             "value": {
-              "lower": {
+              "fold": {
                 "v": "fragment"
               }
             },
@@ -2359,12 +2422,20 @@
           "lookup": {
             "over": "id",
             "key": {
-              "lower": {
-                "f": "item.id"
-              }
+              "if": [
+                {
+                  "f": "item.rendered"
+                },
+                {
+                  "fold": {
+                    "f": "item.id"
+                  }
+                },
+                false
+              ]
             },
             "value": {
-              "lower": {
+              "fold": {
                 "v": "decoded"
               }
             },
@@ -2413,12 +2484,20 @@
               "lookup": {
                 "over": "id",
                 "key": {
-                  "lower": {
-                    "f": "item.id"
-                  }
+                  "if": [
+                    {
+                      "f": "item.rendered"
+                    },
+                    {
+                      "fold": {
+                        "f": "item.id"
+                      }
+                    },
+                    false
+                  ]
                 },
                 "value": {
-                  "lower": {
+                  "fold": {
                     "v": "fragment"
                   }
                 },
@@ -2439,12 +2518,20 @@
                   "lookup": {
                     "over": "id",
                     "key": {
-                      "lower": {
-                        "f": "item.id"
-                      }
+                      "if": [
+                        {
+                          "f": "item.rendered"
+                        },
+                        {
+                          "fold": {
+                            "f": "item.id"
+                          }
+                        },
+                        false
+                      ]
                     },
                     "value": {
-                      "lower": {
+                      "fold": {
                         "v": "decoded"
                       }
                     },
@@ -2491,7 +2578,7 @@
             "not": {
               "eq": [
                 {
-                  "lower": {
+                  "fold": {
                     "v": "fragment"
                   }
                 },
@@ -2506,7 +2593,15 @@
                   "lookup": {
                     "over": "id",
                     "key": {
-                      "f": "item.id"
+                      "if": [
+                        {
+                          "f": "item.rendered"
+                        },
+                        {
+                          "f": "item.id"
+                        },
+                        false
+                      ]
                     },
                     "value": {
                       "v": "fragment"
@@ -2525,7 +2620,15 @@
                   "lookup": {
                     "over": "id",
                     "key": {
-                      "f": "item.id"
+                      "if": [
+                        {
+                          "f": "item.rendered"
+                        },
+                        {
+                          "f": "item.id"
+                        },
+                        false
+                      ]
                     },
                     "value": {
                       "v": "decoded"
@@ -11941,12 +12044,12 @@
               "link_reference_definition"
             ],
             "key": {
-              "lower": {
+              "fold": {
                 "f": "item.node.key"
               }
             },
             "value": {
-              "lower": {
+              "fold": {
                 "f": "node.key"
               }
             },
@@ -11958,17 +12061,17 @@
           "lookup": {
             "over": "id",
             "key": {
-              "lower": {
-                "f": "item.id"
+              "fold": {
+                "f": "item.heading_text"
               }
             },
             "value": {
-              "lower": {
-                "f": "node.key"
+              "fold": {
+                "f": "key_text"
               }
             },
             "all": true,
-            "field": "id"
+            "field": "heading_text"
           }
         },
         "label": {
@@ -12002,7 +12105,7 @@
                     "f": "item"
                   },
                   {
-                    "f": "node.key"
+                    "f": "key_text"
                   }
                 ]
               }
@@ -12053,6 +12156,26 @@
                 },
                 ""
               ]
+            }
+          ]
+        },
+        "case_candidates": {
+          "if": [
+            {
+              "ge": [
+                {
+                  "len": {
+                    "v": "labels"
+                  }
+                },
+                1
+              ]
+            },
+            {
+              "v": "labels"
+            },
+            {
+              "v": "ids"
             }
           ]
         }
@@ -12108,11 +12231,43 @@
         },
         "caseOnlyPhrase": {
           "concat": [
-            "the label ",
             {
-              "v": "case_only"
+              "if": [
+                {
+                  "eq": [
+                    {
+                      "len": {
+                        "v": "case_candidates"
+                      }
+                    },
+                    1
+                  ]
+                },
+                "the label ",
+                "the labels "
+              ]
             },
-            " differs only in case"
+            {
+              "quoted_list": {
+                "v": "case_candidates"
+              }
+            },
+            {
+              "if": [
+                {
+                  "eq": [
+                    {
+                      "len": {
+                        "v": "case_candidates"
+                      }
+                    },
+                    1
+                  ]
+                },
+                " differs only in case",
+                " differ only in case"
+              ]
+            }
           ]
         }
       },
