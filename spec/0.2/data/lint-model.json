@@ -2273,7 +2273,7 @@
                   "concat": [
                     "the id ",
                     {
-                      "quoted_list": {
+                      "plain_list": {
                         "v": "case_ids"
                       }
                     },
@@ -2284,7 +2284,7 @@
                   "concat": [
                     "the ids ",
                     {
-                      "quoted_list": {
+                      "plain_list": {
                         "v": "case_ids"
                       }
                     },
@@ -12304,7 +12304,7 @@
               ]
             },
             {
-              "quoted_list": {
+              "plain_list": {
                 "v": "case_candidates"
               }
             },
