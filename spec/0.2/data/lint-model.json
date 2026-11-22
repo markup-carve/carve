@@ -1829,39 +1829,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "not": {
-                  "all": [
-                    {
-                      "f": "quote_prefix"
-                    },
-                    {
-                      "matches": [
-                        {
-                          "f": "body"
-                        },
-                        "^> [^ \\x00]"
-                      ]
-                    },
-                    {
-                      "matches": [
-                        {
-                          "f": "prev.text"
-                        },
-                        "^[ \t]*> "
-                      ]
-                    },
-                    {
-                      "contains": [
-                        {
-                          "f": "ancestors"
-                        },
-                        "block_quote"
-                      ]
-                    }
-                  ]
-                }
               }
             ]
           },

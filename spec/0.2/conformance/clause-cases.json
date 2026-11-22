@@ -68635,6 +68635,56 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1623",
+  "clauses": [
+   "C2-B-019",
+   "C2-B-031",
+   "C2-W-139"
+  ],
+  "why": "Catalog block-opener-without-blank-line: each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
+  "summary": "nested quote candidate after quoted paragraph text",
+  "kind": "lint",
+  "input": "> para\n> > x\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 2,
+     "column": 3,
+     "endLine": 2,
+     "endColumn": 4
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1624",
+  "clauses": [
+   "C2-B-019",
+   "C2-B-031",
+   "C2-W-139"
+  ],
+  "why": "Catalog block-opener-without-blank-line: each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
+  "summary": "nested quote candidate after quoted paragraph text",
+  "kind": "lint",
+  "input": "> para\n> > >\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 2,
+     "column": 3,
+     "endLine": 2,
+     "endColumn": 4
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
