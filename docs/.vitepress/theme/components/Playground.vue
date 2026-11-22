@@ -157,6 +157,17 @@ function confirmImport(): void {
   void nextTick(() => editorRef.value?.focus())
 }
 
+function clearSource(): void {
+  const editor = editorRef.value
+  if (editor) {
+    editor.replaceAll('')
+    editor.focus()
+  } else {
+    source.value = ''
+    void nextTick(() => editorRef.value?.focus())
+  }
+}
+
 // --- Format: rewrite the source through the selected engine's canonical writer. ---
 const alignTables = ref(true)
 const formatNote = ref('')
@@ -848,6 +859,30 @@ void mermaidInit
         </a>
       </div>
       <div class="pg-toolbar-right">
+        <button
+          class="pg-btn pg-icon-btn"
+          type="button"
+          title="Clear"
+          aria-label="Clear"
+          @click="clearSource"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 6h18" />
+            <path d="M8 6V4h8v2" />
+            <path d="M6 6l1 14h10l1-14" />
+            <path d="M10 10v6m4-6v6" />
+          </svg>
+        </button>
         <button
           class="pg-btn pg-icon-btn"
           type="button"
