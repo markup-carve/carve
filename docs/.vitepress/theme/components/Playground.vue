@@ -1377,6 +1377,11 @@ textarea:focus {
   color: var(--vp-c-text-1);
   line-height: 1.6;
 }
+/* The page's .vp-doc h2 rule draws a docs section divider; rendered output has none. */
+.output :deep(h2) {
+  border-top: 0;
+  padding-top: 0;
+}
 .raw {
   flex: 1;
   padding: 0.75rem;
