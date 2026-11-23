@@ -73567,6 +73567,104 @@
     ]
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-1753",
+  "clauses": [
+   "C2-W-125",
+   "C2-I-089"
+  ],
+  "why": "C2-W-125: Eight: where the opener a round would escape is a text `^[` whose span is what makes a caret pair of the tree ordinary (C2-I-089), the bare `]` that closed the note early gets the backslash, not the opener",
+  "summary": "the bare bracket that closed a text note early takes the backslash, and the caret pair of a collapsed reference stays ordinary",
+  "kind": "format",
+  "input": "^[ \\]} [^[b]\\]][]",
+  "options": {},
+  "expected": {
+   "carve": "^[ \\]} [^[b]\\]][]\n",
+   "diagnosticsComplete": true,
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1754",
+  "clauses": [
+   "C2-W-125",
+   "C2-I-089"
+  ],
+  "why": "C2-W-125: Eight: where the opener a round would escape is a text `^[` whose span is what makes a caret pair of the tree ordinary (C2-I-089), the bare `]` that closed the note early gets the backslash, not the opener",
+  "summary": "a text note opener before a collapsed reference whose text starts with a caret pair is written bare, with its early closer escaped",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "^[ ]} "
+      },
+      {
+       "type": "link",
+       "key": "^[b]\\]",
+       "namespace": "link",
+       "refForm": "collapsed",
+       "children": [
+        {
+         "type": "text",
+         "value": "^[b]]"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": "^[ \\]} [^[b]\\]][]\n",
+   "diagnosticsComplete": true,
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1755",
+  "clauses": [
+   "C2-W-125",
+   "C2-I-089"
+  ],
+  "why": "C2-W-125: Eight: where the opener a round would escape is a text `^[` whose span is what makes a caret pair of the tree ordinary (C2-I-089), the bare `]` that closed the note early gets the backslash, not the opener",
+  "summary": "each bare bracket that would close a text note early takes the backslash in its own round",
+  "kind": "format",
+  "input": "x ^[a \\] b \\] [^[b] c][] z",
+  "options": {},
+  "expected": {
+   "carve": "x ^[a \\] b \\] [^[b] c][] z\n",
+   "diagnosticsComplete": true,
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1756",
+  "clauses": [
+   "C2-W-125",
+   "C2-I-089"
+  ],
+  "why": "C2-W-125: Eight: where the opener a round would escape is a text `^[` whose span is what makes a caret pair of the tree ordinary (C2-I-089), the bare `]` that closed the note early gets the backslash, not the opener",
+  "summary": "a text note opener in a list item keeps its bracket pair bare and escapes only the early closer",
+  "kind": "format",
+  "input": "- ^[ [x] \\]} [^a[b]][].",
+  "options": {},
+  "expected": {
+   "carve": "- ^[ [x] \\]} [^a[b]][].\n",
+   "diagnosticsComplete": true,
+   "diagnostics": []
+  },
+  "from": []
+ }
  ]
 }
