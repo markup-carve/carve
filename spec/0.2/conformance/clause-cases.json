@@ -70317,6 +70317,324 @@
    "carve": "- ```\n  x\n  ```\n---yaml\nk: v\n---\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-1679",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text. C2-B-026: A container that does not own the line closes, with every container inside it.",
+  "summary": "typed opener below an indented description list and a blank line closes the list and stays text",
+  "input": " :: t\n : d\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>—yaml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1680",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-154"
+  ],
+  "why": "C2-W-155: A description list whose last block takes a lazy line is written the same way: the description list `:: t`, `: d` and that paragraph are written ` :: t`, ` : d`, a blank line, ` ---yaml`, `k: v`, `---`.",
+  "summary": "writer indents a description list by one space before a typed-opener paragraph when it ends in a paragraph",
+  "kind": "format",
+  "input": " :: t\n : d\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " :: t\n : d\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1681",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text. C2-B-026: A container that does not own the line closes, with every container inside it.",
+  "summary": "typed opener below an indented two-entry description list ending in a two-line paragraph closes the list and stays text",
+  "input": " :: t\n : a\n :: u\n : b\n   c\n\n ---toml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd>a</dd>\n  <dt>u</dt>\n  <dd>b\nc</dd>\n</dl>\n<p>—toml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "u"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "toml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1682",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-154"
+  ],
+  "why": "C2-W-155: A description list whose last block takes a lazy line is written the same way: the description list `:: t`, `: d` and that paragraph are written ` :: t`, ` : d`, a blank line, ` ---yaml`, `k: v`, `---`. C2-W-154: A description list that ends in a block that takes a lazy line is written under C2-W-155",
+  "summary": "writer indents every line of a two-entry description list ending in a two-line paragraph",
+  "kind": "format",
+  "input": " :: t\n : a\n :: u\n : b\n   c\n\n ---toml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " :: t\n : a\n :: u\n : b\n   c\n\n ---toml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1683",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-154"
+  ],
+  "why": "C2-W-155: A description list whose last block takes a lazy line is written the same way: the description list `:: t`, `: d` and that paragraph are written ` :: t`, ` : d`, a blank line, ` ---yaml`, `k: v`, `---`.",
+  "summary": "writer indents a description list ending in a quote by one space before a typed-opener paragraph",
+  "kind": "format",
+  "input": " :: t\n : > q\n\n ---json\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " :: t\n : > q\n\n ---json\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1684",
+  "clauses": [
+   "C2-W-154",
+   "C2-W-117"
+  ],
+  "why": "C2-W-154: a footnote that ends in one has no spelling there. C2-W-117: For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node.",
+  "summary": "a typed-opener paragraph after a footnote ending in a paragraph keeps the loss report",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "structure-unspellable",
+     "path": "/children/2"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

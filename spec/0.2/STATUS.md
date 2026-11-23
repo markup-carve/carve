@@ -333,6 +333,13 @@ The ruling on #6397 (option 1) extends the direct spelling of C2-W-154 from list
 - `carve-js`: write the paragraph directly after a footnote or a description that ends in a closed block (CC-1667, CC-1669) and keep the indent below an attribute line (CC-1672).
 - `carve-php` and `carve-rs`: the same, with their ports of #6394.
 
+## Engine gaps from the indented description list ruling of 23 November
+
+The ruling on #6409 (option 1) extends C2-W-155 to description lists: where a typed-opener paragraph follows a description list whose last block takes a lazy line, every line of the description list is written indented by one space, and the paragraph follows below a blank line with its first line indented by one space. A footnote that ends in such a block keeps the loss report (C2-W-154). This narrows the description part of the #6397 ruling above. Clause cases CC-1679 to CC-1684 are added. Measured on `carve-js` `next2` `3700e6d`: the trees of CC-1679 and CC-1681 already match, and CC-1684 already passes; `fmt` refuses CC-1680, CC-1682 and CC-1683 with `structure-unspellable`. 1,350 variants (fifteen lazy endings: paragraphs of one and two lines, a paragraph after a blank line, quotes, nested quotes, bullet and ordered lists, nested lists, a quoted list, a paragraph after a fence, a nested description list, inline markup; one to three terms with one or two descriptions; six preceding contexts including attribute lines; three format names) read back as the description list followed by the text paragraph, with the description list unchanged. In none of them does the direct column-0 spelling read back.
+
+- `carve-js`: write a description list whose last block takes a lazy line indented by one space before a typed-opener paragraph (CC-1680, CC-1682, CC-1683).
+- `carve-php` and `carve-rs`: the same, with their ports of #6398.
+
 ## Engine gaps from the tag and mention end guard of 21 November
 
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
