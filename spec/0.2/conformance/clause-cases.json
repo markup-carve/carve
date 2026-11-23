@@ -73681,6 +73681,243 @@
    "carve": "\\[a] and [x[y]z][]\n\n[a]: /u\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-1758",
+  "clauses": [
+   "C2-B-137",
+   "C2-B-138",
+   "C2-B-026"
+  ],
+  "why": "C2-B-137: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line ... So whatever its indent it closes no container C2-B-138: The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.",
+  "summary": "a column-0 comment line that ends a fence in a nested item closes only that item, so the next line stays in the outer item",
+  "input": "- x\n  - ```\n%% c\n  y",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>x\n    <ul>\n      <li>\n        <pre><code></code></pre>\n      </li>\n    </ul>\n    <p>y</p>\n  </li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "type": "list",
+         "marker": {
+          "kind": "bullet",
+          "char": "-"
+         },
+         "spacing": "tight",
+         "children": [
+          {
+           "type": "list_item",
+           "children": [
+            {
+             "type": "code_block",
+             "value": ""
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "comment",
+         "form": "line",
+         "value": "c"
+        },
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "y"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1759",
+  "clauses": [
+   "C2-B-137",
+   "C2-B-138",
+   "C2-B-026"
+  ],
+  "why": "C2-B-137: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line ... So whatever its indent it closes no container C2-B-138: The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.",
+  "summary": "a column-0 comment line that ends a comment block in a nested item closes only that item, so the next line stays in the outer item",
+  "input": "- x\n  - %%%\n%% c\n  y",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>x\n    <ul>\n      <li></li>\n    </ul>\n    <p>y</p>\n  </li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "type": "list",
+         "marker": {
+          "kind": "bullet",
+          "char": "-"
+         },
+         "spacing": "tight",
+         "children": [
+          {
+           "type": "list_item",
+           "children": [
+            {
+             "type": "comment",
+             "form": "block",
+             "value": ""
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "comment",
+         "form": "line",
+         "value": "c"
+        },
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "y"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1760",
+  "clauses": [
+   "C2-B-137",
+   "C2-B-138",
+   "C2-B-123"
+  ],
+  "why": "C2-B-137: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line ... So whatever its indent it closes no container C2-B-138: The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.",
+  "summary": "a column-0 comment line that ends a comment block in a nested line block closes only the inner item, so the next comment block opens in the outer item",
+  "input": "- x\n  - ::: |\n    %%%\n%% c\n    %%%\nz",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>x\n    <ul>\n      <li>\n        <div class=\"line-block\">\n\n        </div>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>z</p>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "type": "list",
+         "marker": {
+          "kind": "bullet",
+          "char": "-"
+         },
+         "spacing": "tight",
+         "children": [
+          {
+           "type": "list_item",
+           "children": [
+            {
+             "type": "line_block",
+             "children": [
+              {
+               "type": "comment",
+               "form": "block",
+               "value": ""
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "comment",
+         "form": "line",
+         "value": "c"
+        },
+        {
+         "type": "comment",
+         "form": "block",
+         "value": ""
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "z"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
