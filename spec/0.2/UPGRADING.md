@@ -113,11 +113,11 @@ The upgrade replay of the 0.1 conformance pack and examples found nine more chan
 
 ### Upgrade replay row of 23 November
 
-The replay of the 0.1 conformance pack found the empty unclosed code and literal-text run, the twin of U-396. No 0.2 spelling keeps it, so the tool reports it.
+The replay of the 0.1 conformance pack found two unclosed runs whose 0.1 value no 0.2 span spells: an empty code or literal-text value, the twin of U-396, and a value that starts with a line break and ends with a backtick. The tool reports both.
 
 | ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
 | --- | --- | --- | --- |
-| U-439 | An empty unclosed code or literal-text run at the end of inline content: <code>a &#96;</code> or <code>!&#96;&#96;</code>. 0.1 writes an empty code span, and nothing for the literal-text span. **SILENT** | The run, and the `!` before it, is text (C2-I-017): `<p>a &#96;</p>`. No preserving spelling exists: an adjacent closer joins the opener into a wider run, and a separator changes the empty value (C2-W-077). | Report at the parsed code or literal-text range; report |
+| U-439 | An unclosed run whose 0.1 value no span spells: an empty code or literal-text value at the end of inline content, <code>a &#96;</code> or <code>!&#96;&#96;</code>, or a code, literal-text or math value that starts with a line break and ends with a backtick, <code>a &#96;&#96;</code> ⏎ <code>b&#96;</code>. 0.1 writes the span, and nothing for an empty literal-text span. **SILENT** | The run, and a `!` or `$` before it, is text (C2-I-017): `<p>a &#96;</p>`. No preserving spelling exists: an adjacent closer joins the opener into a wider run, a separator changes the empty value, and the pad before a leading line break is trailing whitespace (C2-W-077). | Report at the parsed range of the run; report |
 
 ### Source change index
 
@@ -866,7 +866,7 @@ The tool checks each rewrite against the complete 0.1 HTML, compared as "Running
 | U-254 | Under C2-I-023, C2-I-043, and C2-I-047, `/{+a/{k=b+}` writes a literal slash and an insertion, while `/x /*a %% b*/{.c} y` writes nested emphasis and strong text in 0.1. **SILENT** | The same 0.2 sources give the slash an emphasis opener or let `%%` consume the rest of its line. | Review delimiter and comment ownership; report |
 | U-255 | Under C2-I-047, two escaped HTML tags containing `http://` and `fetch("//evil/?")` pair slash delimiters around the text from `iframe` to `fetch` in 0.1. **SILENT** | The same 0.2 source closes that emphasis after `evil`. | Review the escaped text emphasis boundary; report |
 | U-256 | Under C2-I-119 and C2-I-090, `# H {#id .cls}` and `{%~{#i}` expose a tag inside a failed brace attribute in 0.1. **SILENT** | The intact brace form hides the tag in 0.2. | Escape the closing brace in the heading or the opening brace before `#i` after checking the complete HTML; rewrite |
-| U-258 | Under C2-I-017, a backtick run with no closing run of its length, <code>a &#96;b c</code>, is code to the end of the content in 0.1. **SILENT** | The run is text. | Close the span where the old code or math ends; an empty math run is U-396, an empty code or literal-text run U-439; rewrite |
+| U-258 | Under C2-I-017, a backtick run with no closing run of its length, <code>a &#96;b c</code>, is code to the end of the content in 0.1. **SILENT** | The run is text. | Close the span where the old code or math ends; an empty math run is U-396, an empty code or literal-text value or a value that starts with a line break and ends with a backtick U-439; rewrite |
 | U-259 | Under C2-B-173 and C2-B-174, a span mark that cannot join, `\|= ^\|`, is an empty cell in 0.1. | A cell that holds `^` as text, reported by `table-span-marker-blocked`. | Write an empty cell, `\|= \|`; rewrite |
 | U-262 | Under C2-H-116, an authored attribute with a reserved carrier name, as in `[t]{data-carve-raw=html}`, passed through in 0.1 when `roundtrip` was off. **SILENT** | The same source writes `<span>` without the attribute and reports `carrier-attribute-dropped`. | Rename the attribute; report |
 | U-263 | Under C2-A-068, a quote inside `::: \` kept its soft line breaks in 0.1, as did an item, a description, an admonition and a caption inside it, and a div with the class `hardbreaks`. **SILENT** | Every line end inside the block, nested blocks included, is a `<br>`. | Review nested blocks; no preserving 0.2 spelling exists; report |
