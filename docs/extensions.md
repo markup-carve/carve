@@ -40,6 +40,39 @@ document has a useful fallback when the feature is not enabled.
 For the reasons behind these boundaries, see [Feature design
 notes](./native-features-analysis). Use this page for current availability.
 
+### Spoilers
+
+A spoiler can be inline or a block. The inline form hides a few words inside a
+sentence:
+
+```carve
+The killer is :spoiler[the butler] all along.
+```
+
+```html
+<p>The killer is <span class="spoiler">the butler</span> all along.</p>
+```
+
+The block form hides whole paragraphs behind a disclosure:
+
+```carve
+::: spoiler "Ending"
+The butler did it.
+:::
+```
+
+```html
+<details class="spoiler">
+  <summary>Ending</summary>
+  <p>The butler did it.</p>
+</details>
+```
+
+Carve only marks the hidden content. The blur and the click to reveal come from
+the host's CSS. With the extension off, the inline form renders as
+`<span class="ext-spoiler">` and the block as `<div class="spoiler">`, so the
+text stays visible.
+
 ## Features supplied by applications
 
 These depend on a renderer, data source, or user-interface environment and may
