@@ -21,7 +21,7 @@ test('the five rows of #6186 are data and the seven others stay hand-written', (
 test('the catalog readings of the new rows are pinned by clause cases', () => {
   const byId = new Map(cases.map((entry) => [entry.id, entry]))
   const pinned = { 'CC-1729': 'sigil-after-letter', 'CC-1730': 'sigil-after-letter', 'CC-1731': 'djot-intraword-underscore',
-    'CC-1732': 'djot-intraword-underscore', 'CC-1733': 'deprecated-indented-line-under-heading', 'CC-1734': 'unclosed-braced-comment' }
+    'CC-1732': 'djot-intraword-underscore', 'CC-1733': 'deprecated-indented-line-under-heading', 'CC-1734': 'unclosed-braced-comment', 'CC-1735': 'unclosed-braced-comment' }
   for (const [id, code] of Object.entries(pinned)) {
     const expected = byId.get(id)?.expected
     assert.ok(expected?.diagnostics?.some((entry) => entry.code === code) || expected?.notReported?.includes(code), id)

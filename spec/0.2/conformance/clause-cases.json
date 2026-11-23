@@ -73129,7 +73129,24 @@
    "why": "C2-B-141: Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.",
    "summary": "an escaped braced comment opener is no braced comment and is not reported",
    "kind": "lint",
-   "input": "a \\{% b\n# h\n%} z\n",
+   "input": "a \\{% b\n```\nc %}\n```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-braced-comment"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1735",
+   "clauses": [
+    "C2-B-141"
+   ],
+   "why": "C2-B-141: Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.",
+   "summary": "a braced comment whose closer stands behind a blank line is not reported, since a blank line is no interrupter line",
+   "kind": "lint",
+   "input": "a {% b\n\n%}\n",
    "options": {},
    "expected": {
     "notReported": [

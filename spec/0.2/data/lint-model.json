@@ -12338,6 +12338,40 @@
             }
           },
           {
+            "eq": [
+              {
+                "lookup": {
+                  "over": "line",
+                  "key": true,
+                  "value": true,
+                  "before": true,
+                  "from": {
+                    "f": "end"
+                  },
+                  "field": "leaf_next.blank"
+                }
+              },
+              false
+            ]
+          },
+          {
+            "ne": [
+              {
+                "lookup": {
+                  "over": "line",
+                  "key": true,
+                  "value": true,
+                  "before": true,
+                  "from": {
+                    "f": "end"
+                  },
+                  "field": "leaf_next.shape"
+                }
+              },
+              "region_marker"
+            ]
+          },
+          {
             "ge": [
               {
                 "lookup": {
