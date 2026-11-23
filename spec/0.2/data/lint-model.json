@@ -905,6 +905,49 @@
       ]
     }
   ],
+  "paths": {
+    "block": {
+      "names": "the node of the block record",
+      "clauses": [
+        "C2-W-138",
+        "C2-W-140",
+        "C2-W-157"
+      ]
+    },
+    "inline": {
+      "names": "the node of the inline record",
+      "clauses": [
+        "C2-W-138",
+        "C2-W-140",
+        "C2-W-157"
+      ]
+    },
+    "text_run": {
+      "names": "the node whose children make the run, the node with inline content that holds it; never a text or soft break child",
+      "clauses": [
+        "C2-W-138",
+        "C2-W-140",
+        "C2-W-157"
+      ]
+    },
+    "attribute": {
+      "names": "the owner of the attribute record",
+      "clauses": [
+        "C2-W-138",
+        "C2-W-148",
+        "C2-W-157"
+      ]
+    },
+    "line": {
+      "names": "the leaf block of the line: the block with inline content that holds it (a paragraph, a heading, a term, a line of a line block, a cell paragraph, the paragraph of a caption), a verbatim leaf, or the table_row of a line of a pipe table; for a line of no leaf block the innermost block whose source holds the line, and the document where none does",
+      "clauses": [
+        "C2-A-081",
+        "C2-W-138",
+        "C2-W-140",
+        "C2-W-157"
+      ]
+    }
+  },
   "rules": [
     {
       "id": "a11y/image-alt",

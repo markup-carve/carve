@@ -108,7 +108,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `severity` | `hint`, `warning` or `error` | always | C2-W-105 |
 | `channel` | `parse`, `render-loss` or `lint` | always | C2-W-104 |
 | `message` | text | always | C2-A-173 |
-| `path` | an RFC 6901 pointer into the tree | where the entry is about a node | C2-A-173 |
+| `path` | an RFC 6901 pointer into the tree | where the entry is about a node | C2-A-173, C2-W-157 |
 | `range` | an object of `startOffset` and `endOffset`, in UTF-8 bytes | where the entry has a position in source | C2-A-173 |
 | `file` | the id of the included file the range is counted in | where that is not the top-level document | C2-N-063 |
 | `foreignType` | the name of the HTML node | on an entry of the importer that has one | C2-M-081 |

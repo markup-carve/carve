@@ -4,7 +4,7 @@
   "description": "The shared line model of lint and the catalog rows that state their trigger, range and message over it (C2-W-139 to C2-W-142). An engine runs these rows from this file, by an interpreter or by code generated from it.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "text_leaves", "verbatim_leaves", "row_leaves", "line_fields", "block_fields", "inline_fields", "table_fields", "rules"],
+  "required": ["$schema", "text_leaves", "verbatim_leaves", "row_leaves", "line_fields", "block_fields", "inline_fields", "table_fields", "paths", "rules"],
   "properties": {
     "$schema": { "const": "schemas/lint-model.schema.json" },
     "text_leaves": { "$ref": "#/$defs/types", "description": "The leaf blocks whose lines are text that lint reads (C2-W-107). The set name text_leaves stands for this list in an `in` test." },
@@ -17,6 +17,19 @@
     "attribute_owner_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of the owner of an attribute record, the node that its attribute block attaches to (C2-W-148)." },
     "table_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The table fields of C2-W-149: layout facts of a table that the tree does not hold, which the line and block records they name carry beside their own fields." },
     "id_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an id record, one record per distinct id that the tree carries, read by a lookup whose over is id (C2-W-150)." },
+    "paths": {
+      "type": "object",
+      "description": "The node that the path of a finding names, per kind of record the rule reported on (C2-W-157).",
+      "required": ["block", "inline", "text_run", "attribute", "line"],
+      "additionalProperties": false,
+      "properties": {
+        "block": { "$ref": "#/$defs/path" },
+        "inline": { "$ref": "#/$defs/path" },
+        "text_run": { "$ref": "#/$defs/path" },
+        "attribute": { "$ref": "#/$defs/path" },
+        "line": { "$ref": "#/$defs/path" }
+      }
+    },
     "rules": {
       "type": "array",
       "items": {
@@ -73,6 +86,15 @@
   },
   "$defs": {
     "types": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }, "uniqueItems": true },
+    "path": {
+      "type": "object",
+      "required": ["names", "clauses"],
+      "additionalProperties": false,
+      "properties": {
+        "names": { "type": "string", "minLength": 1 },
+        "clauses": { "$ref": "#/$defs/clauses" }
+      }
+    },
     "clauses": { "type": "array", "items": { "type": "string", "pattern": "^C2-[A-Z]-[0-9]{3}$" }, "minItems": 1, "uniqueItems": true },
     "field": {
       "type": "object",
