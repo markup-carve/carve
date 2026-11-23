@@ -2167,7 +2167,7 @@
       "group": "rulings of 16 November",
       "from": "a `b c\n",
       "to": "a `b c`\n",
-      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>. An empty unclosed math run is U-396.",
+      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>. An empty unclosed math run is U-396, an empty literal-text run U-440, and a value no span spells U-439.",
       "toolEntry": "U-258",
       "silent": true
     },
@@ -3329,6 +3329,26 @@
       "to": "   1. inner\n1. outer\nlazy\n\n   2. sibling\n",
       "meaning02": "<ol>\n  <li>inner</li>\n  <li>outer\nlazy\n2. sibling</li>\n</ol> C2-B-015 reads a nested ordered marker whose first value is not 1 as a lazy text line below an open item paragraph. A blank line before the marker closes that paragraph, so the nested list retains its 0.1 value and HTML. The tool writes this only after comparing the complete HTML.",
       "toolEntry": "U-438",
+      "silent": true
+    },
+    {
+      "id": "U-439",
+      "kind": "report",
+      "group": "upgrade replay",
+      "from": "a `\n",
+      "to": "",
+      "meaning02": "<p>a `</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` or `$` glued before it. 0.1 wrote an empty code span for an empty code value; an adjacent closer joins the opener into a wider run, and a separator changes the empty value. A code, literal-text or math value that starts with a line break and ends with a backtick has no spelling either (C2-W-077). An empty literal-text run that U-440 cannot remove is reported too: 0.1 wrote nothing for it, and the space before it, which 0.2 drops at the end of the content (C2-I-002), or the empty paragraph or heading it filled has no spelling. Report the parsed range of the run and its value; do not rewrite.",
+      "toolEntry": "U-439",
+      "silent": true
+    },
+    {
+      "id": "U-440",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "x!``\n",
+      "to": "x\n",
+      "meaning02": "<p>x!``</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` glued before it; 0.1 wrote nothing for an empty literal-text run at the end of the content. Removing the run keeps <p>x</p>. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; otherwise U-439 reports the run.",
+      "toolEntry": "U-440",
       "silent": true
     }
   ],
