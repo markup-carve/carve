@@ -8984,10 +8984,7 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    },
-    "diagnostics": [
-     "deprecated-spaced-thematic-break"
-    ]
+    }
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -83458,44 +83455,57 @@
    ],
    "clauseScope": "section",
    "kind": "lint",
-   "input": "_a_",
+   "input": "---\ncarve: 0.1\n---\n_a_",
    "options": {},
    "expected": {
     "tree": {
-     "type": "document",
      "astVersion": "2.0",
      "children": [
       {
-       "type": "paragraph",
+       "format": "yaml",
+       "pos": {
+        "endColumn": 4,
+        "endLine": 3,
+        "endOffset": 18,
+        "startColumn": 1,
+        "startLine": 1,
+        "startOffset": 0
+       },
+       "type": "frontmatter",
+       "value": "carve: 0.1\n"
+      },
+      {
        "children": [
         {
-         "type": "text",
-         "value": "_a_",
          "pos": {
-          "startLine": 1,
-          "endLine": 1,
-          "startColumn": 1,
           "endColumn": 4,
-          "startOffset": 0,
-          "endOffset": 3
-         }
+          "endLine": 4,
+          "endOffset": 22,
+          "startColumn": 1,
+          "startLine": 4,
+          "startOffset": 19
+         },
+         "type": "text",
+         "value": "_a_"
         }
        ],
        "pos": {
-        "startLine": 1,
-        "endLine": 1,
-        "startColumn": 1,
         "endColumn": 4,
-        "startOffset": 0,
-        "endOffset": 3
-       }
+        "endLine": 4,
+        "endOffset": 22,
+        "startColumn": 1,
+        "startLine": 4,
+        "startOffset": 19
+       },
+       "type": "paragraph"
       }
      ],
-     "srcByteLength": 3,
+     "srcByteLength": 22,
      "stages": [
       "referenceResolution",
       "tableAlignment"
-     ]
+     ],
+     "type": "document"
     },
     "diagnostics": [
      "deprecated-bare-underline"

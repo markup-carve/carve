@@ -47,7 +47,7 @@
           },
           "default": {
             "enum": ["on", "off", "upgrade"],
-            "description": "The default state of a lint rule. `off`: the rule is opt-in and is turned on by its id (C2-W-109). `upgrade`: a migration notice, on only for a document that declares a Carve version below 0.2 or under the option `upgrade` (C2-W-156)."
+            "description": "The default state of a lint rule. `off`: the rule is opt-in and is turned on by its id (C2-W-109). `upgrade`: a migration notice, help in moving from 0.1 or Djot, on only for a document that declares a Carve version below 0.2 or under the option `upgrade` (C2-W-156)."
           },
           "enabled_by": { "enum": ["platforms"], "description": "The option that selects the rule." },
           "fix": { "type": "object", "additionalProperties": false, "required": ["before", "after"], "properties": { "before": { "type": "string", "minLength": 1 }, "after": { "type": "string" } }, "description": "The one replacement the message names, which `lint --fix` writes at the range of a finding (C2-T-049): `before` is a source the rule reports and `after` the same source fixed." },

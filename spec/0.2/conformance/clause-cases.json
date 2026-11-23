@@ -44587,7 +44587,7 @@
    "summary": "the bare key loose on a list is reported at the list",
    "kind": "lint",
    "input": "{loose}\n- a\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44628,7 +44628,7 @@
    "summary": "three underscores with spaces between them are reported",
    "kind": "lint",
    "input": "_ _ _\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44669,7 +44669,7 @@
    "summary": "header-rows on a pipe table is reported at the table",
    "kind": "lint",
    "input": "{header-rows=1}\n| a |\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44753,7 +44753,7 @@
    "summary": "a bare equals pair is reported",
    "kind": "lint",
    "input": "a =b=\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44795,7 +44795,7 @@
    "summary": "a bare tilde pair is reported",
    "kind": "lint",
    "input": "a ~b~\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44837,7 +44837,7 @@
    "summary": "a bare underscore pair after a word is reported",
    "kind": "lint",
    "input": "a _b_\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44879,7 +44879,7 @@
    "summary": "a line that holds only a plus sign is reported",
    "kind": "lint",
    "input": "+\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44922,7 +44922,7 @@
    "summary": "a row whose one cell holds only hyphens is reported",
    "kind": "lint",
    "input": "| a |\n|---|\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44966,7 +44966,7 @@
    "summary": "a braced strike span that holds a tilde arrow is reported",
    "kind": "lint",
    "input": "{~a~>b~}\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -45009,7 +45009,7 @@
    "summary": "a term whose text continues on a second line is reported at that line",
    "kind": "lint",
    "input": ":: a\nb\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -47518,7 +47518,7 @@
    "summary": "an underscore run alone on a line is reported",
    "kind": "lint",
    "input": "___\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -48673,7 +48673,7 @@
    "summary": "a glued alignment mark after the header mark",
    "kind": "lint",
    "input": "|=< a |\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50555,7 +50555,7 @@
    "summary": "an equals pair with a comma and a space in its content (U-067) is reported",
    "kind": "lint",
    "input": "x =1, y= 2\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50600,7 +50600,7 @@
    "summary": "an equals pair whose content holds a line break is reported",
    "kind": "lint",
    "input": "=a\nb=\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50626,7 +50626,7 @@
    "summary": "a tilde pair whose content holds a line break is reported",
    "kind": "lint",
    "input": "~a\nb~\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50671,7 +50671,7 @@
    "summary": "an underscore pair whose first later underscore cannot close is one pair from the first underscore",
    "kind": "lint",
    "input": "_b _c_\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50714,7 +50714,7 @@
    "summary": "a plus as the only text of a list item's marker line is reported",
    "kind": "lint",
    "input": "- +\n  b\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50738,7 +50738,7 @@
    "summary": "a plus line behind a quote mark is reported",
    "kind": "lint",
    "input": "> - a\n> +\n> b\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50780,7 +50780,7 @@
    "summary": "a second row of two-hyphen cells with alignment colons is reported",
    "kind": "lint",
    "input": "| a | b |\n|:--|--:|\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50876,7 +50876,7 @@
    "summary": "an indented continuation line of a term is reported at its text",
    "kind": "lint",
    "input": ":: a\n  b\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -51813,7 +51813,7 @@
    "summary": "a hyphen run after a blank line is text and is reported",
    "kind": "lint",
    "input": "a\n\n---\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -51856,7 +51856,7 @@
    "summary": "an underscore run in a quote is reported at the run",
    "kind": "lint",
    "input": "> ___\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -53290,7 +53290,7 @@
    "summary": "a plus marker in an item does not own a following quote",
    "kind": "lint",
    "input": "- a\n  +\n> q\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -53989,7 +53989,7 @@
    "summary": "standalone plus line inside list item has its own advice",
    "kind": "lint",
    "input": "- a\n  +\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -54977,7 +54977,7 @@
    "summary": "marker-line plus selects list-item variant",
    "kind": "lint",
    "input": "- +\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -60084,7 +60084,8 @@
    "kind": "cli",
    "args": [
     "lint",
-    "--fix"
+    "--fix",
+    "--upgrade"
    ],
    "stdin": "a ~s~ b\n",
    "options": {},
@@ -60793,7 +60794,7 @@
    "summary": "an underscore run on a task item's marker line is reported at the run",
    "kind": "lint",
    "input": "- [ ] ___\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -60817,7 +60818,7 @@
    "summary": "a spaced hyphen run behind an ordered marker is reported at the run",
    "kind": "lint",
    "input": "a. - - -\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -64185,7 +64186,7 @@
  "summary": "a joined tilde takes no part as a closer, so the later tilde closes the whole pair",
  "kind": "lint",
  "input": "~a~‍b~\n",
- "options": {},
+ "options": {"upgrade": true},
  "expected": {
   "diagnostics": [
    {
@@ -64210,7 +64211,7 @@
  "summary": "an escaped candidate opener takes no part and the next valid bare pair is reported",
  "kind": "lint",
  "input": "\\~foo ~bar~\n",
- "options": {},
+ "options": {"upgrade": true},
  "expected": {
   "diagnostics": [
    {
@@ -73320,7 +73321,7 @@
    "summary": "a tilde glued to an attribute block at the start of a cell is reported by both rules",
    "kind": "lint",
    "input": "| ~{.c} x |\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -75365,6 +75366,960 @@
    ]
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-1806",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-bare-highlight is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "a =b=\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-bare-highlight"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1807",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-bare-highlight is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\na =b=\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-bare-highlight",
+      "line": 4,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1808",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-bare-strike is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "a ~b~\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-bare-strike"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1809",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-bare-strike is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\na ~b~\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-bare-strike",
+      "line": 4,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1810",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-bare-underline is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "a _b_\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-bare-underline"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1811",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-bare-underline is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\na _b_\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-bare-underline",
+      "line": 4,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1812",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-cell-alignment is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "|=< a |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-cell-alignment"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1813",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-cell-alignment is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n|=< a |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-cell-alignment",
+      "line": 4,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1814",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-continuation-marker is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "+\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-continuation-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1815",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-continuation-marker is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n+\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-continuation-marker",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1816",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-loose-attribute is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "{loose}\n- a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-loose-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1817",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-loose-attribute is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n{loose}\n- a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-loose-attribute",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1818",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-separator-row is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "| a |\n|---|\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-separator-row"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1819",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-separator-row is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n| a |\n|---|\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-separator-row",
+      "line": 5,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1820",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-spaced-thematic-break is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "_ _ _\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-spaced-thematic-break"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1821",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-spaced-thematic-break is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n_ _ _\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-spaced-thematic-break",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1822",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-substitution-arrow is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "{~a~>b~}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-substitution-arrow"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1823",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-substitution-arrow is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n{~a~>b~}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-substitution-arrow",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1824",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "deprecated-table-attribute is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "{header-rows=1}\n| a |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-table-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1825",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "deprecated-table-attribute is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n{header-rows=1}\n| a |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-table-attribute",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1826",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "description-term-multi-line is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": ":: a\nb\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "description-term-multi-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1827",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "description-term-multi-line is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n:: a\nb\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "description-term-multi-line",
+      "line": 5,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1828",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "thematic-break-spelling is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "___\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "thematic-break-spelling"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1829",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "thematic-break-spelling is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n___\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "thematic-break-spelling",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1830",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-emphasis-underscore is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "a _b_\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-emphasis-underscore"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1831",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-emphasis-underscore is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\na _b_\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-emphasis-underscore",
+      "line": 4,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1832",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-emphasis-underscore is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "a _b_\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-emphasis-underscore",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1833",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-heading-continuation is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "# a\nb\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-heading-continuation"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1834",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-heading-continuation is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n# a\nb\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-heading-continuation",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1835",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-heading-continuation is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "# a\nb\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-heading-continuation",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1836",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-intraword-underscore is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "a_b_c\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-intraword-underscore"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1837",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-intraword-underscore is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\na_b_c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-intraword-underscore",
+      "line": 4,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1838",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-intraword-underscore is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "a_b_c\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-intraword-underscore",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1839",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-plus-bullet is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "+ a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-plus-bullet"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1840",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-plus-bullet is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n+ a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1841",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-plus-bullet is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "+ a\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1842",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-subscript-tilde is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "~x~\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-subscript-tilde"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1843",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-subscript-tilde is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n~x~\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-subscript-tilde",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1844",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-subscript-tilde is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "~x~\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-subscript-tilde",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1845",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-subscript-tilde-braced is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "{~x~}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-subscript-tilde-braced"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1846",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-subscript-tilde-braced is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n{~x~}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-subscript-tilde-braced",
+      "line": 4,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1847",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-subscript-tilde-braced is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "{~x~}\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-subscript-tilde-braced",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1848",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "djot-superscript-caret is off by default on a 0.2 document (carve#6499)",
+   "kind": "lint",
+   "input": "x^2^\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "djot-superscript-caret"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1849",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-superscript-caret is on in a document that declares Carve 0.1 (carve#6499)",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\nx^2^\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-superscript-caret",
+      "line": 4,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1850",
+   "clauses": [
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "djot-superscript-caret is on under the option upgrade (carve#6499)",
+   "kind": "lint",
+   "input": "x^2^\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-superscript-caret",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  }
  ]
 }

@@ -1190,15 +1190,18 @@ Written:
 
 **C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1 (C2-B-215, C2-B-216). A rule that is off by default is turned on by its id. There is no named group of rules, except the migration notices that the option `upgrade` turns on (C2-W-156).
 
-**C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are on by default through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id.
+**C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are migration notices of C2-W-156 through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id.
 
-`_a_` was underline in 0.1 and is a deprecated spelling in 0.2 (C2-W-110).
+`_a_` was underline in 0.1 and is a deprecated spelling in 0.2; a document that declares Carve 0.1 reports it (C2-W-110, C2-W-156).
 
 Example 24 (unverified)
 
 Input:
 
 ```carve
+---
+carve: 0.1
+---
 _a_
 ```
 
@@ -1207,7 +1210,7 @@ Reported: `deprecated-bare-underline`.
 
 **C2-W-111** Each `deprecated-` rule states its trigger on the 0.2 tokens and tree. The 0.2 engine holds no 0.1 parsing code for them.
 
-**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 with an ordinary 0.2 reading, only because 0.1 read the same text otherwise. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. The migration notices are `deprecated-indented-line-under-heading`, `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label` and `tight-list-item-with-blank-line`. The other `deprecated-` rules report a spelling that 0.2 removed, which an author does not write for its 0.2 reading, and stay on by C2-W-110.
+**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 only because 0.1 or Djot read the same text otherwise, or a spelling that 0.2 removed. A valid 0.2 document lints clean of them with the default options. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. The migration notices are the `deprecated-` rules (C2-W-110), the `djot-` rules except `djot-highlight-braces`, which reports a spelling that Djot and Carve read alike and stays off, `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label`, `tight-list-item-with-blank-line`, `description-term-multi-line` and `thematic-break-spelling`. A rule that reports a likely mistake or an ambiguity in the 0.2 document itself is no migration notice and keeps its default, even where Markdown or 0.1 read the text otherwise: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented` are such rules.
 
 ### Rules kept from 0.1
 
@@ -1231,7 +1234,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `definition-term-block-folded` | `This block opener is indented under a definition term, which has no content column, so it folds into the term as text (a fence line or a table row does not fold: it closes the description list). Dedent it to the container's content column to open the block, or put it in the term's ": " description.` | a block opener under a term is term text (C2-B-075) |
 | `delimited-table-malformed` | `This marked CSV/TSV fence has malformed quoting, so it remains a code block.` | severity error; new message text: the block stays a table (C2-B-181) |
 | `delimited-table-wide-row` | `A CSV/TSV record has more fields than the first record; the table keeps the extra columns.` | unchanged |
-| `deprecated-cell-alignment` | `The table cell alignment prefix "${prefix}" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write "${braced}". In 0.2 the old prefix is cell text, so the formatter leaves it; the upgrade tool rewrites it.` | the glued alignment marker is cut; the rule stays on through 0.2.x |
+| `deprecated-cell-alignment` | `The table cell alignment prefix "${prefix}" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write "${braced}". In 0.2 the old prefix is cell text, so the formatter leaves it; the upgrade tool rewrites it.` | the glued alignment marker is cut; a migration notice (C2-W-156) |
 | `description-separator-below-content-column` | `This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list.` | unchanged |
 | `duplicate-footnote-definition` | `Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins.` | unchanged |
 | `duplicate-id` | `Duplicate id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.`<br>`Heading slug "${base}" collides with another heading or an explicit id; its auto id becomes "${id}", and ambiguous references to "${base}" resolve to the first occurrence.` | renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039) |
@@ -1278,7 +1281,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `table-shaped-paragraph` | `This table-shaped line lacks a closing pipe and stays as ${owner} text. If a table row was intended, write a complete row where a table can start.` | stays: a line that starts with a pipe and does not end with one is text (C2-B-168) |
 | `table-span-marker-blocked` | `The "<" span marker cannot extend a cell. There is no cell to its left in its row. It is a cell that holds "<" as text; escape it as "\<" to say so, or remove it.`<br>`The "<" span marker cannot extend a cell. The cell to its left is covered by a row span from above. It is a cell that holds "<" as text; escape it as "\<" to say so, or remove it.`<br>`The "^" span marker cannot extend a cell. It stands in the first row of its group: head, body or foot. It is a cell that holds "^" as text; escape it as "\^" to say so, or remove it.`<br>`The "^" span marker cannot extend a cell. The cell above it spans more than one column. It is a cell that holds "^" as text; escape it as "\^" to say so, or remove it.` | a mark that joins nothing is now the text of its cell, also at a group boundary: head, body or foot (C2-B-173, C2-B-174) |
 | `table-width-total` | `The specified table column widths total more than 100%.` | unchanged |
-| `thematic-break-spelling` | `This line of "${raw}" is text in Carve 0.2. Write "***" for a thematic break.` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2 |
+| `thematic-break-spelling` | `This line of "${raw}" is text in Carve 0.2. Write "***" for a thematic break.` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2; migration notice (C2-W-156) |
 | `unattached-block-attribute` | `This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it.` | new message text; also an attribute line separated from its block by a blank line |
 | `unclosed-code-fence` | `The ${marker} fence opened here has no closing fence; ${ending}. Add a closing ${marker} where the code should stop.` `${ending}` is "it runs to the end of the document", "a continuation marker on line ${line} ends it" or "it ends at the end of its container on line ${line}". | severity error; the block ends with its container (C2-B-111) |
 | `unclosed-comment-fence` | `The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop.` | severity error; the block ends with its container (C2-B-111) |
@@ -1290,14 +1293,14 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `unused-link-reference-definition` | `This link reference definition is unused.` | unchanged |
 | `markdown-strong-double-star` | `` Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks. `` | new message text |
 | `markdown-strikethrough-double-tilde` | `` Markdown `~~strikethrough~~` is literal text in Carve. Carve strikethrough is the braced `{~x~}`. `` | new message text |
-| `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check |
-| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text |
-| `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check |
-| `djot-emphasis-underscore` | `` Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`. `` | opt-in Djot check; new message text |
-| `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check |
+| `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check; migration notice (C2-W-156) |
+| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text; migration notice (C2-W-156) |
+| `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check; migration notice (C2-W-156) |
+| `djot-emphasis-underscore` | `` Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`. `` | opt-in Djot check; new message text; migration notice (C2-W-156) |
+| `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check; migration notice (C2-W-156) |
 | `djot-highlight-braces` | `` Djot highlight `{=x=}` is also Carve highlight (`{=x=}`). `` | opt-in Djot check; new message text |
-| `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`. `` | opt-in Djot check |
-| `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes. `` | opt-in Djot check |
+| `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`. `` | opt-in Djot check; migration notice (C2-W-156) |
+| `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes. `` | opt-in Djot check; migration notice (C2-W-156) |
 | `a11y/image-alt` | `image has empty alternative text and is not marked decorative` | accessibility extension; severity warning, where the 0.1 source sets error |
 
 84 rules are kept, one of them under a new id.
@@ -1329,29 +1332,29 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 |---|---|---|---|
 | `block-opener-without-blank-line` | warning | a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, a definition | a table row is no trigger, because a row interrupts (C2-B-019) |
 | `unattached-caption` | warning | a caption line that is not directly below one of the six caption targets, a caption after a blank line among them | the target list has six kinds, the figure group included |
-| `deprecated-continuation-marker` | warning | a line that holds only `+` outside a table and a fence, and an item whose first line is `+` | unchanged |
+| `deprecated-continuation-marker` | warning, migration notice (C2-W-156) | a line that holds only `+` outside a table and a fence, and an item whose first line is `+` | unchanged |
 | `definition-in-container` | warning | a definition shape inside a container or indented at the top level | unchanged |
 | `list-item-body-below-content-column` | hint | a block of an item that is indented past the marker and short of the content column | unchanged |
 | `ordered-marker-right-aligned` | warning | an ordered marker left of its list that ends at the column where the list's markers end | unchanged |
 | `tight-list-item-with-blank-line` | hint, migration notice (C2-W-156) | a tight list in which an item holds a blank line and a paragraph | unchanged |
-| `deprecated-loose-attribute` | warning | a list that carries the key `loose` | unchanged |
+| `deprecated-loose-attribute` | warning, migration notice (C2-W-156) | a list that carries the key `loose` | unchanged |
 | `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once, at its first heading | unchanged |
 | `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
 | `fence-closer-indented` | hint | a closer whose indent differs from its opener's | unchanged |
 | `ordered-list-kind-split` | warning | a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them | the first marker fixes its style (C2-B-042) |
 | `duplicate-link-reference-definition` | warning | a link definition whose key was defined before | unchanged |
 | `duplicate-abbreviation-definition` | warning | an abbreviation definition whose key was defined before | unchanged |
-| `deprecated-spaced-thematic-break` | warning | a line of three or more stars, hyphens or underscores with spaces between them | unchanged; `- - -` is this case |
+| `deprecated-spaced-thematic-break` | warning, migration notice (C2-W-156) | a line of three or more stars, hyphens or underscores with spaces between them | unchanged; `- - -` is this case |
 | `deprecated-indented-line-under-heading` | warning, migration notice (C2-W-156) | a line directly below a heading line, or below it across comment-only lines, that is indented past the heading marker and so continues the heading, where 0.1 started a paragraph (C2-B-137, C2-B-154) | added with the heading continuation rule |
-| `description-term-multi-line` | hint | a term whose text spans several lines | unchanged |
+| `description-term-multi-line` | hint, migration notice (C2-W-156) | a term whose text spans several lines | unchanged |
 | `table-row-without-closing-pipe` | hint | a row with no closing pipe | void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it |
 | `table-row-attribute-as-cell` | warning | a row whose last cell holds only an attribute block | the half about a row without a closing pipe is void |
-| `deprecated-separator-row` | warning | a row in which every cell holds only hyphens and colons | unchanged |
-| `deprecated-table-attribute` | warning | `header-rows` on a pipe table | only `header-rows`; `aligns`, `valigns`, `widths` and `footer-rows` stay as in 0.1, and `header-cols` has no effect in 0.2.0 |
-| `deprecated-bare-underline` | warning | an underscore pair that 0.1 read as underline | unchanged |
-| `deprecated-bare-strike` | warning | a tilde pair that 0.1 read as strike | unchanged |
-| `deprecated-bare-highlight` | warning | an equals pair that 0.1 read as highlight | unchanged |
-| `deprecated-substitution-arrow` | warning | a braced strike span that holds `~>` | unchanged |
+| `deprecated-separator-row` | warning, migration notice (C2-W-156) | a row in which every cell holds only hyphens and colons | unchanged |
+| `deprecated-table-attribute` | warning, migration notice (C2-W-156) | `header-rows` on a pipe table | only `header-rows`; `aligns`, `valigns`, `widths` and `footer-rows` stay as in 0.1, and `header-cols` has no effect in 0.2.0 |
+| `deprecated-bare-underline` | warning, migration notice (C2-W-156) | an underscore pair that 0.1 read as underline | unchanged |
+| `deprecated-bare-strike` | warning, migration notice (C2-W-156) | a tilde pair that 0.1 read as strike | unchanged |
+| `deprecated-bare-highlight` | warning, migration notice (C2-W-156) | an equals pair that 0.1 read as highlight | unchanged |
+| `deprecated-substitution-arrow` | warning, migration notice (C2-W-156) | a braced strike span that holds `~>` | unchanged |
 | `braced-span-opener-as-text` | warning | a braced opener left as text because a bare delimiter inside it closed an outer span | unchanged |
 | `unattached-inline-attribute` | hint | an attribute block in an inline content that is glued to no host | unchanged |
 | `sigil-after-letter` | hint, migration notice (C2-W-156) | a mention or tag shape directly after a letter or number outside ASCII | unchanged |
