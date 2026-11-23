@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 options",
-  "description": "The 26 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
+  "description": "The 27 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "options"],
@@ -58,7 +58,7 @@
         }
       },
       "minItems": 24,
-      "maxItems": 26
+      "maxItems": 27
     }
   }
 }

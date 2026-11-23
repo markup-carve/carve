@@ -44216,7 +44216,7 @@
    "summary": "a footnote reference whose label is one space is reported",
    "kind": "lint",
    "input": "a[^ ]\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44299,7 +44299,7 @@
    "summary": "a percent run with text behind it inside a comment block is reported",
    "kind": "lint",
    "input": "%%%\n%%% x\n%%%\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -44546,7 +44546,7 @@
    "summary": "a line indented one space directly below a heading is reported",
    "kind": "lint",
    "input": "# a\n b\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -47069,7 +47069,7 @@
    "summary": "a mention shape glued to a non-ascii letter is reported",
    "kind": "lint",
    "input": "ü@bob\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -50983,7 +50983,7 @@
    "summary": "a tag shape whose name starts with a digit after a letter outside ASCII is reported",
    "kind": "lint",
    "input": "ü#1a\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -73019,7 +73019,7 @@
    "summary": "a sigil after a non-ASCII letter before a name that starts with a hyphen is reported",
    "kind": "lint",
    "input": "ü@-a\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -73108,7 +73108,7 @@
    "summary": "an indented heading continuation below a quoted comment-only line is reported",
    "kind": "lint",
    "input": "> # a\n> %% c\n>  b\n",
-   "options": {},
+   "options": {"upgrade": true},
    "expected": {
     "diagnostics": [
      {
@@ -73914,6 +73914,281 @@
        "value": "z"
       }
      ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1761",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-154"
+  ],
+  "why": "C2-W-156: Such a rule is off by default.",
+  "summary": "a multi-line heading lints clean by default (carve#6499)",
+  "kind": "lint",
+  "input": "== A long heading that\n   continues here\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "deprecated-indented-line-under-heading"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1762",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-231"
+  ],
+  "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+  "summary": "a document that declares Carve 0.1 reports a heading continuation (carve#6499)",
+  "kind": "lint",
+  "input": "---\ncarve: 0.1\n---\n== A long heading that\n   continues here\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-indented-line-under-heading",
+     "line": 5,
+     "column": 1,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1763",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-231"
+  ],
+  "why": "C2-W-156: A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`.",
+  "summary": "the key carve-version with a 0.1 patch version declares 0.1 (carve#6499)",
+  "kind": "lint",
+  "input": "---\ncarve-version: 0.1.13\n---\n# a\n b\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-indented-line-under-heading",
+     "line": 5,
+     "column": 1,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1764",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-231"
+  ],
+  "why": "C2-W-156: A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`.",
+  "summary": "a document that declares Carve 0.2 does not turn the migration notices on (carve#6499)",
+  "kind": "lint",
+  "input": "---\ncarve: 0.2\n---\n# a\n b\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "deprecated-indented-line-under-heading"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1765",
+  "clauses": [
+   "C2-W-156"
+  ],
+  "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+  "summary": "the option upgrade reports a heading continuation (carve#6499)",
+  "kind": "lint",
+  "input": "== A long heading that\n   continues here\n",
+  "options": {
+   "upgrade": true
+  },
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-indented-line-under-heading",
+     "line": 2,
+     "column": 1,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1766",
+  "clauses": [
+   "C2-W-156"
+  ],
+  "why": "C2-W-156: The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`.",
+  "summary": "rules off wins over the option upgrade (carve#6499)",
+  "kind": "lint",
+  "input": "# a\n b\n",
+  "options": {
+   "upgrade": true,
+   "rules": {
+    "deprecated-indented-line-under-heading": "off"
+   }
+  },
+  "expected": {
+   "notReported": [
+    "deprecated-indented-line-under-heading"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1767",
+  "clauses": [
+   "C2-W-156"
+  ],
+  "why": "C2-W-156: The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`.",
+  "summary": "rules off wins over a 0.1 declaration (carve#6499)",
+  "kind": "lint",
+  "input": "---\ncarve: 0.1\n---\n# a\n b\n",
+  "options": {
+   "rules": {
+    "deprecated-indented-line-under-heading": "off"
+   }
+  },
+  "expected": {
+   "notReported": [
+    "deprecated-indented-line-under-heading"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1768",
+  "clauses": [
+   "C2-W-156"
+  ],
+  "why": "C2-W-156: The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`.",
+  "summary": "rules on turns a migration notice on by its id (carve#6499)",
+  "kind": "lint",
+  "input": "# a\n b\n",
+  "options": {
+   "rules": {
+    "deprecated-indented-line-under-heading": "on"
+   }
+  },
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-indented-line-under-heading",
+     "line": 2,
+     "column": 1,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1769",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-110"
+  ],
+  "why": "C2-W-156: Such a rule is off by default.",
+  "summary": "a percent line with text inside a comment block lints clean by default (carve#6499)",
+  "kind": "lint",
+  "input": "%%%\n%%% x\n%%%\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "comment-fence-closer-with-text"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1770",
+  "clauses": [
+   "C2-W-156",
+   "C2-I-090"
+  ],
+  "why": "C2-W-156: Such a rule is off by default.",
+  "summary": "a sigil after a letter outside ASCII lints clean by default (carve#6499)",
+  "kind": "lint",
+  "input": "ü@bob\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "sigil-after-letter"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1771",
+  "clauses": [
+   "C2-W-156",
+   "C2-I-079"
+  ],
+  "why": "C2-W-156: Such a rule is off by default.",
+  "summary": "a blank footnote label lints clean by default (carve#6499)",
+  "kind": "lint",
+  "input": "a[^ ]\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "blank-reference-label"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1772",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-062"
+  ],
+  "why": "C2-W-156: Such a rule is off by default.",
+  "summary": "a tight list whose item holds a blank line lints clean by default (carve#6499)",
+  "kind": "lint",
+  "input": "- a\n\n  b\n- c\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "tight-list-item-with-blank-line"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1773",
+  "clauses": [
+   "C2-W-156",
+   "C2-B-062"
+  ],
+  "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+  "summary": "a document that declares Carve 0.1 reports a tight list whose item holds a blank line (carve#6499)",
+  "kind": "lint",
+  "input": "---\ncarve: 0.1\n---\n- a\n\n  b\n- c\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "tight-list-item-with-blank-line",
+     "line": 4,
+     "column": 1,
+     "channel": "lint",
+     "severity": "hint"
     }
    ]
   },

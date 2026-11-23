@@ -238,6 +238,14 @@
       "clauses": ["C2-H-124", "C2-H-137"]
     },
     {
+      "name": "upgrade",
+      "kind": "lint",
+      "read_by": "lint",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-137", "C2-W-156"]
+    },
+    {
       "name": "urlPolicy",
       "kind": "render",
       "read_by": "render",
