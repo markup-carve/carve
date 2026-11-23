@@ -71531,6 +71531,887 @@
     "carve": "{table a=1 z=2 header-rows=2 footer-rows=1 body-rows=1 body-header-rows=1}\n```csv\nh\ng\nx\nb\nf\n```\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1705",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-122",
+    "C2-B-137"
+   ],
+   "why": "C2-W-155: A line comment between them changes nothing, since a comment-only line closes no container (C2-B-137). C2-W-155: after the list `- a`, the line comment `c`, the list `* b` and that paragraph are written ` - a`, a blank line, `%% c`, a blank line, ` * b`, a blank line, ` ---yaml`, `k: v`, `---`, and only the comment is reported.",
+   "summary": "across a line comment the list above is still indented and only the comment is reported",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": " - a\n\n%% c\n\n * b\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "path": "/children/1"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1706",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-122",
+    "C2-B-137"
+   ],
+   "why": "C2-W-155: A line comment between them changes nothing, since a comment-only line closes no container (C2-B-137). C2-W-155: A line comment other than a region marker that stands between the blocks, or between a list and the paragraph, and that C2-W-122 does not spell is written at column 0 (C2-W-059), and the writer reports `structure-unspellable` at its path.",
+   "summary": "across a line comment a description list above is still indented and only the comment is reported",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         }
+        ]
+       },
+       {
+        "type": "definition_description",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "d"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": " :: t\n : d\n\n%% c\n\n * b\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "path": "/children/1"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1707",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-122"
+   ],
+   "why": "C2-W-155: A line comment other than a region marker that stands between the blocks, or between a list and the paragraph, and that C2-W-122 does not spell is written at column 0 (C2-W-059), and the writer reports `structure-unspellable` at its path.",
+   "summary": "a typed-opener paragraph after a list across a line comment keeps the indented list, and only the comment is reported",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": " - a\n\n%% c\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "path": "/children/1"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1708",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-122",
+    "C2-W-117"
+   ],
+   "why": "C2-W-155: A line comment between them changes nothing, since a comment-only line closes no container (C2-B-137). C2-W-155: Otherwise, as below a footnote, which has no indented spelling, the paragraph has no spelling there, and the writer reports `structure-unspellable` at its path (C2-W-117).",
+   "summary": "below a footnote across a line comment both the comment and the typed-opener paragraph are reported",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "n",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "n",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "path": "/children/2"
+     },
+     {
+      "code": "structure-unspellable",
+      "path": "/children/4"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1709",
+   "clauses": [
+    "C2-W-155",
+    "C2-B-014"
+   ],
+   "why": "C2-W-155: The container is closed only by a comment block between them, whose opener at column 0 it does not own (C2-B-014, C2-B-026), by a region marker line, which is no comment-only line and closes every container that does not own it (C2-B-137, C2-W-034), or by the line comment of C2-W-123, which ends it with its open fence.",
+   "summary": "a comment block between the list above and the indented list closes the list, so the indented spelling holds",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "block",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n%%%\nc\n%%%\n\n * b\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1710",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-122"
+   ],
+   "why": "C2-W-155: With the class `c` on the list `* b`, the attribute line stands above the comment (C2-W-122) and nothing is lost: `- a`, a blank line, `{.c}`, `%% c`, ` * b`, a blank line, ` ---yaml`, `k: v`, `---`.",
+   "summary": "the attribute line of the indented list stands above the line comment and closes the list above",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n{.c}\n%% c\n * b\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1711",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-123"
+   ],
+   "why": "C2-W-155: The container is closed only by a comment block between them, whose opener at column 0 it does not own (C2-B-014, C2-B-026), by a region marker line, which is no comment-only line and closes every container that does not own it (C2-B-137, C2-W-034), or by the line comment of C2-W-123, which ends it with its open fence.",
+   "summary": "the line comment after a list ending in an open fence closes the list, so the list above takes no departure",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "code_block",
+          "value": "x\n"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- ```\n  x\n%% c\n\n * b\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1712",
+   "clauses": [
+    "C2-W-155",
+    "C2-W-122"
+   ],
+   "why": "C2-W-155: With the class `c` on the list `* b`, the attribute line stands above the comment (C2-W-122) and nothing is lost: `- a`, a blank line, `{.c}`, `%% c`, ` * b`, a blank line, ` ---yaml`, `k: v`, `---`.",
+   "summary": "below a footnote, the attribute line of the indented list stands above the line comment and nothing is lost",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "n",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "n",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a[^n]\n\n[^n]: x\n\n{.c}\n%% c\n * b\n\n ---yaml\nk: v\n---\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }
