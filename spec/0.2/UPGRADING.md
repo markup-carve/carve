@@ -1134,6 +1134,8 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `fmt --migrate` | `carve upgrade --migrate`, the upgrade tool's repair of a reference whose only target differs in case; each respelled line is a record `case-reference` of entry U-429 |
 | `lint` exits with 1 on any finding, a hint included | `carve lint` exits with 1 only for a warning or an error, and with 0 for hints alone, so a hint rule never fails a CI job (C2-T-031); `--strict` restores the 0.1 status (C2-T-051) |
 | include option `maxWarnings` (default 100) and `suppressedWarnings` | the fixed cap `include_diagnostics` of 100 and `suppressedDiagnostics` (C2-T-024) |
+| `--extension KEY` and `--extensions` of the Rust engine; the tabs, mermaid and details extensions the PHP engine rendered by default | `--extensions` with a JSON list of the standard extension names of `data/extensions.json`, as `--extensions '["carve.tabs","carve.fencedRender.mermaid","carve.details"]'`, on `render`, `fmt`, `lint` and `ast` (C2-T-010); a host extension stays library-only |
+| `--tabs-mode css\|aria` of the Rust engine | `--extension-options '{"carve.tabs":{"mode":"aria"}}'` (C2-T-010, C2-X-056) |
 | `-h`, `-V` | `--help`, `--version` |
 
 Not carried over:

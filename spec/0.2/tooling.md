@@ -74,7 +74,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value. `--ignore` collects every value too.
 
-**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, a `count` option takes a decimal integer, so `--heading-shift=1`, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `allowLosses` and `maxLosses` keep the 0.1 flags: `--allow-loss` gives one code per instance (C2-T-027) and `--max-render-losses` the count (C2-T-029). `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag: they are options of the library calls only (C2-T-005). `codeBlockRenderer` takes host code as well and has no flag either. A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
+**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, a `count` option takes a decimal integer, so `--heading-shift=1`, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `allowLosses` and `maxLosses` keep the 0.1 flags: `--allow-loss` gives one code per instance (C2-T-027) and `--max-render-losses` the count (C2-T-029). `extensions` and `renderers` take host code, which JSON text cannot name, so a host extension or renderer is an option of the library calls only (C2-T-005). The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render`, and `--extension-options` takes a JSON object of their renderer options keyed by extension name, so `--extension-options '{"carve.tabs":{"mode":"aria"}}'`. A name that is no standard extension is refused with the category `usage`. `codeBlockRenderer` takes host code as well and has no flag either. A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
 
 ## Input and output
 
@@ -154,6 +154,8 @@ This document defines what every engine offers a caller: the library calls and t
 | `--strict-losses` | switch | the option `strictLosses`, with the allow list of C2-T-026 |
 | `--symbols` | JSON | the option `symbols` |
 | `--url-policy` | JSON | the option `urlPolicy` |
+| `--extensions` | JSON | the option `extensions`, standard extensions only (C2-T-010) |
+| `--extension-options` | JSON | the renderer options of those extensions (C2-T-010) |
 | `--from-ast` | switch | reads each file as a tree in JSON (C2-A-188) |
 | `--includes` | switch, on | expands includes (C2-T-018) |
 | `--include-root` | path | the containment root of includes (C2-N-004) |
@@ -180,6 +182,8 @@ This document defines what every engine offers a caller: the library calls and t
 |---|---|---|
 | `--positions` | switch, on | writes `pos` on the nodes |
 | `--envelope` | switch | writes the envelope of C2-A-012 instead of the bare tree |
+| `--extensions` | JSON | the option `extensions`, standard extensions only (C2-T-010) |
+| `--extension-options` | JSON | the renderer options of those extensions (C2-T-010) |
 | `--includes` | switch, on | expands includes (C2-T-018) |
 | `--include-root` | path | the containment root of includes (C2-N-004) |
 | `--report-includes` | path | writes the include report (C2-T-022) |
@@ -193,6 +197,8 @@ This document defines what every engine offers a caller: the library calls and t
 | `--write` | switch | replaces each file (C2-T-016); `-w` is the same |
 | `--normalize` | switch | the option `normalize` |
 | `--align-tables` | switch | the option `alignTables` |
+| `--extensions` | JSON | the option `extensions`, standard extensions only (C2-T-010) |
+| `--extension-options` | JSON | the renderer options of those extensions (C2-T-010) |
 | `--from-ast` | switch | writes each file read as a tree in JSON (C2-W-102) |
 | `--output` | path | writes the product to a file (C2-T-053); `-o` is the same |
 
@@ -205,6 +211,8 @@ This document defines what every engine offers a caller: the library calls and t
 | `--rules` | JSON | the option `rules` (C2-W-109) |
 | `--platforms` | JSON | the option `platforms` (C2-W-109) |
 | `--heading-ids` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower` | the option `headingIds` (C2-T-042) |
+| `--extensions` | JSON | the option `extensions`, standard extensions only (C2-T-010) |
+| `--extension-options` | JSON | the renderer options of those extensions (C2-T-010) |
 | `--json` | switch | writes a diagnostics report (C2-T-021) instead of lines |
 | `--includes` | switch, on | expands includes (C2-T-018) |
 | `--include-root` | path | the containment root of includes (C2-N-004) |

@@ -177,6 +177,33 @@
       ]
     },
     {
+      "name": "extension-options",
+      "commands": [
+        "ast",
+        "fmt",
+        "lint",
+        "render"
+      ],
+      "kind": "json",
+      "clauses": [
+        "C2-T-010"
+      ]
+    },
+    {
+      "name": "extensions",
+      "commands": [
+        "ast",
+        "fmt",
+        "lint",
+        "render"
+      ],
+      "kind": "json",
+      "option": "extensions",
+      "clauses": [
+        "C2-T-010"
+      ]
+    },
+    {
       "name": "fix",
       "commands": [
         "lint"

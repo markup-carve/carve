@@ -29196,8 +29196,8 @@
    "clauses": [
     "C2-T-010"
    ],
-   "why": "C2-T-010: `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag",
-   "summary": "there is no extensions flag",
+   "why": "C2-T-010: The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render`",
+   "summary": "an empty list of standard extensions renders the core output",
    "kind": "cli",
    "files": {
     "a.crv": {
@@ -29212,8 +29212,9 @@
    ],
    "options": {},
    "expected": {
-    "status": 2,
-    "stderrCategory": "usage"
+    "status": 0,
+    "stdout": "<p>a</p>\n",
+    "stderrCategory": null
    },
    "from": []
   },
@@ -72410,6 +72411,308 @@
     "carve": "a[^n]\n\n[^n]: x\n\n{.c}\n%% c\n * b\n\n ---yaml\nk: v\n---\n",
     "diagnostics": [],
     "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1713",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: A note that would close only because a caret pair inside it opens is text, and that caret pair is an ordinary bracket.",
+   "summary": "a note that closes only when the footnote reference inside it opens is text, and the caret pair an ordinary bracket",
+   "kind": "parse",
+   "input": "^[[[^\\}[]]]",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^[[[^}[]]]"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1714",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: Unclosed, the two characters are text.",
+   "summary": "after an inline footnote that never closes, a footnote reference opens as usual",
+   "kind": "parse",
+   "input": "^[a [^1]\n\n[^1]: n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^[a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "n"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1715",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: Unclosed, the two characters are text.",
+   "summary": "after an inline footnote that never closes, a later inline footnote opens as usual",
+   "kind": "parse",
+   "input": "x ^[a ^[b] c",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x ^[a "
+       },
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " c"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1716",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: A note that would close only because a caret pair inside it opens is text, and that caret pair is an ordinary bracket.",
+   "summary": "a note that closes only when the inline footnote inside it opens is text, and no note nests in a note",
+   "kind": "parse",
+   "input": "^[^[[^]\\[]",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^[^[[^][]"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1717",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-043"
+   ],
+   "why": "C2-T-010: The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render`",
+   "summary": "--extensions renders the tabs group with the standard tabs renderer",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": ":::: tabs\n::: tab \"A\"\na\n:::\n::::\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabs\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1718",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-056"
+   ],
+   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name, so `--extension-options '{\"carve.tabs\":{\"mode\":\"aria\"}}'`.",
+   "summary": "--extension-options gives the tabs renderer its aria mode",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": ":::: tabs\n::: tab \"A\"\na\n:::\n::::\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabs\"]",
+    "--extension-options",
+    "{\"carve.tabs\":{\"mode\":\"aria\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\"><p>a</p></div></div>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1719",
+   "clauses": [
+    "C2-T-010"
+   ],
+   "why": "C2-T-010: A name that is no standard extension is refused with the category `usage`.",
+   "summary": "a name in --extensions that is no standard extension is a usage error",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.nope\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1720",
+   "clauses": [
+    "C2-T-010"
+   ],
+   "why": "C2-T-010: A name that is no standard extension is refused with the category `usage`.",
+   "summary": "a name in --extension-options that is no standard extension is a usage error",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabs\"]",
+    "--extension-options",
+    "{\"carve.nope\":{}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1721",
+   "clauses": [
+    "C2-T-010"
+   ],
+   "why": "C2-T-010: The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render`",
+   "summary": "fmt takes --extensions",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "fmt",
+    "--extensions",
+    "[\"carve.tabs\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1722",
+   "clauses": [
+    "C2-T-010"
+   ],
+   "why": "C2-T-010: The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render`",
+   "summary": "lint takes --extensions",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--extensions",
+    "[\"carve.tabs\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "",
+    "stderrCategory": null
    },
    "from": []
   }

@@ -1796,7 +1796,7 @@ Example 119 (unverified)
 
 **C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085). The attribute blocks glued to it follow as C2-I-085 says, in the fixed order: `[^x]{.c}{#i}` gives `<p>[^x]{#i .c}</p>`, where 0.1 wrote them as typed (U-207). Lint reports the reference with `unresolved-footnote`.
 
-**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link. Unclosed, the two characters are text.
+**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link. Unclosed, the two characters are text. A note that would close only because a caret pair inside it opens is text, and that caret pair is an ordinary bracket.
 
 The note of the inline footnote holds `[^1]` as text, so the document has one note, and the definition of `1`, which nothing else uses, writes nothing (C2-I-089).
 

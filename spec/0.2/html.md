@@ -2687,7 +2687,7 @@ Reported: `profile-construct-degraded`.
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
 | `adapter` | import | `generic`, `tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word` or `google-docs` | `generic` | C2-M-102 |
 
-Nineteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options, two are lint options and one, `adapter`, is an option of the HTML importer alone. `rawHtml`, `strictLosses`, `allowLosses`, `maxLosses` and `labels` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205, C2-M-101), `headingIds` by lint (C2-T-042) and `headingShift` by the Markdown export (C2-H-209). `codeBlockRenderer`, like `extensions` and `renderers`, takes host code and has no flag (C2-T-010).
+Nineteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options, two are lint options and one, `adapter`, is an option of the HTML importer alone. `rawHtml`, `strictLosses`, `allowLosses`, `maxLosses` and `labels` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205, C2-M-101), `headingIds` by lint (C2-T-042) and `headingShift` by the Markdown export (C2-H-209). `codeBlockRenderer` takes host code and has no flag; `extensions` and `renderers` take host code as well, and only the standard extensions have a flag, `--extensions` with `--extension-options` (C2-T-010).
 
 ## The clauses of PART 10
 
