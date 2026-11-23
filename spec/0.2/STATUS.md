@@ -350,6 +350,14 @@ C2-W-155 now keeps its spelling only where the indented list stays top-level. Wh
 - `carve-php`: carve-php#5642 refuses every such shape; it needs the same spellings.
 - `carve-rs`: the same, with its port of #6398 and #6409.
 
+## Engine gaps from a line comment above the indented list (#6430)
+
+C2-W-155 named a comment between the indented list and the container above as something that keeps the list top-level. A line comment does not: a comment-only line closes no container (C2-B-137), so the container still takes the indented list. The clause now says that only a comment block, or the line comment of C2-W-123 that ends the container with its open fence, closes it. A line comment there that C2-W-122 does not spell is written at column 0 and reported, and the blocks around it are written as without it. Clause cases CC-1705 to CC-1712. Measured on `carve-js` `next2` `7dfff21`, `carve-php` `next2` `a17010d` and `carve-rs` `next2` `78ae0ae`: the comment block cases (CC-1709) pass in all three.
+
+- `carve-js`: indent the list or description list above across a line comment (CC-1705 to CC-1707), and report the paragraph as well below a footnote (CC-1708).
+- `carve-php`: indent the list above a paragraph that follows it across a line comment (CC-1707), and take no departure behind the open fence of C2-W-123 (CC-1711).
+- `carve-rs`: report the line comment instead of the paragraph and indent the container above (CC-1705 to CC-1708, carve-rs#4608), and keep the spellings of CC-1710 to CC-1712, which it now reports as losses.
+
 ## Engine gaps from the table key order ruling of 23 November
 
 The maintainer ruling on #6431 places the table keys the writer makes from the table fields (C2-W-136): they stand after the keys of `attrs`, in the order C2-W-136 lists them. Clause cases CC-1699 to CC-1704. Measured on `carve-js` `next2` `7ccf200`, `carve-php` `next2` `1992f1c` and `carve-rs` `next2` `887141d`: in every case the expected output reads back to the tree of the input in all three engines, and CC-1699 passes in all three.
