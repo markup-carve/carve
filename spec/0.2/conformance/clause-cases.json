@@ -69715,6 +69715,26 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1665",
+  "clauses": [
+   "C2-W-153",
+   "C2-I-097",
+   "C2-W-150"
+  ],
+  "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not. C2-W-150: Its fields are those of `id_fields`; `owner` names the first node that carries the id, `rendered` says whether any occurrence of it is present in the rendered HTML, `xref` says whether it is a cross-reference target on a heading or a numbered caption owner, including a numbered panel, and `heading_text` is the plain text of the first heading with the id read as C2-I-084 reads it, absent where there is none.",
+  "summary": "typed metadata: a reference that matches a decomposed metadata id and a precomposed heading id under NFC resolves to the heading and is no metadata key cross-reference",
+  "kind": "lint",
+  "input": "Text\n\n{id=\"é\"}\n---yaml\na: 1\n---\n\n{id=\"é\"}\n# H\n\nSee </#é>.\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "frontmatter-crossref",
+    "broken-crossref"
+   ]
+  },
+  "from": []
  }
  ]
 }

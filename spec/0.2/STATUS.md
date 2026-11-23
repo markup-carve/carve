@@ -315,7 +315,7 @@ The ruling on #6394 (option 1) writes a typed-opener paragraph directly after a 
 
 ## Engine gaps from the frontmatter cross-reference fix of 23 November
 
-The `frontmatter-crossref` row of `data/lint-model.json` (#6390) matches ids under NFC, as C2-I-097 and the `broken-crossref` row do, and reports only where the id has no cross-reference target (the `xref` field of C2-W-150), so a heading that shares the id keeps the reference resolved (C2-I-096). Clause cases CC-1663 and CC-1664 are added. Measured with the readiness runner on the engine heads of `scripts/next2-readiness-baseline.json`: CC-1664 passes in all three engines; on `carve-js` `next2` `9947883` both cases pass, in data mode with the fixed row and with the hand-written rule.
+The `frontmatter-crossref` row of `data/lint-model.json` (#6390) matches ids under NFC, as C2-I-097 and the `broken-crossref` row do, and reports only where the id has no cross-reference target (the `xref` field of C2-W-150), so a heading that shares the id keeps the reference resolved (C2-I-096). Clause cases CC-1663 to CC-1665 are added; CC-1665 combines both, a decomposed metadata id and a precomposed heading id that the reference matches under NFC. Measured with the readiness runner on the engine heads of `scripts/next2-readiness-baseline.json`: CC-1664 passes in all three engines; on `carve-js` `next2` `9947883` all three cases pass, in data mode with the fixed row and with the hand-written rule.
 
 - All three engines at the baseline heads: a precomposed reference to a decomposed metadata id reports `broken-crossref` instead of `frontmatter-crossref` (CC-1663).
 

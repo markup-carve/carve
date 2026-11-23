@@ -20,5 +20,5 @@ test('frontmatter-crossref looks ids up under NFC and skips an id that has a cro
 test('the decomposed id and the shared heading id are pinned by clause cases', () => {
   const byId = new Map(cases.map((entry) => [entry.id, entry]))
   assert.ok(byId.get('CC-1663')?.expected.diagnostics.some(({ code }) => code === 'frontmatter-crossref'))
-  assert.ok(byId.get('CC-1664')?.expected.notReported.includes('frontmatter-crossref'))
+  for (const id of ['CC-1664', 'CC-1665']) assert.ok(byId.get(id)?.expected.notReported.includes('frontmatter-crossref'), id)
 })
