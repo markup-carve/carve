@@ -234,9 +234,11 @@ jobs:
       # cache and it is what makes a cache miss, or a bundle path this action
       # configures differently than expected, an ordinary slow run rather than a
       # red job.
+      # 3.4 as in carve-rb's own CI: on ubuntu-26.04, rb-sys bindgen cannot
+      # parse Ruby 3.2's headers ("unknown type name 'bool'").
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: '3.4'
           bundler-cache: true
           working-directory: carve-rb
 
