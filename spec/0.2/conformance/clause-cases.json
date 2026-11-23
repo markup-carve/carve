@@ -73399,6 +73399,100 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1746",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "a block at the start of a heading content is glued to no host and is reported",
+   "kind": "lint",
+   "input": "# {.x} y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1747",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "a padded block that opens a paragraph is no block marker and is reported",
+   "kind": "lint",
+   "input": "{ .x} c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1748",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a table cell that `table-row-attribute-as-cell` reports are not reported",
+   "summary": "a run that fills the last cell of a row is left to table-row-attribute-as-cell",
+   "kind": "lint",
+   "input": "| {.x}{#y} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1749",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "a block that fills a cell other than the last is reported",
+   "kind": "lint",
+   "input": "| {.x} | b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
