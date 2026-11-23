@@ -2353,6 +2353,240 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-292",
+   "document": "syntax-blocks.md",
+   "number": 292,
+   "section": "Labels",
+   "clauses": [
+    "C2-B-234"
+   ],
+   "clauseScope": "section",
+   "kind": "render",
+   "input": "![a](a.png)\n^ The caption\n  goes on here\nNext prose.",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"a.png\" alt=\"a\">\n  <figcaption>The caption\ngoes on here</figcaption>\n</figure>\n<p>Next prose.</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "image",
+         "src": "a.png",
+         "alt": "a",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 12,
+          "startOffset": 0,
+          "endOffset": 11
+         }
+        }
+       ],
+       "role": "image",
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 15,
+        "startOffset": 0,
+        "endOffset": 40
+       },
+       "caption": {
+        "type": "caption",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "The caption",
+            "pos": {
+             "startLine": 2,
+             "endLine": 2,
+             "startColumn": 3,
+             "endColumn": 14,
+             "startOffset": 14,
+             "endOffset": 25
+            }
+           },
+           {
+            "type": "soft_break",
+            "pos": {
+             "startLine": 2,
+             "endLine": 3,
+             "startColumn": 14,
+             "endColumn": 3,
+             "startOffset": 25,
+             "endOffset": 28
+            }
+           },
+           {
+            "type": "text",
+            "value": "goes on here",
+            "pos": {
+             "startLine": 3,
+             "endLine": 3,
+             "startColumn": 3,
+             "endColumn": 15,
+             "startOffset": 28,
+             "endOffset": 40
+            }
+           }
+          ],
+          "pos": {
+           "startLine": 2,
+           "endLine": 3,
+           "startColumn": 3,
+           "endColumn": 15,
+           "startOffset": 14,
+           "endOffset": 40
+          }
+         }
+        ],
+        "pos": {
+         "startLine": 2,
+         "endLine": 3,
+         "startColumn": 1,
+         "endColumn": 15,
+         "startOffset": 12,
+         "endOffset": 40
+        }
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "Next prose.",
+         "pos": {
+          "startLine": 4,
+          "endLine": 4,
+          "startColumn": 1,
+          "endColumn": 12,
+          "startOffset": 41,
+          "endOffset": 52
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 4,
+        "endLine": 4,
+        "startColumn": 1,
+        "endColumn": 12,
+        "startOffset": 41,
+        "endOffset": 52
+       }
+      }
+     ],
+     "srcByteLength": 52,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "syntax-blocks-293",
+   "document": "syntax-blocks.md",
+   "number": 293,
+   "section": "Labels",
+   "clauses": [
+    "C2-B-234"
+   ],
+   "clauseScope": "section",
+   "kind": "render",
+   "input": ":: Term\nMore prose.",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>Term</dt>\n</dl>\n<p>More prose.</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "definition_list",
+       "children": [
+        {
+         "type": "definition_term",
+         "children": [
+          {
+           "type": "text",
+           "value": "Term",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 4,
+            "endColumn": 8,
+            "startOffset": 3,
+            "endOffset": 7
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 8,
+          "startOffset": 0,
+          "endOffset": 7
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 8,
+        "startOffset": 0,
+        "endOffset": 7
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "More prose.",
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 12,
+          "startOffset": 8,
+          "endOffset": 19
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 2,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 12,
+        "startOffset": 8,
+        "endOffset": 19
+       }
+      }
+     ],
+     "srcByteLength": 19,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-17",
    "document": "syntax-blocks.md",
    "number": 17,
@@ -9964,10 +10198,10 @@
    ],
    "clauseScope": "section",
    "kind": "render",
-   "input": ":: term\nmore term text\n: first description\n\n: second description",
+   "input": ":: term\n: first description\n\n: second description",
    "options": {},
    "expected": {
-    "html": "<dl>\n  <dt>term\nmore term text</dt>\n  <dd>first description</dd>\n  <dd>second description</dd>\n</dl>",
+    "html": "<dl>\n  <dt>term</dt>\n  <dd>first description</dd>\n  <dd>second description</dd>\n</dl>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -9989,38 +10223,15 @@
             "startOffset": 3,
             "endOffset": 7
            }
-          },
-          {
-           "type": "soft_break",
-           "pos": {
-            "startLine": 1,
-            "endLine": 2,
-            "startColumn": 8,
-            "endColumn": 1,
-            "startOffset": 7,
-            "endOffset": 8
-           }
-          },
-          {
-           "type": "text",
-           "value": "more term text",
-           "pos": {
-            "startLine": 2,
-            "endLine": 2,
-            "startColumn": 1,
-            "endColumn": 15,
-            "startOffset": 8,
-            "endOffset": 22
-           }
           }
          ],
          "pos": {
           "startLine": 1,
-          "endLine": 2,
+          "endLine": 1,
           "startColumn": 1,
-          "endColumn": 15,
+          "endColumn": 8,
           "startOffset": 0,
-          "endOffset": 22
+          "endOffset": 7
          }
         },
         {
@@ -10033,32 +10244,32 @@
              "type": "text",
              "value": "first description",
              "pos": {
-              "startLine": 3,
-              "endLine": 3,
+              "startLine": 2,
+              "endLine": 2,
               "startColumn": 3,
               "endColumn": 20,
-              "startOffset": 25,
-              "endOffset": 42
+              "startOffset": 10,
+              "endOffset": 27
              }
             }
            ],
            "pos": {
-            "startLine": 3,
-            "endLine": 3,
+            "startLine": 2,
+            "endLine": 2,
             "startColumn": 3,
             "endColumn": 20,
-            "startOffset": 25,
-            "endOffset": 42
+            "startOffset": 10,
+            "endOffset": 27
            }
           }
          ],
          "pos": {
-          "startLine": 3,
-          "endLine": 3,
+          "startLine": 2,
+          "endLine": 2,
           "startColumn": 1,
           "endColumn": 20,
-          "startOffset": 23,
-          "endOffset": 42
+          "startOffset": 8,
+          "endOffset": 27
          }
         },
         {
@@ -10071,46 +10282,46 @@
              "type": "text",
              "value": "second description",
              "pos": {
-              "startLine": 5,
-              "endLine": 5,
+              "startLine": 4,
+              "endLine": 4,
               "startColumn": 3,
               "endColumn": 21,
-              "startOffset": 46,
-              "endOffset": 64
+              "startOffset": 31,
+              "endOffset": 49
              }
             }
            ],
            "pos": {
-            "startLine": 5,
-            "endLine": 5,
+            "startLine": 4,
+            "endLine": 4,
             "startColumn": 3,
             "endColumn": 21,
-            "startOffset": 46,
-            "endOffset": 64
+            "startOffset": 31,
+            "endOffset": 49
            }
           }
          ],
          "pos": {
-          "startLine": 5,
-          "endLine": 5,
+          "startLine": 4,
+          "endLine": 4,
           "startColumn": 1,
           "endColumn": 21,
-          "startOffset": 44,
-          "endOffset": 64
+          "startOffset": 29,
+          "endOffset": 49
          }
         }
        ],
        "pos": {
         "startLine": 1,
-        "endLine": 5,
+        "endLine": 4,
         "startColumn": 1,
         "endColumn": 21,
         "startOffset": 0,
-        "endOffset": 64
+        "endOffset": 49
        }
       }
      ],
-     "srcByteLength": 64,
+     "srcByteLength": 49,
      "stages": [
       "referenceResolution",
       "tableAlignment"
@@ -24368,7 +24579,7 @@
    "input": "| a |\n^ one\n^ two",
    "options": {},
    "expected": {
-    "html": "<table>\n  <caption>one\n^ two</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+    "html": "<table>\n  <caption>one</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>^ two</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -24449,11 +24660,11 @@
        ],
        "pos": {
         "startLine": 1,
-        "endLine": 3,
+        "endLine": 2,
         "startColumn": 1,
         "endColumn": 6,
         "startOffset": 0,
-        "endOffset": 17
+        "endOffset": 11
        },
        "caption": {
         "type": "caption",
@@ -24472,49 +24683,51 @@
              "startOffset": 8,
              "endOffset": 11
             }
-           },
-           {
-            "type": "soft_break",
-            "pos": {
-             "startLine": 2,
-             "endLine": 3,
-             "startColumn": 6,
-             "endColumn": 1,
-             "startOffset": 11,
-             "endOffset": 12
-            }
-           },
-           {
-            "type": "text",
-            "value": "^ two",
-            "pos": {
-             "startLine": 3,
-             "endLine": 3,
-             "startColumn": 1,
-             "endColumn": 6,
-             "startOffset": 12,
-             "endOffset": 17
-            }
            }
           ],
           "pos": {
            "startLine": 2,
-           "endLine": 3,
+           "endLine": 2,
            "startColumn": 3,
            "endColumn": 6,
            "startOffset": 8,
-           "endOffset": 17
+           "endOffset": 11
           }
          }
         ],
         "pos": {
          "startLine": 2,
-         "endLine": 3,
+         "endLine": 2,
          "startColumn": 1,
          "endColumn": 6,
          "startOffset": 6,
-         "endOffset": 17
+         "endOffset": 11
         }
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "^ two",
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 12,
+          "endOffset": 17
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 12,
+        "endOffset": 17
        }
       }
      ],
@@ -24523,7 +24736,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "unattached-caption"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"

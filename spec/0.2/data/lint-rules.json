@@ -515,11 +515,11 @@
       "severity": "hint",
       "channel": "lint",
       "status": "new",
-      "default": "upgrade",
-      "messages": ["This line continues the term above. Add a blank line after the term if it is a paragraph."],
+      "default": "on",
+      "messages": ["This line continues the term above, so its `:` is term text and opens no description. Put the description mark at the column of the term mark."],
       "message_origin": "design",
-      "reports": "the first line below a term's mark line that holds text of the term, which continues the term like paragraph text (C2-B-069) instead of starting a paragraph; comment-only lines between are skipped, and a term on one line is not reported; once per term, the range runs from the first character of that line's text, behind its prefixes and indentation, to the end of the line (C2-B-069)",
-      "clauses": ["C2-B-069"]
+      "reports": "a line below a term's mark line that is text of the term, because it is indented past the term mark (C2-B-234), and whose text, behind its prefixes and indentation, starts with a description mark `:` followed by a space or a tab, which opens no description there (C2-B-016); once per line, the range runs from that mark to the end of the line (C2-B-069)",
+      "clauses": ["C2-B-016", "C2-B-069", "C2-B-234"]
     },
     {
       "id": "destination-denied",
@@ -1914,7 +1914,7 @@
         "This caption line is not directly below an image, table, code block, quote, math block, figure group or code include, so it is text. If a blank line separates it from such a block, remove the blank line; otherwise escape the caret."
       ],
       "message_origin": "data_file",
-      "reports": "a caption line that is not directly below an image, table, code block, quote, math block, figure group or valid code include, a caption after a blank line among them",
+      "reports": "a caption line that is not directly below an image, table, code block, quote, math block, figure group or valid code include, a caption after a blank line among them, and a caption line directly below a caption that the same container holds (C2-B-149)",
       "change": "the target list has seven kinds, the figure group and code include included",
       "clauses": ["C2-B-149", "C2-N-073"]
     },

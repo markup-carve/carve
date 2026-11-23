@@ -23,7 +23,7 @@ Terms:
 - The *indent* of a line is the column of its first character that is not a space or a tab. Indent that remains after the prefixes of the open containers is skipped before the shape of a line is tested, so a heading, a quote, a table row or a list marker may stand at any indent. The clauses that pin a column say so: a definition and a frontmatter opener stand at column 0 (C2-B-081, C2-B-161).
 - A marker, a mark or an opener that needs *content* needs at least one character that is not a space or a tab behind it on its line. Spaces and tabs alone are no content, since they are dropped at the end of a line (C2-I-002).
 
-**C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a heading (C2-B-154), the part of its tail an open link definition may still take (C2-B-083), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). The blank-line count and pending attribute lines also decide a typed metadata opener after line 1 (C2-B-232, C2-B-233). A pending attribute line waits for the next line (C2-B-092); no other block fact waits for a later line.
+**C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a label (C2-B-234), the part of its tail an open link definition may still take (C2-B-083), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). The blank-line count and pending attribute lines also decide a typed metadata opener after line 1 (C2-B-232, C2-B-233). A pending attribute line waits for the next line (C2-B-092); no other block fact waits for a later line.
 
 **C2-B-003** Columns count code points from 0, starting after the quote marks of the open quotes: column 0 of quoted content is the column directly behind the innermost quote mark and its one space.
 
@@ -482,6 +482,54 @@ Example 16 (generated)
   </li>
   <li>b</li>
 </ul>
+```
+
+:::
+
+## Labels
+
+**C2-B-234** A heading (C2-B-154), a caption (C2-B-148) and a term (C2-B-069) are labels. A label holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. A line that is not indented past the marker ends the label and is read with no label open: a caption line among such lines is still tested against its host (C2-B-018, C2-B-146, C2-B-149), and below a term the line closes the list unless it is a description line or a term line at the list's column (C2-B-071). Only paragraph text takes lazy lines (C2-B-012), also where it stands behind a list, description, footnote or quote marker.
+
+Prose below a caption is a paragraph; a caption line indented past the `^` continues the caption (C2-B-148, C2-B-234).
+
+Example 292 (unverified)
+
+::: compare
+
+```carve
+![a](a.png)
+^ The caption
+  goes on here
+Next prose.
+```
+
+```html
+<figure>
+  <img src="a.png" alt="a">
+  <figcaption>The caption
+goes on here</figcaption>
+</figure>
+<p>Next prose.</p>
+```
+
+:::
+
+An unindented line below a term closes the list (C2-B-071, C2-B-234).
+
+Example 293 (unverified)
+
+::: compare
+
+```carve
+:: Term
+More prose.
+```
+
+```html
+<dl>
+  <dt>Term</dt>
+</dl>
+<p>More prose.</p>
 ```
 
 :::
@@ -1803,7 +1851,7 @@ Example 62 (unverified)
 
 **C2-B-068** An entry with terms only is valid.
 
-**C2-B-069** A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.
+**C2-B-069** A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it. A term is a label (C2-B-234): it continues only on lines indented past its mark. A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071). In 0.1 a term was one line.
 
 The term mark, its space and a tab: the tab stands before the content column and is not text of the term (C2-B-069).
 
@@ -1837,7 +1885,7 @@ Example 261 (unverified)
 
 **C2-B-070** A fence line or a table row directly below term text is an interrupter, and because a term owns no lines, it closes the description list, whatever its indent.
 
-**C2-B-071** A term owns no lines: after a blank line, a line that is not a description line or a term line at the list's column closes the list, whatever its indent.
+**C2-B-071** A term owns no lines: after a blank line, a line that is not a description line or a term line at the list's column closes the list, whatever its indent. Directly below a term the same holds for a line that is not indented past the term mark (C2-B-234).
 
 **C2-B-072** A description may start with any block on its marker line.
 
@@ -1865,7 +1913,6 @@ Example 63 (unverified)
 
 ```carve
 :: term
-more term text
 : first description
 
 : second description
@@ -1873,8 +1920,7 @@ more term text
 
 ```html
 <dl>
-  <dt>term
-more term text</dt>
+  <dt>term</dt>
   <dd>first description</dd>
   <dd>second description</dd>
 </dl>
@@ -4511,9 +4557,9 @@ Example 257 (unverified)
 
 **C2-B-147** A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group. A code include, an include whose valid options hold `code`, takes a caption too, which its expansion gives to the block it becomes (C2-N-073).
 
-**C2-B-148** A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.
+**C2-B-148** A caption is a label (C2-B-234): its text continues only on lines indented past its `^` and ends as a heading does. A line that is not indented past the `^` starts the next block, so a caret line directly below a caption in the same container is a caption line of its own, which is text (C2-B-149). A caption of two lines indents its second line.
 
-**C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it. A caption line with no host block is text under the same rule.
+**C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it. A caption line with no host block is text under the same rule. So is a caption line directly below a caption that the same container holds.
 
 A raw block is not one of the six blocks of C2-B-147, so the caret line below it is text (C2-B-149).
 
@@ -4736,15 +4782,17 @@ Example 168 (unverified)
 
 ```html
 <table>
-  <caption>one
-^ two</caption>
+  <caption>one</caption>
   <tbody>
     <tr><td>a</td></tr>
   </tbody>
 </table>
+<p>^ two</p>
 ```
 
 :::
+
+Reported: `unattached-caption`.
 
 Example 169 (unverified)
 
@@ -4839,7 +4887,7 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). A continuation line is a lazy line of the heading as of a paragraph (C2-B-012), so it ends where a paragraph ends (C2-B-013): at a blank line, at a region marker line (C2-B-137) and at every interrupter (C2-B-014 to C2-B-020, C2-B-200), which are a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. Ownership comes first, as for every line (C2-B-025, C2-B-026), and the column is counted behind the marks of the open quotes (C2-B-003): a line that lacks the mark of an open quote closes that quote, so below `> > # H` the line `>   cont` is a paragraph of the outer quote. A line that is not indented past the marker starts a new block; a comment-only line is no such line (C2-B-137), so its comment is a child of the heading (C2-B-138) and an indented line below it still continues the heading. So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102), as every label does (C2-B-234). A line that lacks the mark of an open quote closes that quote, so below `> > # H` the line `>   cont` is a paragraph of the outer quote. A line that is not indented past the marker starts a new block; a comment-only line is no such line (C2-B-137), so its comment is a child of the heading (C2-B-138) and an indented line below it still continues the heading. So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
 
 Example 226 (unverified)
 
@@ -6860,6 +6908,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 |---|---|---|---|---|
 | Preliminaries | 9 | 0 | 4 | 4 |
 | Paragraphs and interrupters | 14 | 2 | 6 | 4 |
+| Labels | 1 | 0 | 0 | 2 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
@@ -6883,9 +6932,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **212** | **8** | **170** | **121** |
+| **Total** | **213** | **8** | **170** | **123** |
 
-The chapter has 212 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
+The chapter has 213 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
 
 ## Not covered
 
