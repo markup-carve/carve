@@ -71652,7 +71652,7 @@
     "C2-W-122",
     "C2-B-137"
    ],
-   "why": "C2-W-155: A line comment between them changes nothing, since a comment-only line closes no container (C2-B-137). C2-W-155: A line comment that stands between the blocks, or between a list and the paragraph, and that C2-W-122 does not spell is written at column 0 (C2-W-059), and the writer reports `structure-unspellable` at its path.",
+   "why": "C2-W-155: A line comment between them changes nothing, since a comment-only line closes no container (C2-B-137). C2-W-155: A line comment other than a region marker that stands between the blocks, or between a list and the paragraph, and that C2-W-122 does not spell is written at column 0 (C2-W-059), and the writer reports `structure-unspellable` at its path.",
    "summary": "across a line comment a description list above is still indented and only the comment is reported",
    "kind": "write",
    "tree": {
@@ -71768,7 +71768,7 @@
     "C2-W-155",
     "C2-W-122"
    ],
-   "why": "C2-W-155: A line comment that stands between the blocks, or between a list and the paragraph, and that C2-W-122 does not spell is written at column 0 (C2-W-059), and the writer reports `structure-unspellable` at its path.",
+   "why": "C2-W-155: A line comment other than a region marker that stands between the blocks, or between a list and the paragraph, and that C2-W-122 does not spell is written at column 0 (C2-W-059), and the writer reports `structure-unspellable` at its path.",
    "summary": "a typed-opener paragraph after a list across a line comment keeps the indented list, and only the comment is reported",
    "kind": "write",
    "tree": {
@@ -71979,7 +71979,7 @@
     "C2-W-155",
     "C2-B-014"
    ],
-   "why": "C2-W-155: The container is closed only by a comment block between them, whose opener at column 0 it does not own (C2-B-014, C2-B-026), or by the line comment of C2-W-123, which ends it with its open fence.",
+   "why": "C2-W-155: The container is closed only by a comment block between them, whose opener at column 0 it does not own (C2-B-014, C2-B-026), by a region marker line, which is no comment-only line and closes every container that does not own it (C2-B-137, C2-W-034), or by the line comment of C2-W-123, which ends it with its open fence.",
    "summary": "a comment block between the list above and the indented list closes the list, so the indented spelling holds",
    "kind": "write",
    "tree": {
@@ -72198,7 +72198,7 @@
     "C2-W-155",
     "C2-W-123"
    ],
-   "why": "C2-W-155: The container is closed only by a comment block between them, whose opener at column 0 it does not own (C2-B-014, C2-B-026), or by the line comment of C2-W-123, which ends it with its open fence.",
+   "why": "C2-W-155: The container is closed only by a comment block between them, whose opener at column 0 it does not own (C2-B-014, C2-B-026), by a region marker line, which is no comment-only line and closes every container that does not own it (C2-B-137, C2-W-034), or by the line comment of C2-W-123, which ends it with its open fence.",
    "summary": "the line comment after a list ending in an open fence closes the list, so the list above takes no departure",
    "kind": "write",
    "tree": {
