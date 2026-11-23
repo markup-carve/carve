@@ -69661,6 +69661,60 @@
    "carve": "é- [a]: /u\n:  >=\n](u)# ^}:x *é=}---2) \\---$\nb\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-1663",
+  "clauses": [
+   "C2-W-153",
+   "C2-I-097"
+  ],
+  "why": "C2-W-153: A cross-reference to an id carried by frontmatter reports `frontmatter-crossref` with severity error, at that reference. C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+  "summary": "typed metadata: a precomposed cross-reference to a decomposed metadata id is a metadata key cross-reference",
+  "kind": "lint",
+  "input": "Text\n\n{id=\"é\"}\n---yaml\na: 1\n---\n\nSee </#é>.\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "frontmatter-crossref",
+     "channel": "lint",
+     "severity": "error",
+     "line": 8,
+     "column": 5
+    }
+   ],
+   "notReported": [
+    "broken-crossref"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1664",
+  "clauses": [
+   "C2-W-153",
+   "C2-W-150",
+   "C2-I-096"
+  ],
+  "why": "C2-W-150: Its fields are those of `id_fields`; `owner` names the first node that carries the id, `rendered` says whether any occurrence of it is present in the rendered HTML, `xref` says whether it is a cross-reference target on a heading or a numbered caption owner, including a numbered panel, and `heading_text` is the plain text of the first heading with the id read as C2-I-084 reads it, absent where there is none. C2-I-096: `</#`, an id and `>` form a cross-reference.",
+  "summary": "typed metadata: a cross-reference to an id that metadata and a later heading share resolves to the heading and is no metadata key cross-reference",
+  "kind": "lint",
+  "input": "Text\n\n{#same}\n---yaml\na: 1\n---\n\n{#same}\n# H\n\nSee </#same>.\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "duplicate-id",
+     "line": 8,
+     "column": 2
+    }
+   ],
+   "notReported": [
+    "frontmatter-crossref",
+    "broken-crossref"
+   ]
+  },
+  "from": []
  }
  ]
 }

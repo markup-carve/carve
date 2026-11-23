@@ -7181,9 +7181,10 @@
       "over": "inline",
       "types": ["xref"],
       "let": {
-        "owner": { "lookup": { "over": "id", "key": { "f": "item.id" }, "value": { "f": "node.key" }, "field": "owner" } }
+        "owner": { "lookup": { "over": "id", "key": { "nfc": { "f": "item.id" } }, "value": { "nfc": { "f": "node.key" } }, "field": "owner" } },
+        "target": { "lookup": { "over": "id", "key": { "if": [{ "f": "item.xref" }, { "nfc": { "f": "item.id" } }, false] }, "value": { "nfc": { "f": "node.key" } }, "field": "xref" } }
       },
-      "when": { "eq": [{ "v": "owner" }, "frontmatter"] },
+      "when": { "all": [{ "eq": [{ "v": "owner" }, "frontmatter"] }, { "not": { "v": "target" } }] },
       "report": [{ "start": { "f": "start" }, "end": { "f": "end" }, "values": { "target": { "f": "node.key" } } }],
       "clauses": ["C2-A-218", "C2-W-153"]
     },
