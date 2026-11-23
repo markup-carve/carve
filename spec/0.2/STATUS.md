@@ -319,6 +319,13 @@ The `frontmatter-crossref` row of `data/lint-model.json` (#6390) matches ids und
 
 - All three engines at the baseline heads: a precomposed reference to a decomposed metadata id reports `broken-crossref` instead of `frontmatter-crossref` (CC-1663).
 
+## Engine gaps from the indented-list ruling of 23 November
+
+The ruling on #6398 (option 1) gives the typed-opener paragraph after a list whose last block takes a lazy line a spelling: every line of the list is written indented by one space, and the paragraph follows below a blank line with its first line indented by one space (C2-W-155). Clause cases CC-1673 to CC-1678 are added. Measured on `carve-js` `next2` `3700e6d`: the trees of CC-1673 and CC-1675 already match, and CC-1678 already passes; `fmt` refuses CC-1674, CC-1676 and CC-1677 with `structure-unspellable`. 9,282 variants (ten marker kinds, one to three items, tight and loose, twelve lazy endings: paragraphs of one and two lines, quotes, nested quotes, nested lists of two levels, a paragraph after a fence; five preceding contexts including an attribute line; three format names) read back as the list followed by the text paragraph, with the list unchanged.
+
+- `carve-js`: write a list whose last block takes a lazy line indented by one space before a typed-opener paragraph (CC-1674, CC-1676, CC-1677).
+- `carve-php` and `carve-rs`: the same, with their ports of #6394.
+
 ## Engine gaps from the opener-after-a-closed-container ruling of 23 November
 
 The ruling on #6397 (option 1) extends the direct spelling of C2-W-154 from lists to footnotes and descriptions: where the container ends in a block that takes no lazy line, the typed-opener paragraph goes on the line directly after it, at column 0 and with no blank line; where it ends in one that takes lazy lines, the shape keeps the loss report. Clause cases CC-1666 to CC-1672 are added. Measured on `carve-js` `next2` `99478833`: the trees of CC-1666, CC-1668, CC-1670 and CC-1671 already match; `fmt` refuses CC-1667, CC-1669 and CC-1672 with `structure-unspellable`. 1,200 variants of the direct spelling (footnotes and descriptions, the closed block on the marker line or below it at three indents, a second note or term, fences, divs, tables, headings, a nested list, four preceding contexts, three format names) read back as the container followed by the text paragraph, with the container unchanged.
