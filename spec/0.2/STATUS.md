@@ -432,3 +432,9 @@ The auto-ruling on #6498 states which node the `path` of a data-rule finding nam
 A heading on the marker line of a footnote continues on lines indented past its marker (C2-B-154), which stands right of the footnote content column. `fmt` writes such a source unchanged (CC-1786). Measured on `carve-js` `next2` `4deb322e`: the writer puts the continuation at the content column and refuses the source with a loss report. markup-carve/carve-js#5499 passes CC-1786.
 
 - `carve-js`: refuses CC-1786 with a loss report (fixed by markup-carve/carve-js#5499, merged into `next2` as `383040ef`).
+
+## Engine gaps from the definition continuation ruling of 24 November (#6507)
+
+The ruling on #6507 lets a link definition and an abbreviation definition continue on the lines directly below them that are indented past their marker (C2-B-083, C2-B-084). A link definition takes one such line when it holds exactly the rest of its tail; that line is no attribute line of the next block (C2-B-091). An abbreviation definition takes every such line, without its leading and trailing spaces and tabs, joined with one space. Examples syntax-blocks-290 and syntax-blocks-291, clause cases CC-1787 to CC-1805; the shapes that stay as before (CC-1795 to CC-1800, CC-1805) pin the boundary. The playground bundle of `carve-js` `next2` `50e973c3` reads every definition as one line.
+
+- All three engines: take the indented tail line of a link definition and the indented expansion lines of an abbreviation definition and write them back on one line (syntax-blocks-290, syntax-blocks-291, CC-1787 to CC-1794, CC-1801 to CC-1804).

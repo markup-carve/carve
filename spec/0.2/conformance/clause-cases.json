@@ -15070,7 +15070,7 @@
     "C2-I-067",
     "C2-B-083"
    ],
-   "why": "C2-I-067: Whitespace is a space, a tab or a line break here as everywhere (Preliminaries), so a no-break space, U+00A0 or U+202F, before or inside the destination is part of it, where 0.1 ended the destination at any Unicode whitespace. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title",
+   "why": "C2-I-067: Whitespace is a space, a tab or a line break here as everywhere (Preliminaries), so a no-break space, U+00A0 or U+202F, before or inside the destination is part of it, where 0.1 ended the destination at any Unicode whitespace. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title",
    "summary": "a narrow no-break space after the space of a link definition starts its destination",
    "input": "[a]:  /u\n\n[a][]",
    "options": {},
@@ -18904,7 +18904,7 @@
     "C2-B-083",
     "C2-H-141"
    ],
-   "why": "C2-A-110: A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (C2-I-082) is a resolution result: it is not written into `attrs` and takes no part in equality. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces and tabs. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u\"T\"` and in `[a]: \"T\"` the quotes are part of the destination, and `[a]: /u  \"T\"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). C2-H-141: The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition. The keys of the definition that the reference does not carry come first, in the definition's order, then the keys of the reference in its order: a definition `{j=2 k=1}` and a reference `{m=4 j=3}` give `k=\"1\" m=\"4\" j=\"3\"`.",
+   "why": "C2-A-110: A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (C2-I-082) is a resolution result: it is not written into `attrs` and takes no part in equality. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces and tabs. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u\"T\"` and in `[a]: \"T\"` the quotes are part of the destination, and `[a]: /u  \"T\"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). C2-H-141: The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition. The keys of the definition that the reference does not carry come first, in the definition's order, then the keys of the reference in its order: a definition `{j=2 k=1}` and a reference `{m=4 j=3}` give `k=\"1\" m=\"4\" j=\"3\"`.",
    "summary": "reference keeps own attributes; definition attributes merge only on render",
    "input": "[x][r]{.use}\n\n[r]: /u {.def}",
    "options": {},
@@ -45349,7 +45349,7 @@
     "C2-W-106",
     "C2-B-083"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title",
    "summary": "two link definitions with one url",
    "kind": "lint",
    "input": "[a]: /u\n[b]: /u\n",
@@ -45377,7 +45377,7 @@
     "C2-W-106",
     "C2-B-083"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title",
    "summary": "near miss: two link definitions with different urls",
    "kind": "lint",
    "input": "[a]: /u\n[b]: /v\n",
@@ -49763,7 +49763,7 @@
     "C2-B-083",
     "C2-I-079"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. C2-I-079: Reference labels, footnote labels and definition labels share this rule.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. C2-I-079: Reference labels, footnote labels and definition labels share this rule.",
    "summary": "near miss: the same label defined twice with one url",
    "kind": "lint",
    "input": "[a]: /u\n[a]: /u\n",
@@ -51227,7 +51227,7 @@
     "C2-B-083",
     "C2-B-082"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. C2-B-082: A footnote definition is `[^label]:`, a space and content on the same line.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. C2-B-082: A footnote definition is `[^label]:`, a space and content on the same line.",
    "summary": "a caret label with a colon and no content is no footnote definition and is reported",
    "kind": "lint",
    "input": "[^a]:\n",
@@ -51252,7 +51252,7 @@
     "C2-B-083",
     "C2-I-079"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. C2-I-079: The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. C2-I-079: The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket.",
    "summary": "brackets around only a space hold no label and are not reported",
    "kind": "lint",
    "input": "[ ]:\n",
@@ -51270,7 +51270,7 @@
     "C2-W-106",
     "C2-B-083"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text.",
    "summary": "trailing spaces after the colon still leave the line empty",
    "kind": "lint",
    "input": "[a]:   \n",
@@ -55871,7 +55871,7 @@
    "clauses": [
     "C2-B-084"
    ],
-   "why": "C2-B-084: An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.",
+   "why": "C2-B-084: An abbreviation definition starts with one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.",
    "summary": "spaces alone do not make an abbreviation definition",
    "kind": "render",
    "input": "*[A]:   \n",
@@ -64248,7 +64248,7 @@
    "C2-B-084",
    "C2-B-200"
   ],
-  "why": "C2-B-084: An abbreviation definition is one line: `*[label]:` Catalog block-opener-without-blank-line: a definition; once per candidate line, the range is the marker or attribute block on that line",
+  "why": "C2-B-084: An abbreviation definition starts with one line: `*[label]:` Catalog block-opener-without-blank-line: a definition; once per candidate line, the range is the marker or attribute block on that line",
   "summary": "abbreviation definition shaped paragraph line reports its marker",
   "kind": "lint",
   "input": "para\n*[x]: y\n",
@@ -74495,6 +74495,874 @@
   "options": {},
   "expected": {
    "carve": "Text.[^1]\n\n[^1]: = Head\n        cont\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1787",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs.",
+  "summary": "link definition tail: an indented title on the next line is the title",
+  "kind": "render",
+  "input": "[a]: /url\n  \"Title\"\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>See <a href=\"/url\" title=\"Title\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/url",
+     "tooltip": "Title"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/url"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1788",
+  "clauses": [
+   "C2-W-056"
+  ],
+  "why": "C2-W-056: A link definition is written as `[label]:`, one space, the destination and, when there is one, one space and the title in double quotes.",
+  "summary": "fmt: link definition tail: an indented title on the next line is the title",
+  "kind": "format",
+  "input": "[a]: /url\n  \"Title\"\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "carve": "[a]: /url \"Title\"\n\nSee [a].\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1789",
+  "clauses": [
+   "C2-B-083",
+   "C2-B-091"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs. C2-B-083: a tail line is no attribute line, so `  {.c}` below `[a]: /u` gives the definition the class `c` (C2-B-091).",
+  "summary": "link definition tail: an indented attribute block is the definition's, not an attribute line of the next block",
+  "kind": "render",
+  "input": "[a]: /u\n  {.c}\nPara\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>Para</p>\n<p>See <a href=\"/u\" class=\"c\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u",
+     "attrs": {
+      "classes": [
+       "c"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "Para"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1790",
+  "clauses": [
+   "C2-W-047"
+  ],
+  "why": "C2-W-047: The attributes of a block are written as one brace block on one line directly above the block, with no blank line between.",
+  "summary": "fmt: link definition tail: an indented attribute block is the definition's, not an attribute line of the next block",
+  "kind": "format",
+  "input": "[a]: /u\n  {.c}\nPara\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "carve": "{.c}\n[a]: /u\n\nPara\n\nSee [a].\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1791",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs.",
+  "summary": "link definition tail: a title and an attribute block on the indented line",
+  "kind": "render",
+  "input": "[a]: /u\n  \"T\" {.c}\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u",
+     "tooltip": "T",
+     "attrs": {
+      "classes": [
+       "c"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1792",
+  "clauses": [
+   "C2-W-056",
+   "C2-W-047"
+  ],
+  "why": "C2-W-056: A link definition is written as `[label]:`, one space, the destination and, when there is one, one space and the title in double quotes. C2-W-047: The attributes of a block are written as one brace block on one line directly above the block, with no blank line between.",
+  "summary": "fmt: link definition tail: a title and an attribute block on the indented line",
+  "kind": "format",
+  "input": "[a]: /u\n  \"T\" {.c}\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "carve": "{.c}\n[a]: /u \"T\"\n\nSee [a].\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1793",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs.",
+  "summary": "link definition tail: a tab-indented attribute block completes a definition line that has a title",
+  "kind": "render",
+  "input": "[a]: /u \"T\"\n\t{.c}\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u",
+     "tooltip": "T",
+     "attrs": {
+      "classes": [
+       "c"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1794",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs.",
+  "summary": "link definition tail: a single-quoted title with trailing spaces",
+  "kind": "render",
+  "input": "[a]: /u\n   'T'  \n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>See <a href=\"/u\" title=\"T\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u",
+     "tooltip": "T"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1795",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+  "summary": "link definition: an indented line of prose is no tail and starts a paragraph",
+  "kind": "render",
+  "input": "[a]: /url\n  more text\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>more text</p>\n<p>See <a href=\"/url\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/url"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "more text"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/url"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1796",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+  "summary": "link definition: an indented second title is no tail",
+  "kind": "render",
+  "input": "[a]: /u \"T\"\n  \"U\"\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>“U”</p>\n<p>See <a href=\"/u\" title=\"T\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u",
+     "tooltip": "T"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "left_double_quote",
+       "glyph": "“",
+       "source": "\""
+      },
+      {
+       "type": "text",
+       "value": "U"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "right_double_quote",
+       "glyph": "”",
+       "source": "\""
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1797",
+  "clauses": [
+   "C2-B-083",
+   "C2-B-089"
+  ],
+  "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+  "summary": "link definition: a title followed by a word is no tail",
+  "kind": "render",
+  "input": "[a]: /u\n  \"T\" x\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>“T” x</p>\n<p>See <a href=\"/u\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "left_double_quote",
+       "glyph": "“",
+       "source": "\""
+      },
+      {
+       "type": "text",
+       "value": "T"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "right_double_quote",
+       "glyph": "”",
+       "source": "\""
+      },
+      {
+       "type": "text",
+       "value": " x"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1798",
+  "clauses": [
+   "C2-B-083",
+   "C2-B-091"
+  ],
+  "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+  "summary": "link definition: an indented attribute block below a definition that has one is an attribute line of the next block",
+  "kind": "render",
+  "input": "[a]: /u {.c}\n  {.d}\nPara\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p class=\"d\">Para</p>\n<p>See <a href=\"/u\" class=\"c\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u",
+     "attrs": {
+      "classes": [
+       "c"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "Para"
+      }
+     ],
+     "attrs": {
+      "classes": [
+       "d"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1799",
+  "clauses": [
+   "C2-B-083"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs.",
+  "summary": "link definition: an unindented title below a definition is a paragraph",
+  "kind": "render",
+  "input": "[a]: /url\n\"Title\"\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p>“Title”</p>\n<p>See <a href=\"/url\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/url"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "left_double_quote",
+       "glyph": "“",
+       "source": "\""
+      },
+      {
+       "type": "text",
+       "value": "Title"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "right_double_quote",
+       "glyph": "”",
+       "source": "\""
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/url"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1800",
+  "clauses": [
+   "C2-B-083",
+   "C2-B-091"
+  ],
+  "why": "C2-B-083: The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs.",
+  "summary": "link definition: an unindented attribute block below a definition is an attribute line of the next block",
+  "kind": "render",
+  "input": "[a]: /u\n{.c}\nPara\n\nSee [a].\n",
+  "options": {},
+  "expected": {
+   "html": "<p class=\"c\">Para</p>\n<p>See <a href=\"/u\">a</a>.</p>",
+   "children": [
+    {
+     "type": "link_reference_definition",
+     "key": "a",
+     "namespace": "link",
+     "href": "/u"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "Para"
+      }
+     ],
+     "attrs": {
+      "classes": [
+       "c"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "See "
+      },
+      {
+       "type": "link",
+       "key": "a",
+       "namespace": "link",
+       "refForm": "shortcut",
+       "children": [
+        {
+         "type": "text",
+         "value": "a"
+        }
+       ],
+       "href": "/u"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1801",
+  "clauses": [
+   "C2-B-084"
+  ],
+  "why": "C2-B-084: Every line directly below it that is indented past column 0 continues the expansion: it loses its leading and trailing spaces and tabs and is joined on with one space, so an expansion holds no line break.",
+  "summary": "abbreviation expansion over two lines, trailing spaces and tabs dropped",
+  "kind": "render",
+  "input": "*[HTML]: Hyper Text  \n  Markup Language \t\n\nHTML\n",
+  "options": {},
+  "expected": {
+   "html": "<p><abbr title=\"Hyper Text Markup Language\">HTML</abbr></p>",
+   "children": [
+    {
+     "type": "abbreviation_def",
+     "expansion": "Hyper Text Markup Language",
+     "key": "HTML",
+     "namespace": "abbr"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "abbreviation",
+       "key": "HTML",
+       "namespace": "abbr",
+       "expansion": "Hyper Text Markup Language"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1802",
+  "clauses": [
+   "C2-W-055"
+  ],
+  "why": "C2-W-055: An abbreviation definition is `*[key]:`, one space and the expansion, whose leading spaces and tabs are written after that space.",
+  "summary": "fmt: abbreviation expansion over two lines, trailing spaces and tabs dropped",
+  "kind": "format",
+  "input": "*[HTML]: Hyper Text  \n  Markup Language \t\n\nHTML\n",
+  "options": {},
+  "expected": {
+   "carve": "*[HTML]: Hyper Text Markup Language\n\nHTML\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1803",
+  "clauses": [
+   "C2-B-084"
+  ],
+  "why": "C2-B-084: Every line directly below it that is indented past column 0 continues the expansion: it loses its leading and trailing spaces and tabs and is joined on with one space, so an expansion holds no line break.",
+  "summary": "abbreviation expansion over three lines indented by tabs and spaces",
+  "kind": "render",
+  "input": "*[CSS]: Cascading\n\tStyle\t\n \t Sheets\n\nCSS\n",
+  "options": {},
+  "expected": {
+   "html": "<p><abbr title=\"Cascading Style Sheets\">CSS</abbr></p>",
+   "children": [
+    {
+     "type": "abbreviation_def",
+     "expansion": "Cascading Style Sheets",
+     "key": "CSS",
+     "namespace": "abbr"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "abbreviation",
+       "key": "CSS",
+       "namespace": "abbr",
+       "expansion": "Cascading Style Sheets"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1804",
+  "clauses": [
+   "C2-W-055"
+  ],
+  "why": "C2-W-055: An abbreviation definition is `*[key]:`, one space and the expansion, whose leading spaces and tabs are written after that space.",
+  "summary": "fmt: abbreviation expansion over three lines indented by tabs and spaces",
+  "kind": "format",
+  "input": "*[CSS]: Cascading\n\tStyle\t\n \t Sheets\n\nCSS\n",
+  "options": {},
+  "expected": {
+   "carve": "*[CSS]: Cascading Style Sheets\n\nCSS\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1805",
+  "clauses": [
+   "C2-B-084"
+  ],
+  "why": "C2-B-084: Every line directly below it that is indented past column 0 continues the expansion",
+  "summary": "abbreviation definition: an unindented line below it is a paragraph",
+  "kind": "render",
+  "input": "*[HTML]: Hyper Text\nMarkup Language\n\nHTML\n",
+  "options": {},
+  "expected": {
+   "html": "<p>Markup Language</p>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+   "children": [
+    {
+     "type": "abbreviation_def",
+     "expansion": "Hyper Text",
+     "key": "HTML",
+     "namespace": "abbr"
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "Markup Language"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "abbreviation",
+       "key": "HTML",
+       "namespace": "abbr",
+       "expansion": "Hyper Text"
+      }
+     ]
+    }
+   ]
   },
   "from": []
  }

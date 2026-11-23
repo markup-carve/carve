@@ -574,6 +574,15 @@ A ruling of 23 November decides #6499: a lint rule that reports valid 0.2 text o
 
 To check a 0.1 document before upgrading it, run `carve lint --upgrade` on it, or declare `carve: 0.1` in its frontmatter until it is upgraded. The `deprecated-` rules that report a spelling 0.2 removed stay on by default (C2-W-110).
 
+### Rulings of 24 November 2026
+
+A ruling of 24 November decides #6507: a link definition and an abbreviation definition continue on the lines directly below them that are indented past their marker. A link definition takes one such line when it holds exactly the rest of its tail: a title, an attribute block, or both. An abbreviation definition takes every such line, and each joins its expansion after one space. Any other line is read as before.
+
+| What you wrote | 0.1 and early 0.2 | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A title or attribute block on the indented line below a link definition: `[a]: /url`, then `  "Title"` | The definition ended at its line, and the indented line was a paragraph, `<p>“Title”</p>`; an indented `{.c}` was an attribute line of the next block. | The line is the definition's tail: `<a href="/url" title="Title">`, and `{.c}` reaches every link that uses the definition. | C2-B-083, C2-B-091 |
+| An abbreviation expansion over indented lines: `*[HTML]: Hyper Text`, then `  Markup Language` | The expansion was `Hyper Text`, and the indented line was a paragraph. | The expansion is `Hyper Text Markup Language`. `carve fmt` writes it on one line. | C2-B-084, C2-W-055 |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
