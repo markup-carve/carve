@@ -6,6 +6,9 @@ export function extensionFailures(results) {
     .map(row => `${engine}/extensions/${row.kind}/${row.id}: ${row.status}`))
 }
 
+// With a baseline, extension cases are gated per case by classify like clause cases, so a changed expectation is a gap.
+export const extensionGate = (failures, compared) => compared ? [] : failures
+
 export function extensionReport(cases, results) {
   const names = [...new Set(cases.map(c => c.extension))].sort()
   const engines = Object.keys(results)

@@ -1,7 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { extensionFailures, extensionReport } from '../scripts/next2-readiness-extensions.mjs'
+import { extensionFailures, extensionGate, extensionReport } from '../scripts/next2-readiness-extensions.mjs'
+import { caseKey, caseFingerprint, classify } from '../scripts/next2-readiness-classify.mjs'
 
 const read = path => JSON.parse(readFileSync(new URL(`../spec/0.2/${path}`, import.meta.url), 'utf8'))
 const corpus = read('conformance/extensions.json')
@@ -33,6 +34,21 @@ test('extension failures and unsupported cases gate every engine', () => {
     'rs/extensions/render/EXT-001: unsupported',
   ])
   assert.deepEqual(extensionFailures({ js: results.js }), [])
+})
+
+test('with a baseline, extension cases are gated per case: a changed message is a gap, an unchanged regression fails', () => {
+  const ext = { area: 'extensions', kind: 'render', id: 'EXT-010', extension: 'carve.details', input: 'a\n', expected: { html: '<p>a</p>', diagnostics: ['extension-fallback-rendered'] } }
+  const rule = messages => new Map([['extension-fallback-rendered', { messages }]])
+  const before = caseFingerprint(ext, rule(['old ${name}']))
+  const key = caseKey(ext)
+  const failed = ['js/extensions/render/EXT-010: fail']
+  const changed = classify({ baselineCases: { [key]: before }, currentCases: { [key]: caseFingerprint(ext, rule(['new ${name}'])) }, currentFailures: { [key]: 'fail' } })
+  assert.deepEqual(changed.regressions, [])
+  assert.deepEqual(changed.gaps.unlisted, [{ key, now: 'fail', reason: 'changed' }])
+  assert.deepEqual(extensionGate(failed, true), [])
+  const unchanged = classify({ baselineCases: { [key]: before }, currentCases: { [key]: before }, currentFailures: { [key]: 'fail' } })
+  assert.deepEqual(unchanged.regressions, [{ key, old: 'pass', now: 'fail' }])
+  assert.deepEqual(extensionGate(failed, false), failed)
 })
 
 test('every extension case names its extension, its source and an expectation it can check', () => {
