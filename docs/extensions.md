@@ -36,17 +36,27 @@ The butler did it.
 :::
 ```
 
-With no extension registered, core HTML keeps a class on each, so a stylesheet can blur the content and reveal it on hover or focus:
+The `spoiler` factory in `@markup-carve/carve/extensions` registers both forms (`carve.spoiler` and `carve.spoilerBlock`, [C2-X-064](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md)) with their renderers:
 
-```html
-<p>The killer is <span class="ext-spoiler">the butler</span> all along.</p>
-<div class="spoiler">
-  <p class="admonition-title">Ending</p>
-  <p>The butler did it.</p>
-</div>
+```js
+import { render } from '@markup-carve/carve'
+import { spoiler } from '@markup-carve/carve/extensions'
+
+const { extensions, renderers } = spoiler()
+render(source, { extensions, renderers })
 ```
 
-The standard extension registers `carve.spoiler` for the inline form and `carve.spoilerBlock` for the block ([C2-X-064](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md)). The host supplies the renderer for the hidden state. Without one, the inline content renders as plain text and the block title as a `strong` paragraph ahead of the body ([C2-X-065](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md)), so the text stays readable.
+```html
+<p>The killer is <span class="spoiler">the butler</span> all along.</p>
+<details class="spoiler">
+  <summary>Ending</summary>
+  <p>The butler did it.</p>
+</details>
+```
+
+Carve only marks the hidden content; the blur and the click to reveal come from the host's CSS. A block without a title gets `<summary>Spoiler</summary>`. Static output reveals the content and adds the `spoiler-revealed` class.
+
+Without the extension, core HTML still keeps a class on each form, `<span class="ext-spoiler">` and `<div class="spoiler">`, so the text stays readable.
 
 ## Feature tiers (quick reference) {#feature-tiers-quick-reference}
 
