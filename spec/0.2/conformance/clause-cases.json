@@ -73493,6 +73493,80 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1750",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "an empty block glued behind a valid one ends the run, and the valid block is reported",
+   "kind": "lint",
+   "input": "x {.x}{}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1751",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "an invalid block glued behind a valid one leaves the valid block reported",
+   "kind": "lint",
+   "input": "x {.x}{a=}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1752",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: if more than one declaration meets this test, the first in source order supplies the report",
+   "summary": "the first declaration of a stamp comment that meets the test supplies the report",
+   "kind": "lint",
+   "input": "%% carve-version: next; carve-version: 9.9\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "carve-version-unsupported",
+      "line": 1,
+      "column": 19,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

@@ -3013,7 +3013,7 @@
                 {
                   "f": "raw_body"
                 },
-                "^%%.*carve-version:[ \\t]*(?<v>0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)(?:[ \\t;]|$)"
+                "^%%.*?carve-version:[ \\t]*(?<v>0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)(?:[ \\t;]|$)"
               ]
             },
             {
@@ -3106,7 +3106,7 @@
               {
                 "f": "raw_body"
               },
-              "^%%.*carve-version:[ \\t]*(?<v>[^\\s;]*[^\\d.\\s;][^\\s;]*|\\.[^\\s;]*|[^\\s;]*\\.|[^\\s;]*\\.\\.[^\\s;]*|0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)(?:[ \\t;]|$)"
+              "^%%.*?carve-version:[ \\t]*(?<v>[^\\s;]*[^\\d.\\s;][^\\s;]*|\\.[^\\s;]*|[^\\s;]*\\.|[^\\s;]*\\.\\.[^\\s;]*|0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)(?:[ \\t;]|$)"
             ]
           }
         ]
@@ -12956,43 +12956,230 @@
       ],
       "let": {
         "last_cell": {
-          "matches": [
+          "all": [
             {
-              "slice": [
+              "ge": [
                 {
-                  "lookup": {
-                    "over": "line",
-                    "key": true,
-                    "value": true,
-                    "before": true,
-                    "from": {
-                      "f": "end"
-                    },
-                    "field": "text"
-                  }
-                },
-                {
-                  "sub": [
+                  "index_of": [
                     {
-                      "f": "end"
-                    },
-                    {
-                      "lookup": {
-                        "over": "line",
-                        "key": true,
-                        "value": true,
-                        "before": true,
-                        "from": {
-                          "f": "end"
+                      "slice": [
+                        {
+                          "lookup": {
+                            "over": "line",
+                            "key": true,
+                            "value": true,
+                            "before": true,
+                            "from": {
+                              "f": "end"
+                            },
+                            "field": "text"
+                          }
                         },
-                        "field": "start"
-                      }
-                    }
+                        {
+                          "sub": [
+                            {
+                              "f": "end"
+                            },
+                            {
+                              "lookup": {
+                                "over": "line",
+                                "key": true,
+                                "value": true,
+                                "before": true,
+                                "from": {
+                                  "f": "end"
+                                },
+                                "field": "start"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "|"
                   ]
-                }
+                },
+                0
               ]
             },
-            "^[ \\t]*\\|[ \\t]*$"
+            {
+              "eq": [
+                {
+                  "trim_end": {
+                    "slice": [
+                      {
+                        "slice": [
+                          {
+                            "lookup": {
+                              "over": "line",
+                              "key": true,
+                              "value": true,
+                              "before": true,
+                              "from": {
+                                "f": "end"
+                              },
+                              "field": "text"
+                            }
+                          },
+                          {
+                            "sub": [
+                              {
+                                "f": "end"
+                              },
+                              {
+                                "lookup": {
+                                  "over": "line",
+                                  "key": true,
+                                  "value": true,
+                                  "before": true,
+                                  "from": {
+                                    "f": "end"
+                                  },
+                                  "field": "start"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      0,
+                      {
+                        "index_of": [
+                          {
+                            "slice": [
+                              {
+                                "lookup": {
+                                  "over": "line",
+                                  "key": true,
+                                  "value": true,
+                                  "before": true,
+                                  "from": {
+                                    "f": "end"
+                                  },
+                                  "field": "text"
+                                }
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "f": "end"
+                                  },
+                                  {
+                                    "lookup": {
+                                      "over": "line",
+                                      "key": true,
+                                      "value": true,
+                                      "before": true,
+                                      "from": {
+                                        "f": "end"
+                                      },
+                                      "field": "start"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "|"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                ""
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "trim_end": {
+                    "slice": [
+                      {
+                        "slice": [
+                          {
+                            "lookup": {
+                              "over": "line",
+                              "key": true,
+                              "value": true,
+                              "before": true,
+                              "from": {
+                                "f": "end"
+                              },
+                              "field": "text"
+                            }
+                          },
+                          {
+                            "sub": [
+                              {
+                                "f": "end"
+                              },
+                              {
+                                "lookup": {
+                                  "over": "line",
+                                  "key": true,
+                                  "value": true,
+                                  "before": true,
+                                  "from": {
+                                    "f": "end"
+                                  },
+                                  "field": "start"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "add": [
+                          {
+                            "index_of": [
+                              {
+                                "slice": [
+                                  {
+                                    "lookup": {
+                                      "over": "line",
+                                      "key": true,
+                                      "value": true,
+                                      "before": true,
+                                      "from": {
+                                        "f": "end"
+                                      },
+                                      "field": "text"
+                                    }
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "f": "end"
+                                      },
+                                      {
+                                        "lookup": {
+                                          "over": "line",
+                                          "key": true,
+                                          "value": true,
+                                          "before": true,
+                                          "from": {
+                                            "f": "end"
+                                          },
+                                          "field": "start"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "|"
+                            ]
+                          },
+                          1
+                        ]
+                      }
+                    ]
+                  }
+                },
+                ""
+              ]
+            }
           ]
         }
       },
@@ -13027,46 +13214,13 @@
           {
             "f": "text"
           },
-          "(?:^|[^\\\\])(?:\\\\\\\\)*(?<run>(?:\\{(?:[^{}\"'\\\\\\n]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])*\\})+)"
+          "(?:^|[^\\\\])(?:\\\\\\\\)*(?<run>(?<blk>\\{[ \\t]*(?:[^{}\\s\"'\\\\]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])(?:[^{}\"'\\\\\\n]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])*\\})(?:\\{[ \\t]*(?:[^{}\\s\"'\\\\]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])(?:[^{}\"'\\\\\\n]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])*\\})*)"
         ]
       },
       "report": [
         {
           "when": {
             "all": [
-              {
-                "ne": [
-                  {
-                    "slice": [
-                      {
-                        "f": "text"
-                      },
-                      {
-                        "sub": [
-                          {
-                            "match": "run"
-                          },
-                          {
-                            "f": "start"
-                          }
-                        ]
-                      },
-                      {
-                        "sub": [
-                          {
-                            "match": "run",
-                            "at": "end"
-                          },
-                          {
-                            "f": "start"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "{}"
-                ]
-              },
               {
                 "attribute_line": {
                   "slice": [
@@ -13311,6 +13465,292 @@
           },
           "end": {
             "match": "run",
+            "at": "end"
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "attribute_line": {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "run"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "run",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "all": [
+                  {
+                    "attribute_line": {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "blk"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "blk",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "not": {
+                      "all": [
+                        {
+                          "eq": [
+                            {
+                              "match": "run"
+                            },
+                            {
+                              "lookup": {
+                                "over": "line",
+                                "key": true,
+                                "value": true,
+                                "before": true,
+                                "from": {
+                                  "add": [
+                                    {
+                                      "match": "run"
+                                    },
+                                    1
+                                  ]
+                                },
+                                "field": "body_start"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "any": [
+                            {
+                              "eq": [
+                                {
+                                  "match": "blk",
+                                  "at": "end"
+                                },
+                                {
+                                  "lookup": {
+                                    "over": "line",
+                                    "key": true,
+                                    "value": true,
+                                    "before": true,
+                                    "from": {
+                                      "add": [
+                                        {
+                                          "match": "run"
+                                        },
+                                        1
+                                      ]
+                                    },
+                                    "field": "body_end"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "all": [
+                                {
+                                  "in": [
+                                    {
+                                      "f": "leaf"
+                                    },
+                                    [
+                                      "caption",
+                                      "paragraph"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "in": [
+                                    {
+                                      "slice": [
+                                        {
+                                          "slice": [
+                                            {
+                                              "f": "text"
+                                            },
+                                            {
+                                              "sub": [
+                                                {
+                                                  "match": "run"
+                                                },
+                                                {
+                                                  "f": "start"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "sub": [
+                                                {
+                                                  "match": "run",
+                                                  "at": "end"
+                                                },
+                                                {
+                                                  "f": "start"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        1,
+                                        2
+                                      ]
+                                    },
+                                    [
+                                      ".",
+                                      "#",
+                                      "_",
+                                      "A",
+                                      "B",
+                                      "C",
+                                      "D",
+                                      "E",
+                                      "F",
+                                      "G",
+                                      "H",
+                                      "I",
+                                      "J",
+                                      "K",
+                                      "L",
+                                      "M",
+                                      "N",
+                                      "O",
+                                      "P",
+                                      "Q",
+                                      "R",
+                                      "S",
+                                      "T",
+                                      "U",
+                                      "V",
+                                      "W",
+                                      "X",
+                                      "Y",
+                                      "Z",
+                                      "a",
+                                      "b",
+                                      "c",
+                                      "d",
+                                      "e",
+                                      "f",
+                                      "g",
+                                      "h",
+                                      "i",
+                                      "j",
+                                      "k",
+                                      "l",
+                                      "m",
+                                      "n",
+                                      "o",
+                                      "p",
+                                      "q",
+                                      "r",
+                                      "s",
+                                      "t",
+                                      "u",
+                                      "v",
+                                      "w",
+                                      "x",
+                                      "y",
+                                      "z"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "not": {
+                      "all": [
+                        {
+                          "eq": [
+                            {
+                              "f": "leaf"
+                            },
+                            "cell_paragraph"
+                          ]
+                        },
+                        {
+                          "eq": [
+                            {
+                              "match": "run"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "eq": [
+                            {
+                              "match": "blk",
+                              "at": "end"
+                            },
+                            {
+                              "f": "end"
+                            }
+                          ]
+                        },
+                        {
+                          "v": "last_cell"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "start": {
+            "match": "blk"
+          },
+          "end": {
+            "match": "blk",
             "at": "end"
           }
         }

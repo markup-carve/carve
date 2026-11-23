@@ -28,7 +28,8 @@ test('the catalog readings of the new rows are pinned by clause cases', () => {
     'CC-1741': 'emphasis-marker-before-attributes', 'CC-1742': 'emphasis-marker-before-attributes',
     'CC-1743': 'carve-version-unsupported', 'CC-1744': 'carve-version-unsupported', 'CC-1745': 'carve-version-unsupported',
     'CC-1746': 'unattached-inline-attribute', 'CC-1747': 'unattached-inline-attribute', 'CC-1748': 'unattached-inline-attribute',
-    'CC-1749': 'unattached-inline-attribute' }
+    'CC-1749': 'unattached-inline-attribute', 'CC-1750': 'unattached-inline-attribute', 'CC-1751': 'unattached-inline-attribute',
+    'CC-1752': 'carve-version-unsupported' }
   for (const [id, code] of Object.entries(pinned)) {
     const expected = byId.get(id)?.expected
     assert.ok(expected?.diagnostics?.some((entry) => entry.code === code) || expected?.notReported?.includes(code), id)
