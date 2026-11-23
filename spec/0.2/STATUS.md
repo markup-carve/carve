@@ -365,6 +365,12 @@ The ruling on #6453 (B with the tie-break) keeps C2-I-089's "Unclosed, the two c
 - `carve-js`: read the note of CC-1713 and CC-1716 as text, with no note inside a note.
 - `carve-php` and `carve-rs`: open the footnote reference and the inline footnote behind an `^[` that never closes (CC-1714, CC-1715).
 
+## Engine gaps from the command-line extension ruling of 23 November (#6436)
+
+The ruling on #6436 (option 2) gives `render`, `fmt`, `lint` and `ast` the flags `--extensions`, a JSON list of the standard extension names of `data/extensions.json`, and `--extension-options`, a JSON object of their renderer options keyed by extension name (C2-T-010). A name that is no standard extension is a usage error; a host extension or renderer stays an option of the library calls only, and there is no `--extensions all`. The flags restore the 0.1 command-line output of tabs, mermaid, details and the other standard extensions. CC-533, which pinned the refusal of `--extensions`, now expects the core output of an empty list; clause cases CC-1717 to CC-1722 are added. No engine at the baseline heads offers the flags: the ticket measured `carve[usage]: unknown flag --extensions for render` in all three.
+
+- All three engines: take `--extensions` and `--extension-options` on the four commands (CC-533, CC-1717, CC-1718, CC-1721, CC-1722) and refuse an unknown name with `usage` (CC-1719, CC-1720).
+
 ## Engine gaps from the table key order ruling of 23 November
 
 The maintainer ruling on #6431 places the table keys the writer makes from the table fields (C2-W-136): they stand after the keys of `attrs`, in the order C2-W-136 lists them. Clause cases CC-1699 to CC-1704. Measured on `carve-js` `next2` `7ccf200`, `carve-php` `next2` `1992f1c` and `carve-rs` `next2` `887141d`: in every case the expected output reads back to the tree of the input in all three engines, and CC-1699 passes in all three.
