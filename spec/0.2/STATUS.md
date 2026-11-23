@@ -313,6 +313,12 @@ The ruling on #6394 (option 1) writes a typed-opener paragraph directly after a 
 - `carve-js`: write the paragraph directly after the list (CC-1656 to CC-1659) and keep the indent below an attribute line (CC-1660).
 - `carve-php` and `carve-rs`: the same, with their ports of #6389.
 
+## Engine gaps from the frontmatter cross-reference fix of 23 November
+
+The `frontmatter-crossref` row of `data/lint-model.json` (#6390) matches ids under NFC, as C2-I-097 and the `broken-crossref` row do, and reports only where the id has no cross-reference target (the `xref` field of C2-W-150), so a heading that shares the id keeps the reference resolved (C2-I-096). Clause cases CC-1663 to CC-1665 are added; CC-1665 combines both, a decomposed metadata id and a precomposed heading id that the reference matches under NFC. Measured with the readiness runner on the engine heads of `scripts/next2-readiness-baseline.json`: CC-1664 passes in all three engines; on `carve-js` `next2` `9947883` all three cases pass, in data mode with the fixed row and with the hand-written rule.
+
+- All three engines at the baseline heads: a precomposed reference to a decomposed metadata id reports `broken-crossref` instead of `frontmatter-crossref` (CC-1663).
+
 ## Engine gaps from the tag and mention end guard of 21 November
 
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
