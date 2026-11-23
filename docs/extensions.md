@@ -24,6 +24,30 @@ The optional `carve.tabs` and `carve.tab` extensions demonstrate a standard exte
 
 For implementation details, read the [contract map](./extension-contract.md) and [runnable tutorial](./extension-tutorial.md).
 
+## Spoilers
+
+A spoiler can be inline or a block. Both use existing core forms:
+
+```carve
+The killer is :spoiler[the butler] all along.
+
+::: spoiler "Ending"
+The butler did it.
+:::
+```
+
+With no extension registered, core HTML keeps a class on each, so a stylesheet can blur the content and reveal it on hover or focus:
+
+```html
+<p>The killer is <span class="ext-spoiler">the butler</span> all along.</p>
+<div class="spoiler">
+  <p class="admonition-title">Ending</p>
+  <p>The butler did it.</p>
+</div>
+```
+
+The standard extension registers `carve.spoiler` for the inline form and `carve.spoilerBlock` for the block ([C2-X-064](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md)). The host supplies the renderer for the hidden state. Without one, the inline content renders as plain text and the block title as a `strong` paragraph ahead of the body ([C2-X-065](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md)), so the text stays readable.
+
 ## Feature tiers (quick reference) {#feature-tiers-quick-reference}
 
 The 0.2 extension catalog is provisional. Check the [status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) and [extension specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md) for the current set. The 0.1 tier table does not classify 0.2 features.
