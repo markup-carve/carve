@@ -69486,6 +69486,164 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1656",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "writer keeps a typed-opener paragraph directly after a list that ends in a fence",
+  "kind": "format",
+  "input": "- ```\n  x\n  ```\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "- ```\n  x\n  ```\n---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1657",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "writer keeps a typed-opener paragraph directly after a list that ends in a div",
+  "kind": "format",
+  "input": "- :::\n  x\n  :::\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "- :::\n  x\n  :::\n---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1658",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "writer keeps a typed-opener paragraph directly after a list that ends in a table row",
+  "kind": "format",
+  "input": "- | a | b |\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "- | a | b |\n---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1659",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "writer keeps a typed-opener paragraph directly after a list that ends in a heading",
+  "kind": "format",
+  "input": "- = H\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "- = H\n---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1660",
+  "clauses": [
+   "C2-W-154"
+  ],
+  "why": "C2-W-154: After a list, a paragraph with an attribute line keeps that spelling, since the attribute line closes the list.",
+  "summary": "writer indents a typed-opener paragraph with an attribute line after a list",
+  "kind": "format",
+  "input": "- a\n\n{.c}\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "- a\n\n{.c}\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1661",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-024"
+  ],
+  "why": "C2-B-232: A column-0 opener after a list does not close the list while a paragraph is open: without that separation it is a lazy line of that paragraph, like a heading or a quote (C2-B-024).",
+  "summary": "typed opener after a list ending in a quote is a lazy line of the quote's paragraph",
+  "input": "- > q\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>\n    <blockquote><p>q\n—yaml\nk: v\n—</p></blockquote>\n  </li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "block_quote",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "q"
+            },
+            {
+             "type": "soft_break"
+            },
+            {
+             "type": "smart_punctuation",
+             "kind": "em_dash",
+             "glyph": "—",
+             "source": "---"
+            },
+            {
+             "type": "text",
+             "value": "yaml"
+            },
+            {
+             "type": "soft_break"
+            },
+            {
+             "type": "text",
+             "value": "k: v"
+            },
+            {
+             "type": "soft_break"
+            },
+            {
+             "type": "smart_punctuation",
+             "kind": "em_dash",
+             "glyph": "—",
+             "source": "---"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

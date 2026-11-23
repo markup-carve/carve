@@ -306,6 +306,13 @@ The ruling on #6389 drops the list close before a column-0 typed opener: without
 - `carve-js`: drop the list close before a typed opener (CC-1613) and write the indent of C2-W-154 (CC-1653); it reports `structure-unspellable` there today.
 - `carve-php` and `carve-rs`: the same two rules, with their ports of #6324.
 
+## Engine gaps from the opener-after-a-closed-list ruling of 23 November
+
+The ruling on #6394 (option 1) writes a typed-opener paragraph directly after a list whose last block takes no lazy line, as a closed code block, a closed div, a table or a heading: on the next line, at column 0 and with no blank line, the source form that C2-B-026 and C2-B-232 read back (C2-W-154). With an attribute line the paragraph keeps the blank line and the indent. Clause cases CC-1656 to CC-1661 are added. Measured on `carve-js` `next2` `bc0e1fcf`: the trees of CC-1655 to CC-1659 and CC-1661 already match; `fmt` refuses CC-1656 to CC-1660 with `structure-unspellable`. Each expected source reads back as the tree of its input, and so do 1,200 variants of the direct spelling (list markers, nesting, fences, divs, tables, headings, thematic breaks, format names).
+
+- `carve-js`: write the paragraph directly after the list (CC-1656 to CC-1659) and keep the indent below an attribute line (CC-1660).
+- `carve-php` and `carve-rs`: the same, with their ports of #6389.
+
 ## Engine gaps from the tag and mention end guard of 21 November
 
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
