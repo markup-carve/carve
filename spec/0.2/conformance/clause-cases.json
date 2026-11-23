@@ -69644,6 +69644,23 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1662",
+  "clauses": [
+   "C2-W-088",
+   "C2-W-090",
+   "C2-I-111"
+  ],
+  "why": "C2-W-088: For the kind of a hyphen run, a run of its characters is a run of two or more hyphens: a single hyphen opens no dash (C2-I-111) and is no potential opener, so in a block that escapes a hyphen run the text `é- [a]: /u` keeps its hyphen bare.",
+  "summary": "a single hyphen is no potential opener of the hyphen kind and stays bare beside an escaped hyphen run",
+  "kind": "format",
+  "input": "é- [a]: /u\n:  >=\n](u)# ^}:x *é=}---2) \\---$\nb\n",
+  "options": {},
+  "expected": {
+   "carve": "é- [a]: /u\n:  >=\n](u)# ^}:x *é=}---2) \\---$\nb\n"
+  },
+  "from": []
  }
  ]
 }
