@@ -1346,7 +1346,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `duplicate-abbreviation-definition` | warning | an abbreviation definition whose key was defined before | unchanged |
 | `deprecated-spaced-thematic-break` | warning, migration notice (C2-W-156) | a line of three or more stars, hyphens or underscores with spaces between them | unchanged; `- - -` is this case |
 | `deprecated-indented-line-under-heading` | warning, migration notice (C2-W-156) | a line directly below a heading line, or below it across comment-only lines, that is indented past the heading marker and so continues the heading, where 0.1 started a paragraph (C2-B-137, C2-B-154) | added with the heading continuation rule |
-| `description-term-multi-line` | hint | a line indented past a term mark that continues the term and starts with a description mark `:` and a space (C2-B-016, C2-B-234) | narrowed to that line by the ruling of 24 November (#6508); an unindented line below a term ends it |
+| `description-term-multi-line` | hint | a line indented past a term mark that continues the term and starts with a description mark `:` and a space or a tab (C2-B-016, C2-B-234) | narrowed to that line by the ruling of 24 November (#6508); an unindented line below a term ends it |
 | `table-row-without-closing-pipe` | hint | a row with no closing pipe | void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it |
 | `table-row-attribute-as-cell` | warning | a row whose last cell holds only an attribute block | the half about a row without a closing pipe is void |
 | `deprecated-separator-row` | warning, migration notice (C2-W-156) | a row in which every cell holds only hyphens and colons | unchanged |
