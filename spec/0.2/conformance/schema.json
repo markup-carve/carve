@@ -50,6 +50,7 @@
         "mode": { "type": "string" },
         "normalize": { "type": "boolean" },
         "platforms": { "type": "array", "items": { "type": "string" } },
+        "upgrade": { "type": "boolean" },
         "profile": { "type": "string" },
         "rawHtml": { "type": "boolean" },
         "renderers": { "type": "object", "additionalProperties": { "oneOf": [{ "const": "standard" }, { "type": "object", "required": ["standard"], "additionalProperties": false, "properties": { "standard": { "type": "object", "additionalProperties": { "type": "string" } } } }] } },

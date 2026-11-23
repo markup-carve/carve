@@ -623,6 +623,18 @@
       ]
     },
     {
+      "name": "upgrade",
+      "commands": [
+        "lint"
+      ],
+      "kind": "switch",
+      "option": "upgrade",
+      "clauses": [
+        "C2-T-010",
+        "C2-W-156"
+      ]
+    },
+    {
       "name": "url-policy",
       "commands": [
         "render"

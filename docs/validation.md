@@ -8,7 +8,7 @@ Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a co
 
 ## Command line
 
-`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
+`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `--upgrade` turns on the migration notices, which report valid 0.2 text that 0.1 read differently; they are also on for a document whose line-1 frontmatter declares `carve: 0.1`. See [migration notices](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint). `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
 
 `carve fmt --check FILE` checks canonical source without writing it. Use `carve fmt -w FILE` to write it and `--normalize` to discard measured spelling. Formatting is not automatic repair of a semantic error. See [formatter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#carve-fmt).
 
@@ -20,14 +20,14 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings. The data file is authoritative if a row changes.
+The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given. The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
 | `a11y/image-alt` | warning | on |
 | `bare-html-tag` | warning | on |
 | `bidi-control-in-source` | warning | on |
-| `blank-reference-label` | warning | on |
+| `blank-reference-label` | warning | upgrade |
 | `block-marker-as-text` | warning | on |
 | `block-opener-overindented` | warning | on |
 | `block-opener-without-blank-line` | warning | on |
@@ -39,7 +39,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `caption-looking-paragraph` | warning | on |
 | `carve-version-unsupported` | warning | on |
 | `colon-fence-length-mismatch` | warning | on |
-| `comment-fence-closer-with-text` | warning | on |
+| `comment-fence-closer-with-text` | warning | upgrade |
 | `comment-in-reference-label` | warning | on |
 | `comment-line-in-line-block` | hint | on |
 | `comment-shaped-emphasis` | hint | on |
@@ -53,7 +53,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `deprecated-bare-underline` | warning | on |
 | `deprecated-cell-alignment` | warning | on |
 | `deprecated-continuation-marker` | warning | on |
-| `deprecated-indented-line-under-heading` | warning | on |
+| `deprecated-indented-line-under-heading` | warning | upgrade |
 | `deprecated-loose-attribute` | warning | on |
 | `deprecated-separator-row` | warning | on |
 | `deprecated-spaced-thematic-break` | warning | on |
@@ -112,7 +112,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `semantic-attribute-outside-span` | warning | on |
 | `semantic-attribute-value-ignored` | warning | on |
 | `setext-heading-underline` | warning | on |
-| `sigil-after-letter` | hint | on |
+| `sigil-after-letter` | hint | upgrade |
 | `table-attribute-invalid` | warning | on |
 | `table-column-arity` | warning | on |
 | `table-column-overlap` | warning | on |
@@ -125,7 +125,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `table-span-marker-blocked` | warning | on |
 | `table-width-total` | warning | on |
 | `thematic-break-spelling` | hint | on |
-| `tight-list-item-with-blank-line` | hint | off |
+| `tight-list-item-with-blank-line` | hint | upgrade |
 | `unattached-block-attribute` | warning | on |
 | `unattached-caption` | warning | on |
 | `unattached-inline-attribute` | hint | on |

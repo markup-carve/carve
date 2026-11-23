@@ -29,7 +29,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `formatWithDiagnostics` | as `format` | Carve source and the record | C2-W-134 |
 | `write` | a tree, optionally its sidecar, `alignTables`, `extensions` | Carve source | C2-W-001, C2-W-102 |
 | `writeWithDiagnostics` | as `write` | Carve source and the record | C2-W-134 |
-| `lint` | Carve source, `rules`, `platforms`, `includes`, `extensions`, `headingIds` | the record | C2-W-103, C2-W-109, C2-N-085, C2-T-042 |
+| `lint` | Carve source, `rules`, `platforms`, `upgrade`, `includes`, `extensions`, `headingIds` | the record | C2-W-103, C2-W-109, C2-W-156, C2-N-085, C2-T-042 |
 | `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels`, `adapter` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100, C2-M-102 |
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
 | `encodeTree` | a tree | its JSON text | C2-A-012, C2-A-217 |
@@ -210,6 +210,7 @@ This document defines what every engine offers a caller: the library calls and t
 |---|---|---|
 | `--rules` | JSON | the option `rules` (C2-W-109) |
 | `--platforms` | JSON | the option `platforms` (C2-W-109) |
+| `--upgrade` | switch | the option `upgrade`: turns on the migration notices (C2-W-156) |
 | `--heading-ids` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower` | the option `headingIds` (C2-T-042) |
 | `--extensions` | JSON | the option `extensions`, standard extensions only (C2-T-010) |
 | `--extension-options` | JSON | the renderer options of those extensions (C2-T-010) |
@@ -221,7 +222,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--strict` | switch | ends a file that wrote an entry with status 1 (C2-T-051) |
 | `--ignore` | file, repeatable | drops the entries of that file (C2-T-052) |
 
-**C2-T-031** `lint` writes the entries that the call `lint` returns, as lines or as a report, and ends a file with status 1 when an entry has the severity `warning` or `error`; a run of hints alone ends with 0. The call `lint` returns the record of its run (C2-W-103): the entries of its parse in the parse channel and its findings in the lint channel (C2-W-113), as 0.1 lint reported an unclosed fence. A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.
+**C2-T-031** `lint` writes the entries that the call `lint` returns, as lines or as a report, and ends a file with status 1 when an entry has the severity `warning` or `error`; a run of hints alone ends with 0. The call `lint` returns the record of its run (C2-W-103): the entries of its parse in the parse channel and its findings in the lint channel (C2-W-113), as 0.1 lint reported an unclosed fence. A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`. A migration notice is on for a document that declares Carve 0.1 and under `--upgrade` (C2-W-156).
 
 **C2-T-042** `lint` reads `headingIds` (C2-H-131), so a host lints with the option map it renders with. A rule that compares a fragment with the ids of the rendered HTML, as `broken-fragment-link` does, compares it with the heading ids that value generates: under `lower` the heading `= Alpha` has the id `alpha`, so a link to `#alpha` reports nothing, and under the default `keep-case` it has the id `Alpha`, so the same link reports the case-only message that names `Alpha`. Under `off` a heading has no generated id.
 

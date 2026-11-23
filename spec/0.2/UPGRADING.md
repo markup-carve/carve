@@ -340,7 +340,7 @@ These rulings change what some documents give against the 0.1 engine or against 
 | A bare dot with a task box before a further dot: `. [x] . x` | 0.1: an item with the text `[x] . x`. Early 0.2 (one engine): a paragraph. | A task item whose content `. x` is a nested ordered list. | C2-B-043, C2-B-229 |
 | Inline markup nested about 200 deep inside quotes, lists or divs, as `- *[x](u)` behind 197 quote marks | 0.1 and early 0.2: blocks and inline nodes shared one cap of 200, so deep blocks left inline openers as text. | Blocks and inline content have a limit of 200 each; inline depth counts from zero in each inline content, so the link forms. | C2-B-190, C2-I-118 |
 | A delimited table whose `header-rows` count is larger than its rows: `{table header-rows=5}` on two rows | 0.1 and early 0.2: no head, every cell a header cell, all rows in one body, and `fmt` kept the 5. | Every row is in the head; `fmt` writes the effective count, and `table-row-count-clamped` reports it. | C2-B-209, C2-B-221 |
-| A comment-only line directly below a heading, at or left of its marker: `# Title`, `%% note`, `  more` | 0.1 and early 0.2: the comment closed the heading and stood beside it, and `more` was a paragraph. | The comment is a child of the heading, and `more` continues the heading; the HTML of a heading followed by an unindented line is unchanged. `deprecated-indented-line-under-heading` reports `more`. | C2-B-137, C2-B-154 |
+| A comment-only line directly below a heading, at or left of its marker: `# Title`, `%% note`, `  more` | 0.1 and early 0.2: the comment closed the heading and stood beside it, and `more` was a paragraph. | The comment is a child of the heading, and `more` continues the heading; the HTML of a heading followed by an unindented line is unchanged. `deprecated-indented-line-under-heading` reports `more` in a document that declares Carve 0.1 or under `carve lint --upgrade` (C2-W-156). | C2-B-137, C2-B-154 |
 | An inline form that crosses a continuation row, as a code span opened in a row and closed in its `+` row | 0.1: rows joined before inline parsing, one code span with a space, `<code>a b</code>`. Early 0.2: one code span whose value holds a line feed. | Each fragment is read alone: the backticks, and any other opener without its closer in the same row, are text. | C2-B-184, C2-B-223 |
 | A single quote at the start of a word: `'tis`, `'em`, `rock 'n' roll`, or a quote inside a single quotation: `'I said 'yes' twice'` | 0.1 and early 0.2: a list of elision words gave an apostrophe, and an open quotation made the inner quote an apostrophe. | A quote after whitespace or opening punctuation opens; only a quote between two word characters or before a digit is an apostrophe. Type `’` where it matters: `’tis`. | C2-I-104, C2-I-105 |
 | A quote directly behind a hyphen, a dash or a slash: `said---"Go"`, `and/"or"` | 0.1 and early 0.2: the quote opened unless a space or a closing punctuation character followed. | The quote closes. Type `“` where it opens. | C2-I-104 |
@@ -559,6 +559,20 @@ A ruling of 21 November decides #6306: a parse bounds the copies of abbreviation
 | --- | --- | --- | --- |
 | A long abbreviation expansion used very often, for tree consumers: `*[A]: ` and 99,999 `x`, then `A` 11 times | Every `abbreviation` node carried the expansion, so the tree JSON grew with the square of the source. | The uses draw on 1,000,000 bytes or 8 times the source bytes; the eleventh `A` carries no `expansion`. Resolve it from the `abbreviation_def` of its key. | C2-I-098, C2-A-117 |
 | A tag or mention glued to a letter, number or mark outside ASCII: `#größe`, `#cafe` with a combining accent, `@josé`, `#tag-é` | The name ended at the last ASCII character, `#gr` and the text `öße`; a combining accent was cut from its letter. | The sigil and the whole run are text: `<p>#größe</p>`. An emoji is no letter, so `#tag😀` is still the tag `#tag`. Write a tag with ASCII letters only, or put a space or punctuation behind it. | C2-I-092, C2-W-125 |
+
+### Rulings of 23 November 2026
+
+A ruling of 23 November decides #6499: a lint rule that reports valid 0.2 text only because 0.1 read it differently does not fire on a 0.2 document. These migration notices are off by default. They are on for a document whose line-1 frontmatter declares Carve 0.1 (`carve: 0.1` or `carve-version: 0.1.13`), and under `carve lint --upgrade` or the lint option `upgrade`. `--rules` still turns each one on or off by its id (C2-W-156).
+
+| Rule | Reports | 0.1 read it as |
+| --- | --- | --- |
+| `deprecated-indented-line-under-heading` | a line indented past the heading marker, which continues the heading | a paragraph |
+| `comment-fence-closer-with-text` | a `%%%` line with other text inside a comment block, which is comment content | the closer of the block |
+| `sigil-after-letter` | `@` or `#` directly after a letter or number outside ASCII, which is text | a mention or a tag |
+| `blank-reference-label` | a reference or definition label of spaces only, which is text | a label |
+| `tight-list-item-with-blank-line` | a blank line inside an item of a tight list, which keeps the list tight | a loose list |
+
+To check a 0.1 document before upgrading it, run `carve lint --upgrade` on it, or declare `carve: 0.1` in its frontmatter until it is upgraded. The `deprecated-` rules that report a spelling 0.2 removed stay on by default (C2-W-110).
 
 ### Include expansion
 
@@ -1029,7 +1043,7 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `strictLosses` | Same name, default false. `renderWithDiagnostics` returns empty HTML on a render loss when true. |
 | `defaultFrontmatterFormat`, parser callbacks, `semanticSpanNames`, `codeBlockTabWidth` | No 0.2 option. An unknown option throws `CarveOptionError`. |
 | 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
-| 0.1 lint options | `lint` reads `rules` and `platforms`; `carve lint` takes them as `--rules` and `--platforms` with JSON values (C2-T-010). |
+| 0.1 lint options | `lint` reads `rules`, `platforms` and `upgrade`; `carve lint` takes them as `--rules` and `--platforms` with JSON values and the switch `--upgrade` (C2-T-010, C2-W-156). |
 
 0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `renderTree` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
 

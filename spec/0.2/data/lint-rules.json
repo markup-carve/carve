@@ -43,7 +43,7 @@
       "severity": "warning",
       "channel": "lint",
       "status": "new",
-      "default": "on",
+      "default": "upgrade",
       "messages": ["This label holds only spaces, tabs or a line break, so it is no label and \"${text}\" stays text; 0.1 read it as a label. Give the label a character that is not whitespace."],
       "message_origin": "data_file",
       "reports": "a footnote or link reference or definition whose label is empty after folding, which is text in 0.2 and was a label in 0.1 (C2-I-079, U-340)",
@@ -221,7 +221,7 @@
       "severity": "warning",
       "channel": "lint",
       "status": "new",
-      "default": "on",
+      "default": "upgrade",
       "messages": [
         "This line starts with a percent run and holds other text, so it is content of the comment block and does not close it. Put the closing run alone on its line."
       ],
@@ -410,7 +410,7 @@
       "severity": "warning",
       "channel": "lint",
       "status": "new",
-      "default": "on",
+      "default": "upgrade",
       "messages": [
         "This indented line directly below a heading is part of the heading in 0.2; in 0.1 it started a paragraph. Remove the indent to make it a separate block again; if it then reads as a list marker or another opener and a paragraph is meant, escape its first character."
       ],
@@ -1683,7 +1683,7 @@
       "severity": "hint",
       "channel": "lint",
       "status": "new",
-      "default": "on",
+      "default": "upgrade",
       "messages": ["A mention or tag does not start directly after a letter or number. Put a space or punctuation before it."],
       "message_origin": "design",
       "reports": "an at-sign or a `#` directly after a Unicode letter or number outside ASCII and followed by a mention or tag name (C2-I-092), which forms no mention or tag in 0.2 because the sigil follows a letter or number (C2-I-090) and which 0.1, testing only ASCII letters, digits and `_` before it, read as one; a sigil after an ASCII letter or digit, after a space or punctuation, behind a backslash or in an atom is not reported, nor `#1`, whose name holds no letter; once per sigil, the range is the sigil (C2-I-090, C2-I-092)",
@@ -1884,7 +1884,7 @@
       "severity": "hint",
       "channel": "lint",
       "status": "new",
-      "default": "off",
+      "default": "upgrade",
       "messages": [
         "A blank line inside an item no longer makes the list loose. Put a blank line between the items if every item should render as a paragraph."
       ],

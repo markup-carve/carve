@@ -1188,9 +1188,9 @@ Written:
 
 **C2-W-108** Lint never changes the tree and never changes the output of `fmt`.
 
-**C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1 (C2-B-215, C2-B-216). A rule that is off by default is turned on by its id. There is no named group of rules.
+**C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1 (C2-B-215, C2-B-216). A rule that is off by default is turned on by its id. There is no named group of rules, except the migration notices that the option `upgrade` turns on (C2-W-156).
 
-**C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are on by default through 0.2.x.
+**C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are on by default through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id.
 
 `_a_` was underline in 0.1 and is a deprecated spelling in 0.2 (C2-W-110).
 
@@ -1206,6 +1206,8 @@ Reported: `deprecated-bare-underline`.
 
 
 **C2-W-111** Each `deprecated-` rule states its trigger on the 0.2 tokens and tree. The 0.2 engine holds no 0.1 parsing code for them.
+
+**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 with an ordinary 0.2 reading, only because 0.1 read the same text otherwise. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. The migration notices are `deprecated-indented-line-under-heading`, `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label` and `tight-list-item-with-blank-line`. The other `deprecated-` rules report a spelling that 0.2 removed, which an author does not write for its 0.2 reading, and stay on by C2-W-110.
 
 ### Rules kept from 0.1
 
@@ -1331,7 +1333,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `definition-in-container` | warning | a definition shape inside a container or indented at the top level | unchanged |
 | `list-item-body-below-content-column` | hint | a block of an item that is indented past the marker and short of the content column | unchanged |
 | `ordered-marker-right-aligned` | warning | an ordered marker left of its list that ends at the column where the list's markers end | unchanged |
-| `tight-list-item-with-blank-line` | hint, opt-in | a tight list in which an item holds a blank line and a paragraph | unchanged |
+| `tight-list-item-with-blank-line` | hint, migration notice (C2-W-156) | a tight list in which an item holds a blank line and a paragraph | unchanged |
 | `deprecated-loose-attribute` | warning | a list that carries the key `loose` | unchanged |
 | `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once, at its first heading | unchanged |
 | `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
@@ -1340,7 +1342,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `duplicate-link-reference-definition` | warning | a link definition whose key was defined before | unchanged |
 | `duplicate-abbreviation-definition` | warning | an abbreviation definition whose key was defined before | unchanged |
 | `deprecated-spaced-thematic-break` | warning | a line of three or more stars, hyphens or underscores with spaces between them | unchanged; `- - -` is this case |
-| `deprecated-indented-line-under-heading` | warning | a line directly below a heading line, or below it across comment-only lines, that is indented past the heading marker and so continues the heading, where 0.1 started a paragraph (C2-B-137, C2-B-154) | added with the heading continuation rule |
+| `deprecated-indented-line-under-heading` | warning, migration notice (C2-W-156) | a line directly below a heading line, or below it across comment-only lines, that is indented past the heading marker and so continues the heading, where 0.1 started a paragraph (C2-B-137, C2-B-154) | added with the heading continuation rule |
 | `description-term-multi-line` | hint | a term whose text spans several lines | unchanged |
 | `table-row-without-closing-pipe` | hint | a row with no closing pipe | void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it |
 | `table-row-attribute-as-cell` | warning | a row whose last cell holds only an attribute block | the half about a row without a closing pipe is void |
@@ -1352,7 +1354,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `deprecated-substitution-arrow` | warning | a braced strike span that holds `~>` | unchanged |
 | `braced-span-opener-as-text` | warning | a braced opener left as text because a bare delimiter inside it closed an outer span | unchanged |
 | `unattached-inline-attribute` | hint | an attribute block in an inline content that is glued to no host | unchanged |
-| `sigil-after-letter` | hint | a mention or tag shape directly after a letter or number outside ASCII | unchanged |
+| `sigil-after-letter` | hint, migration notice (C2-W-156) | a mention or tag shape directly after a letter or number outside ASCII | unchanged |
 | `unclosed-frontmatter` | error | frontmatter with no closer | unchanged (C2-B-163) |
 | `frontmatter-shaped-thematic-break` | warning | frontmatter whose first line is blank or that holds no key line | unchanged |
 
@@ -1366,14 +1368,14 @@ Eight findings of the syntax chapters, one of the tree and writer chapters, and 
 |---|---|---|
 | `unclosed-braced-comment` | warning | a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-141) |
 | `comment-in-reference-label` | warning | a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077) |
-| `comment-fence-closer-with-text` | warning | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
+| `comment-fence-closer-with-text` | warning, migration notice (C2-W-156) | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |
 | `table-attribute-invalid` | warning | an invalid value of `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows` or the body keys of C2-B-230 that a table keeps in `attrs` and that has no effect (C2-B-227) |
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
 | `include-attributes-unused` | warning | an attribute line on an include without `code`, which applies to nothing (C2-N-072) |
 | `table-span-marker-attribute` | warning | a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174) |
-| `blank-reference-label` | warning | a footnote or link reference or definition whose label holds only spaces, tabs or a line break, `[^ ]: x` and `a[^ ]`: it is no label and stays text, where 0.1 read it as a label (C2-I-079, U-340) |
+| `blank-reference-label` | warning, migration notice (C2-W-156) | a footnote or link reference or definition whose label holds only spaces, tabs or a line break, `[^ ]: x` and `a[^ ]`: it is no label and stays text, where 0.1 read it as a label (C2-I-079, U-340) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -1596,7 +1598,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 17 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 22 | 0 | 0 | 2 |
-| **Total** | **146** | **6** | **6** | **40** |
+| Diagnostics and lint | 23 | 0 | 0 | 2 |
+| **Total** | **147** | **6** | **6** | **40** |
 
-The document has 146 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 147 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
