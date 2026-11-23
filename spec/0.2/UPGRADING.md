@@ -572,7 +572,25 @@ A ruling of 23 November decides #6499: a lint rule that reports valid 0.2 text o
 | `blank-reference-label` | a reference or definition label of spaces only, which is text | a label |
 | `tight-list-item-with-blank-line` | a blank line inside an item of a tight list, which keeps the list tight | a loose list |
 
-To check a 0.1 document before upgrading it, run `carve lint --upgrade` on it, or declare `carve: 0.1` in its frontmatter until it is upgraded. The `deprecated-` rules that report a spelling 0.2 removed stay on by default (C2-W-110).
+To check a 0.1 document before upgrading it, run `carve lint --upgrade` on it, or declare `carve: 0.1` in its frontmatter until it is upgraded.
+
+A second ruling of 24 November extends #6499 to every rule whose only job is help in moving from 0.1 or Djot, so that a valid 0.2 document lints clean with the default options. These rules have the default `upgrade` too (C2-W-110, C2-W-156):
+
+| Rule | Reports | 0.1 or Djot read it as |
+| --- | --- | --- |
+| `deprecated-bare-underline`, `deprecated-bare-strike`, `deprecated-bare-highlight` | a bare `_`, `~` or `=` pair, which is text | underline, strike or highlight |
+| `deprecated-cell-alignment` | a cell that starts with an alignment prefix such as `<`, which is cell text | the alignment of the cell |
+| `deprecated-continuation-marker` | a line that holds only `+`, which is text | a list continuation marker |
+| `deprecated-loose-attribute` | the key `loose` on a list, which is a plain attribute | a loose list |
+| `deprecated-separator-row` | a row of hyphens below the first row, which is a body row | the end of a Markdown head |
+| `deprecated-spaced-thematic-break` | `* * *`, `- - -` or `_ _ _`, which are list items or text | a thematic break |
+| `deprecated-substitution-arrow` | `~>` in a braced strike, which is text | a substitution |
+| `deprecated-table-attribute` | `header-rows` on a pipe table, which does not apply | the head rows of the table |
+| `description-term-multi-line` | a line below a term line, which continues the term | a paragraph |
+| `thematic-break-spelling` | a line of `---` or `___`, which is text | a thematic break |
+| the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet or a folded heading line |
+
+The rules that report a likely mistake or an ambiguity in the 0.2 document itself keep their defaults: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented`. `carve fix` still turns on every rule that has a fix (C2-T-049), so it rewrites a deprecated spelling that has a fix without `--upgrade`.
 
 ### Rulings of 24 November 2026
 
@@ -986,7 +1004,7 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `decisionTraceJsonLines` | No 0.2 counterpart and no `trace` command; whether a trace returns is open in markup-carve/carve#6264. |
 | `defaultAttributes` | The `defaultAttributes` factory in `@markup-carve/carve/extensions`. |
 | `details` | The `details` factory in `@markup-carve/carve/extensions`. |
-| `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids, which are off by default (C2-W-109). The `markdown-` rules report the Markdown habits. |
+| `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids, or by `upgrade` for all of them but `djot-highlight-braces`; they are off by default (C2-W-109, C2-W-156). The `markdown-` rules report the Markdown habits. |
 | `expandsForTarget` | Internal in 0.1: the command line's choice of which targets expand includes. No replacement needed; C2-N-004 and C2-T-018 state when the command line expands. |
 | `externalLinks` | The `externalLinks()` navigation extension in `@markup-carve/carve/extensions`. Sets `target` and `rel` on external HTTP links; options are `target`, `rel`, and `nofollow`. |
 | `fencedRender` | The `fencedRender` factory in `@markup-carve/carve/extensions`. |
@@ -1151,7 +1169,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
 | `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
 | `lint --rule ID`, `lint --platform NAME` | `carve lint --rules '{"ID":"on"}'`, `--platforms '["NAME"]'` (C2-T-010) |
-| `lint --from-djot` | turn on the `djot-` rules by their ids in `--rules` (C2-T-031) |
+| `lint --from-djot` | `--upgrade`, or turn on the `djot-` rules by their ids in `--rules` (C2-T-031, C2-W-156) |
 | `lint --caption-hints` | none needed: `caption-looking-paragraph` is on by default |
 | `lint --ignore ID` | `carve lint --ignore FILE-ID`, repeatable (C2-T-052) |
 | `fmt --migrate` | `carve upgrade --migrate`, the upgrade tool's repair of a reference whose only target differs in case; each respelled line is a record `case-reference` of entry U-429 |

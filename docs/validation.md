@@ -8,7 +8,7 @@ Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a co
 
 ## Command line
 
-`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `--upgrade` turns on the migration notices, which report valid 0.2 text that 0.1 read differently; they are also on for a document whose line-1 frontmatter declares `carve: 0.1`. See [migration notices](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint). `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
+`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `--upgrade` turns on the migration notices, which report valid 0.2 text that 0.1 or Djot read differently and the spellings 0.2 removed (the `deprecated-` rules and most `djot-` rules among them); they are also on for a document whose line-1 frontmatter declares `carve: 0.1`. See [migration notices](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint). `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
 
 `carve fmt --check FILE` checks canonical source without writing it. Use `carve fmt -w FILE` to write it and `--normalize` to discard measured spelling. Formatting is not automatic repair of a semantic error. See [formatter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#carve-fmt).
 
@@ -48,27 +48,27 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `definition-in-container` | warning | on |
 | `definition-term-block-folded` | warning | on |
 | `delimited-table-wide-row` | warning | on |
-| `deprecated-bare-highlight` | warning | on |
-| `deprecated-bare-strike` | warning | on |
-| `deprecated-bare-underline` | warning | on |
-| `deprecated-cell-alignment` | warning | on |
-| `deprecated-continuation-marker` | warning | on |
+| `deprecated-bare-highlight` | warning | upgrade |
+| `deprecated-bare-strike` | warning | upgrade |
+| `deprecated-bare-underline` | warning | upgrade |
+| `deprecated-cell-alignment` | warning | upgrade |
+| `deprecated-continuation-marker` | warning | upgrade |
 | `deprecated-indented-line-under-heading` | warning | upgrade |
-| `deprecated-loose-attribute` | warning | on |
-| `deprecated-separator-row` | warning | on |
-| `deprecated-spaced-thematic-break` | warning | on |
-| `deprecated-substitution-arrow` | warning | on |
-| `deprecated-table-attribute` | warning | on |
+| `deprecated-loose-attribute` | warning | upgrade |
+| `deprecated-separator-row` | warning | upgrade |
+| `deprecated-spaced-thematic-break` | warning | upgrade |
+| `deprecated-substitution-arrow` | warning | upgrade |
+| `deprecated-table-attribute` | warning | upgrade |
 | `description-separator-below-content-column` | warning | on |
-| `description-term-multi-line` | hint | on |
-| `djot-emphasis-underscore` | warning | off |
-| `djot-heading-continuation` | warning | off |
+| `description-term-multi-line` | hint | upgrade |
+| `djot-emphasis-underscore` | warning | upgrade |
+| `djot-heading-continuation` | warning | upgrade |
 | `djot-highlight-braces` | warning | off |
-| `djot-intraword-underscore` | warning | off |
-| `djot-plus-bullet` | warning | off |
-| `djot-subscript-tilde` | warning | off |
-| `djot-subscript-tilde-braced` | warning | off |
-| `djot-superscript-caret` | warning | off |
+| `djot-intraword-underscore` | warning | upgrade |
+| `djot-plus-bullet` | warning | upgrade |
+| `djot-subscript-tilde` | warning | upgrade |
+| `djot-subscript-tilde-braced` | warning | upgrade |
+| `djot-superscript-caret` | warning | upgrade |
 | `duplicate-reference-url` | warning | off |
 | `emphasis-as-heading` | warning | off |
 | `emphasis-marker-before-attributes` | warning | on |
@@ -124,7 +124,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `table-span-marker-attribute` | warning | on |
 | `table-span-marker-blocked` | warning | on |
 | `table-width-total` | warning | on |
-| `thematic-break-spelling` | hint | on |
+| `thematic-break-spelling` | hint | upgrade |
 | `tight-list-item-with-blank-line` | hint | upgrade |
 | `unattached-block-attribute` | warning | on |
 | `unattached-caption` | warning | on |

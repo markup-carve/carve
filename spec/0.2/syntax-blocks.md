@@ -1643,7 +1643,7 @@ Example 56 (unverified)
 
 :::
 
-Reported: `deprecated-spaced-thematic-break`.
+`deprecated-spaced-thematic-break` reports the line in a document that declares Carve 0.1 and under the lint option `upgrade` (C2-W-156).
 
 Example 57 (generated)
 
@@ -5258,7 +5258,7 @@ Example 259 (unverified)
 
 **C2-B-159** A thematic break is a line that holds three or more `*` and nothing else but trailing spaces and tabs, at any indent.
 
-**C2-B-160** A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.
+**C2-B-160** A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them. Both rules are migration notices (C2-W-156).
 
 Directly after a paragraph line a star run is an interrupter (C2-B-200).
 
