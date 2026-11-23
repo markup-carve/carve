@@ -358,6 +358,13 @@ C2-W-155 named a comment between the indented list and the container above as so
 - `carve-php`: indent the list above a paragraph that follows it across a line comment (CC-1707), and take no departure behind the open fence of C2-W-123 (CC-1711).
 - `carve-rs`: report the line comment instead of the paragraph and indent the container above (CC-1705 to CC-1708, carve-rs#4608), and keep the spellings of CC-1710 to CC-1712, which it now reports as losses.
 
+## Engine gaps from the closing-note ruling of 23 November (#6453)
+
+The ruling on #6453 (B with the tie-break) keeps C2-I-089's "Unclosed, the two characters are text": what follows an `^[` that never closes reads as ordinary inline content, so a footnote reference or an inline footnote there opens as usual. The new sentence of C2-I-089 decides a note whose closing depends on a caret pair inside it: that note is text, and the caret pair an ordinary bracket. Clause cases CC-1713 to CC-1716. Measured on `carve-js` `next2` `ed72bbf0`: CC-1714 and CC-1715 pass; the ticket measured `carve-php` `next2` `33bccd4d` and `carve-rs` `next2` `ba50b123`.
+
+- `carve-js`: read the note of CC-1713 and CC-1716 as text, with no note inside a note.
+- `carve-php` and `carve-rs`: open the footnote reference and the inline footnote behind an `^[` that never closes (CC-1714, CC-1715).
+
 ## Engine gaps from the table key order ruling of 23 November
 
 The maintainer ruling on #6431 places the table keys the writer makes from the table fields (C2-W-136): they stand after the keys of `attrs`, in the order C2-W-136 lists them. Clause cases CC-1699 to CC-1704. Measured on `carve-js` `next2` `7ccf200`, `carve-php` `next2` `1992f1c` and `carve-rs` `next2` `887141d`: in every case the expected output reads back to the tree of the input in all three engines, and CC-1699 passes in all three.

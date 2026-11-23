@@ -72412,6 +72412,142 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-1713",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: A note that would close only because a caret pair inside it opens is text, and that caret pair is an ordinary bracket.",
+   "summary": "a note that closes only when the footnote reference inside it opens is text, and the caret pair an ordinary bracket",
+   "kind": "parse",
+   "input": "^[[[^\\}[]]]",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^[[[^}[]]]"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1714",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: Unclosed, the two characters are text.",
+   "summary": "after an inline footnote that never closes, a footnote reference opens as usual",
+   "kind": "parse",
+   "input": "^[a [^1]\n\n[^1]: n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^[a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "n"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1715",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: Unclosed, the two characters are text.",
+   "summary": "after an inline footnote that never closes, a later inline footnote opens as usual",
+   "kind": "parse",
+   "input": "x ^[a ^[b] c",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x ^[a "
+       },
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " c"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1716",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: A note that would close only because a caret pair inside it opens is text, and that caret pair is an ordinary bracket.",
+   "summary": "a note that closes only when the inline footnote inside it opens is text, and no note nests in a note",
+   "kind": "parse",
+   "input": "^[^[[^]\\[]",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^[^[[^][]"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
