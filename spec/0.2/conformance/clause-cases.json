@@ -70089,6 +70089,234 @@
    "carve": "a[^n]\n\n[^n]: x\n\n{.c}\n ---yaml\nk: v\n---\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-1673",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text. C2-B-026: A container that does not own the line closes, with every container inside it.",
+  "summary": "typed opener below an indented list marker and a blank line closes the list and stays text",
+  "input": " - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>b</li>\n</ul>\n<p>—yaml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1674",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-154"
+  ],
+  "why": "C2-W-155: Where such a paragraph follows a list whose last block takes a lazy line, every line of the list is written indented by one space, and the paragraph follows it below a blank line with its first line indented by one space, which leaves it outside the item",
+  "summary": "writer indents the list by one space before a typed-opener paragraph when the list ends in a paragraph",
+  "kind": "format",
+  "input": " - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " - b\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1675",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text. C2-B-026: A container that does not own the line closes, with every container inside it.",
+  "summary": "typed opener below an indented ordered list ending in a quote closes the list and stays text",
+  "input": " 1. a\n 2. > q\n\n ---toml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<ol>\n  <li>a</li>\n  <li>\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ol>\n<p>—toml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "ordered",
+      "style": "1",
+      "delimiter": "."
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "block_quote",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "q"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "toml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1676",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-154"
+  ],
+  "why": "C2-W-155: Where such a paragraph follows a list whose last block takes a lazy line, every line of the list is written indented by one space, and the paragraph follows it below a blank line with its first line indented by one space, which leaves it outside the item",
+  "summary": "writer indents an ordered list ending in a quote by one space before a typed-opener paragraph",
+  "kind": "format",
+  "input": " 1. a\n 2. > q\n\n ---toml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " 1. a\n 2. > q\n\n ---toml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1677",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-154"
+  ],
+  "why": "C2-W-155: Where such a paragraph follows a list whose last block takes a lazy line, every line of the list is written indented by one space, and the paragraph follows it below a blank line with its first line indented by one space, which leaves it outside the item",
+  "summary": "writer indents every line of a list whose nested list ends in a paragraph",
+  "kind": "format",
+  "input": " - a\n   - b\n     c\n\n ---json\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " - a\n   - b\n     c\n\n ---json\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1678",
+  "clauses": [
+   "C2-W-154",
+   "C2-W-155"
+  ],
+  "why": "C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "a list ending in a closed fence keeps the direct column-0 spelling, with no marker indent",
+  "kind": "format",
+  "input": " - ```\n   x\n   ```\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "- ```\n  x\n  ```\n---yaml\nk: v\n---\n"
+  },
+  "from": []
  }
  ]
 }
