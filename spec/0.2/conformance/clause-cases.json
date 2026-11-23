@@ -74481,6 +74481,22 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1786",
+  "clauses": [
+   "C2-B-154",
+   "C2-W-024"
+  ],
+  "why": "C2-B-154: A heading holds its marker line and every line directly below it that is indented past the column of its marker C2-W-024: Every block of an item, a description or a footnote body after the marker line is written at the content column",
+  "summary": "a heading on the marker line of a footnote keeps its continuation past the heading marker, not at the footnote content column (carve#6502)",
+  "kind": "format",
+  "input": "Text.[^1]\n\n[^1]: = Head\n        cont\n",
+  "options": {},
+  "expected": {
+   "carve": "Text.[^1]\n\n[^1]: = Head\n        cont\n"
+  },
+  "from": []
  }
  ]
 }

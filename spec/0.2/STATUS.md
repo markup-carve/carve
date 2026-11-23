@@ -426,3 +426,9 @@ The auto-ruling on #6498 states which node the `path` of a data-rule finding nam
 
 - carve-js and carve-php: `list-item-body-below-content-column` names the item, not its block (CC-1774); a frontmatter line and a div closer name the document (CC-1783, CC-1785); a line of a pipe table names the table, not the row (CC-1784). carve-js reaches CC-1774 and CC-1782 through per-id code in `lint/data-rules.ts`, which the general line rule replaces.
 - carve-rs: a text-run finding names the `text` child at its start (CC-1776, CC-1777), at a line break a `soft_break`; a line of a line block names the line block (CC-1779), a caption line the caption (CC-1780); a lazy heading line, a comment block line, a frontmatter line and a div closer name the document (CC-1781 to CC-1783, CC-1785); a line of a pipe table names the table (CC-1784).
+
+## Engine gaps from the heading continuation in a footnote body (#6502)
+
+A heading on the marker line of a footnote continues on lines indented past its marker (C2-B-154), which stands right of the footnote content column. `fmt` writes such a source unchanged (CC-1786). Measured on `carve-js` `next2` `4deb322e`: the writer puts the continuation at the content column and refuses the source with a loss report. markup-carve/carve-js#5499 passes CC-1786.
+
+- `carve-js`: refuses CC-1786 with a loss report (fixed by markup-carve/carve-js#5499, merged into `next2` as `383040ef`).
