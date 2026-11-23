@@ -295,9 +295,11 @@ The `github-alert-marker` row skips a line whose first `>` is glued to a `[!` th
 
 ## Engine gaps from typed metadata blocks, 21 November
 
-- `carve-js`: the prototype in carve-js#5302 covers top-level openers, containers, attributes, unclosed blocks and writer round-trips, but needs the final lint, include and flatten rules and the spec pin.
-- `carve-php`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
-- `carve-rs`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
+All three engines now read later typed blocks with their keys, tree positions, lint, includes, `flatten` and the writer (carve-js#5365, carve-php#5614, carve-rs#4595). Measured on 23 November with the readiness runner on the `next2` heads `f33d83eb` (carve-js), `d365a9e7` (carve-php) and `b1ca55c3` (carve-rs), and with a fuzz round of 3,600 generated documents. CC-1663 now passes in all three engines. The C2-W-155 cases CC-1674 to CC-1698 are listed in the sections of the 23 November rulings below. Still open:
+
+- `carve-js`: `unclosed-frontmatter` carries the 0.1 message instead of the template of `data/lint-rules.json` (CC-613, CC-1601; carve-js#5409).
+- `carve-php`: a column-0 typed opener after a description list or a footnote and a blank line stays text (C2-B-232, #6429).
+- `carve-rs`: the same after a description list (#6429); a comment-only line between the blank line and the opener keeps the block from opening (C2-B-137, carve-rs#4612); `flatten` writes the leading frontmatter of an included file (C2-T-047, CC-1611; carve-rs#4613).
 
 ## Engine gaps from the typed opener separation ruling of 22 November
 
