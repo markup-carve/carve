@@ -383,3 +383,9 @@ The maintainer ruling on #6431 places the table keys the writer makes from the t
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
 
 - All three engines: the tag or mention ends at the last ASCII name character, so `#größe` gives the tag `#gr` (CC-1634 to CC-1637, CC-1639 to CC-1641); the writer writes the hyphen or dot behind a tag bare (CC-1643) and reports no loss for a tag glued to a letter outside ASCII (CC-1644). The emoji boundary (CC-1638) and the format case (CC-1642) pass.
+
+## Engine gaps from the braced-sibling ruling of 23 November (#6420)
+
+The ruling on #6420 keeps C2-W-069 as written: an emphasis or strong node directly after a braced sibling of its own kind is written bare where the bare delimiter opens and closes at that position, since C2-W-070 braces only an ancestor or a descendant of the same kind. Clause cases CC-1723 to CC-1728. Measured on `carve-js` `next2` `cad54c1`, `carve-php` `next2` `0f97efc` and `carve-rs` `next2` `d7dc5e0`: every expected source reads back to the tree of its input in all three engines, and `carve-php` passes all six. Of 362 generated sibling trees (emphasis and strong, a first span braced for a space edge, a letter before it or a nested span, fifteen second contents, six contexts), 159 differ, all in this direction.
+
+- `carve-js` and `carve-rs`: a same-kind span directly after a span braced for C2-I-047 or C2-I-048 is braced too (CC-1723 to CC-1728).

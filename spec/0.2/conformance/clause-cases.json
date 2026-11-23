@@ -72715,6 +72715,298 @@
     "stderrCategory": null
    },
    "from": []
+  },
+  {
+   "id": "CC-1723",
+   "clauses": [
+    "C2-W-069",
+    "C2-W-070"
+   ],
+   "why": "C2-W-069: Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written C2-W-070: An emphasis or strong node with an ancestor or a descendant of its own kind is written in the braced form.",
+   "summary": "an emphasis directly after a braced emphasis sibling is written bare",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": " a"
+         }
+        ]
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{/ a/}/a/\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1724",
+   "clauses": [
+    "C2-W-069",
+    "C2-W-070"
+   ],
+   "why": "C2-W-069: Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written C2-W-070: An emphasis or strong node with an ancestor or a descendant of its own kind is written in the braced form.",
+   "summary": "a strong directly after a braced strong sibling is written bare",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "strong",
+        "children": [
+         {
+          "type": "text",
+          "value": " b"
+         }
+        ]
+       },
+       {
+        "type": "strong",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{* b*}*a*\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1725",
+   "clauses": [
+    "C2-W-069",
+    "C2-W-070"
+   ],
+   "why": "C2-W-069: Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written C2-W-070: An emphasis or strong node with an ancestor or a descendant of its own kind is written in the braced form.",
+   "summary": "an emphasis after a sibling braced for its trailing space is written bare",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         }
+        ]
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{/a /}/a/\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1726",
+   "clauses": [
+    "C2-W-069",
+    "C2-W-070"
+   ],
+   "why": "C2-W-069: Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written C2-W-070: An emphasis or strong node with an ancestor or a descendant of its own kind is written in the braced form.",
+   "summary": "an emphasis after a sibling braced behind a letter is written bare",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "p"
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "a b"
+         }
+        ]
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "c"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "p{/a b/}/c/\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1727",
+   "clauses": [
+    "C2-W-069",
+    "C2-W-070"
+   ],
+   "why": "C2-W-069: Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written C2-W-070: An emphasis or strong node with an ancestor or a descendant of its own kind is written in the braced form.",
+   "summary": "of three emphasis siblings after a braced one, the second is bare and the third braced",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": " a"
+         }
+        ]
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "c"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{/ a/}/b/{/c/}\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1728",
+   "clauses": [
+    "C2-W-069",
+    "C2-W-070"
+   ],
+   "why": "C2-W-069: Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written C2-W-070: An emphasis or strong node with an ancestor or a descendant of its own kind is written in the braced form.",
+   "summary": "a strong after a braced strong sibling in a list item is written bare",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "strong",
+            "children": [
+             {
+              "type": "text",
+              "value": " a "
+             }
+            ]
+           },
+           {
+            "type": "strong",
+            "children": [
+             {
+              "type": "text",
+              "value": "b c"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- {* a *}*b c*\n"
+   },
+   "from": []
   }
  ]
 }
