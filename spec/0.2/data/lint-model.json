@@ -2851,6 +2851,367 @@
       ]
     },
     {
+      "id": "carve-version-unsupported",
+      "over": "block",
+      "types": [
+        "frontmatter"
+      ],
+      "let": {
+        "numeric_at": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "(?:^|\\n)[ \\t]*(?:carve|carve-version):[ \\t]*(?<v>0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)[ \\t]*(?:\\n|$)"
+              ]
+            },
+            {
+              "match": "v"
+            },
+            -1
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "parent.type"
+              },
+              "document"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "line.number"
+              },
+              1
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "(?:^|\\n)[ \\t]*(?:carve|carve-version):[ \\t]*(?<v>\\S*[^\\d.\\s]\\S*|\\.\\S*|\\S*\\.|\\S*\\.\\.\\S*|0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)[ \\t]*(?:\\n|$)"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "eq": [
+              {
+                "v": "numeric_at"
+              },
+              {
+                "match": "v"
+              }
+            ]
+          },
+          "message": 1,
+          "start": {
+            "match": "v"
+          },
+          "end": {
+            "match": "v",
+            "at": "end"
+          },
+          "values": {
+            "version": {
+              "json_escape": {
+                "slice": [
+                  {
+                    "f": "text"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v",
+                        "at": "end"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "start": {
+            "match": "v"
+          },
+          "end": {
+            "match": "v",
+            "at": "end"
+          },
+          "values": {
+            "version": {
+              "json_escape": {
+                "slice": [
+                  {
+                    "f": "text"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v",
+                        "at": "end"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-161",
+        "C2-B-231"
+      ]
+    },
+    {
+      "id": "carve-version-unsupported",
+      "over": "line",
+      "let": {
+        "numeric_at": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "raw_body"
+                },
+                "^%%.*carve-version:[ \\t]*(?<v>0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)(?:[ \\t;]|$)"
+              ]
+            },
+            {
+              "match": "v"
+            },
+            -1
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "starts": [
+              {
+                "f": "raw_body"
+              },
+              "%%"
+            ]
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "line",
+                    "key": {
+                      "not": {
+                        "f": "item.blank"
+                      }
+                    },
+                    "value": true,
+                    "after": true,
+                    "from": {
+                      "f": "start"
+                    },
+                    "field": "start"
+                  }
+                },
+                0
+              ]
+            }
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "block",
+                    "types": [
+                      "frontmatter"
+                    ],
+                    "key": {
+                      "all": [
+                        {
+                          "eq": [
+                            {
+                              "f": "item.line.number"
+                            },
+                            1
+                          ]
+                        },
+                        {
+                          "eq": [
+                            {
+                              "f": "item.parent.type"
+                            },
+                            "document"
+                          ]
+                        },
+                        {
+                          "matches": [
+                            {
+                              "f": "item.text"
+                            },
+                            "(?:^|\\n)[ \\t]*(?:carve|carve-version):[ \\t]*(?<v>\\S+)[ \\t]*(?:\\n|$)"
+                          ]
+                        }
+                      ]
+                    },
+                    "value": true,
+                    "field": "start"
+                  }
+                },
+                0
+              ]
+            }
+          },
+          {
+            "matches": [
+              {
+                "f": "raw_body"
+              },
+              "^%%.*carve-version:[ \\t]*(?<v>[^\\s;]*[^\\d.\\s;][^\\s;]*|\\.[^\\s;]*|[^\\s;]*\\.|[^\\s;]*\\.\\.[^\\s;]*|0*[1-9]\\d*(?:\\.\\d+)*|0+\\.0*(?:[3-9]|[1-9]\\d+)(?:\\.\\d+)*|0+\\.0*2(?:\\.0+)*\\.0*[1-9]\\d*(?:\\.\\d+)*)(?:[ \\t;]|$)"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "eq": [
+              {
+                "v": "numeric_at"
+              },
+              {
+                "match": "v"
+              }
+            ]
+          },
+          "message": 1,
+          "start": {
+            "match": "v"
+          },
+          "end": {
+            "match": "v",
+            "at": "end"
+          },
+          "values": {
+            "version": {
+              "json_escape": {
+                "slice": [
+                  {
+                    "f": "raw_body"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v"
+                      },
+                      {
+                        "f": "body_start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v",
+                        "at": "end"
+                      },
+                      {
+                        "f": "body_start"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "start": {
+            "match": "v"
+          },
+          "end": {
+            "match": "v",
+            "at": "end"
+          },
+          "values": {
+            "version": {
+              "json_escape": {
+                "slice": [
+                  {
+                    "f": "raw_body"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v"
+                      },
+                      {
+                        "f": "body_start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "v",
+                        "at": "end"
+                      },
+                      {
+                        "f": "body_start"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-161",
+        "C2-B-231"
+      ]
+    },
+    {
       "id": "colon-fence-length-mismatch",
       "over": "line",
       "when": {
@@ -12588,6 +12949,121 @@
       ]
     },
     {
+      "id": "unclosed-braced-comment",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "all": [
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "(?:^|[^\\\\])(?:\\\\\\\\)*(?<o>\\{%)"
+            ]
+          },
+          {
+            "not": {
+              "contains": [
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "o",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "%}"
+              ]
+            }
+          },
+          {
+            "eq": [
+              {
+                "lookup": {
+                  "over": "line",
+                  "key": true,
+                  "value": true,
+                  "before": true,
+                  "from": {
+                    "f": "end"
+                  },
+                  "field": "leaf_next.blank"
+                }
+              },
+              false
+            ]
+          },
+          {
+            "ne": [
+              {
+                "lookup": {
+                  "over": "line",
+                  "key": true,
+                  "value": true,
+                  "before": true,
+                  "from": {
+                    "f": "end"
+                  },
+                  "field": "leaf_next.shape"
+                }
+              },
+              "region_marker"
+            ]
+          },
+          {
+            "ge": [
+              {
+                "lookup": {
+                  "over": "line",
+                  "key": {
+                    "contains": [
+                      {
+                        "f": "item.raw_body"
+                      },
+                      "%}"
+                    ]
+                  },
+                  "value": true,
+                  "after": true,
+                  "from": {
+                    "f": "end"
+                  },
+                  "field": "start"
+                }
+              },
+              0
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "match": "o"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-141"
+      ]
+    },
+    {
       "id": "unclosed-inline-emphasis",
       "over": "inline",
       "types": [
@@ -12949,121 +13425,6 @@
         "C2-I-046",
         "C2-I-047",
         "C2-I-051"
-      ]
-    },
-    {
-      "id": "unclosed-braced-comment",
-      "over": "inline",
-      "types": [
-        "text_run"
-      ],
-      "when": {
-        "all": [
-          {
-            "matches": [
-              {
-                "f": "text"
-              },
-              "(?:^|[^\\\\])(?:\\\\\\\\)*(?<o>\\{%)"
-            ]
-          },
-          {
-            "not": {
-              "contains": [
-                {
-                  "slice": [
-                    {
-                      "f": "text"
-                    },
-                    {
-                      "sub": [
-                        {
-                          "match": "o",
-                          "at": "end"
-                        },
-                        {
-                          "f": "start"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "%}"
-              ]
-            }
-          },
-          {
-            "eq": [
-              {
-                "lookup": {
-                  "over": "line",
-                  "key": true,
-                  "value": true,
-                  "before": true,
-                  "from": {
-                    "f": "end"
-                  },
-                  "field": "leaf_next.blank"
-                }
-              },
-              false
-            ]
-          },
-          {
-            "ne": [
-              {
-                "lookup": {
-                  "over": "line",
-                  "key": true,
-                  "value": true,
-                  "before": true,
-                  "from": {
-                    "f": "end"
-                  },
-                  "field": "leaf_next.shape"
-                }
-              },
-              "region_marker"
-            ]
-          },
-          {
-            "ge": [
-              {
-                "lookup": {
-                  "over": "line",
-                  "key": {
-                    "contains": [
-                      {
-                        "f": "item.raw_body"
-                      },
-                      "%}"
-                    ]
-                  },
-                  "value": true,
-                  "after": true,
-                  "from": {
-                    "f": "end"
-                  },
-                  "field": "start"
-                }
-              },
-              0
-            ]
-          }
-        ]
-      },
-      "report": [
-        {
-          "start": {
-            "match": "o"
-          },
-          "end": {
-            "f": "end"
-          }
-        }
-      ],
-      "clauses": [
-        "C2-B-141"
       ]
     },
     {

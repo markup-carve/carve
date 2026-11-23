@@ -73339,6 +73339,66 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1743",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: or is such a version greater than 0.2 compared part by part as numbers with missing parts as 0",
+   "summary": "a version below 0.2 compared part by part is not reported, whatever its later parts",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1.9\n---\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "carve-version-unsupported"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1744",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: with no such line in the line-1 block, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document",
+   "summary": "a stamp comment that ends a document without frontmatter declaration is tested",
+   "kind": "lint",
+   "input": "x\n\n%% carve-version: 9.9; generated-by: carve-js 0.1.0\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "carve-version-unsupported",
+      "line": 3,
+      "column": 19,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1745",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: with no such line in the line-1 block, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document",
+   "summary": "a frontmatter declaration line keeps the stamp comment from being tested",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\nx\n\n%% carve-version: 9.9\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "carve-version-unsupported"
+    ]
+   },
+   "from": []
   }
  ]
 }
