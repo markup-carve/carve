@@ -74193,6 +74193,294 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1774",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A block or inline record names its node.",
+  "summary": "lint path: a block rule names the block of its record, not the item that holds it",
+  "kind": "lint",
+  "input": "- a\n\n b\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "list-item-body-below-content-column",
+     "line": 3,
+     "column": 2,
+     "path": "/children/0/children/0/children/1",
+     "channel": "lint",
+     "severity": "hint"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1775",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A block or inline record names its node.",
+  "summary": "lint path: an inline rule names the inline node of its record",
+  "kind": "lint",
+  "input": "> a ![](i.png)\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "a11y/image-alt",
+     "line": 1,
+     "column": 5,
+     "path": "/children/0/children/0/children/1",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1776",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A text run has no node (C2-W-140), so it names the node whose children make the run, never a text or soft break child.",
+  "summary": "lint path: a text-run finding that crosses a soft break names the paragraph that holds the run",
+  "kind": "lint",
+  "input": "a **b\nc** d\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "markdown-strong-double-star",
+     "line": 1,
+     "column": 3,
+     "path": "/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1777",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A text run has no node (C2-W-140), so it names the node whose children make the run, never a text or soft break child.",
+  "summary": "lint path: a text-run finding inside strong names the strong, not its text child",
+  "kind": "lint",
+  "input": "> *x **b** y*\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "markdown-strong-double-star",
+     "line": 1,
+     "column": 6,
+     "path": "/children/0/children/0/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1778",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: An attribute record names its owner (C2-W-148).",
+  "summary": "lint path: an attribute finding names the owner of the attribute",
+  "kind": "lint",
+  "input": "{kbd}\n# H\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "semantic-attribute-outside-span",
+     "line": 1,
+     "column": 2,
+     "path": "/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1779",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
+  "summary": "lint path: a line of a line block names its line node, not the line block",
+  "kind": "lint",
+  "input": "::: |\n>a\n:::\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "blockquote-marker-without-space",
+     "line": 2,
+     "column": 1,
+     "path": "/children/0/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1780",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
+  "summary": "lint path: a caption line names the paragraph inside the caption",
+  "kind": "lint",
+  "input": "| a |\n^ cap\n# h\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 3,
+     "column": 1,
+     "path": "/children/0/caption/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1781",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
+  "summary": "lint path: a lazy heading line names the heading",
+  "kind": "lint",
+  "input": "# H\n  | a\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "table-shaped-paragraph",
+     "line": 2,
+     "column": 3,
+     "path": "/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1782",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
+  "summary": "lint path: a line of a comment block names the comment block",
+  "kind": "lint",
+  "input": "%%%\n%%% x\n%%%\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "comment-fence-closer-with-text",
+     "line": 2,
+     "column": 1,
+     "path": "/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1783",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
+  "summary": "lint path: a frontmatter line names the frontmatter",
+  "kind": "lint",
+  "input": "---\n>a\n---\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "blockquote-marker-without-space",
+     "line": 2,
+     "column": 1,
+     "path": "/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1784",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
+  "summary": "lint path: a line of a pipe table names its row",
+  "kind": "lint",
+  "input": "| a | %% x\n+ b |\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "comment-splits-table-row",
+     "line": 1,
+     "column": 6,
+     "path": "/children/0/children/0/children/0",
+     "channel": "lint",
+     "severity": "hint"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1785",
+  "clauses": [
+   "C2-W-157"
+  ],
+  "why": "C2-W-157: A line that no leaf block holds names the innermost block whose source holds it, such as a div at its closer, and the document `\"\"` where none does.",
+  "summary": "lint path: a div closer line of no leaf block names the div",
+  "kind": "lint",
+  "input": ":::\na\n::::\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "colon-fence-length-mismatch",
+     "line": 3,
+     "column": 1,
+     "path": "/children/0",
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
