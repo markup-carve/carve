@@ -401,3 +401,9 @@ Every active lint rule is now a rule of `data/lint-model.json` or names, in `han
 The ruling on #6471 (option A) gives C2-W-125 an eighth case: where the opener a round would escape is a text `^[` that the C2-I-089 tie-break keeps as text, the bare `]` that closed the note early takes the backslash and `^[` stays bare, so a tree from a parse is kept (C2-W-091). Clause cases CC-1753 to CC-1756. Measured on `carve-js` `next2` `ce5de13`: of 30,000 generated trees of the shape (five contexts, five prefixes, ten note contents, five texts between, eight collapsed reference texts, three tails), the form of the eighth case reads back to the tree in every one, the form that escapes the opener instead reads back in none, and `carve-js` refuses all of them with `field-unspellable`. `carve-php` and `carve-rs` do not read the #6453 tie-break yet.
 
 - `carve-js`: the writer refuses the tree instead of escaping the early closer (CC-1753 to CC-1756).
+
+## Engine gaps from the kind-round strong ruling of 23 November (#6482)
+
+The ruling on #6482 (option A) applies C2-W-069 in every round of C2-W-088, the kind rounds included: a strong or emphasis whose bare delimiter would not open or close where it stands keeps its braced form there too. CC-1633 now expects the form of the kind rounds, which escape every backtick opener of the paragraph. The fallback of C2-W-088 keeps a case built for it, CC-1757: the kind round escapes the bracket inside a collapsed reference text, which turns the link into text, so only the reported opener takes a backslash. Measured on `carve-js` `next2` `fd6bcc33`, `carve-php` `next2` `f7f4ee23` and `carve-rs` `next2` `05e843ca`: `carve-php` passes both cases, and CC-1757 passes in all three.
+
+- `carve-js` and `carve-rs`: take the braced form of C2-W-069 in the kind rounds as well, not only in the rounds of the reported openers (CC-1633).
