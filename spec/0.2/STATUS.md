@@ -407,3 +407,9 @@ The ruling on #6471 (option A) gives C2-W-125 an eighth case: where the opener a
 The ruling on #6482 (option A) applies C2-W-069 in every round of C2-W-088, the kind rounds included: a strong or emphasis whose bare delimiter would not open or close where it stands keeps its braced form there too. CC-1633 now expects the form of the kind rounds, which escape every backtick opener of the paragraph. The fallback of C2-W-088 keeps a case built for it, CC-1757: the kind round escapes the bracket inside a collapsed reference text, which turns the link into text, so only the reported opener takes a backslash. Measured on `carve-js` `next2` `fd6bcc33`, `carve-php` `next2` `f7f4ee23` and `carve-rs` `next2` `05e843ca`: `carve-php` passes both cases, and CC-1757 passes in all three.
 
 - `carve-js` and `carve-rs`: take the braced form of C2-W-069 in the kind rounds as well, not only in the rounds of the reported openers (CC-1633).
+
+## Engine gaps from the opaque-body comment line ruling of 23 November (#6439)
+
+The ruling on #6439 (Reading 1) reads C2-B-137 as written: where a comment-only line ends the opaque body of a nested item and no item owns the line, only the container that holds the body closes with it. The line is then a comment-only line and closes no container, so the outer item stays open. This holds for a code fence and a comment block alike. Clause cases CC-1758 to CC-1760; CC-1760 is row D of the ticket. Measured on `carve-js` `next2` `200f575` and `carve-php` `next2` `c2d9115`; the ticket measured `carve-rs` `next2` `05e843ca`. `carve-js` with markup-carve/carve-js#5492 passes all three.
+
+- All three engines: the comment-only line also closes the outer item, so `y` is a paragraph after the list (CC-1758, CC-1759), and the `%%%` below it opens a comment block at the root that hides `z` (CC-1760).
