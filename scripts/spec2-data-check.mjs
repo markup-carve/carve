@@ -301,6 +301,13 @@ for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, 
       if (key !== 'f' && key !== 'has' && key !== 'v') walkExpr(value, over, lets, where)
     }
   }
+  // C2-W-139: a catalog row is stated as data or marked hand-written, never both, and only an active lint rule is either.
+  const stated = new Set(model.rules.map(rule => rule.id))
+  for (const row of data['lint-rules']?.rules ?? []) {
+    const active = row.channel === 'lint' && (row.status === 'kept' || row.status === 'new')
+    if (row.hand_written !== undefined && stated.has(row.id)) fail(`lint-rules.json ${row.id}: hand_written, but lint-model.json states the rule as data`)
+    if ((row.hand_written !== undefined || stated.has(row.id)) && !active) fail(`lint-rules.json ${row.id}: data or hand_written, but no active lint rule`)
+  }
   for (const rule of model.rules) {
     need(codes, rule.id, `lint-model.json ${rule.id}`, 'id of lint-rules.json')
     const lets = new Set(Object.keys(rule.let ?? {}))

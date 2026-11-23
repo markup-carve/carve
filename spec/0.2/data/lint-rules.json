@@ -35,7 +35,8 @@
       ],
       "message_origin": "engine_0_1",
       "reports": "each bidirectional override or isolate control, U+202A to U+202E and U+2066 to U+2069, in text and code, the only places a render drops it: the value of a text, code span, code block or math node, title and label text included only when written between tags; a title written in an attribute, including a code title, is excluded; one finding per code point; the marks U+200E, U+200F and U+061C are not reported (C2-H-172)",
-      "clauses": ["C2-H-172"]
+      "clauses": ["C2-H-172"],
+      "hand_written": "C2-N-086 also runs it on the payload of a code include, with ranges in the included file, and the line model has records only for the source being linted"
     },
     {
       "id": "blank-reference-label",
@@ -128,7 +129,8 @@
       ],
       "message_origin": "design",
       "reports": "a braced opener (C2-I-055) inside a bare emphasis or strong span that is removed and left as text because a bare delimiter after it closed that span, which opened before it (C2-I-059, C2-I-060), where a braced closer of the opener's mark follows later in the same content, so the braced span would have formed without that delimiter; a braced opener removed by a braced closer of an outer braced span, as in `{+a {*b+} c*}`, and one that has no closer of its mark are not reported; once per opener, the range is the two characters of the opener (C2-I-055, C2-I-059, C2-I-060)",
-      "clauses": ["C2-I-055", "C2-I-059", "C2-I-060"]
+      "clauses": ["C2-I-055", "C2-I-059", "C2-I-060"],
+      "hand_written": "it reports an opener by why the inline parse removed it (a bare delimiter closed an earlier span) and whether it would have formed otherwise; the tree and the line model keep only the result of the pairing"
     },
     {
       "id": "broken-crossref",
@@ -238,7 +240,8 @@
       ],
       "message_origin": "data_file",
       "reports": "a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077)",
-      "clauses": ["C2-I-077"]
+      "clauses": ["C2-I-077"],
+      "hand_written": "whether the brackets would form a reference label is a parse of the line without the comment, and no record gives a construct the comment kept from forming"
     },
     {
       "id": "comment-line-in-line-block",
@@ -467,7 +470,8 @@
       ],
       "message_origin": "design",
       "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` not behind a backslash in the strike's own inline content, outside a nested braced span or bracket construct, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
-      "clauses": ["C2-I-062"]
+      "clauses": ["C2-I-062"],
+      "hand_written": "whether a `~>` under nested spans counts depends on the nearest braced span around it, and an inline record gives only the type of its parent, not its ancestors"
     },
     {
       "id": "deprecated-table-attribute",
@@ -1510,7 +1514,8 @@
       "messages": ["Use descriptive link text or a specific aria-label."],
       "message_origin": "engine_0_1",
       "reports": "a link that resolves and holds no image, whose text, with each run of ASCII whitespace folded to one space, the ends trimmed and lower-cased, is `here`, `click here` or `read more`, unless the link carries an `aria-label` key, in any letter case, whose folded value is neither empty nor one of those three; once per link (C2-I-066, C2-I-072)",
-      "clauses": ["C2-I-066", "C2-I-072"]
+      "clauses": ["C2-I-066", "C2-I-072"],
+      "hand_written": "it compares the plain text of the link content, and no inline field gives the plain text of a link"
     },
     {
       "id": "ordered-list-kind-split",
@@ -1554,7 +1559,8 @@
       ],
       "message_origin": "engine_0_1",
       "reports": "with the platform `github` selected, a `#` followed by one or more ASCII digits, where the character before the `#` is not an ASCII letter, digit, `_`, `#` or `/` and the character after the digits is none of those nor `-`, in paragraph, heading, cell, term, caption or line of a line block text, with inline code expressly included; bare URLs and unreferenced footnote definitions are masked; once per run (C2-W-109, C2-I-092)",
-      "clauses": ["C2-W-109", "C2-I-092"]
+      "clauses": ["C2-W-109", "C2-I-092"],
+      "hand_written": "it reads the option `platforms` and masks bare URLs, and the line model gives neither: `run` names only the extensions, and no record marks a bare URL"
     },
     {
       "id": "platform-mention-token",
@@ -1567,7 +1573,8 @@
       ],
       "message_origin": "engine_0_1",
       "reports": "with the platform `github` selected, an at-sign followed by a name, which is an ASCII letter, digit or `_` and then letters, digits, `_` and `-`, with interior dots each followed by such a character, where the character before the at-sign is not an ASCII letter, digit, `_`, at-sign, `.`, `-` or `/`, in paragraph, heading, cell, term, caption or line of a line block text, with inline code expressly included; bare URLs and unreferenced footnote definitions are masked; the range is the at-sign and the name, once per token (C2-W-109, C2-I-090, C2-I-092)",
-      "clauses": ["C2-W-109", "C2-I-090", "C2-I-092"]
+      "clauses": ["C2-W-109", "C2-I-090", "C2-I-092"],
+      "hand_written": "it reads the option `platforms` and masks bare URLs, and the line model gives neither: `run` names only the extensions, and no record marks a bare URL"
     },
     {
       "id": "profile-construct-degraded",

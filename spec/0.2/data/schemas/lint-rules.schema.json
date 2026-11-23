@@ -75,7 +75,12 @@
             "description": "What the table of parse and render-loss codes says the code reports, where the rule also has messages."
           },
           "change": { "type": "string", "description": "What 0.2 changes for the rule, in the words of the writer document." },
-          "why": { "type": "string", "description": "Why the id is retired." }
+          "why": { "type": "string", "description": "Why the id is retired." },
+          "hand_written": {
+            "type": "string",
+            "minLength": 1,
+            "description": "For an active lint rule that stays engine code instead of a rule of `lint-model.json` (C2-W-139): the fact it needs that the line model does not give."
+          }
         }
       }
     }
