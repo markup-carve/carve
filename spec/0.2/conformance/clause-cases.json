@@ -69735,6 +69735,360 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1666",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: With no paragraph open, the list closes as for any column-0 line (C2-B-026), and the opener still needs that separation.",
+  "summary": "typed opener after a footnote ending in a fence closes the footnote and stays text",
+  "input": "a[^n]\n\n[^n]: x\n\n  ```\n  y\n  ```\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<p>a<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<p>—yaml\nk: v\n—</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>x</p>\n      <pre><code>y\n</code></pre>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      },
+      {
+       "type": "code_block",
+       "value": "y\n"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1667",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: A footnote or a description follows the same rules as a list, with the block it ends on deciding the spelling. C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "writer keeps a typed-opener paragraph directly after a footnote that ends in a fence",
+  "kind": "format",
+  "input": "a[^n]\n\n[^n]: x\n\n  ```\n  y\n  ```\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "a[^n]\n\n[^n]: x\n\n  ```\n  y\n  ```\n---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1668",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-026"
+  ],
+  "why": "C2-B-232: With no paragraph open, the list closes as for any column-0 line (C2-B-026), and the opener still needs that separation.",
+  "summary": "typed opener after a description ending in a fence closes the description list and stays text",
+  "input": ":: t\n: ```\n  y\n  ```\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>y\n</code></pre>\n  </dd>\n</dl>\n<p>—yaml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "code_block",
+         "value": "y\n"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1669",
+  "clauses": [
+   "C2-W-154",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-W-154: A footnote or a description follows the same rules as a list, with the block it ends on deciding the spelling. C2-W-154: Where that block takes no lazy line, as a closed code block, a closed div, a table or a heading, the paragraph is written on the line directly after the list, at column 0 and with no blank line",
+  "summary": "writer keeps a typed-opener paragraph directly after a description that ends in a fence",
+  "kind": "format",
+  "input": ":: t\n: ```\n  y\n  ```\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": ":: t\n: ```\n  y\n  ```\n---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1670",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-024"
+  ],
+  "why": "C2-B-232: It does not interrupt a paragraph without that separation.",
+  "summary": "typed opener after a footnote ending in a paragraph is a lazy line of that paragraph",
+  "input": "a[^n]\n\n[^n]: x\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<p>a<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>x\n—yaml\nk: v\n—<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        },
+        {
+         "type": "soft_break"
+        },
+        {
+         "type": "smart_punctuation",
+         "kind": "em_dash",
+         "glyph": "—",
+         "source": "---"
+        },
+        {
+         "type": "text",
+         "value": "yaml"
+        },
+        {
+         "type": "soft_break"
+        },
+        {
+         "type": "text",
+         "value": "k: v"
+        },
+        {
+         "type": "soft_break"
+        },
+        {
+         "type": "smart_punctuation",
+         "kind": "em_dash",
+         "glyph": "—",
+         "source": "---"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1671",
+  "clauses": [
+   "C2-B-232",
+   "C2-B-024"
+  ],
+  "why": "C2-B-232: It does not interrupt a paragraph without that separation.",
+  "summary": "typed opener after a description ending in a paragraph is a lazy line of that paragraph",
+  "input": ":: t\n: x\n---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd>x\n—yaml\nk: v\n—</dd>\n</dl>",
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "smart_punctuation",
+           "kind": "em_dash",
+           "glyph": "—",
+           "source": "---"
+          },
+          {
+           "type": "text",
+           "value": "yaml"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "k: v"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "smart_punctuation",
+           "kind": "em_dash",
+           "glyph": "—",
+           "source": "---"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1672",
+  "clauses": [
+   "C2-W-154"
+  ],
+  "why": "C2-W-154: A footnote or a description follows the same rules as a list, with the block it ends on deciding the spelling. C2-W-154: After a list, a paragraph with an attribute line keeps that spelling, since the attribute line closes the list.",
+  "summary": "writer indents a typed-opener paragraph with an attribute line after a footnote",
+  "kind": "format",
+  "input": "a[^n]\n\n[^n]: x\n\n{.c}\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "a[^n]\n\n[^n]: x\n\n{.c}\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
  }
  ]
 }

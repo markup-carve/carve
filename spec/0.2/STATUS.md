@@ -319,6 +319,13 @@ The `frontmatter-crossref` row of `data/lint-model.json` (#6390) matches ids und
 
 - All three engines at the baseline heads: a precomposed reference to a decomposed metadata id reports `broken-crossref` instead of `frontmatter-crossref` (CC-1663).
 
+## Engine gaps from the opener-after-a-closed-container ruling of 23 November
+
+The ruling on #6397 (option 1) extends the direct spelling of C2-W-154 from lists to footnotes and descriptions: where the container ends in a block that takes no lazy line, the typed-opener paragraph goes on the line directly after it, at column 0 and with no blank line; where it ends in one that takes lazy lines, the shape keeps the loss report. Clause cases CC-1666 to CC-1672 are added. Measured on `carve-js` `next2` `99478833`: the trees of CC-1666, CC-1668, CC-1670 and CC-1671 already match; `fmt` refuses CC-1667, CC-1669 and CC-1672 with `structure-unspellable`. 1,200 variants of the direct spelling (footnotes and descriptions, the closed block on the marker line or below it at three indents, a second note or term, fences, divs, tables, headings, a nested list, four preceding contexts, three format names) read back as the container followed by the text paragraph, with the container unchanged.
+
+- `carve-js`: write the paragraph directly after a footnote or a description that ends in a closed block (CC-1667, CC-1669) and keep the indent below an attribute line (CC-1672).
+- `carve-php` and `carve-rs`: the same, with their ports of #6394.
+
 ## Engine gaps from the tag and mention end guard of 21 November
 
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
