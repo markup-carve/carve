@@ -73007,6 +73007,566 @@
     "carve": "- {* a *}*b c*\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1729",
+   "clauses": [
+    "C2-I-090",
+    "C2-I-092"
+   ],
+   "why": "C2-I-090: A sigil starts a form only at the start of the content or after a character outside the Unicode letter-or-number class. C2-I-092: The name of a mention or a tag is one or more runs of letters, digits, `_` and `-`, joined by single dots, and holds at least one letter.",
+   "summary": "a sigil after a non-ASCII letter before a name that starts with a hyphen is reported",
+   "kind": "lint",
+   "input": "ü@-a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "sigil-after-letter",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1730",
+   "clauses": [
+    "C2-I-090",
+    "C2-I-092"
+   ],
+   "why": "C2-I-090: A sigil starts a form only at the start of the content or after a character outside the Unicode letter-or-number class. C2-I-092: The name of a mention or a tag is one or more runs of letters, digits, `_` and `-`, joined by single dots, and holds at least one letter.",
+   "summary": "a sigil after a non-ASCII letter whose run ends at a non-ASCII letter starts no name and is not reported",
+   "kind": "lint",
+   "input": "ü#größe\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "sigil-after-letter"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1731",
+   "clauses": [
+    "C2-I-047"
+   ],
+   "why": "Catalog djot-intraword-underscore: an opening `_` after an ASCII letter or digit ... and the next `_` not after whitespace and before an ASCII letter or digit, with no blank line between",
+   "summary": "an underscore after a non-ASCII letter opens no intraword pair",
+   "kind": "lint",
+   "input": "é_a_b\n",
+   "options": {
+    "rules": {
+     "djot-intraword-underscore": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-intraword-underscore"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1732",
+   "clauses": [
+    "C2-I-047"
+   ],
+   "why": "Catalog djot-intraword-underscore: an opening `_` after an ASCII letter or digit ... and the next `_` not after whitespace and before an ASCII letter or digit, with no blank line between",
+   "summary": "an intraword underscore pair across a soft break is reported",
+   "kind": "lint",
+   "input": "a_b\nc_d\n",
+   "options": {
+    "rules": {
+     "djot-intraword-underscore": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-intraword-underscore",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1733",
+   "clauses": [
+    "C2-B-137"
+   ],
+   "why": "Catalog deprecated-indented-line-under-heading: a line directly below a heading line, or below it across comment-only lines, that is indented past the heading marker",
+   "summary": "an indented heading continuation below a quoted comment-only line is reported",
+   "kind": "lint",
+   "input": "> # a\n> %% c\n>  b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-indented-line-under-heading",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1734",
+   "clauses": [
+    "C2-B-141"
+   ],
+   "why": "C2-B-141: Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.",
+   "summary": "an escaped braced comment opener is no braced comment and is not reported",
+   "kind": "lint",
+   "input": "a \\{% b\n```\nc %}\n```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-braced-comment"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1735",
+   "clauses": [
+    "C2-B-141"
+   ],
+   "why": "C2-B-141: Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.",
+   "summary": "a braced comment whose closer stands behind a blank line is not reported, since a blank line is no interrupter line",
+   "kind": "lint",
+   "input": "a {% b\n\n%}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-braced-comment"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1736",
+   "clauses": [
+    "C2-I-046",
+    "C2-I-047",
+    "C2-I-051"
+   ],
+   "why": "Catalog unclosed-inline-emphasis: a bare `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind",
+   "summary": "only the last unclosed opener of its kind in a paragraph is reported",
+   "kind": "lint",
+   "input": "a *b\nc *d\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-inline-emphasis",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1737",
+   "clauses": [
+    "C2-I-046",
+    "C2-I-047",
+    "C2-I-051"
+   ],
+   "why": "Catalog unclosed-inline-emphasis: a bare `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind",
+   "summary": "a star after an escaped brace is bare and is reported",
+   "kind": "lint",
+   "input": "\\{*b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-inline-emphasis",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1738",
+   "clauses": [
+    "C2-I-046",
+    "C2-I-047",
+    "C2-I-051"
+   ],
+   "why": "Catalog unclosed-inline-emphasis: a bare `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind",
+   "summary": "an underscore after the star counts as the following character",
+   "kind": "lint",
+   "input": "a *_b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-inline-emphasis",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1739",
+   "clauses": [
+    "C2-I-046",
+    "C2-I-047",
+    "C2-I-051"
+   ],
+   "why": "Catalog unclosed-inline-emphasis: a bare `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind",
+   "summary": "an unclosed strong opener and an unclosed emphasis opener of one paragraph are each reported",
+   "kind": "lint",
+   "input": "a *b /c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-inline-emphasis",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "unclosed-inline-emphasis",
+      "line": 1,
+      "column": 6,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1740",
+   "clauses": [
+    "C2-I-046",
+    "C2-I-047",
+    "C2-I-051"
+   ],
+   "why": "Catalog unclosed-inline-emphasis: a bare `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind",
+   "summary": "a heading line is no paragraph line",
+   "kind": "lint",
+   "input": "# a *b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-inline-emphasis"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1741",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-036",
+    "C2-I-046",
+    "C2-I-048"
+   ],
+   "why": "Catalog emphasis-marker-before-attributes: each unescaped `*`, `/`, `_`, `~` or `=` that is text and is directly followed by a valid attribute block in the same text",
+   "summary": "a quoted value may hold a closing brace, so the mark before the block is reported",
+   "kind": "lint",
+   "input": "a *{k=\"}\"} b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "emphasis-marker-before-attributes",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1742",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-036",
+    "C2-I-046",
+    "C2-I-048"
+   ],
+   "why": "Catalog emphasis-marker-before-attributes: each unescaped `*`, `/`, `_`, `~` or `=` that is text and is directly followed by a valid attribute block in the same text",
+   "summary": "a tilde glued to an attribute block at the start of a cell is reported by both rules",
+   "kind": "lint",
+   "input": "| ~{.c} x |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-cell-alignment",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "emphasis-marker-before-attributes",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1743",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: or is such a version greater than 0.2 compared part by part as numbers with missing parts as 0",
+   "summary": "a version below 0.2 compared part by part is not reported, whatever its later parts",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1.9\n---\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "carve-version-unsupported"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1744",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: with no such line in the line-1 block, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document",
+   "summary": "a stamp comment that ends a document without frontmatter declaration is tested",
+   "kind": "lint",
+   "input": "x\n\n%% carve-version: 9.9; generated-by: carve-js 0.1.0\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "carve-version-unsupported",
+      "line": 3,
+      "column": 19,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1745",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: with no such line in the line-1 block, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document",
+   "summary": "a frontmatter declaration line keeps the stamp comment from being tested",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\nx\n\n%% carve-version: 9.9\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "carve-version-unsupported"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1746",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "a block at the start of a heading content is glued to no host and is reported",
+   "kind": "lint",
+   "input": "# {.x} y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1747",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "a padded block that opens a paragraph is no block marker and is reported",
+   "kind": "lint",
+   "input": "{ .x} c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1748",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a table cell that `table-row-attribute-as-cell` reports are not reported",
+   "summary": "a run that fills the last cell of a row is left to table-row-attribute-as-cell",
+   "kind": "lint",
+   "input": "| {.x}{#y} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1749",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "a block that fills a cell other than the last is reported",
+   "kind": "lint",
+   "input": "| {.x} | b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1750",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "an empty block glued behind a valid one ends the run, and the valid block is reported",
+   "kind": "lint",
+   "input": "x {.x}{}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1751",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host",
+   "summary": "an invalid block glued behind a valid one leaves the valid block reported",
+   "kind": "lint",
+   "input": "x {.x}{a=}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1752",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-231"
+   ],
+   "why": "Catalog carve-version-unsupported: if more than one declaration meets this test, the first in source order supplies the report",
+   "summary": "the first declaration of a stamp comment that meets the test supplies the report",
+   "kind": "lint",
+   "input": "%% carve-version: next; carve-version: 9.9\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "carve-version-unsupported",
+      "line": 1,
+      "column": 19,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
