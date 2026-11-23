@@ -340,6 +340,14 @@ The ruling on #6409 (option 1) extends C2-W-155 to description lists: where a ty
 - `carve-js`: write a description list whose last block takes a lazy line indented by one space before a typed-opener paragraph (CC-1680, CC-1682, CC-1683).
 - `carve-php` and `carve-rs`: the same, with their ports of #6398.
 
+## Engine gaps from the indented list below an open container (#6418)
+
+C2-W-155 now keeps its spelling only where the indented list stays top-level. Where the block directly above it is a list, a description list or a footnote, that container would own the indented list below the blank line (C2-B-025), so the writer departs in a fixed order, the smallest departure first (C2-W-005): an attribute line of the written list goes to column 0, which closes the container (C2-B-097, C2-B-091); otherwise a list or description list above is indented by one space as well, and the same test applies to it; otherwise, as below a footnote, the paragraph reports `structure-unspellable` (C2-W-117). The writer adds no attribute. Clause cases CC-1685 to CC-1698. Measured on `carve-js` `next2` `95298e5`: the trees of CC-1685 and CC-1688 already match; `fmt` writes the old C2-W-155 spelling for CC-1686, CC-1687 and CC-1689 to CC-1694, which reads back to another tree, and `write` gives no loss report for CC-1695 to CC-1697. A generator over chains of up to three blocks above the list (paragraphs, quotes, fences, headings, footnotes, description lists, lists, nested lists, closed and lazy endings, with and without attribute lines; 35,352 trees without a comment node) found every tree the rule spells reading back, and no spelling of the enumerated columns, indents and attribute-line positions for the 1,600 trees it refuses. Of the trees with a comment node between the container and the list, the ones with an attribute line already read back; the rest keep the comment rules.
+
+- `carve-js`: apply the departures of C2-W-155 below a list, description list or footnote (CC-1686, CC-1687, CC-1689 to CC-1694, CC-1698) and report `structure-unspellable` where none keeps the tree (CC-1695 to CC-1697).
+- `carve-php`: carve-php#5642 refuses every such shape; it needs the same spellings.
+- `carve-rs`: the same, with its port of #6398 and #6409.
+
 ## Engine gaps from the tag and mention end guard of 21 November
 
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.

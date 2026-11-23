@@ -70635,6 +70635,808 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1685",
+  "clauses": [
+   "C2-B-097",
+   "C2-B-091",
+   "C2-B-232"
+  ],
+  "why": "C2-B-097: An attribute line is a line like any other for ownership, so one that its container does not own closes that container (C2-B-026). C2-B-091: An attribute line applies to the block that starts on the next line and is owned by the same container, with no column test. C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text.",
+  "summary": "a column-0 attribute line after a footnote closes it and applies to the indented list below, and the typed opener stays text",
+  "input": "a[^n]\n\n[^n]: x\n\n{.c}\n - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<p>a<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<ul class=\"c\">\n  <li>b</li>\n</ul>\n<p>—yaml\nk: v\n—</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>x<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "attrs": {
+      "classes": [
+       "c"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1686",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Where the written list starts with an attribute line, that line stands at column 0: it closes the container above (C2-B-097) and still applies to the list (C2-B-091), and the other lines stay indented.",
+  "summary": "writer puts the attribute line of the indented list at column 0 below a footnote",
+  "kind": "format",
+  "input": "a[^n]\n\n[^n]: x\n\n{.c}\n - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "a[^n]\n\n[^n]: x\n\n{.c}\n - b\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1687",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Where the written list starts with an attribute line, that line stands at column 0: it closes the container above (C2-B-097) and still applies to the list (C2-B-091), and the other lines stay indented.",
+  "summary": "writer puts the attribute line of an indented description list ending in a quote at column 0 below a footnote",
+  "kind": "format",
+  "input": "a[^n]\n\n[^n]: x\n\n{.c}\n :: u\n : > e\n\n ---toml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "a[^n]\n\n[^n]: x\n\n{.c}\n :: u\n : > e\n\n ---toml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1688",
+  "clauses": [
+   "C2-B-025",
+   "C2-B-026",
+   "C2-B-232"
+  ],
+  "why": "C2-B-025: With no paragraph open, a line belongs to the innermost open item, description or footnote body whose marker it is indented past, measured from that item's own marker column C2-B-026: A container that does not own the line closes, with every container inside it. C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text.",
+  "summary": "an indented list at the marker column of an indented description list closes it, and the typed opener stays text",
+  "input": " :: t\n : d\n\n - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<ul>\n  <li>b</li>\n</ul>\n<p>—yaml\nk: v\n—</p>",
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1689",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Otherwise, where the block above is a list or a description list, that block is written indented by one space as well, and the same test applies to it and the block directly above it.",
+  "summary": "writer indents a description list above the indented list too, before a typed-opener paragraph",
+  "kind": "format",
+  "input": " :: t\n : d\n\n - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " :: t\n : d\n\n - b\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1690",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Where the written list starts with an attribute line, that line stands at column 0: it closes the container above (C2-B-097) and still applies to the list (C2-B-091), and the other lines stay indented.",
+  "summary": "writer puts the start attribute line of an indented ordered list at column 0 below a description list",
+  "kind": "format",
+  "input": ":: t\n: d\n\n{start=3}\n . b\n\n ---json\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": ":: t\n: d\n\n{start=3}\n . b\n\n ---json\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1691",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Otherwise, where the block above is a list or a description list, that block is written indented by one space as well, and the same test applies to it and the block directly above it.",
+  "summary": "writer indents an ordered list above an indented description list too, before a typed-opener paragraph",
+  "kind": "format",
+  "input": " 1. x\n\n :: u\n : e\n\n ---toml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " 1. x\n\n :: u\n : e\n\n ---toml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1692",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-005"
+  ],
+  "why": "C2-W-155: Where the written list starts with an attribute line, that line stands at column 0: it closes the container above (C2-B-097) and still applies to the list (C2-B-091), and the other lines stay indented. C2-W-005: Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree",
+  "summary": "below a list, the column-0 attribute line is the smallest departure and the list above keeps its column",
+  "kind": "format",
+  "input": "* x\n* > y\n\n{.c}\n - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "* x\n* > y\n\n{.c}\n - b\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1693",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Otherwise, where the block above is a list or a description list, that block is written indented by one space as well, and the same test applies to it and the block directly above it.",
+  "summary": "writer indents every list and description list of the run above the indented list",
+  "kind": "format",
+  "input": " 1. x\n\n :: t\n : d\n\n - b\n   c\n\n ---json\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": " 1. x\n\n :: t\n : d\n\n - b\n   c\n\n ---json\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1694",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Otherwise, where the block above is a list or a description list, that block is written indented by one space as well, and the same test applies to it and the block directly above it. ... Where the written list starts with an attribute line, that line stands at column 0: it closes the container above (C2-B-097) and still applies to the list (C2-B-091), and the other lines stay indented.",
+  "summary": "the run of indented blocks stops at a description list whose attribute line closes the footnote above",
+  "kind": "format",
+  "input": "a[^n]\n\n[^n]: x\n\n{.g}\n :: t\n : d\n\n - b\n\n ---yaml\nk: v\n---\n",
+  "options": {},
+  "expected": {
+   "carve": "a[^n]\n\n[^n]: x\n\n{.g}\n :: t\n : d\n\n - b\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1695",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-117"
+  ],
+  "why": "C2-W-155: Otherwise, as below a footnote, which has no indented spelling, the paragraph has no spelling there, and the writer reports `structure-unspellable` at its path (C2-W-117).",
+  "summary": "a typed-opener paragraph after a footnote and a lazy-ending list without attributes has no spelling",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "structure-unspellable",
+     "path": "/children/3"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1696",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-117"
+  ],
+  "why": "C2-W-155: Otherwise, as below a footnote, which has no indented spelling, the paragraph has no spelling there, and the writer reports `structure-unspellable` at its path (C2-W-117).",
+  "summary": "a typed-opener paragraph after a footnote and a lazy-ending description list without attributes has no spelling",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "u"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "e"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "toml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "structure-unspellable",
+     "path": "/children/3"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1697",
+  "clauses": [
+   "C2-W-155",
+   "C2-W-117"
+  ],
+  "why": "C2-W-155: Otherwise, as below a footnote, which has no indented spelling, the paragraph has no spelling there, and the writer reports `structure-unspellable` at its path (C2-W-117).",
+  "summary": "the run of indented blocks reaching a footnote leaves the typed-opener paragraph without a spelling",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "footnote_ref",
+       "key": "n",
+       "namespace": "footnote",
+       "number": 1
+      }
+     ]
+    },
+    {
+     "type": "footnote",
+     "key": "n",
+     "namespace": "footnote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "json"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "structure-unspellable",
+     "path": "/children/4"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1698",
+  "clauses": [
+   "C2-W-155"
+  ],
+  "why": "C2-W-155: Otherwise, where the block above is a list or a description list, that block is written indented by one space as well, and the same test applies to it and the block directly above it.",
+  "summary": "writer indents a description list above the indented list when it writes the tree",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      },
+      {
+       "type": "text",
+       "value": "yaml"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "k: v"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "em_dash",
+       "glyph": "—",
+       "source": "---"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": " :: t\n : d\n\n - b\n\n ---yaml\nk: v\n---\n"
+  },
+  "from": []
  }
  ]
 }
