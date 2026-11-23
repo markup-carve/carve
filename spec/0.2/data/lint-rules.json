@@ -750,7 +750,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "messages": ["Rendered the fallback of the unknown extension \"${name}\""],
+      "messages": ["Rendered the fallback of the extension \"${name}\", which has no matching renderer"],
       "message_origin": "data_file",
       "reports": "an extension node written through its fallback because no renderer matches it in the selected channel, whether or not its definition is registered (C2-X-035, C2-X-004, C2-H-076)",
       "clauses": ["C2-H-076", "C2-X-004", "C2-X-035"]
