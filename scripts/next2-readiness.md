@@ -32,7 +32,7 @@ Catalog rows with status `obsolete` or `void` remain in the historical data but 
 
 ## Extensions
 
-The report ends with a section "Extensions": the standard extension corpus `spec/0.2/conformance/extensions.json`, pass, fail and unsupported per engine and extension, and the cases each engine does not pass. Extension cases count toward Engine ready and the per-case baseline. Any failing or unsupported extension case fails the job, including with `--extensions-only`. The JSON report keeps the HTML an engine wrote for each failing case. `--extensions-only` replays only that corpus, without the baseline comparison and the upgrade replay.
+The report ends with a section "Extensions": the standard extension corpus `spec/0.2/conformance/extensions.json`, pass, fail and unsupported per engine and extension, and the cases each engine does not pass. Extension cases count toward Engine ready and are gated per case against the baseline like every other case: an unchanged extension case that does worse is a regression, a new or changed one that does not pass is an expected gap. A change to the message template of a rule an extension case expects changes that case. Without a baseline comparison (`--extensions-only`, or no baseline file) any failing or unsupported extension case fails the job. The JSON report keeps the HTML an engine wrote for each failing case. `--extensions-only` replays only that corpus, without the baseline comparison and the upgrade replay.
 
 ## Which engines are replayed
 

@@ -9,7 +9,7 @@ import { isDeepStrictEqual } from 'node:util'
 import { caseKey, caseFingerprint, classify, settle, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 import { verifyPreparedHeads } from './next2-readiness-heads.mjs'
-import { extensionFailures, extensionReport } from './next2-readiness-extensions.mjs'
+import { extensionFailures, extensionGate, extensionReport } from './next2-readiness-extensions.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = resolve(root, 'spec/0.2')
@@ -568,7 +568,7 @@ const upgradeVerdict = baseline && !sampled
   : { regressions: [], gaps: [] }
 const headMismatch = args.has('--baseline-heads') && baseline ? Object.keys(engineHeads).filter(engine => engineHeads[engine] !== baseline.engineHeads[engine]) : []
 const regressions = [
-  ...failedExtensions,
+  ...extensionGate(failedExtensions, Boolean(baseline) && !sampled),
   ...forbiddenReports.map(report => `excluded catalog diagnostic on clause case: ${report}`),
   ...headMismatch.map(engine => `${engine}: checked out ${engineHeads[engine]}, the baseline names ${baseline.engineHeads[engine]}`),
   ...Object.entries(verdicts).flatMap(([engine, v]) => v.regressions.map(r => `${engine}/${r.key}: ${r.old} became ${r.now}`)),
