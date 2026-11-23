@@ -6591,6 +6591,297 @@
       ]
     },
     {
+      "id": "emphasis-marker-before-attributes",
+      "over": "inline",
+      "types": [
+        "emphasis",
+        "strong",
+        "text_run"
+      ],
+      "when": {
+        "any": [
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "type"
+                  },
+                  "text_run"
+                ]
+              },
+              {
+                "contains": [
+                  {
+                    "f": "text"
+                  },
+                  "{"
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "type"
+                  },
+                  "strong"
+                ]
+              },
+              {
+                "matches": [
+                  {
+                    "f": "text"
+                  },
+                  "^\\*(?:[^\\\\*]|\\\\[\\s\\S])*\\*[\\s\\S]*\\*\\{"
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "type"
+                  },
+                  "emphasis"
+                ]
+              },
+              {
+                "matches": [
+                  {
+                    "f": "text"
+                  },
+                  "^/(?:[^\\\\/]|\\\\[\\s\\S])*/[\\s\\S]*/\\{"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "each": {
+        "matches": [
+          {
+            "f": "text"
+          },
+          "(?:^|[^\\\\])(?:\\\\\\\\)*(?<m>[*/_~=])(?<run>(?<blk>\\{(?:[^{}\"'\\\\\\n]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])*\\})(?:\\{(?:[^{}\"'\\\\\\n]|\"(?:[^\"\\\\]|\\\\[\\s\\S])*\"|'(?:[^'\\\\]|\\\\[\\s\\S])*'|\\\\[\\s\\S])*\\})*)"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "type"
+                  },
+                  "text_run"
+                ]
+              },
+              {
+                "attribute_line": {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "blk"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "blk",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "m"
+          },
+          "end": {
+            "match": "blk",
+            "at": "end"
+          },
+          "values": {
+            "ch": {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "m"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "m",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "ne": [
+                  {
+                    "f": "type"
+                  },
+                  "text_run"
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "match": "run",
+                    "at": "end"
+                  },
+                  {
+                    "f": "end"
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "m"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "m",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "if": [
+                      {
+                        "eq": [
+                          {
+                            "f": "type"
+                          },
+                          "strong"
+                        ]
+                      },
+                      "*",
+                      "/"
+                    ]
+                  }
+                ]
+              },
+              {
+                "has": "node.attrs"
+              }
+            ]
+          },
+          "message": 1,
+          "start": {
+            "match": "m"
+          },
+          "end": {
+            "match": "m",
+            "at": "end"
+          },
+          "values": {
+            "marker": {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "m"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "m",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            },
+            "name": {
+              "f": "type"
+            },
+            "line": {
+              "f": "node.pos.startLine"
+            },
+            "column": {
+              "f": "node.pos.startColumn"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-028",
+        "C2-I-036",
+        "C2-I-046",
+        "C2-I-048"
+      ]
+    },
+    {
       "id": "empty-include-path",
       "over": "line",
       "when": {

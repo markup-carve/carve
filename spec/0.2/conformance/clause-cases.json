@@ -73280,6 +73280,65 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1741",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-036",
+    "C2-I-046",
+    "C2-I-048"
+   ],
+   "why": "Catalog emphasis-marker-before-attributes: each unescaped `*`, `/`, `_`, `~` or `=` that is text and is directly followed by a valid attribute block in the same text",
+   "summary": "a quoted value may hold a closing brace, so the mark before the block is reported",
+   "kind": "lint",
+   "input": "a *{k=\"}\"} b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "emphasis-marker-before-attributes",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1742",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-036",
+    "C2-I-046",
+    "C2-I-048"
+   ],
+   "why": "Catalog emphasis-marker-before-attributes: each unescaped `*`, `/`, `_`, `~` or `=` that is text and is directly followed by a valid attribute block in the same text",
+   "summary": "a tilde glued to an attribute block at the start of a cell is reported by both rules",
+   "kind": "lint",
+   "input": "| ~{.c} x |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-cell-alignment",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "emphasis-marker-before-attributes",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
