@@ -348,6 +348,13 @@ C2-W-155 now keeps its spelling only where the indented list stays top-level. Wh
 - `carve-php`: carve-php#5642 refuses every such shape; it needs the same spellings.
 - `carve-rs`: the same, with its port of #6398 and #6409.
 
+## Engine gaps from the table key order ruling of 23 November
+
+The maintainer ruling on #6431 places the table keys the writer makes from the table fields (C2-W-136): they stand after the keys of `attrs`, in the order C2-W-136 lists them. Clause cases CC-1699 to CC-1704. Measured on `carve-js` `next2` `7ccf200`, `carve-php` `next2` `1992f1c` and `carve-rs` `next2` `887141d`: in every case the expected output reads back to the tree of the input in all three engines, and CC-1699 passes in all three.
+
+- All three engines: the made keys are written before the keys of `attrs` (CC-1701 to CC-1704).
+- `carve-php`: the body keys are written before `header-rows` and `footer-rows` (CC-1700).
+
 ## Engine gaps from the tag and mention end guard of 21 November
 
 The ruling on #6327 ends a mention or a tag only at a word edge: where the run of name characters behind the sigil is directly followed by a Unicode letter, number or mark, the sigil and the run are text (C2-I-092). C2-W-125 escapes a hyphen or dot that would keep the node from forming, and C2-W-117 reports a node that no backslash keeps apart. Clause cases CC-1634 to CC-1644. Measured on `carve-js` `next2` `d627349`; the ticket measured the same split in all three engines.
