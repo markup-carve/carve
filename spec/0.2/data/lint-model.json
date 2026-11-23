@@ -4693,6 +4693,133 @@
       ]
     },
     {
+      "id": "deprecated-indented-line-under-heading",
+      "over": "block",
+      "types": [
+        "heading"
+      ],
+      "let": {
+        "line_start": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "start"
+          }
+        },
+        "line_end": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "end"
+          }
+        },
+        "line_body": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "body_start"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "lt": [
+              {
+                "v": "line_start"
+              },
+              {
+                "f": "end"
+              }
+            ]
+          },
+          {
+            "gt": [
+              {
+                "column": [
+                  {
+                    "v": "line_body"
+                  },
+                  {
+                    "count": {
+                      "in": "ancestors",
+                      "where": {
+                        "eq": [
+                          {
+                            "f": "item"
+                          },
+                          "blockquote"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "f": "mark_column"
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "v": "line_start"
+          },
+          "end": {
+            "v": "line_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-137",
+        "C2-B-154"
+      ]
+    },
+    {
       "id": "deprecated-loose-attribute",
       "over": "block",
       "types": [
@@ -5700,6 +5827,83 @@
         "C2-I-046",
         "C2-I-059",
         "C2-I-060"
+      ]
+    },
+    {
+      "id": "djot-intraword-underscore",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "_"
+        ]
+      },
+      "each": {
+        "matches": [
+          {
+            "f": "text"
+          },
+          "[A-Za-z0-9](?<pair>_[^_\\s](?:[^_]*[^_\\s])?_)"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "matches": [
+              {
+                "slice": [
+                  {
+                    "f": "text"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "pair",
+                        "at": "end"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "add": [
+                      {
+                        "sub": [
+                          {
+                            "match": "pair",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      1
+                    ]
+                  }
+                ]
+              },
+              "^[A-Za-z0-9]$"
+            ]
+          },
+          "start": {
+            "match": "pair"
+          },
+          "end": {
+            "match": "pair",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046",
+        "C2-I-047"
       ]
     },
     {
@@ -6892,6 +7096,63 @@
       ],
       "clauses": [
         "C2-B-127"
+      ]
+    },
+    {
+      "id": "figure-group-panel-number",
+      "over": "block",
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "parent.type"
+              },
+              "figure_group"
+            ]
+          },
+          {
+            "ne": [
+              {
+                "f": "type"
+              },
+              "figure_group"
+            ]
+          },
+          {
+            "some": {
+              "in": "node.caption.children",
+              "where": {
+                "some": {
+                  "in": "item.children",
+                  "where": {
+                    "eq": [
+                      {
+                        "f": "item.type"
+                      },
+                      "caption_number"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-207",
+        "C2-H-066",
+        "C2-A-084"
       ]
     },
     {
@@ -10132,6 +10393,149 @@
       ]
     },
     {
+      "id": "sigil-after-letter",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "matches": [
+          {
+            "f": "text"
+          },
+          "[@#]"
+        ]
+      },
+      "each": {
+        "matches": [
+          {
+            "f": "text"
+          },
+          "(?<b>[\\p{L}\\p{N}])(?<s>[@#])(?<name>[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*)[A-Za-z0-9_.-]*(?<next>[\\p{L}\\p{N}\\p{M}]?)"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "b"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "b",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[A-Za-z0-9]$"
+                  ]
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "next"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "next",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  ""
+                ]
+              },
+              {
+                "matches": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "name"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "name",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "[A-Za-z]"
+                ]
+              }
+            ]
+          },
+          "start": {
+            "match": "s"
+          },
+          "end": {
+            "match": "s",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-090",
+        "C2-I-092"
+      ]
+    },
+    {
       "id": "table-attribute-invalid",
       "over": "attribute",
       "types": [
@@ -11890,6 +12294,87 @@
       "clauses": [
         "C2-B-149",
         "C2-N-073"
+      ]
+    },
+    {
+      "id": "unclosed-braced-comment",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "all": [
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "(?:^|[^\\\\])(?:\\\\\\\\)*(?<o>\\{%)"
+            ]
+          },
+          {
+            "not": {
+              "contains": [
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "o",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "%}"
+              ]
+            }
+          },
+          {
+            "ge": [
+              {
+                "lookup": {
+                  "over": "line",
+                  "key": {
+                    "contains": [
+                      {
+                        "f": "item.raw_body"
+                      },
+                      "%}"
+                    ]
+                  },
+                  "value": true,
+                  "after": true,
+                  "from": {
+                    "f": "end"
+                  },
+                  "field": "start"
+                }
+              },
+              0
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "match": "o"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-141"
       ]
     },
     {

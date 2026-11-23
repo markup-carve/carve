@@ -389,3 +389,9 @@ The ruling on #6327 ends a mention or a tag only at a word edge: where the run o
 The ruling on #6420 keeps C2-W-069 as written: an emphasis or strong node directly after a braced sibling of its own kind is written bare where the bare delimiter opens and closes at that position, since C2-W-070 braces only an ancestor or a descendant of the same kind. Clause cases CC-1723 to CC-1728. Measured on `carve-js` `next2` `cad54c1`, `carve-php` `next2` `0f97efc` and `carve-rs` `next2` `d7dc5e0`: every expected source reads back to the tree of its input in all three engines, and `carve-php` passes all six. Of 362 generated sibling trees (emphasis and strong, a first span braced for a space edge, a letter before it or a nested span, fifteen second contents, six contexts), 159 differ, all in this direction.
 
 - `carve-js` and `carve-rs`: a same-kind span directly after a span braced for C2-I-047 or C2-I-048 is braced too (CC-1723 to CC-1728).
+
+## Engine gaps from five more lint rows as data (#6186)
+
+`data/lint-model.json` states `sigil-after-letter`, `djot-intraword-underscore`, `figure-group-panel-number`, `deprecated-indented-line-under-heading` and `unclosed-braced-comment` as data, and seven catalog rows that stay engine code name the fact they need in `hand_written` (C2-W-139). Clause cases CC-1729 to CC-1734 pin the catalog reading where the hand-written rules of `carve-js` `next2` `cad54c1` differ; with the new rows generated into it, `carve-js` passes all six and the 72 earlier cases of these codes.
+
+- `carve-js` hand-written rules: a name that starts with a hyphen (CC-1729), a run that ends at a letter outside ASCII (CC-1730), an underscore after a letter outside ASCII (CC-1731), a pair across a soft break (CC-1732), a comment-only line inside a quote below a heading (CC-1733) and an escaped `{%` (CC-1734).
