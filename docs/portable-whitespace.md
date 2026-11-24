@@ -18,7 +18,7 @@ A paragraph ends here.
 
 A heading or quote without the blank line can be a lazy paragraph line. List markers have their own interruption rules. When a list should be separate, leave the blank line.
 
-Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, so indent the second line of a heading, a caption or a term past its marker. A line that repeats a marker, such as `>` or a table row, is read by that marker. A fenced block (code, div, comment block) is the exception: its body runs to the closing fence. A blank line ends every block but a fenced one; after it, only a list item, a description or a footnote goes on, and only with blocks indented to its content.
+Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, so indent the second line of a heading, a caption or a term past its marker. A line that repeats a marker, such as `>` or a table row, is read by that marker. A fenced block (code, div, comment block) is the exception: its body runs to the closing fence or the end of its container (C2-B-111). A blank line ends every block but a fenced one; after it, only a list item, a description or a footnote goes on, and only with blocks indented to its content.
 
 ## Keep container prefixes clear
 

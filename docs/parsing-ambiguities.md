@@ -14,7 +14,7 @@ A heading, quote, attribute line, definition, or include directive can be a lazy
 
 ## A line below a block
 
-Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker: a heading, a caption and a description term hold the indented lines below them, a link definition takes an indented title or attribute block, and an abbreviation definition takes indented expansion lines. An unindented line ends each of them. A line that repeats a marker, such as `>` or a table row, is read by that marker. A fenced block (code, div, comment block) is the exception: its body runs to the closing fence. A blank line ends every block but a fenced one; after it, only a list item, a description or a footnote goes on, and only with blocks indented to its content. See [labels](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#labels).
+Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker: a heading, a caption and a description term hold the indented lines below them, a link definition takes an indented title or attribute block, and an abbreviation definition takes indented expansion lines. An unindented line ends each of them. A line that repeats a marker, such as `>` or a table row, is read by that marker. A fenced block (code, div, comment block) is the exception: its body runs to the closing fence or the end of its container (C2-B-111). A blank line ends every block but a fenced one; after it, only a list item, a description or a footnote goes on, and only with blocks indented to its content. See [labels](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#labels).
 
 ## A slash or star in a word
 
