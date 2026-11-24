@@ -3953,6 +3953,29 @@
     {
       "id": "continuation-reading-changed",
       "over": "line",
+      "let": {
+        "term_next": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "leaf_head.end"
+            },
+            "field": "start"
+          }
+        }
+      },
       "when": {
         "any": [
           {
@@ -3971,15 +3994,12 @@
                 }
               },
               {
-                "f": "prev.leaf_first"
-              },
-              {
                 "eq": [
                   {
-                    "f": "prev.leaf_id"
+                    "v": "term_next"
                   },
                   {
-                    "f": "leaf_id"
+                    "f": "start"
                   }
                 ]
               }
@@ -9297,33 +9317,147 @@
       "types": [
         "link_reference_definition"
       ],
+      "let": {
+        "next_text": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "text"
+          }
+        },
+        "next_raw": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "raw_body"
+          }
+        },
+        "next_body": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "body_start"
+          }
+        },
+        "next_end": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "body_end"
+          }
+        }
+      },
       "when": {
         "all": [
           {
             "matches": [
               {
-                "f": "last_line.next.text"
+                "v": "next_text"
               },
               "^[ \\t]+[^ \\t]"
             ]
           },
           {
             "not": {
-              "starts": [
+              "any": [
                 {
-                  "f": "last_line.next.raw_body"
+                  "matches": [
+                    {
+                      "v": "next_raw"
+                    },
+                    "^(?:\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*')$"
+                  ]
                 },
-                "%%"
-              ]
-            }
-          },
-          {
-            "not": {
-              "matches": [
                 {
-                  "f": "last_line.next.raw_body"
+                  "attribute_line": {
+                    "v": "next_raw"
+                  }
                 },
-                "^(?:(?:\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*')(?: \\{.*\\})?|\\{.*\\})$"
+                {
+                  "all": [
+                    {
+                      "matches": [
+                        {
+                          "v": "next_raw"
+                        },
+                        "^(?:\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*') (?<attr>\\{.*)$"
+                      ]
+                    },
+                    {
+                      "attribute_line": {
+                        "slice": [
+                          {
+                            "v": "next_raw"
+                          },
+                          {
+                            "match": "attr"
+                          },
+                          {
+                            "len": {
+                              "v": "next_raw"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
               ]
             }
           }
@@ -9332,10 +9466,10 @@
       "report": [
         {
           "start": {
-            "f": "last_line.next.body_start"
+            "v": "next_body"
           },
           "end": {
-            "f": "last_line.next.body_end"
+            "v": "next_end"
           }
         }
       ],

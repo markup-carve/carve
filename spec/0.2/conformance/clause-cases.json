@@ -77671,7 +77671,7 @@
    "clauses": [
     "C2-B-083"
    ],
-   "why": "Catalog link-definition-indented-line: a blank line and a comment-only line are not reported",
+   "why": "Catalog link-definition-indented-line: comment-only lines between are skipped (C2-B-137), and a blank line is not reported",
    "summary": "an indented comment-only line below a link definition is not reported",
    "kind": "lint",
    "input": "[a]: /u\n  %% c\n\nSee [a].\n",
@@ -78398,7 +78398,7 @@
     "C2-B-069",
     "C2-B-234"
    ],
-   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term, comment-only lines skipped, that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
    "summary": "an indented line that continues a term is reported under upgrade",
    "kind": "lint",
    "input": ":: t\n  more\n: d\n",
@@ -78425,7 +78425,7 @@
     "C2-B-069",
     "C2-B-234"
    ],
-   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term, comment-only lines skipped, that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
    "summary": "an unindented line below a term is a paragraph in both readings and is not reported",
    "kind": "lint",
    "input": ":: t\nmore\n",
@@ -78546,6 +78546,105 @@
    "summary": "a heading line that starts with = below a caption is reported under upgrade",
    "kind": "lint",
    "input": "| a |\n^ cap\n= H\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1914",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-137"
+   ],
+   "why": "Catalog link-definition-indented-line: comment-only lines between are skipped (C2-B-137)",
+   "summary": "a comment-only line between a link definition and the indented line is skipped",
+   "kind": "lint",
+   "input": "[a]: /u\n%% note\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 3,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1915",
+   "clauses": [
+    "C2-B-083",
+    "C2-I-028"
+   ],
+   "why": "Catalog link-definition-indented-line: an attribute block is a valid one (C2-I-028)",
+   "summary": "an indented brace line that is no valid attribute block is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  {#}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1916",
+   "clauses": [
+    "C2-B-083",
+    "C2-I-028"
+   ],
+   "why": "Catalog link-definition-indented-line: an attribute block is a valid one (C2-I-028)",
+   "summary": "a title followed by a brace block that is not valid is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\" {#}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1917",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-137",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term, comment-only lines skipped, that continues the term",
+   "summary": "a term continuation line below a comment-only line is reported under upgrade",
+   "kind": "lint",
+   "input": ":: t\n%% note\n  more\n: d\n",
    "options": {
     "upgrade": true
    },
