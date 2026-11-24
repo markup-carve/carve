@@ -507,3 +507,9 @@ The ruling on #6531 numbers headings by depth and has `carve.headingNumbers`, `c
 The ruling on #6542 (option A) gives an attribute value of a supplied tree that holds a line feed its nearest form: one space in place of each line feed, in double quotes, with `field-unspellable` at the path of the value; the node and its other attributes are kept (C2-W-050, C2-W-117). Clause cases CC-2010 to CC-2012 are added. Measured on `carve-js` `next2` `fdd53bf7`: the import refuses with `writer-refused`, and the write reports `structure-unspellable` for the span and the document. The issue measured `carve-php` writing the value over two lines with no report and `carve-rs` writing it unquoted over two lines; both read back as text.
 
 - All three engines: write the value with one space per line feed and report `field-unspellable` at the value (CC-2010 to CC-2012).
+
+## Engine gaps from the nested-link bracket ruling of 24 November (#6544)
+
+The ruling on #6544 places a backslash in link text only where a C2-W-088 round or a C2-W-125 case for a node that did not form places it; a nested link alone is no reason. For a tree from a parse whose bare text reads back, the text brackets around a nested link stay bare (C2-W-088, C2-W-091). CC-1567 now expects its input unchanged. Measured on `carve-js` `next2` `fdd53bf7` and `carve-php` `next2` `2fb117558`: both escape every text bracket around the nested links; `carve-rs` `next2` writes the same escapes.
+
+- All three engines: write CC-1567 unchanged, without `\[` and `\]` around the nested links.
