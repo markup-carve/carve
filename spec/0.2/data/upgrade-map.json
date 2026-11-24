@@ -2167,7 +2167,7 @@
       "group": "rulings of 16 November",
       "from": "a `b c\n",
       "to": "a `b c`\n",
-      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>. An empty unclosed math run is U-396, an empty literal-text run U-440, and a value no span spells U-439.",
+      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>, with one space before it when the value ends with a backtick (C2-W-077). An empty unclosed math run is U-396, an empty literal-text run U-440, and a value no span spells U-439.",
       "toolEntry": "U-258",
       "silent": true
     },
@@ -3337,7 +3337,7 @@
       "group": "upgrade replay",
       "from": "a `\n",
       "to": "",
-      "meaning02": "<p>a `</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` or `$` glued before it. 0.1 wrote an empty code span for an empty code value; an adjacent closer joins the opener into a wider run, and a separator changes the empty value. A code, literal-text or math value that starts with a line break and ends with a backtick has no spelling either (C2-W-077). An empty literal-text run that U-440 cannot remove is reported too: 0.1 wrote nothing for it, and the space before it, which 0.2 drops at the end of the content (C2-I-002), or the empty paragraph or heading it filled has no spelling. Report the parsed range of the run and its value; do not rewrite.",
+      "meaning02": "<p>a `</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` or `$` glued before it. 0.1 wrote an empty code span for an empty code value; an adjacent closer joins the opener into a wider run, and a separator changes the empty value. A code, literal-text or math value that starts with a space and a backtick, or ends with a backtick and a space, has no spelling either, since C2-I-016 removes that space (C2-W-077). An empty literal-text run that U-440 cannot remove is reported too: 0.1 wrote nothing for it, and the space before it, which 0.2 drops at the end of the content (C2-I-002), or the empty paragraph or heading it filled has no spelling. Report the parsed range of the run and its value; do not rewrite.",
       "toolEntry": "U-439",
       "silent": true
     },
@@ -3349,6 +3349,16 @@
       "to": "x\n",
       "meaning02": "<p>x!``</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` glued before it; 0.1 wrote nothing for an empty literal-text run at the end of the content. Removing the run keeps <p>x</p>. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; otherwise U-439 reports the run.",
       "toolEntry": "U-440",
+      "silent": true
+    },
+    {
+      "id": "U-441",
+      "kind": "rewrite",
+      "group": "rulings of 24 November",
+      "from": "a ` x ` b\n",
+      "to": "a `x` b\n",
+      "meaning02": "<p>a <code> x </code> b</p> C2-I-016 keeps the spaces at the ends of a code span and removes only a space between a backtick and the opening or closing run; 0.1 removed one space from each end when both ends held one. Writing the 0.1 value as C2-W-077 spells it keeps <p>a <code>x</code> b</p>. This holds for a literal-text, math or raw inline span too. A 0.1 value that starts with a space and a backtick or ends with a backtick and a space has no 0.2 spelling (C2-W-077): report the span; do not rewrite. `code-span-padding-kept` reports the span under the lint option `upgrade` (C2-W-156).",
+      "toolEntry": "U-441",
       "silent": true
     }
   ],

@@ -226,7 +226,7 @@ Example 7 (generated)
 
 **C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. The spaces and tabs at the end of each line are removed before the span is read (C2-I-002): `` `a ``, two spaces, a line break and `` b` `` give the value `a`, a line feed and `b`.
 
-**C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is.
+**C2-I-016** The spaces of the content are kept, except one space next to a backtick: a space directly after the opening run is removed when the character after it is a backtick, and a space directly before the closing run is removed when the character before it is a backtick. This lets a span start or end with a backtick: ``` `` `x` `` ``` holds `` `x` ``, and `` ` x ` `` holds a space, `x` and a space.
 
 **C2-I-017** A backtick run with no closing run of its length later in the same content opens nothing (C2-I-119): the run is text, and so is a `!`, `$` or `$$` glued before it. The scan goes on behind the run, so a shorter or longer run after it may open a span. This holds for a code span, a literal-text span and a math span alike, and in a table cell as anywhere: the cell `` | x `a | `` holds the text `` x `a ``. For this test a comment-only line ends the content (C2-B-138).
 
@@ -234,7 +234,7 @@ Example 7 (generated)
 
 A literal `!` before a code span is written with a backslash.
 
-Example 8 (generated)
+Example 8 (unverified)
 
 ::: compare
 
@@ -243,7 +243,7 @@ Example 8 (generated)
 ```
 
 ```html
-<p><code>code</code> and <code>a ` b</code> and <code>x</code> and <code>*a*</code></p>
+<p><code>code</code> and <code> a ` b </code> and <code> x </code> and <code>*a*</code></p>
 ```
 
 :::
@@ -2509,7 +2509,7 @@ There is no fixed budget for the inline chapter.
 |---|---|---|---|---|
 | Preliminaries | 10 | 0 | 3 | 4 |
 | Backslash escapes | 4 | 0 | 2 | 0 |
-| Code spans | 5 | 0 | 3 | 1 |
+| Code spans | 5 | 0 | 2 | 2 |
 | Math spans | 1 | 0 | 1 | 1 |
 | Raw inline | 1 | 0 | 2 | 1 |
 | Comments | 4 | 1 | 4 | 2 |
@@ -2530,7 +2530,7 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **109** | **14** | **70** | **61** |
+| **Total** | **109** | **14** | **69** | **62** |
 
 The chapter has 109 clauses, 14 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-022, C2-I-041 and C2-I-045, whose rule other clauses state or give; their ids are not reused.
 

@@ -467,7 +467,7 @@
           "reads_escapes": { "type": "boolean", "description": "False when a backslash inside the atom is content (C2-I-013)." },
           "crosses_lines": { "type": "boolean", "description": "True when the atom may hold a line break." },
           "nests": { "type": "boolean", "description": "False when an opener inside the atom is content." },
-          "trim": { "enum": ["one_space_each_end_when_both_and_not_only_spaces"], "description": "What is removed from the content." },
+          "trim": { "enum": ["one_space_beside_a_backtick_at_each_end"], "description": "What is removed from the content. `one_space_beside_a_backtick_at_each_end`: a space directly after the opener when a backtick follows it, and a space directly before the closer when a backtick precedes it (C2-I-016)." },
           "unclosed": {
             "enum": ["text", "next_brace_rule"],
             "description": "What happens without a closer. `text`: the opener is literal text. `next_brace_rule`: the brace is read by the next entry of inline-braces.json."

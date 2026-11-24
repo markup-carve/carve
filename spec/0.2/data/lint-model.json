@@ -3255,6 +3255,138 @@
       ]
     },
     {
+      "id": "code-span-padding-kept",
+      "over": "inline",
+      "types": [
+        "code",
+        "literal_inline",
+        "math",
+        "raw_inline"
+      ],
+      "let": {
+        "tick_start": {
+          "starts": [
+            {
+              "f": "node.value"
+            },
+            "`"
+          ]
+        },
+        "tick_end": {
+          "all": [
+            {
+              "matches": [
+                {
+                  "f": "node.value"
+                },
+                "`$"
+              ]
+            },
+            {
+              "not": {
+                "matches": [
+                  {
+                    "f": "node.value"
+                  },
+                  "\\n$"
+                ]
+              }
+            }
+          ]
+        },
+        "space_start": {
+          "starts": [
+            {
+              "f": "node.value"
+            },
+            " "
+          ]
+        },
+        "space_end": {
+          "all": [
+            {
+              "matches": [
+                {
+                  "f": "node.value"
+                },
+                " $"
+              ]
+            },
+            {
+              "not": {
+                "matches": [
+                  {
+                    "f": "node.value"
+                  },
+                  "\\n$"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "when": {
+        "any": [
+          {
+            "all": [
+              {
+                "v": "tick_start"
+              },
+              {
+                "not": {
+                  "v": "tick_end"
+                }
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "not": {
+                  "v": "tick_start"
+                }
+              },
+              {
+                "v": "tick_end"
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "v": "space_start"
+              },
+              {
+                "v": "space_end"
+              },
+              {
+                "matches": [
+                  {
+                    "f": "node.value"
+                  },
+                  "[^ ]"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-016",
+        "C2-W-156"
+      ]
+    },
+    {
       "id": "colon-fence-length-mismatch",
       "over": "line",
       "when": {

@@ -191,6 +191,23 @@
       "clauses": ["C2-B-161", "C2-B-231"]
     },
     {
+      "id": "code-span-padding-kept",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": [
+        "The spaces at the ends of this span read otherwise than in 0.1, which removed one space from each end when both ends held one; 0.2 removes only a space next to a backtick. Check the spaces at the ends of the span."
+      ],
+      "message_origin": "design",
+      "reports": "a code span, a literal-text span, a math span or a raw inline span whose value differs from the value 0.1 read: 0.1 removed one space from each end when the content started and ended with a space and held a character that is not a space, and 0.2 removes only a space between a backtick and the run (C2-I-016). Since the content never starts or ends with a backtick, the 0.2 value decides it: exactly one end of the value is a backtick, or the value starts and ends with a space and holds a character that is not a space. Once per span, the range is the span",
+      "change": "added with the code span padding ruling of 24 November (#6525)",
+      "clauses": [
+        "C2-I-016",
+        "C2-W-156"
+      ]
+    },
+    {
       "id": "colon-fence-length-mismatch",
       "severity": "warning",
       "channel": "lint",

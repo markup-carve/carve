@@ -20,7 +20,7 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 120 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
+The following 121 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
@@ -38,6 +38,7 @@ The following 120 lint-channel rows, every row except the two with status `void`
 | `broken-fragment-link` | warning | on |
 | `caption-looking-paragraph` | warning | on |
 | `carve-version-unsupported` | warning | on |
+| `code-span-padding-kept` | warning | upgrade |
 | `colon-fence-length-mismatch` | warning | on |
 | `comment-fence-closer-with-text` | warning | upgrade |
 | `comment-in-reference-label` | warning | on |
