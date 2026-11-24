@@ -12617,6 +12617,128 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-296",
+   "document": "syntax-blocks.md",
+   "number": 296,
+   "section": "Definitions",
+   "clauses": [
+    "C2-B-081",
+    "C2-B-082",
+    "C2-B-083",
+    "C2-B-084",
+    "C2-B-085",
+    "C2-B-087",
+    "C2-B-088",
+    "C2-B-089"
+   ],
+   "clauseScope": "section",
+   "kind": "render",
+   "input": "[a]: /url\n  \"Title\"\n  {.c}\n\nSee [a].",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"/url\" title=\"Title\" class=\"c\">a</a>.</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "link_reference_definition",
+       "key": "a",
+       "namespace": "link",
+       "href": "/url",
+       "tooltip": "Title",
+       "attrs": {
+        "classes": [
+         "c"
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 7,
+        "startOffset": 0,
+        "endOffset": 26
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "See ",
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 28,
+          "endOffset": 32
+         }
+        },
+        {
+         "type": "link",
+         "key": "a",
+         "namespace": "link",
+         "refForm": "shortcut",
+         "children": [
+          {
+           "type": "text",
+           "value": "a",
+           "pos": {
+            "startLine": 5,
+            "endLine": 5,
+            "startColumn": 6,
+            "endColumn": 7,
+            "startOffset": 33,
+            "endOffset": 34
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 5,
+          "endColumn": 8,
+          "startOffset": 32,
+          "endOffset": 35
+         },
+         "href": "/url"
+        },
+        {
+         "type": "text",
+         "value": ".",
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 8,
+          "endColumn": 9,
+          "startOffset": 35,
+          "endOffset": 36
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 5,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 9,
+        "startOffset": 28,
+        "endOffset": 36
+       }
+      }
+     ],
+     "srcByteLength": 36,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-241",
    "document": "syntax-blocks.md",
    "number": 241,

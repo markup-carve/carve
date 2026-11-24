@@ -77772,6 +77772,463 @@
     "carve": "[a]: /docs/\n\nguide.html\n\nSee [a].\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1890",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: When that line holds a title alone, the line directly below it continues the definition in the same way when it holds an attribute block alone, so a title and an attribute block may each stand on their own indented line, in that order, and a definition takes at most one of each.",
+   "summary": "link definition tail: a title and an attribute block on two indented lines",
+   "kind": "render",
+   "input": "[a]: /url\n  \"Title\"\n  {.c}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"/url\" title=\"Title\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/url",
+      "tooltip": "Title",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/url"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1891",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: When that line holds a title alone, the line directly below it continues the definition in the same way when it holds an attribute block alone, so a title and an attribute block may each stand on their own indented line, in that order, and a definition takes at most one of each.",
+   "summary": "fmt: link definition tail: a title and an attribute block on two indented lines",
+   "kind": "format",
+   "input": "[a]: /url\n  \"Title\"\n  {.c}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "{.c}\n[a]: /url \"Title\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1892",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: When that line holds a title alone, the line directly below it continues the definition in the same way when it holds an attribute block alone",
+   "summary": "link definition tail: a single-quoted title and a tab-indented attribute block on two lines",
+   "kind": "render",
+   "input": "[a]: /u\n   'T'  \n\t{.c}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1893",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: so a title and an attribute block may each stand on their own indented line, in that order",
+   "summary": "link definition tail: a title below an attribute block line is no tail and is a paragraph",
+   "kind": "render",
+   "input": "[a]: /u\n  {.c}\n  \"T\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“T”</p>\n<p>See <a href=\"/u\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "T"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1894",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: so a title and an attribute block may each stand on their own indented line, in that order",
+   "summary": "fmt: link definition tail: a title below an attribute block line is no tail and is a paragraph",
+   "kind": "format",
+   "input": "[a]: /u\n  {.c}\n  \"T\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "{.c}\n[a]: /u\n\n\"T\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1895",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "link definition tail: a second title line is no tail and is a paragraph",
+   "kind": "render",
+   "input": "[a]: /u\n  \"T\"\n  \"U\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“U”</p>\n<p>See <a href=\"/u\" title=\"T\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "U"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1896",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "fmt: link definition tail: a second title line is no tail and is a paragraph",
+   "kind": "format",
+   "input": "[a]: /u\n  \"T\"\n  \"U\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /u \"T\"\n\n\"U\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1897",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-091"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "link definition tail: a second attribute block line is an attribute line of the next block",
+   "kind": "render",
+   "input": "[a]: /u\n  \"T\"\n  {.c}\n  {.d}\nPara\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p class=\"d\">Para</p>\n<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Para"
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "d"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1898",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-091"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "fmt: link definition tail: a second attribute block line is an attribute line of the next block",
+   "kind": "format",
+   "input": "[a]: /u\n  \"T\"\n  {.c}\n  {.d}\nPara\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "{.c}\n[a]: /u \"T\"\n\n{.d}\nPara\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1899",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-091"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "link definition tail: an attribute block line below a full tail line is an attribute line of the next block",
+   "kind": "render",
+   "input": "[a]: /u\n  \"T\" {.c}\n  {.d}\nPara\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p class=\"d\">Para</p>\n<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Para"
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "d"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

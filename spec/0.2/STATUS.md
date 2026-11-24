@@ -464,3 +464,7 @@ The same ruling adds the hint `link-definition-indented-line` (C2-B-083): an ind
 
 - carve-js: the row arrives with the spec pin, since `lint/data-tables.ts` is generated from `data/lint-model.json`; CC-1883 passes once the tail of C2-B-083 is ported.
 - carve-php and carve-rs: add `link-definition-indented-line` from its data row (CC-1880 to CC-1887).
+
+The same ruling lets the tail of a link definition span two indented lines: a title line, then an attribute block line, at most one of each (C2-B-083). `fmt` writes such a tail as it writes the same tail on the definition line. Example syntax-blocks-296, clause cases CC-1890 to CC-1899. `carve-js` `next2` `383040ef` takes no tail line, so all ten cases fail there.
+
+- All three engines: take a title line and then an attribute block line as the tail of a link definition, and read a later tail part, a second title or a second attribute block as the next block (syntax-blocks-296, CC-1890 to CC-1899).
