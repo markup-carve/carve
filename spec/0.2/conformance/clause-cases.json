@@ -80877,7 +80877,7 @@
       "line": 1,
       "column": 3,
       "endLine": 1,
-      "endColumn": 11,
+      "endColumn": 10,
       "channel": "lint",
       "severity": "warning"
      }
