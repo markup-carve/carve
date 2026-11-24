@@ -73,7 +73,7 @@ Other common edits include changing bare `_`, `~`, and `=` inline formatting to 
 
 ## Review changed output
 
-Compare representative pages rendered by both engines. Check headings and generated ids, list tightness and task items, table headers, footnotes, links, captions, and raw HTML. The 0.2 output contract is [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md). Markdown, plain text, and ANSI writers from 0.1 have no 0.2 counterpart. A Markdown source first goes through an HTML renderer and the [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) path.
+Compare representative pages rendered by both engines. Check headings and generated ids, list tightness and task items, table headers, footnotes, links, captions, and raw HTML. The 0.2 output contract is [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md). Markdown, plain text, and ANSI output come from export renderers (`carve render --to markdown`, `--to plain`, `--to ansi`); their output is engine behavior, not part of the specification (C2-T-003). A Markdown source first goes through an HTML renderer and the [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) path.
 
 ## Update the host
 

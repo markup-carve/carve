@@ -24,4 +24,4 @@ A render profile can degrade an extension even if its renderer is installed. Res
 
 ## Changed in 0.2
 
-The 0.1 Markdown, plain text, and ANSI fallback writers are not part of the 0.2 engine. Use HTML, a semantic AST bridge, or a host writer for another target. See [format conversion](./format-bridges.md).
+Every 0.2 engine offers Markdown, plain text, and ANSI export (`carve render --to markdown`, `--to plain`, `--to ansi`), but the specification does not define that output (C2-T-003). For a target you must rely on, use HTML or a semantic AST bridge. See [format conversion](./format-bridges.md).
