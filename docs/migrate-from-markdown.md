@@ -18,7 +18,7 @@ Carve is a separate language. A Markdown file needs conversion and review before
 | GFM separator table | `|=` header cells |
 | Tilde code fence | Backtick code fence |
 
-A blank line before a new heading or quote avoids a lazy paragraph line. List markers do not always interrupt an open paragraph. The exact rules are in [block structure](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#paragraphs-and-interrupters).
+Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, and a blank line ends every block but a fenced one. A blank line before a new heading or quote avoids a lazy paragraph line. List markers do not always interrupt an open paragraph. The exact rules are in [block structure](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#paragraphs-and-interrupters).
 
 ## Import with the reference engine
 

@@ -622,6 +622,8 @@ The rules that report a likely mistake or an ambiguity in the 0.2 document itsel
 
 ### Rulings of 24 November 2026
 
+The two continuation rulings of 24 November (#6507, #6508) come down to one rule: only a paragraph takes unindented lines, and every other block continues only on lines indented past its marker. A paragraph takes them also where it stands behind a list, description, footnote or quote marker (C2-B-012, C2-B-234). A line that repeats a marker, such as `>` or a table row, is read by that marker. A blank line ends every block except a fenced one, which runs to its closing fence; after a blank line, a list item, a description or a footnote goes on only with lines indented to its content.
+
 A ruling of 24 November decides #6507: a link definition and an abbreviation definition continue on the lines directly below them that are indented past their marker. A link definition takes one such line when it holds exactly the rest of its tail: a title, an attribute block, or both. An abbreviation definition takes every such line, and each joins its expansion after one space. Any other line is read as before.
 
 | What you wrote | 0.1 and early 0.2 | 0.2 now | Clause |
@@ -633,7 +635,7 @@ A ruling of 24 November decides #6507: a link definition and an abbreviation def
 
 ### Ruling of 24 November 2026: labels continue only on indented lines
 
-A ruling of 24 November decides #6508: a caption (`^`, also a quote attribution) and a description term (`::`) continue only on lines indented past their marker, as a heading does (C2-B-154). The three are labels (C2-B-234). Only paragraph text keeps unindented continuation lines.
+A ruling of 24 November decides #6508: a caption (`^`, also a quote attribution) and a description term (`::`) continue only on lines indented past their marker, as a heading does (C2-B-154). The three are labels (C2-B-234), and the one rule above applies to them as to every block but the paragraph.
 
 | You write | Earlier 0.2 | Now |
 | --- | --- | --- |

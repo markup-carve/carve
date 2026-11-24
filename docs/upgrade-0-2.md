@@ -41,7 +41,7 @@ Each section below opens with what 0.2 changed for one construct and why, then l
 
 ## Paragraphs and continuation {#paragraphs}
 
-In 0.1 every block kind had its own answer to whether it could interrupt a paragraph, so a wrapped line that only looked like a heading or quote marker restructured the block above it. 0.2 has one rule: an open paragraph takes the next nonblank line, and only fence lines, table rows, `***`, a caption under an image or display math, and markers that continue an open list or description list end it without a blank line ([#315](https://github.com/markup-carve/carve/issues/315), C2-B-013 to C2-B-020). Most rows here need one inserted blank line.
+In 0.1 every block kind had its own answer to whether it could interrupt a paragraph, so a wrapped line that only looked like a heading or quote marker restructured the block above it. 0.2 has one rule: an open paragraph takes the next nonblank line, and only fence lines, table rows, `***`, a caption under an image or display math, and markers that continue an open list or description list end it without a blank line ([#315](https://github.com/markup-carve/carve/issues/315), C2-B-013 to C2-B-020). Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, and a blank line ends every block but a fenced one (C2-B-234). Most rows here need one inserted blank line.
 
 **[U-001](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Heading directly under text
 
@@ -977,7 +977,7 @@ lazy
 
 ## Description lists {#descriptions}
 
-Terms and descriptions own lines by column, like list items: after `:: term` only a line indented past the column of the `::` continues the term, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).
+Terms and descriptions own lines by column, like list items. A term follows the continuation rule of every block but the paragraph: after `:: term` only a line indented past the column of the `::` continues it, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).
 
 **[U-123](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-059 and C2-B-076, `:: term` then `:  intro` then `+` then `  more` writes `more` outside the description in 0.1.
 

@@ -7,7 +7,7 @@
     {
       "key": "paragraphs",
       "title": "Paragraphs and continuation",
-      "why": "In 0.1 every block kind had its own answer to whether it could interrupt a paragraph, so a wrapped line that only looked like a heading or quote marker restructured the block above it. 0.2 has one rule: an open paragraph takes the next nonblank line, and only fence lines, table rows, `***`, a caption under an image or display math, and markers that continue an open list or description list end it without a blank line ([#315](https://github.com/markup-carve/carve/issues/315), C2-B-013 to C2-B-020). Most rows here need one inserted blank line.",
+      "why": "In 0.1 every block kind had its own answer to whether it could interrupt a paragraph, so a wrapped line that only looked like a heading or quote marker restructured the block above it. 0.2 has one rule: an open paragraph takes the next nonblank line, and only fence lines, table rows, `***`, a caption under an image or display math, and markers that continue an open list or description list end it without a blank line ([#315](https://github.com/markup-carve/carve/issues/315), C2-B-013 to C2-B-020). Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, and a blank line ends every block but a fenced one (C2-B-234). Most rows here need one inserted blank line.",
       "rows": ["U-001", "U-002", "U-003", "U-004", "U-005", "U-006", "U-007", "U-008", "U-009", "U-010", "U-012", "U-013", "U-126"]
     },
     {
@@ -31,7 +31,7 @@
     {
       "key": "descriptions",
       "title": "Description lists",
-      "why": "Terms and descriptions own lines by column, like list items: after `:: term` only a line indented past the column of the `::` continues the term, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).",
+      "why": "Terms and descriptions own lines by column, like list items. A term follows the continuation rule of every block but the paragraph: after `:: term` only a line indented past the column of the `::` continues it, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).",
       "rows": ["U-123", "U-128", "U-172", "U-179", "U-180", "U-193", "U-199", "U-210", "U-215", "U-228", "U-232", "U-236", "U-239", "U-252", "U-361", "U-378", "U-379", "U-387", "U-433", "U-435"]
     },
     {

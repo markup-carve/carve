@@ -12,6 +12,10 @@ The 0.2 block and inline chapters give explicit priorities when a character has 
 
 A heading, quote, attribute line, definition, or include directive can be a lazy line of an open paragraph. Leave a blank line before a new block. A table row and a star thematic break have their own interruption rules. See [paragraphs and interrupters](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#paragraphs-and-interrupters).
 
+## A line below a block
+
+Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker: a heading, a caption and a description term hold the indented lines below them, a link definition takes an indented title or attribute block, and an abbreviation definition takes indented expansion lines. An unindented line ends each of them. A blank line ends every block but a fenced one, which runs to its closing fence. See [labels](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#labels).
+
 ## A slash or star in a word
 
 Bare `/` and `*` need boundary conditions to become emphasis or strong text. A run of two or more of the same bare delimiter is literal text, so Markdown `**bold**` does not make strong text. Use a braced pair when a boundary needs to be explicit. See [emphasis and strong](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md#emphasis-and-strong).

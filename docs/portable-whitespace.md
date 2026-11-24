@@ -18,6 +18,8 @@ A paragraph ends here.
 
 A heading or quote without the blank line can be a lazy paragraph line. List markers have their own interruption rules. When a list should be separate, leave the blank line.
 
+Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, so indent the second line of a heading, a caption or a term past its marker. A blank line ends every block but a fenced one.
+
 ## Keep container prefixes clear
 
 ```crv
