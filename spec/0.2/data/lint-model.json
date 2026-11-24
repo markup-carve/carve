@@ -12669,6 +12669,19 @@
               },
               "\\|\\s*\\{\\s*[^%}\\s][^|]*\\}\\s*\\|[^|]*$"
             ]
+          },
+          {
+            "has": "node.children.-1.children.0.children.0.value"
+          },
+          {
+            "not": {
+              "has": "node.children.-1.children.0.children.1"
+            }
+          },
+          {
+            "attribute_line": {
+              "f": "node.children.-1.children.0.children.0.value"
+            }
           }
         ]
       },
