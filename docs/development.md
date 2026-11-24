@@ -20,6 +20,30 @@ The reference implementation lives in [`carve-js` on `next2`](https://github.com
 
 Record the spec pin, engine pin, case ID, input, options, expected and actual results. Compare the cited clause before changing either side. The [comparison methodology](./implementation-comparison-methodology) describes what a corpus pass measures. The 0.1 decision trace uses the 0.1 model, so its output does not decide a 0.2 case.
 
+## Check an Expected section before filing
+
+A bug ticket states its expected result. Before filing it, write each expected result as a case and run `npm run expected:check -- <cases.crv>` with a carve-js `next2` checkout in `engines/carve-js` (or `CARVE_JS_DIR`, or `--js <dir>`). The case file is Carve 0.1: a `##` heading per case (a 0.2 `==` heading works too), an `operation` of `fmt`, `html`, `ast` or `lint`, optional `clauses` and `options`, then the input block and the expected block (the language after a fence is free).
+
+````text
+## 6569 editorial comment across a comment line
+
+- operation: ast
+- clauses: C2-B-138
+
+```text
+{#a
+%% b#}
+```
+
+```json
+[{"type":"paragraph","children":[{"type":"text","value":"{"},{"type":"tag","name":"a"},{"type":"soft_break"},{"type":"comment","form":"line","value":"b#}"}]}]
+```
+````
+
+`ast` expects the JSON children of the document without positions, `lint` one rule code per line with an optional `line:column`. For each case the check runs carve-js and reports where its output differs. Where it differs, it also lists the clause cases on the same constructs: a clause case with the same input, and those whose model trees share the node kinds the expected result disputes (for `fmt`, the kinds the text forms with its escapes dropped). Each listed case says whether carve-js passes it now and which clauses it cites. The command exits 0 when every case agrees with carve-js, 1 on a conflict and 2 on a tool error. `--help` prints the format.
+
+A conflict with a clause or a pinned clause case is filed as `needs-decision` with both readings, not as a bug with that Expected section.
+
 ## Nightly fuzz differential
 
 `.github/workflows/nightly-fuzz.yml` runs every day at 05:45 UTC and on dispatch. It checks out carve-js, carve-php and carve-rs at their `next2` heads and runs `scripts/fuzz-nightly.mjs`: mutants of the 0.2 conformance inputs, random documents, deep nesting around the depth limits (C2-B-190, C2-I-118) and line-ending, tab and control-character noise go through parse, render, format and lint in each engine. The run compares the tree, the HTML, the fmt output and the lint findings across the engines, checks the writer gates C2-W-002 and C2-W-003 in each engine, imports the rendered HTML in every engine, and times long inputs of each construct. A crash, a hang, an error that is not a Carve refusal and superlinear time are reported per engine. There is no spec model on `next2`, so a split where two engines agree is a lead for triage, not a verdict.

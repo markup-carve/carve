@@ -100,6 +100,10 @@ jobs:
           cargo build --manifest-path scripts/next2-readiness-rs/Cargo.toml
       - name: Baseline classifier tests
         run: node --test tests/next2-readiness-classify.test.mjs tests/next2-readiness-extensions.test.mjs
+      # The tests that need carve-js skip in the plain test job.
+      - name: Expected-section check tests
+        if: matrix.mode == 'baseline'
+        run: node --test tests/expected-check.test.mjs
       - name: Replay the 0.2 contract and check the baseline
         env:
           MODE: ${{ matrix.mode }}
