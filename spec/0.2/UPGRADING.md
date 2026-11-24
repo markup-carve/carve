@@ -598,7 +598,7 @@ A ruling of 24 November decides #6507: a link definition and an abbreviation def
 | What you wrote | 0.1 and early 0.2 | 0.2 now | Clause |
 | --- | --- | --- | --- |
 | A title or attribute block on the indented line below a link definition: `[a]: /url`, then `  "Title"` | The definition ended at its line, and the indented line was a paragraph, `<p>“Title”</p>`; an indented `{.c}` was an attribute line of the next block. | The line is the definition's tail: `<a href="/url" title="Title">`, and `{.c}` reaches every link that uses the definition. | C2-B-083, C2-B-091 |
-| An abbreviation expansion over indented lines: `*[HTML]: Hyper Text`, then `  Markup Language` | The expansion was `Hyper Text`, and the indented line was a paragraph. | The expansion is `Hyper Text Markup Language`. `carve fmt` writes it on one line. | C2-B-084, C2-W-055 |
+| An abbreviation expansion over indented lines: `*[HTML]: Hyper Text`, then `  Markup Language` | The expansion was `Hyper Text`, and the indented line was a paragraph. | The expansion is `Hyper Text Markup Language`. `carve fmt` writes it on one line. An indented fence line, table row, thematic break or region marker line still ends the definition and starts its block, as in 0.1. | C2-B-084, C2-W-055 |
 
 ### Ruling of 24 November 2026: labels continue only on indented lines
 

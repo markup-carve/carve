@@ -77139,6 +77139,406 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1868",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-014",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "abbreviation definition: an indented fence line ends the expansion and opens a code block",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  ```\n  code\n  ```\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<pre><code>code\n</code></pre>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "code_block",
+      "value": "code\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1869",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-014",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "fmt: abbreviation definition: an indented fence line ends the expansion and opens a code block",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  ```\n  code\n  ```\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n\n```\ncode\n```\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1870",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table",
+   "summary": "abbreviation definition: an indented table row ends the expansion and opens a table",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  | a |\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1871",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table",
+   "summary": "fmt: abbreviation definition: an indented table row ends the expansion and opens a table",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  | a |\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n\n| a |\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1872",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-200",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "abbreviation definition: an indented thematic break ends the expansion",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  ***\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<hr>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "thematic_break"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1873",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-200",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "fmt: abbreviation definition: an indented thematic break ends the expansion",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  ***\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n\n***\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1874",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-137",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "abbreviation definition: an indented region marker line ends the expansion",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  %% #region a\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region a"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1875",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-137",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "fmt: abbreviation definition: an indented region marker line ends the expansion",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  %% #region a\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n%% #region a\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1876",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "abbreviation definition: a text line continues the expansion and a table row below it ends the definition",
+   "kind": "render",
+   "input": "*[A]: x\n  y\n  | a |\n\nA\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p><abbr title=\"x y\">A</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "x y",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "A",
+        "namespace": "abbr",
+        "expansion": "x y"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1877",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "fmt: abbreviation definition: a text line continues the expansion and a table row below it ends the definition",
+   "kind": "format",
+   "input": "*[A]: x\n  y\n  | a |\n\nA\n",
+   "options": {},
+   "expected": {
+    "carve": "*[A]: x y\n\n| a |\n\nA\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1878",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-154",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table, and `  - y` continues the expansion as it continues a heading.",
+   "summary": "abbreviation definition: an indented list marker line is no block line and continues the expansion",
+   "kind": "render",
+   "input": "*[A]: x\n  - y\n\nA\n",
+   "options": {},
+   "expected": {
+    "html": "<p><abbr title=\"x - y\">A</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "x - y",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "A",
+        "namespace": "abbr",
+        "expansion": "x - y"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1879",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-154",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table, and `  - y` continues the expansion as it continues a heading.",
+   "summary": "fmt: abbreviation definition: an indented list marker line is no block line and continues the expansion",
+   "kind": "format",
+   "input": "*[A]: x\n  - y\n\nA\n",
+   "options": {},
+   "expected": {
+    "carve": "*[A]: x - y\n\nA\n"
+   },
+   "from": []
   }
  ]
 }

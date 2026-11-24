@@ -453,3 +453,9 @@ Mark's ruling on #6508 makes the caption and the term labels like the heading (C
 - All three engines: an unindented line below a caption or a term still continues it. CC-070 (the last line captions the outer quote, C2-B-018), CC-721, CC-791, CC-1853 to CC-1860, CC-1865 to CC-1867, syntax-blocks-168 and syntax-blocks-293.
 - All three engines: a second caret line directly below a caption continues it instead of being unattached text (CC-1861).
 - All three engines: `description-term-multi-line` still reports every term continuation line (CC-982).
+
+## Engine gaps from the follow-up ruling on #6507 (24 November)
+
+The follow-up ruling on #6507 ends an abbreviation definition at every indented line that ends a heading continuation (C2-B-154, C2-B-234): a fence line, a table row, a thematic break or a region marker line starts its block, and only text lines continue the expansion. Example syntax-blocks-294, clause cases CC-1868 to CC-1879. Measured on `carve-js` `next2` `383040ef`, which reads every definition as one line: CC-1868 to CC-1875 pass and pin the end of the expansion for the port of #6507; CC-1876 to CC-1879 fail.
+
+- All three engines: end the expansion of an abbreviation definition at an indented fence line, table row, thematic break or region marker line, and continue it on every other indented line (syntax-blocks-294, CC-1868 to CC-1879).
