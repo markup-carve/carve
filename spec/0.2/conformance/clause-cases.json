@@ -80960,6 +80960,123 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2007",
+   "clauses": [
+    "C2-B-212",
+    "C2-B-227"
+   ],
+   "why": "C2-B-212: The widths need not total 100; `table-width-total` reports a total above 100. C2-B-227: A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`",
+   "summary": "an invalid aligns value keeps the table-width-total finding of widths beside it",
+   "kind": "lint",
+   "input": "{aligns=x widths=60,50}\n| a | b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-attribute-invalid",
+      "line": 1,
+      "column": 2,
+      "endLine": 1,
+      "endColumn": 10,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "table-width-total",
+      "line": 1,
+      "column": 11,
+      "endLine": 1,
+      "endColumn": 17,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2008",
+   "clauses": [
+    "C2-B-211",
+    "C2-B-227"
+   ],
+   "why": "C2-B-211: Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it. C2-B-227: A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`",
+   "summary": "an invalid valigns value keeps the table-column-arity finding of aligns beside it",
+   "kind": "lint",
+   "input": "{aligns=left valigns=q}\n| a | b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-column-arity",
+      "line": 1,
+      "column": 2,
+      "endLine": 1,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "table-attribute-invalid",
+      "line": 1,
+      "column": 14,
+      "endLine": 1,
+      "endColumn": 23,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2009",
+   "clauses": [
+    "C2-B-213",
+    "C2-B-227"
+   ],
+   "why": "C2-B-213: Where a head mark and an `aligns` or `valigns` entry set the same axis of a column, `table-column-overlap` reports it. C2-B-227: A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`",
+   "summary": "an invalid valigns value keeps both table-column-overlap findings of aligns beside it",
+   "kind": "lint",
+   "input": "{aligns=left,right valigns=q}\n|={<} a |={>} b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-column-overlap",
+      "line": 1,
+      "column": 2,
+      "endLine": 1,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "table-column-overlap",
+      "line": 1,
+      "column": 2,
+      "endLine": 1,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "table-attribute-invalid",
+      "line": 1,
+      "column": 20,
+      "endLine": 1,
+      "endColumn": 29,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }
