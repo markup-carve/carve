@@ -6,8 +6,8 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 
-// Ahead of the package pin: typed metadata blocks after line 1 (carve#6324) landed on carve-js next2 after it.
-const ENGINE_REVISION = '50e973c33eb27fa6d32c7f5fde0d3a6de732f8e9'
+// Ahead of the package pin: definitions continuing on indented lines (carve#6507) landed on carve-js next2 after it.
+const ENGINE_REVISION = 'a333bbc52fef189ff67d70b57d735599c3ef8fdd'
 
 const checkout = resolve(process.argv[2] ?? '../carve-js')
 const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: checkout, encoding: 'utf8' }).trim()
