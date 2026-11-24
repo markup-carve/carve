@@ -166,7 +166,7 @@ These forms are text in Djot and syntax in Carve, so Djot text that happens to c
 - `{#...#}` editorial comments;
 - `^[...]` inline footnotes, `</#id>` cross-references and `*[ABBR]: expansion` definitions;
 - `::: |` line blocks and `::: \` hard-break blocks;
-- frontmatter on line 1 and `{{ path }}` includes.
+- frontmatter on line 1 and <code v-pre>{{ path }}</code> includes.
 
 ## Porting checklist
 
