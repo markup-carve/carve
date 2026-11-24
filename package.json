@@ -10,6 +10,7 @@
   "scripts": {
     "spec2:data": "node scripts/spec2-data-check.mjs",
     "spec2:unicode": "node scripts/spec2-unicode.mjs --check",
+    "expected:check": "node scripts/expected-check.mjs",
     "docs:dev": "npm run docs:pages && vitepress dev docs",
     "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs && node scripts/publish-schema.mjs && npm run docs:pages && vitepress build docs",
     "docs:preview": "vitepress preview docs",

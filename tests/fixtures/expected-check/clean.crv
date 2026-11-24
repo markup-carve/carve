@@ -1,0 +1,27 @@
+# A case the model gives
+
+## 6569 corrected
+
+- operation: ast
+- clauses: C2-B-138
+
+```crv
+{#a
+%% b#}
+```
+
+```json
+[{"type":"paragraph","children":[{"type":"text","value":"{"},{"type":"tag","name":"a"},{"type":"soft_break"},{"type":"comment","form":"line","value":"b#}"}]}]
+```
+
+## a paragraph renders
+
+- operation: html
+
+```crv
+a *b*
+```
+
+```html
+<p>a <strong>b</strong></p>
+```
