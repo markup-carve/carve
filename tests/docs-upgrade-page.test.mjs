@@ -32,3 +32,31 @@ test('a map row in no section fails the build', () => {
   writeFileSync(configPath, JSON.stringify(config))
   assert.deepEqual(build(root).errors, ['U-001 of the upgrade map is in no section of scripts/docs-upgrade-page.json'])
 })
+
+function copyRoot(edit) {
+  const root = mkdtempSync(join(tmpdir(), 'docs-upgrade-page-'))
+  for (const path of ['scripts/docs-upgrade-page.json', 'spec/0.2/data/upgrade-map.json', 'spec/0.2/UPGRADING.md']) {
+    cpSync(path, join(root, path), { recursive: true })
+  }
+  const configPath = join(root, 'scripts/docs-upgrade-page.json')
+  const config = JSON.parse(readFileSync(configPath, 'utf8'))
+  edit(config)
+  writeFileSync(configPath, JSON.stringify(config))
+  return root
+}
+
+test('a 0.2 sample that lints after fmt needs a reason', () => {
+  const root = copyRoot((config) => { delete config.samples['U-111'] })
+  assert.deepEqual(build(root).errors, ['U-111: the 0.2 sample lints after carve fmt (unused-link-reference-definition); give a reason in samples of scripts/docs-upgrade-page.json'])
+})
+
+test('a reason for a 0.2 sample that passes lint is stale', () => {
+  const root = copyRoot((config) => { config.samples['U-001'] = 'stale' })
+  assert.deepEqual(build(root).errors, ['U-001: the 0.2 sample passes lint; drop its entry from samples of scripts/docs-upgrade-page.json'])
+})
+
+test('each sample marker on the page comes from a reason in the config', () => {
+  const markers = page.match(/<!-- carve-sample \{"(lint|skip)":/g) ?? []
+  const { samples } = JSON.parse(readFileSync('scripts/docs-upgrade-page.json', 'utf8'))
+  assert.equal(markers.length, Object.keys(samples).length)
+})

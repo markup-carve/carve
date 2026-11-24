@@ -1,7 +1,7 @@
 {
   "intro": "Carve 0.2 is a source break, and it is still a development version. A 0.1 document can parse in 0.2 without an error and still render different HTML, so anyone who keeps 0.1 files has to act: authors run `carve upgrade` on each file, and hosts review their render options and stored trees. The tool rewrites what has one safe 0.2 spelling, checks each rewrite against the 0.1 HTML, and reports the rest for a person to review.\n\nThe largest changes:\n\n- A block marker directly under a paragraph line no longer starts a block; insert a blank line ([paragraphs](#paragraphs)).\n- `---` and `___` breaks, `~~~` fences, `+` continuation lines, bare `_`, `~` and `=` pairs, and GFM separator rows lose their 0.1 meanings ([breaks](#breaks), [lists](#lists), [inline marks](#inline), [tables](#tables)).\n- Raw HTML is escaped unless the host turns on `rawHtml` ([raw HTML](#html)).\n- Stored trees move to AST 2.0 ([AST](#ast)).",
   "howTo": "## Run the rewrite tool {#tool}\n\nStart with a copy of each 0.1 `.crv` file. Build `carve-js` on `next2` with `npm ci` and `npm run build`. Its CLI is `node dist/cli.js` (installed as `carve`). In a working copy of a 0.1 document:\n\n```sh\nnode dist/cli.js upgrade --check page.crv\nnode dist/cli.js upgrade --json page.crv\nnode dist/cli.js upgrade --write page.crv\nnode dist/cli.js fmt --write page.crv\n```\n\n`--check` writes nothing and exits 1 when a change or human review is needed. `--json` writes a structured report. Without `--write`, upgraded source goes to standard output and the report to standard error. `--write` replaces the input after checking the old and proposed HTML. A usage error exits 2. `--force` does not bypass an HTML mismatch. Run the tool **once per 0.1 file**: it is not idempotent on already upgraded source. This `upgrade` command is specific to the JavaScript reference engine; the shared [0.2 tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#scope) does not require it.\n\nRead the `rewrite`, `escape`, `report`, `upgrade-conflict` and `upgrade-mismatch` records. A mismatch prevents writing. Even a passing rewrite needs review: the tool's HTML comparison normalizes attribute order, whitespace between tags, and a leading line feed in list item text. Then compare representative pages rendered by both engines: headings and generated ids, list tightness and task items, table headers, footnotes, links, captions and raw HTML. The 0.2 output contract is [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md). Markdown, plain text and ANSI output come from export renderers (`carve render --to markdown`, `--to plain`, `--to ansi`); their output is engine behavior, not part of the specification (C2-T-003). Keep the JSON upgrade report with the source change for review.",
-  "legend": "Each section below opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) for that construct. The row id links to its detail in the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md), which stays the normative record.\n\n- The left block is the 0.1 source. The right block is the 0.2 source the tool writes (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).\n- <Badge type=\"tip\" text=\"rewrite\" /> the tool changes the spelling. <Badge type=\"warning\" text=\"escape\" /> it escapes text that 0.2 would read as syntax. <Badge type=\"danger\" text=\"report\" /> a person has to decide. <Badge type=\"info\" text=\"none\" /> no source edit is needed.\n- <Badge type=\"warning\" text=\"silent\" /> the unchanged 0.1 source still parses in 0.2 but renders different HTML. Review these rows even when a document has no syntax error.\n- An invisible character in a sample, such as a tab-like control character or a no-break space, is shown as its code point, for example `⟨U+00A0⟩`. A tab is a real tab.\n- `carve fmt` may respell a rewritten source further, for example `# Heading` as `= Heading`.",
+  "legend": "Each section below opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) for that construct. The row id links to its detail in the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md), which stays the normative record.\n\n- The left block is the 0.1 source. The right block is the 0.2 source the tool writes, as `carve fmt` writes it in turn (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).\n- <Badge type=\"tip\" text=\"rewrite\" /> the tool changes the spelling. <Badge type=\"warning\" text=\"escape\" /> it escapes text that 0.2 would read as syntax. <Badge type=\"danger\" text=\"report\" /> a person has to decide. <Badge type=\"info\" text=\"none\" /> no source edit is needed.\n- <Badge type=\"warning\" text=\"silent\" /> the unchanged 0.1 source still parses in 0.2 but renders different HTML. Review these rows even when a document has no syntax error.\n- An invisible character in a sample, such as a tab-like control character or a no-break space, is shown as its code point, for example `⟨U+00A0⟩`. A tab is a real tab.",
   "withdrawn": "These ids were withdrawn after their ruling, in most cases because 0.1 and 0.2 give the same HTML. Each links to the paragraph of the guide that says why.",
   "sections": [
     {
@@ -134,4 +134,35 @@
       "body": "Stored trees need the 2.0 schema: run `migrateTree` or `carve migrate-ast` before a strict 2.0 decoder reads them, and validate the result. Source spelling moved out of the tree into the [source layout](./ast-source-layout) sidecar. Each row below is a tree change from the [tree and field migration index](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tree-and-field-migration-index); a field marked dropped does not survive a tree-only migration."
     }
   ]
+,
+  "samples": {
+    "U-068": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-070": "comment-shaped-emphasis hint on the emphasis inside strong that the upgrade writes; the span is meant",
+    "U-106": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-107": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-108": "the 0.1 source is reported too (table-shaped-paragraph)",
+    "U-111": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-112": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-113": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-121": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-124": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-138": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-162": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-177": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-183": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-184": "unattached-inline-attribute reports the brace block after the escaped brace of the map spelling; carve-js next2 b967be5 keeps the include as written",
+    "U-212": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-223": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-234": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-242": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-244": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-246": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-250": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-267": "the carve-js build the docs pin refuses to write this source; carve-js next2 b967be5 writes it (CC-2021)",
+    "U-280": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-285": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-360": "canonical fmt output that 0.2 lint reports, carve#6585",
+    "U-362": "the 0.1 source has the same finding: the sample is a fragment",
+    "U-432": "comment-shaped-emphasis hint on the emphasis inside strong that the upgrade writes; the span is meant"
+  }
 }

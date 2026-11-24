@@ -34,11 +34,10 @@ Read the `rewrite`, `escape`, `report`, `upgrade-conflict` and `upgrade-mismatch
 
 Each section below opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) for that construct. The row id links to its detail in the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md), which stays the normative record.
 
-- The left block is the 0.1 source. The right block is the 0.2 source the tool writes (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).
+- The left block is the 0.1 source. The right block is the 0.2 source the tool writes, as `carve fmt` writes it in turn (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).
 - <Badge type="tip" text="rewrite" /> the tool changes the spelling. <Badge type="warning" text="escape" /> it escapes text that 0.2 would read as syntax. <Badge type="danger" text="report" /> a person has to decide. <Badge type="info" text="none" /> no source edit is needed.
 - <Badge type="warning" text="silent" /> the unchanged 0.1 source still parses in 0.2 but renders different HTML. Review these rows even when a document has no syntax error.
 - An invisible character in a sample, such as a tab-like control character or a no-break space, is shown as its code point, for example `⟨U+00A0⟩`. A tab is a real tab.
-- `carve fmt` may respell a rewritten source further, for example `# Heading` as `= Heading`.
 
 ## Paragraphs and continuation {#paragraphs}
 
@@ -51,11 +50,10 @@ In 0.1 every block kind had its own answer to whether it could interrupt a parag
 Some text
 # Heading
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Some text
 
-# Heading
+= Heading
 ```
 :::
 
@@ -66,7 +64,6 @@ Some text
 Some text
 > quote
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Some text
 
@@ -82,7 +79,6 @@ Some text
 {.x}
 Next block
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Some text
 
@@ -99,7 +95,6 @@ Some text
 :: term
 : description
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Some text
 
@@ -117,7 +112,6 @@ Some text
 
 See [ref][].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Some text
 
@@ -134,11 +128,10 @@ See [ref][].
 - item text
 # Heading
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - item text
 
-# Heading
+= Heading
 ```
 :::
 
@@ -149,7 +142,6 @@ See [ref][].
 > - a
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 > - a
 
@@ -165,7 +157,6 @@ See [ref][].
 : desc
 - item
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: term
 : desc
@@ -182,7 +173,6 @@ See [ref][].
   :: term
   : desc
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - text
 
@@ -199,12 +189,11 @@ See [ref][].
 ^ Caption
 # Heading
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 | a | b |
 ^ Caption
 
-# Heading
+= Heading
 ```
 :::
 
@@ -260,7 +249,6 @@ more
 y
 >
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 y
 
@@ -337,10 +325,9 @@ Tool: Review.
 ```text
 # A </#A>
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {#A}
-# A [A A ](#A)
+= A [A A ](#A)
 ```
 :::
 
@@ -362,7 +349,6 @@ ___
 
 -----
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 para
 
@@ -384,7 +370,6 @@ next
 
 - - -
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ***
 
@@ -409,7 +394,6 @@ _ _ _
 ```text
 said 'Bob and left.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 said ’Bob and left.
 ```
@@ -421,7 +405,6 @@ said ’Bob and left.
 ```text
 x{.k title="`"} y
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 x{.k title=“`"} y`
 ```
@@ -434,7 +417,6 @@ x{.k title=“`"} y`
 :a:"q"
 :long-name:'q'
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :a:“q"
 :long-name:‘q'
@@ -447,7 +429,6 @@ x{.k title=“`"} y`
 ```text
 a {%%}'word
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a {%%}’word
 ```
@@ -463,7 +444,6 @@ a="b"
 /"q"
 ("q")
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a="b"
 :"q"
@@ -479,7 +459,6 @@ a="b"
 ```text
 a ----------- b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a ———– b
 ```
@@ -498,7 +477,6 @@ a ———– b
 > a note
 - step two
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - step one
 
@@ -517,7 +495,6 @@ Tool: Review by hand: `- a`, a blank line, `  second`, `- b` keeps `second` in t
 second
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
 
@@ -536,7 +513,6 @@ second
   ```
 - two
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 - ```
   code
@@ -554,7 +530,6 @@ second
   second
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
 
@@ -592,7 +567,6 @@ Tool: Review by hand.
 - a
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
 
@@ -608,7 +582,6 @@ Tool: Review by hand.
 {loose}
 - Note text.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - Note text.
 ```
@@ -621,9 +594,9 @@ Tool: Review by hand.
 - item text
  3. child
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - item text
+
 3. child
 ```
 :::
@@ -635,7 +608,6 @@ Tool: Review by hand: `{start=1234567890}` above `. x` keeps the number only as 
 ```text
 1234567890. x
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {start=1234567890}
 . x
@@ -652,9 +624,9 @@ x
 %%%
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
+
   %%%
   x
   %%%
@@ -740,7 +712,6 @@ B.  two
 - [ ] a
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - [ ] a
 
@@ -782,7 +753,6 @@ II. Background
 ```text
 - > +
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - >
 ```
@@ -865,7 +835,6 @@ Tool: Review.
 {start=9}
 3. x
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 3. x
 ```
@@ -880,11 +849,12 @@ Tool: Review.
   1. v
     - u
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
   * w
+
   1. v
+
   - u
 ```
 :::
@@ -967,7 +937,6 @@ vi) two
 ```text
 -   [ ] a
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - [ ] a
 ```
@@ -981,9 +950,9 @@ vi) two
   %% c
 after
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - %% c
+
   after
 ```
 :::
@@ -997,11 +966,10 @@ after
 lazy
    2. sibling
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-   1. inner
-1. outer
-lazy
+1. inner
+2. outer
+   lazy
 
    2. sibling
 ```
@@ -1018,10 +986,9 @@ Terms and descriptions own lines by column, like list items: after `:: term` onl
 :: t
 : +
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
-: {% %}
+: {%%}
 ```
 :::
 
@@ -1032,7 +999,6 @@ Terms and descriptions own lines by column, like list items: after `:: term` onl
  :: t
 : x
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
 : x
@@ -1062,10 +1028,11 @@ Tool: Review.
 : ```
  y
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 :: t
 : ```
+  ```
+
 y
 ````
 :::
@@ -1077,10 +1044,9 @@ y
 :: t
  : b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
- :: t
- : b
+:: t
+: b
 ```
 :::
 
@@ -1105,10 +1071,9 @@ C2-B-069 starts the term at its content column, so the marker tab is dropped and
    {.k}
 tail
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
-:  d
+: d
 
 tail
 ```
@@ -1123,12 +1088,11 @@ tail
 
 see [t][r]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [r]: /u
 
 :: term
-: {% %}
+: {%%}
 
 see [t][r]
 ```
@@ -1144,7 +1108,6 @@ a
 %%%
 : body
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
 : body
@@ -1160,12 +1123,11 @@ a
 
    > c
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: term
 : - a
 
- > c
+  > c
 ```
 :::
 
@@ -1177,10 +1139,10 @@ a
 : para
  | a |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
 : para
+
 | a |
 ```
 :::
@@ -1194,7 +1156,6 @@ a
 : d
  : e
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
 :: u
@@ -1212,11 +1173,14 @@ a
 	```
  ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 :: t
 : a
-	```
+
+  ```
+  ```
+
+```
 ```
 ````
 :::
@@ -1246,10 +1210,10 @@ C2-B-046, C2-B-067, and C2-H-032 change ownership of the nested description and 
 %%%
 : d2
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
 : d
+
   %%%
   %%%
 : d2
@@ -1327,12 +1291,12 @@ Tool: Report from the description marker through the shifted list line.
  %% c
    more
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
 
- %% c
-   more
+%% c
+
+more
 ```
 :::
 
@@ -1348,14 +1312,13 @@ Tool: Report from the description marker through the shifted list line.
 
 see[^n]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [^n]: a
 
-   :: t
-   :  d
+  :: t
+  : d
 
-   > q
+  > q
 
 see[^n]
 ```
@@ -1373,7 +1336,6 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 |---|--:|
 | 1 | 2 |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 |= a |={>} b |
 | 1 | 2 |
@@ -1387,7 +1349,6 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 |=< a |=> b |=~ c |
 | 1 | 2 | 3 |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 |={<} a |={>} b |={~} c |
 | 1 | 2 | 3 |
@@ -1400,7 +1361,6 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 ```text
 | a | b \|
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 | a | b \| |
 ```
@@ -1414,7 +1374,6 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 | a | b |
 | 1 | 2 |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 |= a |= b |
 | 1 | 2 |
@@ -1502,7 +1461,6 @@ c,d</th></tr>
 
 ^ Caption
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 | a | b |
 ^ Caption
@@ -1534,7 +1492,7 @@ let x = 1
 >
 ^ p
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 >
 
@@ -1618,7 +1576,7 @@ Tool: Review.
 ```text
 |?v |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 |{?v} |
 ```
@@ -1694,7 +1652,6 @@ C2-B-171 trims the cell tab, so its HTML text changes.
 ```text
 | a `b | c d |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 | a `b | c d` |
 ```
@@ -1707,7 +1664,6 @@ C2-B-171 trims the cell tab, so its HTML text changes.
 $$`x
 ^ p
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 $$`x`
 ^ p
@@ -1720,7 +1676,6 @@ $$`x`
 ```text
 |= ^|
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 |= |
 ```
@@ -1733,7 +1688,6 @@ $$`x`
 |= A |={>^} < |
 | a | b |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 |= A |= < |
 | a |{>^} b |
@@ -1806,7 +1760,6 @@ Tool: Review the cell.
 | a |
 |{.x} ^ |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 | a |
 |{.x} \^ |
@@ -1821,9 +1774,8 @@ Tool: Review the cell.
 | A | B | C |
 | D | E | F |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-{valigns="top,middle,bottom" widths="25,50,25"}
+{valigns=top,middle,bottom widths=25,50,25}
 |{>} A | B |{~} C |
 |{>} D | E |{~} F |
 ```
@@ -1839,7 +1791,6 @@ Bare `_`, `~` and `=` pairs collided with prose and identifiers such as `snake_c
 ```text
 an _underlined_ word and snake_case and _id
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 an {_underlined_} word and snake_case and _id
 ```
@@ -1851,7 +1802,6 @@ an {_underlined_} word and snake_case and _id
 ```text
 a ~struck~ word and ~/config
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a {~struck~} word and ~/config
 ```
@@ -1863,7 +1813,6 @@ a {~struck~} word and ~/config
 ```text
 a =marked= word and x =1, y= 2
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a {=marked=} word and x {=1, y=} 2
 ```
@@ -1875,7 +1824,7 @@ a {=marked=} word and x {=1, y=} 2
 ```text
 /*bold italic*/ and */bold italic/*
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 */bold italic/* and */bold italic/*
 ```
@@ -1887,7 +1836,6 @@ a {=marked=} word and x {=1, y=} 2
 ```text
 {~old~>new~}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {-old-}{+new+}
 ```
@@ -1899,9 +1847,9 @@ a {=marked=} word and x {=1, y=} 2
 ```text
 *bold {/note*/} more*
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"comment-shaped-emphasis hint on the emphasis inside strong that the upgrade writes; the span is meant"} -->
 ```crv
-*bold {/note\*/} more*
+{*bold /note*/ more*}
 ```
 :::
 
@@ -1994,7 +1942,6 @@ C2-I-062 has no arrow replacement, and C2-W-116 gives an empty insertion or dele
 ```text
 {~a~>b~}{.k} c
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {-a-}{+b+}\{.k} c
 ```
@@ -2044,7 +1991,7 @@ C2-I-047 pairs slash delimiters at a different boundary after raw HTML is escape
 ```text
 an _a=b_ word
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"skip":"the carve-js build the docs pin refuses to write this source; carve-js next2 b967be5 writes it (CC-2021)"} -->
 ```crv
 an {_a\=b_} word
 ```
@@ -2056,9 +2003,8 @@ an {_a\=b_} word
 ```text
 /This /does not/ nest/
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-/This \/does not/ nest\/
+/This \/does not/ nest/
 ```
 :::
 
@@ -2068,9 +2014,8 @@ an {_a\=b_} word
 ```text
 {*a *b* c*}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-{*a \*b\* c*}
+{*a \*b* c*}
 ```
 :::
 
@@ -2080,7 +2025,6 @@ an {_a\=b_} word
 ```text
 {-{#x-}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {-\{#x-}
 ```
@@ -2125,7 +2069,6 @@ The writer escape rules get one data-driven procedure after 0.2.0 ([#6579](https
 = 4 is the answer
 and more.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 \= 4 is the answer
 and more.
@@ -2139,9 +2082,9 @@ and more.
 # Heading
   indented text
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-# Heading
+= Heading
+
 indented text
 ```
 :::
@@ -2153,10 +2096,9 @@ indented text
 a. one
 b. two
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a\. one
-b. two
+b\. two
 ```
 :::
 
@@ -2168,10 +2110,12 @@ b. two
 quoted
 :::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 \::: > "T"
 quoted
+
+:::
+
 :::
 ```
 ::::
@@ -2184,10 +2128,11 @@ quoted
 <b>x</b>
 ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
-{%%}```=html "T"
-<b>x</b>```
+{%%}`=html "T"
+<b>x</b>`
+
+```
 ```
 ````
 :::
@@ -2200,7 +2145,7 @@ quoted
 more term text
 : first description
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 :: term
 
@@ -2217,7 +2162,7 @@ more term text
 ^ first
 ^ second
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 | a | b |
 ^ first
@@ -2232,9 +2177,9 @@ more term text
 ```text
 | a | b | {.r}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source is reported too (table-shaped-paragraph)"} -->
 ```crv
-| a | b | \{.r}
+\| a | b | {.r}
 ```
 :::
 
@@ -2246,7 +2191,6 @@ more term text
 
  second paragraph
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - item
 
@@ -2262,11 +2206,10 @@ second paragraph
 
 See [My Heading][] and [the text][My Heading].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-# My Heading
+= My Heading
 
-See [My Heading][] and \[the text][My Heading].
+See [My Heading][] and \[the text]\[My Heading].
 ```
 :::
 
@@ -2279,7 +2222,7 @@ label] here.
 
 [a long label]: /u
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 See \[the text]\[a long
 label] here.
@@ -2296,9 +2239,9 @@ See [x][^n].
 
 [^n]: Note.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
-See [x]\[^n].
+See \[x]\[^n].
 
 [^n]: Note.
 ```
@@ -2310,7 +2253,7 @@ See [x]\[^n].
 ```text
 See [*b* and /i/][nope] and [`c`][].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 See [\*b\* and \/i\/][nope] and [\`c\`][].
 ```
@@ -2337,7 +2280,6 @@ See [\*b\* and \/i\/][nope] and [\`c\`][].
 ```text
 a{--}b and --flag
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a--b and -\-flag
 ```
@@ -2349,7 +2291,6 @@ a--b and -\-flag
 ```text
 1. [ ] x
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 1. \[ ] x
 ```
@@ -2363,7 +2304,7 @@ a--b and -\-flag
 
 [text]: /u
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 \[text]
 
@@ -2378,7 +2319,6 @@ a--b and -\-flag
 {%
 %}x
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 \{%
 %}x
@@ -2391,9 +2331,8 @@ a--b and -\-flag
 ```text
 x^[]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-x\^[]
+x^\[]
 ```
 :::
 
@@ -2403,7 +2342,6 @@ x\^[]
 ```text
 \</#x>
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 \</\#x>
 ```
@@ -2415,7 +2353,6 @@ x\^[]
 ```text
 [{^]^}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [\{^]^}
 ```
@@ -2428,7 +2365,7 @@ x\^[]
 ![a][nope]
 ^ cap
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 \![a][nope]
 ^ cap
@@ -2441,7 +2378,6 @@ x\^[]
 ```text
 :+-:
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :\+-:
 ```
@@ -2453,7 +2389,6 @@ x\^[]
 ```text
 d[^]{}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 d[\^]{}
 ```
@@ -2466,10 +2401,10 @@ d[\^]{}
 > a
  ^ cap
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 > a
- \^ cap
+> ^ cap
 ```
 :::
 
@@ -2480,7 +2415,6 @@ d[\^]{}
 ![alt](u)
 ^ %% hidden
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ![alt](u)
 \^ %% hidden
@@ -2493,9 +2427,8 @@ d[\^]{}
 ```text
 |{>.c} a |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-|\{>.c} a |
+| {>.c} a |
 ```
 :::
 
@@ -2505,9 +2438,8 @@ d[\^]{}
 ```text
 |{>}{^} a |
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-|\{>}{^} a |
+| {>}{^} a |
 ```
 :::
 
@@ -2517,7 +2449,6 @@ d[\^]{}
 ```text
 a /b {+c/ d+}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a \/b {+c/ d+}
 ```
@@ -2535,7 +2466,6 @@ A code or math span now needs its closer: an unclosed backtick run is text where
 a
 ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 ```js
 a
@@ -2552,7 +2482,6 @@ code
    ```
 after
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 `````crv
 ````
 code
@@ -2574,14 +2503,13 @@ Tool: Review by hand: four spaces for the tab keep the 0.1 code text, but 0.1 ma
 		y
 	```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 - item
 
-	```
-	x
-	    y
-	```
+  ```
+  x
+      y
+  ```
 ````
 :::
 
@@ -2608,7 +2536,6 @@ code
 x
 ~~~
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 ```js
 x
@@ -2624,7 +2551,6 @@ x
 
 +
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 - ```
 
@@ -2639,7 +2565,6 @@ x
 ```
 
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 ```
 
@@ -2672,15 +2597,18 @@ a
 b
 ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 :: t
-:  d
+: d
+
   ```
   a
 
   ```
+
 b
+
+```
 ```
 ````
 :::
@@ -2696,12 +2624,12 @@ Tool: Write a matching fence closer and indent `tail` under the item: the struct
 +
 tail
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 - ```
   x
 
   ```
+
   tail
 ````
 :::
@@ -2717,14 +2645,16 @@ wa
 > q
   ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 `````crv
 {.x
 .y}
+
 ````
 wa
 > q
   ```
+````
 `````
 :::
 
@@ -2739,7 +2669,6 @@ wa
 >
 > y
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 > a
 >
@@ -2747,6 +2676,7 @@ wa
 >    x
 >
 >    ```
+>
 > y
 ````
 :::
@@ -2769,7 +2699,6 @@ C2-H-009 and C2-H-013 write the structural class attribute with its canonical lo
 ```text
 a `b c
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a `b c`
 ```
@@ -2783,7 +2712,6 @@ a `b c`
 x
 ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 ```js
 x
@@ -2799,10 +2727,11 @@ x
 x
 ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
-``	js
-x``
+`	js
+x`
+
+```
 ```
 ````
 :::
@@ -2815,7 +2744,6 @@ x``
 %% b
 c`
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 `a
 c`
@@ -2830,7 +2758,6 @@ c`
 ```js `
 ```
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 ```js
 ```
@@ -2881,7 +2808,6 @@ a `
 ```text
 x!``
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 x
 ```
@@ -2893,7 +2819,6 @@ x
 ```text
 a ` x ` b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a `x` b
 ```
@@ -2911,7 +2836,6 @@ Quotes, divs and line blocks follow the same paragraph and column rules as the t
 +
 - a list inside the quote
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 > quoted
 >
@@ -2929,7 +2853,6 @@ one
 two
 :::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ::: |
 one
@@ -2946,9 +2869,7 @@ two
 > +
 >
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
->
 >
 ```
 :::
@@ -2974,9 +2895,10 @@ Tool: The tool checks removal of trailing no-break spaces in plain line-block li
 ```text
 :::[+]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ::: [+]
+
+:::
 ```
 ::::
 
@@ -2986,9 +2908,10 @@ Tool: The tool checks removal of trailing no-break spaces in plain line-block li
 ```text
 :::[]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ::: []
+
+:::
 ```
 ::::
 
@@ -3016,12 +2939,11 @@ Tool: Review the container boundary; no preserving rewrite was verified for this
 - item
 > more
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 > quoted
 >
 > - item
-> more
+>   more
 ```
 :::
 
@@ -3047,12 +2969,12 @@ C2-B-109 closes the shorter div with the longer bare colon run. The old source o
  b
  :::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - one
+
 ::: note
- b
- :::
+b
+:::
 ```
 ::::
 
@@ -3084,16 +3006,19 @@ code
 :::
 after *b*
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 ::: note
 10. para
+
 | t |
+
 ```
 code
 ::::
 :::
 after *b*
+```
+:::
 ````
 :::::
 
@@ -3125,7 +3050,6 @@ Tool: Close and reopen the span on each line, `*Roses are red*` then `*Violets a
 Violets are blue*
 :::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ::: |
 *Roses are red*
@@ -3142,7 +3066,6 @@ Violets are blue*
 Roses  are red
 :::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ::: |
 Roses\ \ are red
@@ -3158,7 +3081,6 @@ Roses\ \ are red
 x
 :::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ::: note
 x
@@ -3369,7 +3291,6 @@ Tool: Report from the line-block closer through the shifted code opener.
 - b
 > c
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 > a
 >
@@ -3391,7 +3312,6 @@ An attribute line applies only to the block on the next line, and an attribute b
 
 Paragraph.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {.note}
 Paragraph.
@@ -3406,7 +3326,6 @@ Paragraph.
  .b}
 Paragraph.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {.a .b}
 Paragraph.
@@ -3421,9 +3340,10 @@ Paragraph.
 {.x}
 - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
+
+
 
 {.x}
 - b
@@ -3438,7 +3358,6 @@ Paragraph.
 
 {.x}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Paragraph.
 ```
@@ -3478,9 +3397,8 @@ Paragraph.
 ```text
 - {k}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-- {% %}
+- {%%}
 ```
 :::
 
@@ -3491,9 +3409,9 @@ Paragraph.
 > {k}
 t
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 >
+
 t
 ```
 :::
@@ -3505,10 +3423,9 @@ t
 :: t
 : {empty}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :: t
-: {% %}
+: {%%}
 ```
 :::
 
@@ -3518,7 +3435,6 @@ t
 ```text
 []{:r lang}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 []{lang}
 ```
@@ -3532,11 +3448,10 @@ t
   {.k}
 # H
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - a
 
-# H
+= H
 ```
 :::
 
@@ -3549,7 +3464,6 @@ t
 
 paragraph
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {.a .b}
 paragraph
@@ -3562,9 +3476,8 @@ paragraph
 ```text
 # H {#id .cls}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-# H {#id .cls\}
+= H \{#id .cls}
 ```
 :::
 
@@ -3574,7 +3487,6 @@ paragraph
 ```text
 a {#id} b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 a \{#id} b
 ```
@@ -3635,7 +3547,6 @@ Definitions stand at column 0 outside quotes and items (C2-B-081), and a duplica
 
 Outside [ref][].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 > See [ref][].
 
@@ -3653,7 +3564,6 @@ Text [a][].
 
  [a]: /u
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Text [a][].
 
@@ -3670,7 +3580,6 @@ Text [a][].
 
 [x][a]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [a]: /two
 
@@ -3687,7 +3596,6 @@ Text [a][].
 
 HTML here.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 *[HTML]: Second
 
@@ -3835,9 +3743,8 @@ Tool: Review.
 ```text
 [@]: y
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
- [@]: y
+\[@]: y
 ```
 :::
 
@@ -3874,7 +3781,7 @@ The tail holds a line break and is no tail (C2-I-069), so the source is paragrap
 ```text
 [\^][]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 [\\\^][]
 ```
@@ -3888,9 +3795,8 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 * * [d]: u
   :
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-* * {% %}
+* * {%%}
 
   :
 ```
@@ -3904,9 +3810,9 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 
 [a b]: /u
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
-[t]\[a	b]
+\[t]\[a	b]
 
 [a b]: /u
 ```
@@ -3920,11 +3826,10 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 
 [Quoted][]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-> # Quoted
+> = Quoted
 
-\[Quoted][]
+\[Quoted]\[]
 ```
 :::
 
@@ -3934,7 +3839,6 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```text
 [t](u⟨U+202F⟩v)
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 \[t](u⟨U+202F⟩v)
 ```
@@ -3948,7 +3852,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 
 [a][]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 \[a]: ⟨U+202F⟩/u
 
@@ -3962,9 +3866,8 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```text
 [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[x]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]{.a}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[\[x\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]\]]{.a}
+[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[x\]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]{.a}
 ```
 :::
 
@@ -3976,7 +3879,6 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 
 a[^ ]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [^blank]: x
 
@@ -3994,7 +3896,6 @@ a[^blank]
 
 </#t>
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {#t}
 ![a](u)
@@ -4024,7 +3925,6 @@ Tool: Merged and written as one block in the fixed order, `<p>[x][no]{#i .c}</p>
 
 HTML
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 *[HTML]: Hyper Text
 
@@ -4040,9 +3940,8 @@ HTML
 
 See </#intro>.
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-# Intro
+= Intro
 
 See </#Intro>.
 ```
@@ -4081,7 +3980,7 @@ Text[^n].
 a
 [^n]: +
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 a
 
@@ -4128,12 +4027,12 @@ g]
 
 s
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 [^a]: o
 
-{% %}
- e
+{%%}
+e
 
 s
 ```
@@ -4159,13 +4058,12 @@ See [^a].
 
 - [^a]: note body
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [^a]: note body
 
 See [^a].
 
-- {% %}
+- {%%}
 ```
 :::
 
@@ -4177,11 +4075,10 @@ See[^f]
 
 [^f]: {empty}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 See[^f]
 
-[^f]: {% %}
+[^f]: {%%}
 ```
 :::
 
@@ -4195,10 +4092,11 @@ See[^f]
 
 [^f]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 [^f]: :: t
       : | a |
+
 ^ cap
 
 [^f]
@@ -4214,10 +4112,14 @@ See[^f]
 
 [^f]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-[^f]: - :::::
-      :::::
+[^f]: - :::
+
+        :::
+
+  :::
+
+  :::
 
 [^f]
 ```
@@ -4232,7 +4134,7 @@ See[^f]
 
 Visible
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 [^f]: note
 
@@ -4249,12 +4151,12 @@ x[^n]{#i}
 
 ## {#i}
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
-x[^n]{\#i}
+x[^n]\{\#i}
 
 {#i}
-## \{#i}
+== \{#i}
 ```
 :::
 
@@ -4269,16 +4171,17 @@ x[^1]
 
 after
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ````crv
 x[^1]
 
-- {% %}
+- {%%}
 
 [^1]: ```
-      code
+  code
 
-      ```
+  ```
+
 after
 ````
 :::
@@ -4306,11 +4209,9 @@ b[^1]
 
 [^1]: c
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :::
 b[^1]
-
 :::
 
 [^1]: c
@@ -4350,12 +4251,12 @@ hidden
 %%% visible?
 after
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 %%%
 hidden
 visible?
 %%%
+
 after
 ```
 :::
@@ -4380,11 +4281,11 @@ a*{#b} c #}
 %%%%
 y
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 %%%%%
 %%%%
 y
+%%%%%
 ```
 :::
 
@@ -4406,7 +4307,6 @@ a	%%
 ```text
 {%%}![alt](x.png)
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ![alt](x.png)
 ```
@@ -4444,12 +4344,11 @@ Tool: Escape the percent run inside the brace comment, `\%%%`: the list boundary
    z %}
 plain
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 - {% a
-   \%%%
-   z %}
-plain
+  \%%%
+  z %}
+  plain
 ```
 :::
 
@@ -4463,12 +4362,11 @@ Tool: Escape the first backtick inside the brace comment, `` \``` ``: the list b
    z %}
 plain
 ````
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ````crv
 - {% a
-   \```
-   z %}
-plain
+  \```
+  z %}
+  plain
 ````
 :::
 
@@ -4482,12 +4380,12 @@ Tool: The comment line belongs to the item (U-109) and renders nothing, so `- b`
  {%%}
   - b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 - a
 
 {%%}
-  - b
+- b
 ```
 :::
 
@@ -4601,7 +4499,6 @@ plain
 ```text
 [a %% b](/u) c
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [a{% b %}](/u) c
 ```
@@ -4613,7 +4510,6 @@ plain
 ```text
 ^[a %% c] d
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ^[a{% c %}] d
 ```
@@ -4625,7 +4521,6 @@ plain
 ```text
 {_a %% b_} y
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 {_a{% b %}_} y
 ```
@@ -4637,7 +4532,6 @@ plain
 ```text
 :foo[a %% c] d
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :foo[a{% c %}] d
 ```
@@ -4649,7 +4543,6 @@ plain
 ```text
 [%% c] d
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 [{% c %}] d
 ```
@@ -4661,7 +4554,6 @@ plain
 ```text
 ^[%% c] d
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 ^[{% c %}] d
 ```
@@ -4673,9 +4565,8 @@ plain
 ```text
 :f[%%]
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
-:f[{% %}]
+:f[{%%}]
 ```
 :::
 
@@ -4697,9 +4588,9 @@ Tool: Report from the `%%` through the closer of its frame.
 ```text
 /*a %% b*/ y
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"comment-shaped-emphasis hint on the emphasis inside strong that the upgrade writes; the span is meant"} -->
 ```crv
-*/a{% b%}/* y
+*/a{% b %}/* y
 ```
 :::
 
@@ -4761,7 +4652,7 @@ Tool: Review by hand: - <span v-pre>\{{</span> e }} ⏎   b keeps the 0.1 HTML o
 - {{ e }}
   b
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"unattached-inline-attribute reports the brace block after the escaped brace of the map spelling; carve-js next2 b967be5 keeps the include as written"} -->
 ```crv
 - \{{ e }}
   b
@@ -4786,7 +4677,6 @@ Tool: The directive is text, <code v-pre>&lt;p&gt;{{ a.crv @shift:1 }}&lt;/p&gt;
 ```text
 x {{ a.crv @lines:0 }} y
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 x {{ a.crv \@lines:0 }} y
 ```
@@ -4851,7 +4741,7 @@ Tool: Review references in the selected lines.
 {{ a.txt @code }}
 ^ cap
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
+<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 {{ a.txt @code }}
 
@@ -5048,7 +4938,6 @@ Run.
 :::
 ::::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :::: tabs
 ::: tab "Install"
@@ -5069,7 +4958,6 @@ Run.
 :::
 ::::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :::: tabs
 ::: tab "Install"
@@ -5187,7 +5075,6 @@ Run.
 ```text
 See [[Main Page]].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 See :wiki[Main Page].
 ```
@@ -5199,7 +5086,6 @@ See :wiki[Main Page].
 ```text
 See [[Main Page|home]].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 See :wiki[Main Page|home].
 ```
@@ -5211,7 +5097,6 @@ See :wiki[Main Page|home].
 ```text
 Type :samp[ls -l].
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 Type [ls -l]{samp}.
 ```
@@ -5229,7 +5114,6 @@ Run it.
 :::
 ::::
 ```
-<!-- carve-sample {"skip":"carve upgrade output from the upgrade map, before carve fmt"} -->
 ```crv
 :::: tabs
 ::: tab "Install"
