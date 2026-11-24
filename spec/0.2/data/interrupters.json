@@ -22,7 +22,7 @@
       "when": ["at_open_list_column", "between_columns_of_two_open_lists", "indented_past_enclosing_marker_as_bullet_bare_dot_or_one", "left_of_every_open_list"],
       "carries_quote_marks": true,
       "not_when": ["at_description_list_column_after_term_or_description_text"],
-      "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-054", "C2-B-055", "C2-B-228"]
+      "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-235", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-054", "C2-B-055", "C2-B-228"]
     },
     {
       "name": "c",

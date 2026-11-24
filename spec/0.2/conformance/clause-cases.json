@@ -81182,6 +81182,340 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-2013",
+   "clauses": [
+    "C2-B-235",
+    "C2-B-015"
+   ],
+   "why": "C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count",
+   "summary": "a bullet indented past the item's marker but inside a div in the item is a lazy line of the div's paragraph",
+   "kind": "render",
+   "input": "- ::::\n  x\n - y\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div>\n      <p>x\n- y</p>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             },
+             {
+              "type": "soft_break"
+             },
+             {
+              "type": "text",
+              "value": "- y"
+             }
+            ],
+            "type": "paragraph"
+           }
+          ],
+          "type": "div"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2014",
+   "clauses": [
+    "C2-B-235",
+    "C2-B-015"
+   ],
+   "why": "C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count",
+   "summary": "a bullet indented past the item's marker but not past the mark of a description in a div is a lazy line of the description",
+   "kind": "render",
+   "input": "- ::::\n  :: t\n  : x\n - y\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div>\n      <dl>\n        <dt>t</dt>\n        <dd>x\n- y</dd>\n      </dl>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "children": [
+             {
+              "children": [
+               {
+                "type": "text",
+                "value": "t"
+               }
+              ],
+              "type": "definition_term"
+             },
+             {
+              "children": [
+               {
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "x"
+                 },
+                 {
+                  "type": "soft_break"
+                 },
+                 {
+                  "type": "text",
+                  "value": "- y"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "definition_description"
+             }
+            ],
+            "type": "definition_list"
+           }
+          ],
+          "type": "div"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2015",
+   "clauses": [
+    "C2-B-235",
+    "C2-B-015"
+   ],
+   "why": "C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count",
+   "summary": "one level deeper: a bullet past the outer description's mark but not past the mark of the description inside the div is a lazy line",
+   "kind": "render",
+   "input": "- :: t\n  : ::::\n    :: u\n    : x\n   - y\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <div>\n          <dl>\n            <dt>u</dt>\n            <dd>x\n- y</dd>\n          </dl>\n        </div>\n      </dd>\n    </dl>\n  </li>\n</ul>",
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "children": [
+             {
+              "type": "text",
+              "value": "t"
+             }
+            ],
+            "type": "definition_term"
+           },
+           {
+            "children": [
+             {
+              "children": [
+               {
+                "children": [
+                 {
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "u"
+                   }
+                  ],
+                  "type": "definition_term"
+                 },
+                 {
+                  "children": [
+                   {
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "x"
+                     },
+                     {
+                      "type": "soft_break"
+                     },
+                     {
+                      "type": "text",
+                      "value": "- y"
+                     }
+                    ],
+                    "type": "paragraph"
+                   }
+                  ],
+                  "type": "definition_description"
+                 }
+                ],
+                "type": "definition_list"
+               }
+              ],
+              "type": "div"
+             }
+            ],
+            "type": "definition_description"
+           }
+          ],
+          "type": "definition_list"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2016",
+   "clauses": [
+    "C2-B-235",
+    "C2-B-015"
+   ],
+   "why": "C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count",
+   "summary": "a bullet indented past the mark of a description opened inside the div opens a list in the description",
+   "kind": "render",
+   "input": "- ::::\n  :: t\n  : x\n   - y\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div>\n      <dl>\n        <dt>t</dt>\n        <dd>\n          <p>x</p>\n          <ul>\n            <li>y</li>\n          </ul>\n        </dd>\n      </dl>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "children": [
+             {
+              "children": [
+               {
+                "type": "text",
+                "value": "t"
+               }
+              ],
+              "type": "definition_term"
+             },
+             {
+              "children": [
+               {
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "x"
+                 }
+                ],
+                "type": "paragraph"
+               },
+               {
+                "children": [
+                 {
+                  "children": [
+                   {
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "y"
+                     }
+                    ],
+                    "type": "paragraph"
+                   }
+                  ],
+                  "type": "list_item"
+                 }
+                ],
+                "marker": {
+                 "char": "-",
+                 "kind": "bullet"
+                },
+                "spacing": "tight",
+                "type": "list"
+               }
+              ],
+              "type": "definition_description"
+             }
+            ],
+            "type": "definition_list"
+           }
+          ],
+          "type": "div"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2017",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-235"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count",
+   "summary": "a bullet that C2-B-235 leaves lazy in a description inside a div is reported at its marker",
+   "kind": "lint",
+   "input": "- ::::\n  :: t\n  : x\n - y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-marker-without-blank-line",
+      "line": 4,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning",
+      "messageWhen": "the marker is term or description text"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
