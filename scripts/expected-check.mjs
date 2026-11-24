@@ -143,13 +143,14 @@ function point(source, offset) {
   return { line: lines.length, column: [...lines.at(-1)].length + 1 }
 }
 const lintEntries = (diagnostics, source) => diagnostics.map(d => {
-  if (!d.range) return { code: d.code, severity: d.severity, channel: d.channel }
+  const base = { code: d.code, severity: d.severity, channel: d.channel, ...(d.path !== undefined ? { path: d.path } : {}) }
+  if (!d.range) return base
   const start = point(source, d.range.startOffset)
   const end = point(source, d.range.endOffset)
-  return { code: d.code, severity: d.severity, channel: d.channel, ...start, endLine: end.line, endColumn: end.column }
+  return { ...base, ...start, endLine: end.line, endColumn: end.column }
 })
 const lintText = entries => entries.map(e => e.line ? `${e.code} ${e.line}:${e.column}` : e.code).join('\n')
-const PLACE = ['line', 'column', 'endLine', 'endColumn', 'severity', 'channel']
+const PLACE = ['line', 'column', 'endLine', 'endColumn', 'severity', 'channel', 'path']
 const fits = (found, wanted) => found.code === wanted.code && PLACE.every(key => wanted[key] === undefined || found[key] === wanted[key])
 // Each expected entry takes its own finding (augmenting paths), so two expectations never share one finding.
 export function matchDiagnostics(found, wanted) {
@@ -192,7 +193,7 @@ export async function loadModel(dir) {
     } catch (e) { return { error: `${e.name}: ${e.message}` } }
   }
   const parse = input => { try { return js.parse(input, { positions: false }) } catch { return null } }
-  const write = (tree, options = {}) => { try { return { output: js.writeWithDiagnostics(tree, options).source } } catch (e) { return { error: `${e.name}: ${e.message}` } } }
+  const write = (tree, options = {}) => { try { const r = js.writeWithDiagnostics(tree, options); return { output: r.source, diagnostics: r.diagnostics } } catch (e) { return { error: `${e.name}: ${e.message}` } } }
   return { run, parse, write, dir }
 }
 
@@ -299,7 +300,8 @@ function clauseCasePasses(model, c) {
   const kind = c.kind ?? 'render'
   if (kind === 'write') {
     const r = model.write(c.tree, c.layout ? { ...c.options, layout: c.layout } : c.options)
-    return r.error ? !!c.expected.refusal : r.output === c.expected.carve
+    if (r.error) return !!c.expected.refusal
+    return (c.expected.carve === undefined || r.output === c.expected.carve) && diagnosticsHold(r.diagnostics, c.expected)
   }
   const operation = kind === 'format' ? 'fmt' : kind === 'lint' ? 'lint' : c.expected.html !== undefined ? 'html' : 'ast'
   const r = model.run(operation, c.input, c.options)
