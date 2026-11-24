@@ -17,6 +17,8 @@
     "docs:samples:check": "node scripts/docs-samples-check.mjs",
     "docs:layout:check": "node scripts/docs-layout-check.mjs",
     "docs:pages": "node scripts/generate-example-pages.mjs",
+    "docs:upgrade:check": "node scripts/docs-upgrade-page.mjs",
+    "docs:upgrade:write": "node scripts/docs-upgrade-page.mjs --write",
     "changelog:check": "node scripts/changelog-completeness.mjs",
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
