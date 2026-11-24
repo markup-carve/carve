@@ -21,7 +21,7 @@ These eight change a Djot document without a parse error, and most of them get n
 7. `-->`, `==>`, `!=`, `<=`, `>=`, `+-` and `(tm)` become `→`, `⇒`, `≠`, `≤`, `≥`, `±` and `™`.
 8. `::: note`, `::: warning` and the other admonition names render as `<aside>`, and `::: toc`, `::: footnotes` and `::: figure` are directives, not plain divs.
 
-Items 2, 5, 6 and 7, and the `(1)` and `A. x` list markers, are planned to get upgrade-only lint rules (`djot-definition-list`, `djot-emphasis-underscore-braced`, `djot-tag-mention`, `djot-typography-sign` and `djot-ordered-marker`, [carve#6522](https://github.com/markup-carve/carve/issues/6522)). Like the other `djot-` rules, they will report only under `carve lint --upgrade` or in a document that declares `carve: 0.1`. Items 1, 3 and 4 are reported already: items 1 and 4 under `--upgrade`, item 3 by default.
+Under `carve lint --upgrade`, or in a document that declares `carve: 0.1`, the upgrade-only `djot-` hints report items 2, 5, 6 and 7 and the `(1)` and `A. x` list markers: `djot-definition-list`, `djot-emphasis-underscore-braced`, `djot-tag-mention`, `djot-typography-sign` and `djot-ordered-marker`. Items 1 and 4 are reported under `--upgrade` too, and item 3 by default. Item 8 has no migration notice.
 
 ## Inline marks
 
@@ -174,7 +174,7 @@ These forms are text in Djot and syntax in Carve, so Djot text that happens to c
 2. Replace `---` breaks with `***`, and check line 1.
 3. Rewrite definition lists as `::` and `:`, and indent every line that continues a term or a caption.
 4. Move attributes off bare words into spans, and remove blank lines between an attribute line and its block.
-5. Check `{_x_}`, `-->`, `==>`, `<=` and `!=`; none of them is reported yet.
+5. Check the admonition and directive names of item 8; no migration notice reports them.
 6. Escape `#` and `@` before words that are not tags or mentions.
 7. Put each link destination and footnote body on its definition line.
 8. Replace `~~~` fences with backticks, `(1)` markers with `1.` or `1)`, and `+` bullets with `-`.
