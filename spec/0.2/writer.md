@@ -1176,6 +1176,8 @@ Written:
 
 **C2-W-103** A parse, a render, a write and a lint run report into one diagnostics record (C2-A-172). Every entry has a code, a severity, a position, a message and a channel (C2-A-173). The position is a byte range in the source, a path into the tree, or both: a finding of the writer on a supplied tree has the path alone.
 
+**C2-W-158** The writer lists its entries on a supplied tree in document order of their paths, as C2-L-011 orders the entries of the sidecar: each index compares as a number, and at one node its own fields come before the nodes in its slots. A clause case with several such entries compares them position by position. For a `table_body` that carries `attrs` and holds a cell that source cannot spell, `field-unspellable` at `/children/0/children/1/attrs` comes before `structure-unspellable` at `/children/0/children/1/children/1/children/1`.
+
 **C2-W-104** The channel is `parse`, `render-loss` or `lint`. A code belongs to one channel. The writer's codes `structure-unspellable` and `field-unspellable` are in the render-loss channel, and so are the codes of the HTML importer (C2-M-080).
 
 **C2-W-105** The severity is one of `hint`, `warning` and `error`, in lower case. The 0.1 engine source writes the first with a capital, `Hint`. The default is `warning`: a rule has that severity unless the catalog names another.
@@ -1629,7 +1631,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 17 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 24 | 0 | 0 | 3 |
-| **Total** | **148** | **6** | **6** | **41** |
+| Diagnostics and lint | 25 | 0 | 0 | 3 |
+| **Total** | **149** | **6** | **6** | **41** |
 
-The document has 148 clauses, 6 of them marked with the word "Exception", and 47 examples, 6 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 149 clauses, 6 of them marked with the word "Exception", and 47 examples, 6 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.

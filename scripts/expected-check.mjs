@@ -320,6 +320,7 @@ function diagnosticsHold(found = [], expected) {
   if (!expected.diagnostics && !expected.notReported) return true
   const wanted = (expected.diagnostics ?? []).map(d => typeof d === 'string' ? { code: d } : d)
   if (expected.diagnosticsComplete && found.length !== wanted.length) return false
+  if (expected.diagnosticsOrdered && !wanted.every((w, i) => found[i] && fits(found[i], w))) return false
   return matchDiagnostics(found, wanted) && (expected.notReported ?? []).every(code => !found.some(d => d.code === code))
 }
 
