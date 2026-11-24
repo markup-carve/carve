@@ -484,3 +484,14 @@ The ruling on #6522 adds five migration notices, each a hint with the default `u
 
 - carve-js: the rows arrive with the spec pin, since `lint/catalog.ts` and `lint/data-tables.ts` are generated from the data files; the cases pass with the generated tables and no matcher code.
 - carve-php and carve-rs: add the five rules from their data rows (CC-1952 to CC-1978).
+
+## Engine gaps from the code span padding ruling of 24 November (#6525)
+
+Mark's ruling on #6525: the spaces at the ends of a code span are part of its value. Only a space between a backtick and the opening or closing run is removed (C2-I-016, the Djot rule); 0.1 and earlier 0.2 removed one space from each end when both ends held one. The writer pads a side only when that side of the value is a backtick (C2-W-077), and a value that starts with a space and a backtick or ends with a backtick and a space has no spelling. The same holds for literal-text, math and raw inline spans. Example syntax-inline-8, clause cases CC-1979 to CC-1995. Measured on `carve-js` `next2` `9e136b0`: CC-1979, CC-1980, CC-1983, CC-1985, CC-1987, CC-1989, CC-1992, CC-1993 and CC-1995 fail; the others pass and pin the shapes that read as before.
+
+- All three engines: keep the padding of a code, literal-text, math and raw inline span and remove only a space next to a backtick (syntax-inline-8, CC-1979 to CC-1993); pad a written code value only on its backtick side and report `field-unspellable` for a value that starts with a space and a backtick or ends with a backtick and a space (CC-1994, CC-1995).
+
+The same ruling adds the migration notice `code-span-padding-kept` (default `upgrade`, C2-W-156), stated as one inline row of `lint-model.json`, and the upgrade row U-441. U-439 now reports a 0.1 value that starts with a space and a backtick or ends with a backtick and a space; a value that starts with a line break and ends with a backtick is spelled by U-258, with one space before the closing run. Clause cases CC-1996 to CC-2006. The row has no fix: it also reports a span where 0.2 removes a space 0.1 kept, whose 0.1 value often has no 0.2 spelling (C2-W-077), so its message names no single replacement (C2-T-049).
+
+- carve-js: the rows arrive with the spec pin, since `lint/data-tables.ts` is generated from `data/lint-model.json`; CC-1996, CC-1998, CC-1999, CC-2003, CC-2004 and CC-2005 pass once C2-I-016 is ported. Its `upgrade` tool writes U-441 and moves the line-break shape from U-439 to U-258.
+- carve-php and carve-rs: add `code-span-padding-kept` from its data row (CC-1996 to CC-2006).

@@ -40923,7 +40923,7 @@
    "input": "`code` and `` a ` b `` and ` x ` and `*a*`",
    "options": {},
    "expected": {
-    "html": "<p><code>code</code> and <code>a ` b</code> and <code>x</code> and <code>*a*</code></p>",
+    "html": "<p><code>code</code> and <code> a ` b </code> and <code> x </code> and <code>*a*</code></p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -40957,7 +40957,7 @@
         },
         {
          "type": "code",
-         "value": "a ` b",
+         "value": " a ` b ",
          "pos": {
           "startLine": 1,
           "endLine": 1,
@@ -40981,7 +40981,7 @@
         },
         {
          "type": "code",
-         "value": "x",
+         "value": " x ",
          "pos": {
           "startLine": 1,
           "endLine": 1,
@@ -41033,8 +41033,8 @@
      ]
     }
    },
-   "status": "verified",
-   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
    "id": "syntax-inline-9",

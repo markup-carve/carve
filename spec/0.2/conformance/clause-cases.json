@@ -80219,6 +80219,746 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1979",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: The spaces of the content are kept, except one space next to a backtick",
+   "summary": "code span: the padding spaces of a span padded on both sides are kept",
+   "kind": "render",
+   "input": "a ` x ` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code> x </code> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": " x "
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1980",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-077"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "fmt: code span: the padding spaces of a span padded on both sides are kept",
+   "kind": "format",
+   "input": "a ` x ` b\n",
+   "options": {},
+   "expected": {
+    "carve": "a ` x ` b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1981",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: a space directly after the opening run is removed when the character after it is a backtick, and a space directly before the closing run is removed when the character before it is a backtick.",
+   "summary": "code span: a space between a backtick and the run is removed on both sides",
+   "kind": "render",
+   "input": "a `` `x` `` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code>`x`</code> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "`x`"
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1982",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-077"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "fmt: code span: a space between a backtick and the run is removed on both sides",
+   "kind": "format",
+   "input": "a `` `x` `` b\n",
+   "options": {},
+   "expected": {
+    "carve": "a `` `x` `` b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1983",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: a space directly after the opening run is removed when the character after it is a backtick, and a space directly before the closing run is removed when the character before it is a backtick.",
+   "summary": "code span: only the opening space next to a backtick is removed, the closing space stays",
+   "kind": "render",
+   "input": "a `` `x ``\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code>`x </code></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "`x "
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1984",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-077"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "fmt: code span: only the opening space next to a backtick is removed, the closing space stays",
+   "kind": "format",
+   "input": "a `` `x ``\n",
+   "options": {},
+   "expected": {
+    "carve": "a `` `x ``\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1985",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: a space directly after the opening run is removed when the character after it is a backtick, and a space directly before the closing run is removed when the character before it is a backtick.",
+   "summary": "code span: only the closing space next to a backtick is removed, the opening space stays",
+   "kind": "render",
+   "input": "a `` x` ``\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code> x`</code></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": " x`"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1986",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-077"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "fmt: code span: only the closing space next to a backtick is removed, the opening space stays",
+   "kind": "format",
+   "input": "a `` x` ``\n",
+   "options": {},
+   "expected": {
+    "carve": "a `` x` ``\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1987",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: a space directly after the opening run is removed when the character after it is a backtick, and a space directly before the closing run is removed when the character before it is a backtick.",
+   "summary": "code span: a space after the opening run is removed before a backtick even when the closing side has no space",
+   "kind": "render",
+   "input": "a `` `x`` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code>`x</code> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "`x"
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1988",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-077"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "fmt: code span: a space after the opening run is removed before a backtick even when the closing side has no space",
+   "kind": "format",
+   "input": "a `` `x`` b\n",
+   "options": {},
+   "expected": {
+    "carve": "a `` `x`` b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1989",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: The spaces of the content are kept, except one space next to a backtick",
+   "summary": "code span: two spaces of padding on each side are all kept",
+   "kind": "render",
+   "input": "a `  x  ` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code>  x  </code> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "  x  "
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1990",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-077"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "fmt: code span: two spaces of padding on each side are all kept",
+   "kind": "format",
+   "input": "a `  x  ` b\n",
+   "options": {},
+   "expected": {
+    "carve": "a `  x  ` b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1991",
+   "clauses": [
+    "C2-I-016"
+   ],
+   "why": "C2-I-016: a space directly after the opening run is removed when the character after it is a backtick, and a space directly before the closing run is removed when the character before it is a backtick.",
+   "summary": "code span: one backtick between two spaces loses both spaces",
+   "kind": "render",
+   "input": "a `` ` `` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <code>`</code> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "`"
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1992",
+   "clauses": [
+    "C2-I-016",
+    "C2-I-018"
+   ],
+   "why": "C2-I-016: The spaces of the content are kept, except one space next to a backtick",
+   "summary": "literal-text span: the padding spaces are kept",
+   "kind": "render",
+   "input": "a !` x ` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a  x  b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "literal_inline",
+        "value": " x "
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1993",
+   "clauses": [
+    "C2-I-016",
+    "C2-I-019"
+   ],
+   "why": "C2-I-016: The spaces of the content are kept, except one space next to a backtick",
+   "summary": "math span: the padding spaces are kept",
+   "kind": "render",
+   "input": "a $` x ` b\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a <span class=\"math inline\" role=\"math\">\\( x \\)</span> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "math",
+        "display": false,
+        "value": " x "
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1994",
+   "clauses": [
+    "C2-W-077",
+    "C2-W-117"
+   ],
+   "why": "C2-W-077: A value that starts with a space and a backtick, or ends with a backtick and a space, has no spelling, since C2-I-016 removes that space: the writer writes it without padding on that side and reports `field-unspellable` (C2-W-117).",
+   "summary": "write: a code value that starts with a space and a backtick has no spelling",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": " `x"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a `` `x``\n",
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/1/value"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1995",
+   "clauses": [
+    "C2-W-077",
+    "C2-I-016"
+   ],
+   "why": "C2-W-077: with one space of padding on a side only when that side of the content is a backtick; spaces at either end of the content are written as they are (C2-I-016).",
+   "summary": "write: a code value that ends with a backtick is padded on that side only",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "x`"
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a ``x` `` b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1996",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick, or the value starts and ends with a space and holds a character that is not a space",
+   "summary": "a code span padded on both sides is reported under upgrade",
+   "kind": "lint",
+   "input": "a ` x ` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "code-span-padding-kept",
+      "line": 1,
+      "column": 3,
+      "endLine": 1,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1997",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "a padded code span lints clean by default",
+   "kind": "lint",
+   "input": "a ` x ` b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "code-span-padding-kept"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1998",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156",
+    "C2-B-231"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "a document that declares Carve 0.1 reports a padded code span",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\na ` x ` b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "code-span-padding-kept",
+      "line": 4,
+      "column": 3,
+      "endLine": 4,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1999",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick, or the value starts and ends with a space and holds a character that is not a space",
+   "summary": "a span whose closing space stays is reported under upgrade",
+   "kind": "lint",
+   "input": "a `` `x ``\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "code-span-padding-kept",
+      "line": 1,
+      "column": 3,
+      "endLine": 1,
+      "endColumn": 11,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2000",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick",
+   "summary": "a span with a backtick inside both spaces reads as in 0.1 and is not reported",
+   "kind": "lint",
+   "input": "a `` `x` `` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "code-span-padding-kept"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2001",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: the value starts and ends with a space",
+   "summary": "a span padded on one side only reads as in 0.1 and is not reported",
+   "kind": "lint",
+   "input": "a ` x` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "code-span-padding-kept"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2002",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: holds a character that is not a space",
+   "summary": "a span of spaces only reads as in 0.1 and is not reported",
+   "kind": "lint",
+   "input": "a `  ` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "code-span-padding-kept"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2003",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick",
+   "summary": "a space removed before a backtick on one side only, which 0.1 kept, is reported under upgrade",
+   "kind": "lint",
+   "input": "a `` `x`` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "code-span-padding-kept",
+      "line": 1,
+      "column": 3,
+      "endLine": 1,
+      "endColumn": 11,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2004",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick",
+   "summary": "a value that ends with a backtick and a line feed reads as in 0.1 and is not reported",
+   "kind": "lint",
+   "input": "a `` x`\n`` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "code-span-padding-kept"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2005",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick, or the value starts and ends with a space and holds a character that is not a space",
+   "summary": "a padded math span is reported under upgrade",
+   "kind": "lint",
+   "input": "a $` x ` b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "code-span-padding-kept",
+      "line": 1,
+      "column": 3,
+      "endLine": 1,
+      "endColumn": 9,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2006",
+   "clauses": [
+    "C2-I-016",
+    "C2-W-156"
+   ],
+   "why": "Catalog code-span-padding-kept: exactly one end of the value is a backtick, or the value starts and ends with a space and holds a character that is not a space",
+   "summary": "a padded raw inline span is reported under upgrade",
+   "kind": "lint",
+   "input": "a ` x `{=html} b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "code-span-padding-kept",
+      "line": 1,
+      "column": 3,
+      "endLine": 1,
+      "endColumn": 15,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
