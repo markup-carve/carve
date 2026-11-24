@@ -5861,53 +5861,46 @@
     },
     {
       "id": "description-term-multi-line",
-      "over": "block",
-      "types": [
-        "definition_term"
-      ],
+      "over": "line",
       "when": {
-        "gt": [
+        "all": [
           {
-            "f": "last_line.number"
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "definition_term"
+            ]
           },
           {
-            "f": "line.number"
+            "not": {
+              "f": "leaf_first"
+            }
+          },
+          {
+            "matches": [
+              {
+                "f": "body"
+              },
+              "^:[ \\t]"
+            ]
           }
         ]
       },
       "report": [
         {
-          "when": {
-            "not": {
-              "matches": [
-                {
-                  "f": "line.next.body"
-                },
-                "^%%"
-              ]
-            }
-          },
           "start": {
-            "f": "line.next.body_start"
+            "f": "body_start"
           },
           "end": {
-            "f": "line.next.end"
-          }
-        },
-        {
-          "when": {
-            "has": "line.next2"
-          },
-          "start": {
-            "f": "line.next2.body_start"
-          },
-          "end": {
-            "f": "line.next2.end"
+            "f": "end"
           }
         }
       ],
       "clauses": [
-        "C2-B-069"
+        "C2-B-016",
+        "C2-B-069",
+        "C2-B-234"
       ]
     },
     {
@@ -8135,14 +8128,87 @@
     {
       "id": "frontmatter-crossref",
       "over": "inline",
-      "types": ["xref"],
+      "types": [
+        "xref"
+      ],
       "let": {
-        "owner": { "lookup": { "over": "id", "key": { "nfc": { "f": "item.id" } }, "value": { "nfc": { "f": "node.key" } }, "field": "owner" } },
-        "target": { "lookup": { "over": "id", "key": { "if": [{ "f": "item.xref" }, { "nfc": { "f": "item.id" } }, false] }, "value": { "nfc": { "f": "node.key" } }, "field": "xref" } }
+        "owner": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "nfc": {
+                "f": "item.id"
+              }
+            },
+            "value": {
+              "nfc": {
+                "f": "node.key"
+              }
+            },
+            "field": "owner"
+          }
+        },
+        "target": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "if": [
+                {
+                  "f": "item.xref"
+                },
+                {
+                  "nfc": {
+                    "f": "item.id"
+                  }
+                },
+                false
+              ]
+            },
+            "value": {
+              "nfc": {
+                "f": "node.key"
+              }
+            },
+            "field": "xref"
+          }
+        }
       },
-      "when": { "all": [{ "eq": [{ "v": "owner" }, "frontmatter"] }, { "not": { "v": "target" } }] },
-      "report": [{ "start": { "f": "start" }, "end": { "f": "end" }, "values": { "target": { "f": "node.key" } } }],
-      "clauses": ["C2-A-218", "C2-W-153"]
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "v": "owner"
+              },
+              "frontmatter"
+            ]
+          },
+          {
+            "not": {
+              "v": "target"
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "target": {
+              "f": "node.key"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-A-218",
+        "C2-W-153"
+      ]
     },
     {
       "id": "frontmatter-shaped-thematic-break",

@@ -32,7 +32,7 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-376 | Every space after the colon of an abbreviation definition is separator in 0.1: `*[HTML]:  Hyper Text` gives the title `Hyper Text`; 0.2 keeps the second space in the title. **SILENT** | The old HTML is restored by the verified source spelling. | Use one space after `*[HTML]:`; rewrite |
 | U-377 | A table attribute `aligns="right,,center"` aligns each column in 0.1; 0.2 has no `aligns` attribute. **SILENT** | The old HTML is restored by the verified source spelling. | Remove the invalid `aligns` list and put `{>}` or `{~}` on each affected cell; rewrite |
 | U-378 | A footnote definition inside a definition description, then an indented and an unindented line: `:: t`, `:  [^f]: note`, `     cont`, `tail`. 0.1 writes an empty description; 0.2 keeps the three lines as description text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the nested definition opener through the following unprefixed line; report |
-| U-379 | A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 adds `more` to the term. **SILENT** | The old HTML differs. Where a blank line above the comment keeps the complete 0.1 HTML, U-433 writes it. | Report from the comment line through the following retained line; report |
+| U-379 | A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 skips the comment-only line (C2-B-137), and `more`, which is not indented past the term mark, is a paragraph, as in 0.1 (C2-B-234). | The visible HTML is the 0.1 HTML. Where a blank line above the comment keeps the complete 0.1 HTML, U-433 writes it. | Report from the comment line through the following retained line; report |
 | U-380 | A comment in a div label: `::: note [%% hidden]`. 0.1 hides it and writes an empty label; 0.2 writes `%% hidden` as the label. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the bracketed label on the div opener; report |
 | U-381 | Inline markup in a div label: `::: note [/i/]`. 0.1 writes `<em>i</em>`; 0.2 writes the label as plain text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the bracketed label on the div opener; report |
 | U-382 | A comment line in a div that opens on a list item: `- ::: inner`, ` %% c`, ` text`. 0.1 ends the div and the list at the comment and `text` is a paragraph after the list; 0.2 keeps `text` in the div. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment line through the next retained line; report |
@@ -136,7 +136,7 @@ The replay of the 0.1 conformance pack found unclosed runs whose 0.1 value no 0.
 | U-007 | List marker without the quote mark under a list in a quote **SILENT** | &lt;blockquote&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;a ⏎ - b&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;/block… | &gt; - a ⏎ ⏎ - b ⏎ ; rewrite |
 | U-008 | List marker directly after description text **SILENT** | &lt;dl&gt; ⏎ &lt;dt&gt;term&lt;/dt&gt; ⏎ &lt;dd&gt;desc ⏎ - item&lt;/dd&gt; ⏎ &lt;/dl&gt; | :: term ⏎ : desc ⏎ ⏎ - item ⏎ ; rewrite |
 | U-009 | Term mark directly under item text **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;text ⏎ :: term ⏎ : desc&lt;/li&gt; ⏎ &lt;/ul&gt; | - text ⏎ ⏎ :: term ⏎ : desc ⏎ ; rewrite |
-| U-010 | Block directly under a caption line **SILENT** | &lt;table&gt; ⏎ &lt;caption&gt;Caption ⏎ 1 Heading&lt;/caption&gt; ⏎ &lt;tbody&gt; ⏎ &lt;… | \| a \| b \| ⏎ ^ Caption ⏎ ⏎ # Heading ⏎ ; rewrite |
+| U-010 | Block directly under a caption line | The 0.1 HTML: since the ruling of 24 November (#6508) an unindented line ends the caption (C2-B-234) | \| a \| b \| ⏎ ^ Caption ⏎ ⏎ # Heading ⏎ ; rewrite |
 | U-011 | Include directive | &lt;p&gt;Some text ⏎ {{ other.crv }}&lt;/p&gt; | Review by hand; report |
 | U-012 | List marker directly under text at the top level | &lt;p&gt;Some text ⏎ - item&lt;/p&gt; | Keep it; none |
 | U-013 | Table row, fence line or &#96;***&#96; directly under text | &lt;p&gt;Some text&lt;/p&gt; ⏎ &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/… | Keep it; none |
@@ -281,8 +281,8 @@ The replay of the 0.1 conformance pack found unclosed runs whose 0.1 value no 0.
 | U-103 | Letter marker with one space **SILENT** | &lt;ol type="a"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;li&gt;two&lt;/li&gt; ⏎ &lt;/ol&gt; | a\. one ⏎ b. two ⏎ ; escape |
 | U-104 | Quote fence or line block with a title **SILENT** | &lt;blockquote&gt;&lt;p&gt;quoted&lt;/p&gt;&lt;/blockquote&gt; | \::: &gt; "T" ⏎ quoted ⏎ ::: ⏎ ; escape |
 | U-105 | Raw fence with a title **SILENT** | &lt;pre&gt;&lt;code class="language-html"&gt;&lt;b&gt;x&lt;/b&gt; ⏎ &lt;/code&gt;&lt;/pre… | {%%}&#96;&#96;&#96;=html "T" ⏎ &lt;b&gt;x&lt;/b&gt;&#96;&#96;&#96; ⏎ &#96;&#96;&#96; ⏎ ; escape |
-| U-106 | Text line directly under a term **SILENT** | &lt;dl&gt; ⏎ &lt;dt&gt;term ⏎ more term text&lt;/dt&gt; ⏎ &lt;dd&gt;first description&lt;… | :: term ⏎ ⏎ more term text ⏎ : first description ⏎ ; escape |
-| U-107 | Second caret line under a caption **SILENT** | &lt;table&gt; ⏎ &lt;caption&gt;first ⏎ ^ second&lt;/caption&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&… | \| a \| b \| ⏎ ^ first ⏎ ⏎ ^ second ⏎ ; escape |
+| U-106 | Text line directly under a term | The 0.1 HTML: since the ruling of 24 November (#6508) an unindented line ends the term (C2-B-234) | :: term ⏎ ⏎ more term text ⏎ : first description ⏎ ; escape |
+| U-107 | Second caret line under a caption | The 0.1 HTML: since the ruling of 24 November (#6508) the second caret line is text (C2-B-149) | \| a \| b \| ⏎ ^ first ⏎ ⏎ ^ second ⏎ ; escape |
 | U-108 | Row attribute one space after the closing pipe **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr class="r"&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;… | \| a \| b \| \{.r} ⏎ ; escape |
 | U-109 | Line indented short of the content column after a blank line **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item ⏎ &lt;p&gt;second paragraph&lt;/p&gt; ⏎ &lt;/li&gt; ⏎ &lt;/ul… | - item ⏎ ⏎ second paragraph ⏎ ; escape |
 
@@ -586,7 +586,6 @@ A second ruling of 24 November extends #6499 to every rule whose only job is hel
 | `deprecated-spaced-thematic-break` | `* * *`, `- - -` or `_ _ _`, which are list items or text | a thematic break |
 | `deprecated-substitution-arrow` | `~>` in a braced strike, which is text | a substitution |
 | `deprecated-table-attribute` | `header-rows` on a pipe table, which does not apply | the head rows of the table |
-| `description-term-multi-line` | a line below a term line, which continues the term | a paragraph |
 | `thematic-break-spelling` | a line of `---` or `___`, which is text | a thematic break |
 | the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet or a folded heading line |
 
@@ -600,6 +599,20 @@ A ruling of 24 November decides #6507: a link definition and an abbreviation def
 | --- | --- | --- | --- |
 | A title or attribute block on the indented line below a link definition: `[a]: /url`, then `  "Title"` | The definition ended at its line, and the indented line was a paragraph, `<p>“Title”</p>`; an indented `{.c}` was an attribute line of the next block. | The line is the definition's tail: `<a href="/url" title="Title">`, and `{.c}` reaches every link that uses the definition. | C2-B-083, C2-B-091 |
 | An abbreviation expansion over indented lines: `*[HTML]: Hyper Text`, then `  Markup Language` | The expansion was `Hyper Text`, and the indented line was a paragraph. | The expansion is `Hyper Text Markup Language`. `carve fmt` writes it on one line. | C2-B-084, C2-W-055 |
+
+### Ruling of 24 November 2026: labels continue only on indented lines
+
+A ruling of 24 November decides #6508: a caption (`^`, also a quote attribution) and a description term (`::`) continue only on lines indented past their marker, as a heading does (C2-B-154). The three are labels (C2-B-234). Only paragraph text keeps unindented continuation lines.
+
+| You write | Earlier 0.2 | Now |
+| --- | --- | --- |
+| `^ Cap`, then `Next prose.` | one caption of two lines | a caption `Cap` and a paragraph, as in 0.1 |
+| `^ Cap`, then `= Heading`, `> q` or `- x` | caption text | a heading, a quote or a list, as in 0.1 |
+| `^ one`, then `^ two` | one caption of two lines | a caption `one` and the text `^ two`, which `unattached-caption` reports, as in 0.1 |
+| `:: Term`, then `More prose.` | one term of two lines | a term and a paragraph, as in 0.1 |
+| `:: Term`, then `   : desc` | term text | term text; `description-term-multi-line` reports the `:` |
+
+Write a two-line caption or term with its second line indented past the marker; `carve fmt` already writes it that way (C2-W-024). `description-term-multi-line` now reports only a term line that starts with a description mark. That shape is suspect in 0.2 itself, so the rule is no migration notice and is on by default again; the second ruling of 24 November on #6499 had made it one. U-010, U-106 and U-107 now render as in 0.1.
 
 ### Include expansion
 
@@ -744,11 +757,11 @@ Under C2-B-057, C2-B-109, and C2-B-111, a code fence in a list item ends when th
 
 #### Measured description ownership rewrite
 
-Under C2-B-069, C2-B-076, and C2-B-078, a description body belongs to its term only when its mark is at the list's owning column and later body blocks are indented past that mark. For ` :: t` followed by `: x`, 0.1 writes a description list, while unchanged 0.2 source folds `: x` into the term text. Move the term mark to the owning column to retain the 0.1 HTML.
+Under C2-B-069, C2-B-076, and C2-B-078, a description body belongs to its term only when its mark is at the list's owning column and later body blocks are indented past that mark. For ` :: t` followed by `: x`, 0.1 writes a description list, while unchanged 0.2 source ends the term at `: x`, which is not indented past the term mark, and reads `: x` as a paragraph (C2-B-234). Move the term mark to the owning column to retain the 0.1 HTML.
 
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
-| U-128 | ` :: t` then `: x` **SILENT** | One term containing `: x` | `:: t` then `: x`; rewrite |
+| U-128 | ` :: t` then `: x` **SILENT** | A term `t`, then a paragraph `: x` | `:: t` then `: x`; rewrite |
 
 #### Measured percent comment fence rewrite
 

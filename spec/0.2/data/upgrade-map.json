@@ -97,9 +97,9 @@
       "group": "paragraphs and blocks",
       "from": "| a | b |\n^ Caption\n# Heading\n",
       "to": "| a | b |\n^ Caption\n\n# Heading\n",
-      "meaning02": "<table>\n  <caption>Caption\n1 Heading</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+      "meaning02": "<table>\n  <caption>Caption</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<section id=\"Heading\">\n  <h1>Heading</h1>\n</section> Since the ruling of 24 November (#6508) a caption continues only on lines indented past its caret (C2-B-148, C2-B-234), so the 0.2 HTML is the 0.1 HTML and the blank line the tool writes changes nothing.",
       "toolEntry": "U-010",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-011",
@@ -817,9 +817,9 @@
       "group": "new block shapes",
       "from": ":: term\nmore term text\n: first description\n",
       "to": ":: term\n\nmore term text\n: first description\n",
-      "meaning02": "<dl>\n  <dt>term\nmore term text</dt>\n  <dd>first description</dd>\n</dl>",
+      "meaning02": "<dl>\n  <dt>term</dt>\n</dl>\n<p>more term text\n: first description</p> Since the ruling of 24 November (#6508) a term continues only on lines indented past its mark (C2-B-069, C2-B-234), so the 0.2 HTML is the 0.1 HTML and the blank line the tool writes changes nothing.",
       "toolEntry": "U-106",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-107",
@@ -827,9 +827,9 @@
       "group": "new block shapes",
       "from": "| a | b |\n^ first\n^ second\n",
       "to": "| a | b |\n^ first\n\n^ second\n",
-      "meaning02": "<table>\n  <caption>first\n^ second</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+      "meaning02": "<table>\n  <caption>first</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>^ second</p> Since the ruling of 24 November (#6508) a caret line directly below a caption is text (C2-B-148, C2-B-149), so the 0.2 HTML is the 0.1 HTML and the blank line the tool writes changes nothing.",
       "toolEntry": "U-107",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-108",
@@ -1037,7 +1037,7 @@
       "group": "lists",
       "from": " :: t\n: x",
       "to": ":: t\n: x",
-      "meaning02": "<dl>\n  <dt>t\n: x</dt>\n</dl>",
+      "meaning02": "<dl>\n  <dt>t</dt>\n</dl>\n<p>: x</p>",
       "toolEntry": "U-128",
       "silent": true
     },
@@ -2737,9 +2737,9 @@
       "group": "description ownership",
       "from": ":: c\n%% note\nmore\n",
       "to": "",
-      "meaning02": "<dl>\n  <dt>c\nmore</dt>\n</dl> A comment after a definition term is removed, and the following line continues that term under C2-B-081 and C2-B-083. Report the source range from the comment line through the following retained line.",
+      "meaning02": "<dl>\n  <dt>c</dt>\n</dl>\n<p>more</p> The comment-only line is not seen (C2-B-137), and `more`, which is not indented past the term mark, ends the term (C2-B-234), so the visible HTML is the 0.1 HTML.",
       "toolEntry": "U-379",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-380",

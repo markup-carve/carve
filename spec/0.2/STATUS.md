@@ -444,4 +444,12 @@ The ruling on #6507 lets a link definition and an abbreviation definition contin
 Mark's second ruling on #6499: the `deprecated-` rules and every other rule whose only job is help in moving from 0.1 or Djot are migration notices too, so a valid 0.2 document lints clean with the default options. Nineteen more rows get the default `upgrade` of C2-W-156: the ten `deprecated-` rules of removed spellings, seven `djot-` rules (all but `djot-highlight-braces`), `description-term-multi-line` and `thematic-break-spelling`. CC-701, CC-703, CC-705, CC-709, CC-711, CC-713, CC-715, CC-717, CC-719, CC-721, CC-839, CC-893, CC-967, CC-969, CC-970, CC-972, CC-974, CC-975, CC-977, CC-982, CC-1024, CC-1026, CC-1083, CC-1117, CC-1164, CC-1377, CC-1378, CC-1468, CC-1469, CC-1742 now set the option `upgrade`, CC-1353 the flag `--upgrade`; CC-1806 to CC-1850 are new. Measured on `carve-js` at `b838714f` (carve-js#5500, the port of C2-W-156) with the data of this change: every lint clause case passes except CC-1076 and CC-1124, which fail without it too.
 
 - carve-js: its catalog is generated from `data/lint-rules.json`, so the new defaults arrive with the spec pin once C2-W-156 is ported.
-- carve-php and carve-rs: give the twenty-four rows the default `upgrade` in their own rule lists (C2-W-156).
+- carve-php and carve-rs: give the twenty-three rows the default `upgrade` (`description-term-multi-line` left the list with #6508) in their own rule lists (C2-W-156).
+
+## Engine gaps from the label continuation ruling of 24 November (#6508)
+
+Mark's ruling on #6508 makes the caption and the term labels like the heading (C2-B-234): they continue only on lines indented past their marker, and only paragraph text takes unindented lines. A caret line directly below a caption in the same container is text with `unattached-caption` (C2-B-149). `description-term-multi-line` reports only a term line that starts with a description mark `:` and a space. Measured on the `carve-js` `next2` bundle the 0.2 playground pins (`063576947`); carve-php and carve-rs read captions and terms lazily too and are expected to show the same gaps.
+
+- All three engines: an unindented line below a caption or a term still continues it. CC-070 (the last line captions the outer quote, C2-B-018), CC-721, CC-791, CC-1853 to CC-1860, CC-1865 to CC-1867, syntax-blocks-168 and syntax-blocks-293.
+- All three engines: a second caret line directly below a caption continues it instead of being unattached text (CC-1861).
+- All three engines: `description-term-multi-line` still reports every term continuation line (CC-982).

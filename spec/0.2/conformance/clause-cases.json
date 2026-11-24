@@ -6394,18 +6394,34 @@
    "id": "CC-070",
    "clauses": [
     "C2-B-148",
+    "C2-B-234",
+    "C2-B-018",
     "C2-H-008",
     "C2-H-062"
    ],
-   "why": "C2-B-148: A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.",
-   "summary": "lazy caption line on empty nested quote",
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open C2-B-018: A caption line that does not carry the mark of an open quote, directly below a line of that quote, and owned by the container that holds the quote (C2-B-146), closes the quote and captions it, whatever the quote's last block is",
+   "summary": "a caret line without the outer quote's mark below a caption of a nested quote captions the outer quote",
    "input": "> >\n> ^ c\n^ c",
    "options": {},
    "expected": {
-    "html": "<blockquote>\n  <figure>\n    <blockquote>\n\n    </blockquote>\n    <figcaption>c\n^ c</figcaption>\n  </figure>\n</blockquote>",
+    "html": "<figure>\n  <blockquote>\n    <figure>\n      <blockquote>\n\n      </blockquote>\n      <figcaption>c</figcaption>\n    </figure>\n  </blockquote>\n  <figcaption>c</figcaption>\n</figure>",
     "children": [
      {
       "type": "block_quote",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      },
       "children": [
        {
         "type": "block_quote",
@@ -6418,13 +6434,6 @@
             {
              "type": "text",
              "value": "c"
-            },
-            {
-             "type": "soft_break"
-            },
-            {
-             "type": "text",
-             "value": "^ c"
             }
            ]
           }
@@ -45003,22 +45012,17 @@
    "id": "CC-721",
    "clauses": [
     "C2-W-106",
-    "C2-B-069"
+    "C2-B-069",
+    "C2-B-234"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.",
-   "summary": "a term whose text continues on a second line is reported at that line",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "an unindented line below a term is a paragraph, so the term is not reported",
    "kind": "lint",
    "input": ":: a\nb\n",
-   "options": {"upgrade": true},
+   "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "description-term-multi-line",
-      "line": 2,
-      "column": 1,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "description-term-multi-line"
     ]
    },
    "from": []
@@ -45029,7 +45033,7 @@
     "C2-W-106",
     "C2-B-069"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it.",
    "summary": "a term followed by a description line is not reported",
    "kind": "lint",
    "input": ":: a\n: b\n",
@@ -46545,22 +46549,18 @@
   {
    "id": "CC-791",
    "clauses": [
-    "C2-B-022"
+    "C2-B-022",
+    "C2-B-069",
+    "C2-B-234"
    ],
-   "why": "C2-B-022: a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.",
-   "summary": "a list marker directly after a term",
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "a list marker at column 0 directly after a term closes the list and opens a list",
    "kind": "lint",
    "input": ":: a\n- b\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "list-marker-without-blank-line",
-      "line": 2,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "list-marker-without-blank-line"
     ]
    },
    "from": []
@@ -50872,20 +50872,14 @@
     "C2-W-106",
     "C2-B-069"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.",
-   "summary": "an indented continuation line of a term is reported at its text",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog description-term-multi-line: whose text, behind its prefixes and indentation, starts with a description mark `:` followed by a space or a tab",
+   "summary": "an indented continuation line of a term that does not start with a description mark is not reported",
    "kind": "lint",
    "input": ":: a\n  b\n",
-   "options": {"upgrade": true},
+   "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "description-term-multi-line",
-      "line": 2,
-      "column": 3,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "description-term-multi-line"
     ]
    },
    "from": []
@@ -54032,9 +54026,9 @@
     "C2-B-022"
    ],
    "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "term text list marker takes term advice",
+   "summary": "a list marker on an indented term line takes term advice",
    "kind": "lint",
-   "input": ":: a\n- b\n",
+   "input": ":: a\n   - b\n",
    "options": {},
    "expected": {
     "diagnostics": [
@@ -57404,7 +57398,7 @@
    "why": "C2-H-203: The option holds wherever a soft break is written, in a paragraph, a heading and a caption (C2-H-065) C2-H-065: and line breaks in it are soft breaks, written as `softBreak` says (C2-H-203)",
    "summary": "softBreak br in a caption",
    "kind": "render",
-   "input": "```ts\nx\n```\n^ cap\nmore\n",
+   "input": "```ts\nx\n```\n^ cap\n  more\n",
    "options": {
     "softBreak": "br"
    },
@@ -66484,12 +66478,13 @@
    "id": "CC-1546",
    "clauses": [
     "C2-B-069",
+    "C2-B-234",
     "C2-B-146"
    ],
-   "why": "C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text. Catalog caption-looking-paragraph: a paragraph line whose text",
+   "why": "C2-B-069: A term is a label (C2-B-234): it continues only on lines indented past its mark. Catalog caption-looking-paragraph: a paragraph line whose text",
    "summary": "a caption-looking line that continues a term is term text, not a paragraph line",
    "kind": "lint",
-   "input": " :: term\n: | A | B |\n  | x | y |\n",
+   "input": " :: term\n  : | A | B |\n  | x | y |\n",
    "options": {},
    "expected": {
     "notReported": [
@@ -66502,12 +66497,13 @@
    "id": "CC-1547",
    "clauses": [
     "C2-B-069",
+    "C2-B-234",
     "C2-B-146"
    ],
-   "why": "C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text. Catalog caption-looking-paragraph: a paragraph line whose text",
+   "why": "C2-B-069: A term is a label (C2-B-234): it continues only on lines indented past its mark. Catalog caption-looking-paragraph: a paragraph line whose text",
    "summary": "a caption-looking term continuation below a tab-indented term is not a paragraph line",
    "kind": "lint",
-   "input": "\t:: t\n: ## H #\n | 1 | 2 |\n",
+   "input": "\t:: t\n     : ## H #\n | 1 | 2 |\n",
    "options": {},
    "expected": {
     "notReported": [
@@ -68518,15 +68514,16 @@
   "id": "CC-1617",
   "clauses": [
    "C2-B-148",
+   "C2-B-234",
    "C2-B-149",
    "C2-B-166",
    "C2-B-081",
    "C2-W-139"
   ],
-  "why": "C2-B-148: A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.",
+  "why": "C2-B-148: A caption is a label (C2-B-234): its text continues only on lines indented past its `^` and ends as a heading does. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
   "summary": "indented caption continuation is not a definition",
   "kind": "lint",
-  "input": " | w | w |\n ^ w\n [^w]: %%\n",
+  "input": " | w | w |\n ^ w\n  [^w]: %%\n",
   "options": {},
   "expected": {
    "notReported": [
@@ -74347,14 +74344,14 @@
   "why": "C2-W-157: A line record names the leaf block of the line: the block with inline content that holds it, which for a caption is the paragraph inside it (C2-A-081), a verbatim leaf, or the `table_row` of a line of a pipe table.",
   "summary": "lint path: a caption line names the paragraph inside the caption",
   "kind": "lint",
-  "input": "| a |\n^ cap\n# h\n",
+  "input": "| a |\n^ cap\n  # h\n",
   "options": {},
   "expected": {
    "diagnostics": [
     {
      "code": "block-opener-without-blank-line",
      "line": 3,
-     "column": 1,
+     "column": 3,
      "path": "/children/0/caption/children/0",
      "channel": "lint",
      "severity": "warning"
@@ -75780,10 +75777,11 @@
   {
    "id": "CC-1826",
    "clauses": [
-    "C2-W-156"
+    "C2-B-069",
+    "C2-B-234"
    ],
-   "why": "C2-W-156: Such a rule is off by default.",
-   "summary": "description-term-multi-line is off by default on a 0.2 document (carve#6499)",
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "an unindented line below a term is a paragraph, so description-term-multi-line does not report it (carve#6499, carve#6508)",
    "kind": "lint",
    "input": ":: a\nb\n",
    "options": {},
@@ -75797,23 +75795,18 @@
   {
    "id": "CC-1827",
    "clauses": [
-    "C2-W-156",
+    "C2-B-069",
+    "C2-B-234",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "description-term-multi-line is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "in a document that declares Carve 0.1, an unindented line below a term is a paragraph too, and description-term-multi-line is no migration notice (carve#6508)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n:: a\nb\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "description-term-multi-line",
-      "line": 5,
-      "column": 1,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "description-term-multi-line"
     ]
    },
    "from": []
@@ -76317,6 +76310,832 @@
       "channel": "lint",
       "severity": "warning"
      }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1851",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-148: A caption is a label (C2-B-234): its text continues only on lines indented past its `^` and ends as a heading does. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
+   "summary": "a caption continues on one line indented past its caret",
+   "input": "![a](a.png)\n^ The caption\n  goes on\n",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"a.png\" alt=\"a\">\n  <figcaption>The caption\ngoes on</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "a.png",
+        "alt": "a"
+       }
+      ],
+      "role": "image",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "The caption"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "goes on"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1852",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-148: A caption is a label (C2-B-234): its text continues only on lines indented past its `^` and ends as a heading does. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
+   "summary": "a caption continues on two lines indented past its caret",
+   "input": "| a |\n^ The caption\n  goes on\n  and on\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <caption>The caption\ngoes on\nand on</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "The caption"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "goes on"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "and on"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1853",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open",
+   "summary": "an unindented line below a caption starts prose",
+   "input": "| a |\n^ Cap\nNext.\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <caption>Cap</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>Next.</p>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Cap"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Next."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1854",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open",
+   "summary": "an unindented line below a caption starts a heading",
+   "input": "| a |\n^ Cap\n= Heading\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <caption>Cap</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<section id=\"Heading\">\n  <h1>Heading</h1>\n</section>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Cap"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Heading"
+       }
+      ],
+      "generatedId": "Heading"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1855",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open",
+   "summary": "an unindented line below a caption starts a quote",
+   "input": "| a |\n^ Cap\n> q\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <caption>Cap</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<blockquote><p>q</p></blockquote>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Cap"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "q"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1856",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open",
+   "summary": "an unindented line below a caption starts a list",
+   "input": "| a |\n^ Cap\n- x\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <caption>Cap</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<ul>\n  <li>x</li>\n</ul>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Cap"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1857",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-071",
+    "C2-B-234"
+   ],
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "an unindented line below a term closes the list and starts a paragraph",
+   "input": ":: Term\nNext.\n",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>Term</dt>\n</dl>\n<p>Next.</p>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "Term"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Next."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1858",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-071",
+    "C2-B-234"
+   ],
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "an unindented line below a term closes the list and starts a heading",
+   "input": ":: Term\n= Heading\n",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>Term</dt>\n</dl>\n<section id=\"Heading\">\n  <h1>Heading</h1>\n</section>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "Term"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Heading"
+       }
+      ],
+      "generatedId": "Heading"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1859",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-071",
+    "C2-B-234"
+   ],
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "an unindented line below a term closes the list and starts a quote",
+   "input": ":: Term\n> q\n",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>Term</dt>\n</dl>\n<blockquote><p>q</p></blockquote>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "Term"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "q"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1860",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-071",
+    "C2-B-234"
+   ],
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "an unindented line below a term closes the list and starts a list",
+   "input": ":: Term\n- x\n",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>Term</dt>\n</dl>\n<ul>\n  <li>x</li>\n</ul>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "Term"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1861",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-149"
+   ],
+   "why": "C2-B-148: A line that is not indented past the `^` starts the next block, so a caret line directly below a caption in the same container is a caption line of its own, which is text (C2-B-149). C2-B-149: A caption line with no host block is text under the same rule. So is a caption line directly below a caption that the same container holds.",
+   "summary": "a second caret line directly below a caption is unattached text",
+   "kind": "lint",
+   "input": "![a](a.png)\n^ one\n^ two\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-caption",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1862",
+   "clauses": [
+    "C2-B-016",
+    "C2-B-069",
+    "C2-B-234"
+   ],
+   "why": "C2-B-069: A term is a label (C2-B-234): it continues only on lines indented past its mark. C2-B-016: Interrupter (c): a description mark or a term mark with content at an open description list's column",
+   "summary": "an indented description mark below a term is term text",
+   "input": ":: Term\n   : desc\n",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>Term\n: desc</dt>\n</dl>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "Term"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": ": desc"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1863",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-069"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog description-term-multi-line: whose text, behind its prefixes and indentation, starts with a description mark `:` followed by a space or a tab",
+   "summary": "an indented description mark below a term is reported",
+   "kind": "lint",
+   "input": ":: Term\n   : desc\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "description-term-multi-line",
+      "line": 2,
+      "column": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1864",
+   "clauses": [
+    "C2-B-157",
+    "C2-B-234"
+   ],
+   "why": "C2-B-157: A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197).",
+   "summary": "a block image line followed by unindented prose stays one paragraph",
+   "input": "![a](a.png)\nNext prose.\n",
+   "options": {},
+   "expected": {
+    "html": "<p><img src=\"a.png\" alt=\"a\">\nNext prose.</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "a.png",
+        "alt": "a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "Next prose."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1865",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234",
+    "C2-B-081"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open",
+   "summary": "a definition-shaped line at the caret's column below a caption is not caption text",
+   "kind": "lint",
+   "input": " | w | w |\n ^ w\n [^w]: %%\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-in-container",
+      "line": 3,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1866",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-071",
+    "C2-B-234"
+   ],
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071). Catalog caption-looking-paragraph: a paragraph line whose text",
+   "summary": "a caption-looking line left of the term mark is a paragraph line",
+   "kind": "lint",
+   "input": " :: term\n: | A | B |\n  | x | y |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "caption-looking-paragraph",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1867",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open",
+   "summary": "a heading line at the caret's column below a caption is a heading, not caption text",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n# h\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "block-opener-without-blank-line"
     ]
    },
    "from": []

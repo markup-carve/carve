@@ -60,7 +60,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `deprecated-substitution-arrow` | warning | upgrade |
 | `deprecated-table-attribute` | warning | upgrade |
 | `description-separator-below-content-column` | warning | on |
-| `description-term-multi-line` | hint | upgrade |
+| `description-term-multi-line` | hint | on |
 | `djot-emphasis-underscore` | warning | upgrade |
 | `djot-heading-continuation` | warning | upgrade |
 | `djot-highlight-braces` | warning | off |
