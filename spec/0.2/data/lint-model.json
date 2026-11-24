@@ -8292,6 +8292,57 @@
                 "v": "run"
               }
             ]
+          },
+          {
+            "not": {
+              "all": [
+                {
+                  "in": [
+                    {
+                      "f": "owner.type"
+                    },
+                    [
+                      "list_item",
+                      "description",
+                      "footnote"
+                    ]
+                  ]
+                },
+                {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "line.text"
+                        },
+                        0,
+                        {
+                          "v": "at"
+                        }
+                      ]
+                    },
+                    "[^ \\t>]"
+                  ]
+                },
+                {
+                  "le": [
+                    {
+                      "column": [
+                        {
+                          "match": "close"
+                        },
+                        {
+                          "f": "last_line.quote_depth"
+                        }
+                      ]
+                    },
+                    {
+                      "f": "owner.content_column"
+                    }
+                  ]
+                }
+              ]
+            }
           }
         ]
       },
@@ -8311,6 +8362,7 @@
         }
       ],
       "clauses": [
+        "C2-B-027",
         "C2-B-108",
         "C2-B-109"
       ]

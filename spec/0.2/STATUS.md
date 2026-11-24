@@ -546,3 +546,10 @@ The rulings on #6561 and #6559 let the text of C2-W-088 win over the older form 
 
 - `carve-js`: carve-js#5550 (CC-1568 and the writer-slow fixture `4e78df2a673d1efc.out`).
 - `carve-php` and `carve-rs`: write the new CC-1568 form.
+
+## Engine gaps from the canonical caret and fence closer ruling of 24 November (#6585)
+
+The ruling on #6585 (A1 + A2) has two parts. A1: canonical output also passes `unattached-caption`, so a caret line that it reports and whose caret the writer wrote takes a backslash, after a blank line, on a marked quote line or inside a paragraph (C2-W-146, C2-W-092): `^ second` below a captioned table and a blank line is written `\^ second`, and `> ^ cap` is written `> \^ cap`. A2: `fence-closer-indented` counts a closer below an opener on the marker line of an item, a description or a footnote body inside that container's content as C2-B-027 strips it, so a closer at or left of its content column is not reported; the data row and the catalog row say so. CC-2026 now expects no finding for the footnote fence of U-250. Clause cases CC-2029 to CC-2044 are added. Measured on `carve-js` `next2` `42644b71` and `carve-php` `next2` `99b0fd55`: both keep the caret bare (CC-2029 to CC-2035, CC-2037) and report the closers of CC-2026, CC-2039 and CC-2040; the new data row run in carve-js passes every lint case. `carve-rs` was not measured.
+
+- All three engines: escape the caret that `unattached-caption` reports in written text (CC-2029 to CC-2035, CC-2037).
+- All three engines: take the `fence-closer-indented` row of `data/lint-model.json` (CC-2026, CC-2039, CC-2040).

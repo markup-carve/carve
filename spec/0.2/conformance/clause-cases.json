@@ -81668,24 +81668,19 @@
    "id": "CC-2026",
    "clauses": [
     "C2-W-106",
-    "C2-B-109"
+    "C2-B-027"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
-   "summary": "a code fence closer in a footnote indented under the opener's backticks is reported on its own line",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog fence-closer-indented: where the opener stands on the marker line of an item, a description or a footnote body, the closer's column is counted inside that container's content as C2-B-027 strips it, so a closer at or left of its content column stands where the opener does and is not reported C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "a code fence closer in a footnote at the indent of the body, below a fence opened on the marker line, is not reported (U-250)",
    "kind": "lint",
    "input": "x[^1]\n\n[^1]: ```\n  code\n\n  ```\n\nafter\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "fence-closer-indented",
-      "line": 6,
-      "column": 3,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "fence-closer-indented"
     ]
    },
+   "corrected": "expected fence-closer-indented at 6:3 before the ruling on #6585 (A2)",
    "from": []
   },
   {
@@ -81720,6 +81715,330 @@
    "expected": {
     "notReported": [
      "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2029",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: So is a caption line directly below a caption that the same container holds.",
+   "summary": "a second caret line below a table caption is written below a blank line with its caret escaped",
+   "kind": "format",
+   "input": "| a | b |\n^ first\n^ second\n",
+   "options": {},
+   "expected": {
+    "carve": "| a | b |\n^ first\n\n\\^ second\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2030",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "a caret line after a blank line below a captioned table keeps no bare caret",
+   "kind": "format",
+   "input": "| a | b |\n^ first\n\n^ second\n",
+   "options": {},
+   "expected": {
+    "carve": "| a | b |\n^ first\n\n\\^ second\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2031",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "a caret line that carries the quote's mark inside a quote paragraph takes a backslash",
+   "kind": "format",
+   "input": "> a\n> ^ cap\n",
+   "options": {},
+   "expected": {
+    "carve": "> a\n> \\^ cap\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2032",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "an escaped caret on a lazy line of a quote paragraph keeps its backslash when the line takes the quote's mark",
+   "kind": "format",
+   "input": "> a\n\\^ cap\n",
+   "options": {},
+   "expected": {
+    "carve": "> a\n> \\^ cap\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2033",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "a paragraph that starts with a caret after a blank line below a paragraph takes a backslash",
+   "kind": "format",
+   "input": "text\n\n^ x\n",
+   "options": {},
+   "expected": {
+    "carve": "text\n\n\\^ x\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2034",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "a caret line inside a paragraph takes a backslash",
+   "kind": "format",
+   "input": "a\n^ b\n",
+   "options": {},
+   "expected": {
+    "carve": "a\n\\^ b\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2035",
+   "clauses": [
+    "C2-W-146",
+    "C2-B-149"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash C2-B-149: So is a caption line directly below a caption that the same container holds.",
+   "summary": "a second caret line below an image caption is written below a blank line with its caret escaped",
+   "kind": "format",
+   "input": "![i](u)\n^ c\n^ d\n",
+   "options": {},
+   "expected": {
+    "carve": "![i](u)\n^ c\n\n\\^ d\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2036",
+   "clauses": [
+    "C2-W-146"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash",
+   "summary": "near miss: a caption directly below its table is no text and keeps its caret bare",
+   "kind": "format",
+   "input": "| a |\n^ cap\n",
+   "options": {},
+   "expected": {
+    "carve": "| a |\n^ cap\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2037",
+   "clauses": [
+    "C2-W-146"
+   ],
+   "why": "C2-W-146: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash",
+   "summary": "a paragraph of a supplied tree whose text starts with a caret and a space is written with the caret escaped",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^ x"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "\\^ x\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2038",
+   "clauses": [
+    "C2-W-107",
+    "C2-B-149"
+   ],
+   "why": "C2-W-107: A mark that C2-I-010 reads as an escaped character is not the start or end of a source shape that any catalog row reports. C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "the escaped caret line that canonical output writes is not reported",
+   "kind": "lint",
+   "input": "| a | b |\n^ first\n\n\\^ second\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-caption"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2039",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-027"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog fence-closer-indented: where the opener stands on the marker line of an item, a description or a footnote body, the closer's column is counted inside that container's content as C2-B-027 strips it, so a closer at or left of its content column stands where the opener does and is not reported C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "a closer below a fence opened on a footnote marker line, at the indent of the footnote body, is not reported",
+   "kind": "lint",
+   "input": "[^1]: ```\n  code\n  ```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "fence-closer-indented"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2040",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-027"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog fence-closer-indented: where the opener stands on the marker line of an item, a description or a footnote body, the closer's column is counted inside that container's content as C2-B-027 strips it, so a closer at or left of its content column stands where the opener does and is not reported C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "a closer left of the content column of the item whose marker line opens the fence is not reported",
+   "kind": "lint",
+   "input": "- ```\n  a\n ```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "fence-closer-indented"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2041",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-027"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog fence-closer-indented: where the opener stands on the marker line of an item, a description or a footnote body, the closer's column is counted inside that container's content as C2-B-027 strips it, so a closer at or left of its content column stands where the opener does and is not reported C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "a closer past the content column of the footnote whose marker line opens the fence is reported",
+   "kind": "lint",
+   "input": "[^1]: ```\n  code\n        ```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 3,
+      "column": 9,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2042",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
+   "summary": "a fence opened on a later line of a footnote body counts no content column, so its indented closer is reported",
+   "kind": "lint",
+   "input": "[^1]: x\n\n  ```\n  b\n   ```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 5,
+      "column": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2043",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-027"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog fence-closer-indented: where the opener stands on the marker line of an item, a description or a footnote body, the closer's column is counted inside that container's content as C2-B-027 strips it, so a closer at or left of its content column stands where the opener does and is not reported C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "a closer past the content column of the item whose marker line opens the fence is reported",
+   "kind": "lint",
+   "input": "- ```\n  a\n   ```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 3,
+      "column": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2044",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
+   "summary": "a quote mark is no marker, so an indented closer in a quote is reported",
+   "kind": "lint",
+   "input": "> ```\n> a\n>  ```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 3,
+      "column": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
     ]
    },
    "from": []
