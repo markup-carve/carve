@@ -67138,13 +67138,13 @@
     "C2-W-088",
     "C2-W-091"
    ],
-   "why": "C2-W-088: For each kind reported in a block, the round escapes every potential opener of that kind in that block, not only the reported ones, and the text is then parsed again.",
-   "summary": "nested strong and link openers escape every bracket of the paragraph text from one read-back parse",
+   "why": "C2-W-088: Every construct that the parse holds but the tree does not hold is reported ... In text written by this procedure, a backslash it does not place is a defect, and so is a missing one; C2-W-125 and C2-W-146 name the few it adds. C2-W-091: For a tree from a parse the procedure keeps the tree.",
+   "summary": "text brackets around nested links stay bare when the bare text reads back",
    "kind": "format",
    "input": "^*[*[[*^*[*[[*^*[*[[*^*[*x](u)^]]](u)^]]](u)^]]](u)\n",
    "options": {},
    "expected": {
-    "carve": "^*[*\\[\\[*^*[*\\[\\[*^*[*\\[\\[*^*[*x](u)^\\]\\]](u)^\\]\\]](u)^\\]\\]](u)\n"
+    "carve": "^*[*[[*^*[*[[*^*[*[[*^*[*x](u)^]]](u)^]]](u)^]]](u)\n"
    },
    "from": []
   },
