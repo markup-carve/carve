@@ -83724,7 +83724,8 @@
      "type": "document"
     },
     "diagnostics": [
-     "deprecated-bare-underline"
+     "deprecated-bare-underline",
+     "djot-emphasis-underscore"
     ]
    },
    "status": "unverified",
