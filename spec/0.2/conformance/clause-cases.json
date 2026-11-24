@@ -81094,9 +81094,12 @@
     "diagnostics": [
      {
       "code": "field-unspellable",
-      "path": "/children/0/children/0/attrs/keyValues/0/1"
+      "path": "/children/0/children/0/attrs/keyValues/0/1",
+      "channel": "render-loss",
+      "severity": "warning"
      }
-    ]
+    ],
+    "diagnosticsComplete": true
    },
    "from": []
   },
@@ -81116,9 +81119,12 @@
     "diagnostics": [
      {
       "code": "field-unspellable",
-      "path": "/children/0/attrs/keyValues/0/1"
+      "path": "/children/0/attrs/keyValues/0/1",
+      "channel": "render-loss",
+      "severity": "warning"
      }
-    ]
+    ],
+    "diagnosticsComplete": true
    },
    "from": []
   },
@@ -81172,7 +81178,8 @@
       "channel": "render-loss",
       "severity": "warning"
      }
-    ]
+    ],
+    "diagnosticsComplete": true
    },
    "from": []
   }
