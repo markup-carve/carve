@@ -971,7 +971,7 @@ Written:
 **C2-W-092** A paragraph line is tested for reading as a block opener or as an interrupter. The cases:
 
 - one to six `=` or `#` and a space at the start of a paragraph (C2-B-151, C2-B-152);
-- a caret and a space on a line directly below a block that takes a caption, below an image paragraph, and directly after a line of an open quote when the line does not carry the quote's mark (C2-B-017, C2-B-018, C2-B-146);
+- a caret and a space on a line directly below a block that takes a caption, below an image paragraph, and directly after a line of an open quote when the line does not carry the quote's mark (C2-B-017, C2-B-018, C2-B-146); on any other paragraph line, as after a blank line or on a line that carries the quote's mark, a caret and a space stay text that `unattached-caption` reports, and C2-W-146 escapes the caret (C2-B-149);
 - a pipe at the start of a line that also ends with a pipe (C2-B-166), and a `+` at the start of such a line below a table row (C2-B-175);
 - a fence run: three or more backticks, colons or percent signs (C2-B-014);
 - a list marker with content, at the start of a paragraph and on every line inside an item, a description or a footnote body (C2-B-015);
@@ -1040,7 +1040,7 @@ A line.
 \- not a list
 ```
 
-**C2-W-146** Canonical output passes the lint rules that report a pair of bare marks that stays text. After the test of C2-W-088, the text the procedure writes is tested with the rules `deprecated-bare-underline`, `deprecated-bare-strike`, `deprecated-bare-highlight`, `markdown-strikethrough-double-tilde` and `markdown-strong-double-star`, as lint runs them on the written source (C2-W-107). Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again. Where the backslashes of a round keep the tree from reading back, the round is taken back and the text keeps its form before it. The test holds for `fmt` as for `write`, and it reads neither the option `rules` nor a control comment, so lint still changes no output of `fmt` (C2-W-108). The text `~s~` is written `\~s~`, `_u_` is written `\_u_`, `=x=` is written `\=x=`, `~~s~~` is written `\~\~s~~` and `**b**` is written `\*\*b**`. A form with these backslashes is the canonical one, and C2-W-088 does not call them defects.
+**C2-W-146** Canonical output passes the lint rules that report a pair of bare marks that stays text. After the test of C2-W-088, the text the procedure writes is tested with the rules `deprecated-bare-underline`, `deprecated-bare-strike`, `deprecated-bare-highlight`, `markdown-strikethrough-double-tilde`, `markdown-strong-double-star`, as lint runs them on the written source (C2-W-107). Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again. Canonical output also passes `unattached-caption`, which reports a caret line that stays text. The written text is tested with it in the same test: where `unattached-caption` reports a line whose caret is text the procedure wrote, the caret takes a backslash, and both tests run again. Where the backslashes of a round keep the tree from reading back, the round is taken back and the text keeps its form before it. The test holds for `fmt` as for `write`, and it reads neither the option `rules` nor a control comment, so lint still changes no output of `fmt` (C2-W-108). The text `~s~` is written `\~s~`, `_u_` is written `\_u_`, `=x=` is written `\=x=`, `~~s~~` is written `\~\~s~~` and `**b**` is written `\*\*b**`. A paragraph `^ second` below a table, its caption and a blank line is written `\^ second`, and the quote paragraph line `^ cap` is written `> \^ cap` (C2-B-149). A form with these backslashes is the canonical one, and C2-W-088 does not call them defects.
 
 ## `carve fmt`
 
@@ -1358,7 +1358,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `deprecated-loose-attribute` | warning, migration notice (C2-W-156) | a list that carries the key `loose` | unchanged |
 | `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once, at its first heading | unchanged |
 | `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
-| `fence-closer-indented` | hint | a closer whose indent differs from its opener's | unchanged |
+| `fence-closer-indented` | hint | a closer whose indent differs from its opener's | an opener on the marker line of an item, a description or a footnote body counts from that container's content, so a closer at or left of its content column is not reported (C2-B-027) |
 | `ordered-list-kind-split` | warning | a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them | the first marker fixes its style (C2-B-042) |
 | `duplicate-link-reference-definition` | warning | a link definition whose key was defined before | unchanged |
 | `duplicate-abbreviation-definition` | warning | an abbreviation definition whose key was defined before | unchanged |

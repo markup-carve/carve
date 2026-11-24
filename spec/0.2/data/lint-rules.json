@@ -894,8 +894,8 @@
         "This line closes the block opened on line ${line} although it is indented differently. If it is content, make the outer fence longer."
       ],
       "message_origin": "design",
-      "reports": "the closer of a code fence whose first backtick stands at another source column than the first backtick of its opener, which still closes the block because a closer has no column test (C2-B-109); an unclosed fence, a div and a comment block are not reported; once per code block, the range runs from the closer's first backtick to the end of its line (C2-B-108, C2-B-109)",
-      "clauses": ["C2-B-108", "C2-B-109"]
+      "reports": "the closer of a code fence whose first backtick stands at another source column than the first backtick of its opener, which still closes the block because a closer has no column test (C2-B-109); where the opener stands on the marker line of an item, a description or a footnote body, the closer's column is counted inside that container's content as C2-B-027 strips it, so a closer at or left of its content column stands where the opener does and is not reported; an unclosed fence, a div and a comment block are not reported; once per code block, the range runs from the closer's first backtick to the end of its line (C2-B-108, C2-B-109)",
+      "clauses": ["C2-B-027", "C2-B-108", "C2-B-109"]
     },
     {
       "id": "fence-opener-fallback",
