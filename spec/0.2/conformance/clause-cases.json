@@ -81040,7 +81040,7 @@
     "C2-B-227"
    ],
    "why": "C2-B-213: Where a head mark and an `aligns` or `valigns` entry set the same axis of a column, `table-column-overlap` reports it. C2-B-227: A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`",
-   "summary": "an invalid valigns value keeps one table-column-overlap finding per column of aligns beside it",
+   "summary": "an invalid valigns value keeps both table-column-overlap findings of aligns beside it",
    "kind": "lint",
    "input": "{aligns=left,right valigns=q}\n|={<} a |={>} b |\n",
    "options": {},
