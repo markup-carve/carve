@@ -519,3 +519,9 @@ The ruling on #6544 places a backslash in link text only where a C2-W-088 round 
 The ruling on #6540 (option A) keeps a heading cross-reference inside the title copy of a `number-title` reference a reference: it is not expanded again and renders as a plain link with its target's title, so copies do not nest (C2-X-070). It moves the column Clauses of `extensions.md`; Rules and Exceptions wait for a recount. Extension cases EXT-104 to EXT-106 are added. Measured on `carve-js` `next2` `ac8afa9f` and `carve-php` `next2` `f6a50999`: both expand the copy again and fail EXT-104 and EXT-105; on EXT-106, a title that references its own heading, carve-js writes no numbers and carve-php exhausts 1 GiB of memory. The issue measured `carve-rs` `next2` with the same growth.
 
 - All three engines: leave a cross-reference inside a title copy unexpanded (EXT-104 to EXT-106).
+
+## Engine gaps from the div interrupter ruling of 24 November (#6545)
+
+The ruling on #6545 (option 2) counts a list marker indented past a marker as interrupter (b) inside a div only when that marker belongs to an item, a description or a footnote body opened inside the div (C2-B-235). Clause cases CC-2013 to CC-2017 are added. Measured on `carve-js` `next2` `ac8afa9f` and `carve-php` `next2` `f6a50999`: all five pass. `carve-rs` `next2` `d2192115` passes CC-2013 and CC-2016.
+
+- `carve-rs`: a bullet below a description inside a div, indented past the item's or the outer description's marker but not past the inner description's mark, closes the description and opens a list in the div; it is a lazy line of the description (CC-2014, CC-2015), and the library lint does not report it (CC-2017).

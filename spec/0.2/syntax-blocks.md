@@ -228,7 +228,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost open list when its marker matches under C2-B-049 and the container that holds that list owns the line (C2-B-025); otherwise it closes the open lists and opens a new one, whatever its value, in the innermost container that owns the line (C2-B-228). A marker indented past an item's, description's or footnote body's marker, and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line, directly on the marker line, or between the columns of two open lists (C2-B-055).
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost open list when its marker matches under C2-B-049 and the container that holds that list owns the line (C2-B-025); otherwise it closes the open lists and opens a new one, whatever its value, in the innermost container that owns the line (C2-B-228). A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line, directly on the marker line, or between the columns of two open lists (C2-B-055).
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -241,6 +241,8 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 **C2-B-200** Interrupter (f): a thematic break (C2-B-159). A line of three or more stars and nothing else has no reading as prose. Like a fence line it interrupts wherever it stands: at an open list's column it closes the list, and indented past a marker it stays in that item.
 
 **C2-B-020** Interrupters (b) and (c) count only on a line that carries the quote mark of every quote the list or the definition sits in, and a quote inside the item does not count.
+
+**C2-B-235** Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count, as C2-B-020 limits interrupters (b) and (c) for quotes. Below `- ::::` and `  x`, the line ` - y` is indented past the item's marker and is a lazy line of `x`; below `- ::::`, `  :: t` and `  : x` it is a lazy line too, and `   - y`, indented past the description's mark, opens a list in the description.
 
 **C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item.
 
@@ -6973,7 +6975,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Preliminaries | 9 | 0 | 4 | 4 |
-| Paragraphs and interrupters | 14 | 2 | 6 | 4 |
+| Paragraphs and interrupters | 15 | 2 | 6 | 4 |
 | Labels | 1 | 0 | 0 | 2 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
@@ -6998,9 +7000,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **213** | **8** | **170** | **126** |
+| **Total** | **214** | **8** | **170** | **126** |
 
-The chapter has 213 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
+The chapter has 214 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
 
 ## Not covered
 
