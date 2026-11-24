@@ -525,3 +525,11 @@ The ruling on #6540 (option A) keeps a heading cross-reference inside the title 
 The ruling on #6545 (option 2) counts a list marker indented past a marker as interrupter (b) inside a div only when that marker belongs to an item, a description or a footnote body opened inside the div (C2-B-235). Clause cases CC-2013 to CC-2017 are added. Measured on `carve-js` `next2` `ac8afa9f` and `carve-php` `next2` `f6a50999`: all five pass. `carve-rs` `next2` `d2192115` passes CC-2013 and CC-2016.
 
 - `carve-rs`: a bullet below a description inside a div, indented past the item's or the outer description's marker but not past the inner description's mark, closes the description and opens a list in the div; it is a lazy line of the description (CC-2014, CC-2015), and the library lint does not report it (CC-2017).
+
+## Engine gaps from the tree-opener ruling of 24 November (#6566)
+
+The ruling on #6566 (reading 2) makes a construct that opens on the opener of a node of the tree that node, also where it reads on past the tree's closer or ends early at a closer the tree holds as text. It is not reported and gives no kind; C2-W-125 repairs it (C2-W-088). Clause cases CC-2018 to CC-2020 are added. Measured on `carve-js` `next2` `8b4d4a7a` and `carve-php` `next2` `cd08d2e2e`: carve-js passes CC-2019 and escapes the last text `{,` in CC-2018 and CC-2020; carve-php passes CC-2018 and CC-2020 and writes `- {^}^\{a\^}\{^\^}^},,,}` for CC-2019. `carve-rs` was not measured.
+
+- `carve-js`: report no kind for a span on the tree's own opener that reads on (CC-2018, CC-2020).
+- `carve-php`: report no kind for a span on the tree's own opener that ends early (CC-2019).
+- `carve-rs`: measure CC-2018 to CC-2020.
