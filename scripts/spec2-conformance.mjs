@@ -222,6 +222,7 @@ function diagnosticProblems(entry) {
     if (listed.some(item => (typeof item === 'string' ? item : item.code) === code)) problems.push(`both expects and excludes ${code}`)
   }
   if (entry.expected.diagnosticsComplete !== undefined && !entry.expected.diagnostics) problems.push('states diagnosticsComplete without diagnostics')
+  if (entry.expected.diagnosticsOrdered !== undefined && entry.expected.diagnosticsComplete !== true) problems.push('states diagnosticsOrdered without diagnosticsComplete')
   return problems
 }
 
@@ -253,7 +254,7 @@ function refusalProblems(entry) {
   if (refusal) {
     if (!CATEGORY_ERRORS.has(refusal.error)) problems.push(`refuses with ${refusal.error}, which no category of data/cli.json names`)
     if (REFUSALS[kind] && !REFUSALS[kind].includes(refusal.error)) problems.push(`a ${kind} call does not refuse with ${refusal.error}`)
-    for (const field of Object.keys(entry.expected)) if (!['refusal', 'diagnostics', 'diagnosticsComplete', 'notReported'].includes(field)) problems.push(`expects ${field} beside a refusal`)
+    for (const field of Object.keys(entry.expected)) if (!['refusal', 'diagnostics', 'diagnosticsComplete', 'diagnosticsOrdered', 'notReported'].includes(field)) problems.push(`expects ${field} beside a refusal`)
   }
   if (entry.tree && kind !== 'migrate') {
     const isEnvelope = entry.tree.type === undefined && entry.tree.document !== undefined
@@ -374,7 +375,7 @@ function exportProblems(entry) {
     if (entry.expected.output !== undefined) problems.push('expects output from a call that is no export')
     return problems
   }
-  for (const field of Object.keys(entry.expected)) if (!['output', 'diagnostics', 'diagnosticsComplete', 'notReported', 'refusal'].includes(field)) problems.push(`expects ${field} from an export`)
+  for (const field of Object.keys(entry.expected)) if (!['output', 'diagnostics', 'diagnosticsComplete', 'diagnosticsOrdered', 'notReported', 'refusal'].includes(field)) problems.push(`expects ${field} from an export`)
   return problems
 }
 

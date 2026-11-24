@@ -82042,6 +82042,283 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2045",
+   "clauses": [
+    "C2-W-158",
+    "C2-W-103"
+   ],
+   "why": "C2-W-158: The writer lists its entries on a supplied tree in document order of their paths, as C2-L-011 orders the entries of the sidecar: each index compares as a number, and at one node its own fields come before the nodes in its slots. A clause case with several such entries compares them position by position. C2-W-103: a finding of the writer on a supplied tree has the path alone.",
+   "summary": "write diagnostics on a table stand in document order of their paths",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column",
+        "width": 0.4
+       },
+       {
+        "type": "table_column",
+        "width": 0.6
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "A "
+          },
+          {
+           "type": "strong",
+           "children": [
+            {
+             "type": "text",
+             "value": "rich"
+            }
+           ]
+          },
+          {
+           "type": "text",
+           "value": " table"
+          }
+         ]
+        }
+       ]
+      },
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "A"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "B"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "id": "head"
+        }
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "Merged"
+               }
+              ]
+             }
+            ],
+            "rowspan": 2,
+            "attrs": {
+             "id": "value",
+             "classes": [
+              "token"
+             ]
+            }
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "one"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "span": "rowspan",
+            "children": []
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "Two paragraphs."
+               }
+              ]
+             },
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "emphasis",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "Second"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "measurements"
+         ],
+         "keyValues": [
+          [
+           "foo",
+           "bar"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "table_foot",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "total"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "3"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "id": "foot"
+        }
+       }
+      ],
+      "attrs": {
+       "id": "data"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0/children/0/attrs"
+     },
+     {
+      "code": "field-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0/children/1/attrs"
+     },
+     {
+      "code": "structure-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0/children/1/children/1/children/1"
+     },
+     {
+      "code": "field-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0/children/2/attrs"
+     }
+    ],
+    "diagnosticsComplete": true,
+    "diagnosticsOrdered": true
+   },
+   "from": []
   }
  ]
 }

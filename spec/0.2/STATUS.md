@@ -553,3 +553,9 @@ The ruling on #6585 (A1 + A2) has two parts. A1: canonical output also passes `u
 
 - All three engines: escape the caret that `unattached-caption` reports in written text (CC-2029 to CC-2035, CC-2037).
 - All three engines: take the `fence-closer-indented` row of `data/lint-model.json` (CC-2026, CC-2039, CC-2040).
+
+## Engine gaps from the write diagnostics order ruling of 24 November (#6619)
+
+The auto-ruling on #6619 (option A) orders the entries of the writer on a supplied tree by their paths, as C2-L-011 orders sidecar entries: a node's own fields before the nodes in its slots (C2-W-158). CC-2045 compares four entries position by position, with the new conformance field `diagnosticsOrdered`. Measured on carve-js `next2` `9aa2b4d`: it lists `structure-unspellable` first, before the three `field-unspellable` entries. carve-php already lists them in path order.
+
+- `carve-js` and `carve-rs`: list write diagnostics in path order (CC-2045).

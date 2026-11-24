@@ -167,6 +167,7 @@
             "output": { "type": "string", "description": "The text an export case returns, byte for byte." },
             "diagnostics": { "$ref": "#/$defs/diagnostics" },
             "diagnosticsComplete": { "type": "boolean", "description": "true: the record holds these entries and no other; false or absent: it holds at least these." },
+            "diagnosticsOrdered": { "type": "boolean", "description": "true, beside diagnosticsComplete: the entries of the record stand in the order of the list, each one matching the listed entry at its position (C2-W-158)." },
             "notReported": { "type": "array", "items": { "$ref": "#/$defs/code" }, "description": "Codes the record holds no entry of." },
             "line": { "type": "integer", "minimum": 1, "description": "The line positionOf returns (C2-T-041)." },
             "column": { "type": "integer", "minimum": 1, "description": "The column positionOf returns (C2-T-041)." },

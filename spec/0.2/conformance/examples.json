@@ -84094,6 +84094,7 @@
    "section": "Diagnostics and lint",
    "clauses": [
     "C2-W-103",
+    "C2-W-158",
     "C2-W-104",
     "C2-W-105",
     "C2-W-106",
@@ -84174,6 +84175,7 @@
    "section": "Diagnostics and lint",
    "clauses": [
     "C2-W-103",
+    "C2-W-158",
     "C2-W-104",
     "C2-W-105",
     "C2-W-106",
