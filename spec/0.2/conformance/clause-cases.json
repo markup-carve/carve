@@ -63622,7 +63622,7 @@
  "html": "<table><tr><th>A</th><th>B</th></tr><tr><td colspan=\"2\">m</td></tr></table>",
  "options": {},
  "expected": {
-  "carve": "{body-rows=1 body-header-rows=1}\n| A | B |\n| m | < |\n",
+  "carve": "|= A |= B |\n| m | < |\n",
   "notReported": [
    "field-unspellable",
    "structure-unspellable"
@@ -82331,7 +82331,7 @@
   "html": "<table><colgroup><col style=\"width:40%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [],
    "diagnosticsComplete": true
   },
@@ -82348,7 +82348,7 @@
   "html": "<table><colgroup><col style=\"WIDTH:40%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [],
    "diagnosticsComplete": true
   },
@@ -82365,7 +82365,7 @@
   "html": "<table><colgroup><col style=\"width : 40% ;\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [],
    "diagnosticsComplete": true
   },
@@ -82382,7 +82382,7 @@
   "html": "<table><colgroup><col style=\"width: 40%; color: red\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [
     {
      "code": "import-attribute-dropped",
@@ -82407,7 +82407,7 @@
   "html": "<table><colgroup><col style=\"width: 30%; width: 50%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{widths=50 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "{widths=50}\n|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [
     {
      "code": "import-attribute-dropped",
@@ -82432,7 +82432,7 @@
   "html": "<table><colgroup><col style=\"width: 40px\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [
     {
      "code": "import-attribute-dropped",
@@ -82457,7 +82457,7 @@
   "html": "<table><colgroup><col style=\"width: 40%;\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
-   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
    "diagnostics": [],
    "diagnosticsComplete": true
   },
@@ -82476,6 +82476,197 @@
   "options": {},
   "expected": {
    "carve": "|{style=text-align:right} a |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2054",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "a leading row of th cells in a table with no thead imports as the head",
+  "kind": "import",
+  "html": "<table><tr><th>Name</th><th>Value</th></tr><tr><td>Alpha</td><td>b</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= Name |= Value |\n| Alpha | b |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2055",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-040"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped. C2-M-040: `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it.",
+  "summary": "a leading row of th cells with scope col imports as the head and drops the scope",
+  "kind": "import",
+  "html": "<table><tr><th scope=\"col\">Name</th><th scope=\"col\">Value</th></tr><tr><td>Alpha</td><td>b</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= Name |= Value |\n| Alpha | b |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2056",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-040"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped. C2-M-040: `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it.",
+  "summary": "a leading row of th cells with scope row stays a body header row",
+  "kind": "import",
+  "html": "<table><tr><th scope=\"row\">Name</th><th scope=\"row\">Value</th></tr><tr><td>Alpha</td><td>b</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=1 body-header-rows=1}\n| Name | Value |\n| Alpha | b |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2057",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "two leading rows of th cells both import as head rows",
+  "kind": "import",
+  "html": "<table><tr><th>A</th><th>B</th></tr><tr><th>C</th><th>D</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |= B |\n|= C |= D |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2058",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "a row of th cells below a body row stays in the body",
+  "kind": "import",
+  "html": "<table><tr><td>1</td><td>2</td></tr><tr><th>A</th><th>B</th></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "| 1 | 2 |\n|= A |= B |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2059",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "a leading row of th and td cells stays in the body",
+  "kind": "import",
+  "html": "<table><tr><th>A</th><td>B</td></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A | B |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2060",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "a leading row of th cells in an explicit tbody imports as the head",
+  "kind": "import",
+  "html": "<table><tbody><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |= B |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2061",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "a row of th cells that leads the second tbody stays in that body",
+  "kind": "import",
+  "html": "<table><tbody><tr><td>1</td><td>2</td></tr></tbody><tbody><tr><th>A</th><th>B</th></tr><tr><td>3</td><td>4</td></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=1,1 body-header-rows=0,1}\n| 1 | 2 |\n| A | B |\n| 3 | 4 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2062",
+  "clauses": [
+   "C2-M-037"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped.",
+  "summary": "a table of th rows only imports as a head with no body",
+  "kind": "import",
+  "html": "<table><tr><th>A</th><th>B</th></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |= B |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2063",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-040"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped. C2-M-040: `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it.",
+  "summary": "a leading th row with one scope row cell stays a body header row",
+  "kind": "import",
+  "html": "<table><tr><th>A</th><th scope=\"row\">B</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=1 body-header-rows=1}\n| A | B |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2064",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-040"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped. C2-M-040: `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it. ... The values of `scope`, `align` and `valign` compare without ASCII case and are kept in lower case",
+  "summary": "a leading th row of unscoped and scope COL cells imports as the head",
+  "kind": "import",
+  "html": "<table><tr><th>A</th><th scope=\"COL\">B</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |= B |\n| 1 | 2 |\n",
    "diagnostics": [],
    "diagnosticsComplete": true
   },
