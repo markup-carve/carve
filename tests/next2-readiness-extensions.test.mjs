@@ -58,7 +58,8 @@ test('every extension case names its extension, its source and an expectation it
     assert.equal(c.kind, 'render', c.id)
     assert.match(c.extension, /^carve\.[A-Za-z][\w.-]*$/, c.id)
     assert.ok(c.options.extensions.includes(c.extension) || c.options.extensions.some(name => catalog.has(name) && c.extension.startsWith(name)), `${c.id} enables ${c.extension}`)
-    assert.ok(c.expectedFrom === '0.2' || c.expectedFrom.startsWith('0.1: '), `${c.id} says where its expectation comes from`)
+    assert.ok(c.expectedFrom === '0.2' || c.expectedFrom.startsWith('0.1: ') || /^ruling: markup-carve\/carve#\d+/.test(c.expectedFrom),
+      `${c.id} says where its expectation comes from`)
     if (c.expectedFrom === '0.2') assert.ok(c.clauses.length > 0, `${c.id} cites the 0.2 clause it follows`)
     assert.ok(c.expected.html !== undefined || c.expected.htmlIncludes !== undefined, `${c.id} states HTML`)
     assert.ok(typeof c.summary === 'string' && c.summary.length > 0, c.id)

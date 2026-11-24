@@ -2002,6 +2002,169 @@
       "expected": {
         "htmlIncludes": "<li><a href=\"https://example.com\" "
       }
+    },
+    {
+      "id": "EXT-095",
+      "extension": "carve.headingNumbers",
+      "summary": "a skipped level continues the counter at its depth (carve#6531 example 1)",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n=== C\n\n== B\n\n==== D\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <section id=\"C\">\n    <h3><span class=\"section-number\">1.1</span> C</h3>\n  </section>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.2</span> B</h2>\n    <section id=\"D\">\n      <h4><span class=\"section-number\">1.2.1</span> D</h4>\n    </section>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-096",
+      "extension": "carve.headingNumbers",
+      "summary": "a lower heading before the first top heading counts at depth one (carve#6531 example 2)",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "== B\n\n= A\n\n== C\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"B\">\n  <h2><span class=\"section-number\">1</span> B</h2>\n</section>\n<section id=\"A\">\n  <h1><span class=\"section-number\">2</span> A</h1>\n  <section id=\"C\">\n    <h2><span class=\"section-number\">2.1</span> C</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-097",
+      "extension": "carve.headingNumbers",
+      "summary": "a heading inside a note takes no number",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n::: note\n== In note\n:::\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <h2 id=\"In-note\">In note</h2>\n  </aside>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.1</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-098",
+      "extension": "carve.headingNumbers",
+      "summary": "inside a list item: the heading takes no number",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n- == In item\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <ul>\n    <li>\n      <h2 id=\"In-item\">In item</h2>\n    </li>\n  </ul>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.1</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-099",
+      "extension": "carve.headingNumbers",
+      "summary": "inside a block quote: the heading takes no number",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n> == Quoted\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.1</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-100",
+      "extension": "carve.headingNumbers",
+      "summary": "a number-title cross-reference keeps the inline markup of the title",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= Intro\n\n{#sub}\n== Sub *bold*\n\nSee </#sub>.\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"Intro\">\n  <h1><span class=\"section-number\">1</span> Intro</h1>\n  <section id=\"sub\">\n    <h2><span class=\"section-number\">1.1</span> Sub <strong>bold</strong></h2>\n    <p>See <a href=\"#sub\">Section 1.1 - Sub <strong>bold</strong></a>.</p>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-101",
+      "extension": "carve.headingNumbers",
+      "summary": "with tableOfContents: both count the same headings by depth",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n=== C\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers",
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#C\">C</a></li>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <section id=\"C\">\n    <h3><span class=\"section-number\">1.1</span> C</h3>\n  </section>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.2</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-102",
+      "extension": "carve.toc",
+      "summary": "skips headings in a block quote and a list item",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n> == Quoted\n\n- == In item\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <ul>\n    <li>\n      <h2 id=\"In-item\">In item</h2>\n    </li>\n  </ul>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-103",
+      "extension": "carve.tocPlacement",
+      "summary": "a placed table skips headings in a note and a block quote",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "::: toc\n:::\n\n= A\n\n::: note\n== In note\n:::\n\n> == Quoted\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.tocPlacement"
+        ],
+        "renderers": {
+          "carve.tocPlacement": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <h2 id=\"In-note\">In note</h2>\n  </aside>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>"
+      }
     }
   ]
 }
