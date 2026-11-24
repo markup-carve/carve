@@ -1192,7 +1192,7 @@ Written:
 
 **C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are migration notices of C2-W-156 through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id. `continuation-reading-changed` reports no removed spelling either: it is the migration notice of C2-W-156 for a line that a definition, a term or a caption reads otherwise than 0.1 did (C2-B-083, C2-B-084, C2-B-234).
 
-`_a_` was underline in 0.1 and is a deprecated spelling in 0.2; a document that declares Carve 0.1 reports it (C2-W-110, C2-W-156).
+`_a_` was underline in 0.1 and is a deprecated spelling in 0.2, and Djot reads it as emphasis; a document that declares Carve 0.1 reports both (C2-W-110, C2-W-156).
 
 Example 24 (unverified)
 
@@ -1205,7 +1205,7 @@ carve: 0.1
 _a_
 ```
 
-Reported: `deprecated-bare-underline`.
+Reported: `deprecated-bare-underline`, `djot-emphasis-underscore`.
 
 An indented title below a link definition is its tail in 0.2 and was a paragraph in 0.1, so a document that declares Carve 0.1 reports the line (C2-W-110, C2-W-156).
 
