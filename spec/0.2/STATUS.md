@@ -539,3 +539,10 @@ The ruling on #6566 (reading 2) makes a construct that opens on the opener of a 
 The ruling on #6570 (option A) adds case nine to C2-W-125: where a braced opener reads as the key of a valid attribute block, the first character of its content that makes the block valid gets the backslash, so an underline of `=.` is written `{_\=._}`. Clause case CC-2021 is added. Measured on `carve-js` `next2` `08df6978`: it writes `{_=._}` and reports `structure-unspellable`; `carve-php` `next2` `cd08d2e2` reports `writer-refused`. The issue measured `carve-rs` `next2` `3f79f926` writing `{_=._}` with `structure-unspellable`.
 
 - All three engines: place the backslash of case nine (CC-2021).
+
+## Engine gaps from the brace-kind ruling of 24 November (#6561, #6559)
+
+The rulings on #6561 and #6559 let the text of C2-W-088 win over the older form pinned in CC-1568: every potential opener of a reported kind takes the backslash, and pairing does not count. CC-1568 now expects `\{^\^}` where it expected `\{\^\^}`; no other byte moves. Measured on `carve-js` `next2` `08df6978` and `carve-php` `next2` `cd08d2e2`: both write the old form. The head of carve-js#5550 (`0058adb0`) writes the new one.
+
+- `carve-js`: carve-js#5550 (CC-1568 and the writer-slow fixture `4e78df2a673d1efc.out`).
+- `carve-php` and `carve-rs`: write the new CC-1568 form.
