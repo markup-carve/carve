@@ -229,7 +229,12 @@ export function noise(source, r) {
   if (k === 0) return source.replaceAll('\n', '\r\n')
   if (k === 1) return source.replaceAll('\n', '\r')
   if (k === 2) return source.replace(/^( {2,4})/gm, '\t')
-  if (k === 3) { const at = r.int(source.length + 1); return source.slice(0, at) + r.pick(['\u0000', '\u000b', '\u000c', '\u0085', ' ', '﻿']) + source.slice(at) }
+  if (k === 3) {
+    // Insert on a code point boundary: a split surrogate pair is not a Carve source.
+    const points = Array.from(source)
+    const at = r.int(points.length + 1)
+    return points.slice(0, at).join('') + r.pick(['\u0000', '\u000b', '\u000c', '\u0085', ' ', '﻿']) + points.slice(at).join('')
+  }
   if (k === 4) return source.replace(/\n$/, '')
   return source.replace(/ /g, () => r.chance(0.2) ? '\t' : ' ')
 }

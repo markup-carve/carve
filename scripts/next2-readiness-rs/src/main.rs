@@ -15,10 +15,13 @@ fn diagnostics(items: Vec<carve::diagnostic::Diagnostic>) -> Value {
     })).collect())
 }
 
-fn decode_unbounded(source: &str) -> Value {
+/// Every engine answer is read here: without serde's 128-level limit, and an
+/// unreadable answer is a harness error, never `Null`.
+fn decode(source: &str) -> Result<Value, Value> {
     let mut decoder = serde_json::Deserializer::from_str(source);
     decoder.disable_recursion_limit();
-    Value::deserialize(&mut decoder).unwrap_or(Value::Null)
+    Value::deserialize(&mut decoder).map_err(|error| json!({"accepted":false,"error":"HarnessError",
+        "message":format!("engine answer is not readable JSON: {error}"),"path":null}))
 }
 
 fn options(v: &Value, files: Option<&Value>) -> carve::Options {
@@ -138,7 +141,7 @@ fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
 }
 
 fn invoke(req: Value) -> Result<Value, Value> {
-    let out: Value = serde_json::from_str(&carve::api::json::call(&req.to_string())).unwrap_or(Value::Null);
+    let out = decode(&carve::api::json::call(&req.to_string()))?;
     match out.get("ok") {
         Some(ok) => Ok(ok.clone()),
         None => {
@@ -309,8 +312,10 @@ fn run(c: &Value) -> Value {
     let o = options(&c["options"], c.get("files"));
     match kind {
         "layout" => match carve::api::parse_with_layout(input, &o) {
-            Ok(result) => json!({"tree":serde_json::from_str::<Value>(&carve::api::encode_tree(&result.tree)).unwrap_or(Value::Null),
-                "layout":result.layout,"diagnostics":result.diagnostics}),
+            Ok(result) => match decode(&carve::api::encode_tree(&result.tree)) {
+                Ok(tree) => json!({"tree":tree,"layout":result.layout,"diagnostics":result.diagnostics}),
+                Err(error) => error,
+            },
             Err(error) => json!({"accepted":false,"error":error.spec_name(),"path":error.path()}),
         },
         "layout-fixture" => {
@@ -344,7 +349,7 @@ fn run(c: &Value) -> Value {
                     Err(e) => return json!({"error":e.to_string()}),
                 }
             } else { carve::tree_json(input, &o) };
-            let tree = decode_unbounded(&tree);
+            let tree = match decode(&tree) { Ok(tree) => tree, Err(error) => return error };
             if kind == "parse" {
                 return match carve::api::parse_with_diagnostics(input, &o) {
                     Ok(parsed) => json!({"tree":tree,"diagnostics":parsed.diagnostics,
@@ -376,11 +381,14 @@ fn run(c: &Value) -> Value {
             }
             let mut result = json!({"diagnostics":diagnostics(carve::lint::lint(input, &opts))});
             if c["area"] == "examples" {
-                result["tree"] = decode_unbounded(&carve::tree_json(input, &o));
+                result["tree"] = match decode(&carve::tree_json(input, &o)) { Ok(tree) => tree, Err(error) => return error };
             }
             result
         }
-        "tree-fixture" => json!({"accepted":true,"tree":decode_unbounded(&carve::tree_json(input, &o))}),
+        "tree-fixture" => match decode(&carve::tree_json(input, &o)) {
+            Ok(tree) => json!({"accepted":true,"tree":tree}),
+            Err(error) => error,
+        },
         "tree" | "refused-tree" | "supplied-tree" => {
             if let Some(annotations) = c.get("annotations") {
                 let source = c["json"].as_str().map(str::to_owned)
@@ -394,7 +402,10 @@ fn run(c: &Value) -> Value {
             let result = if let Some(source) = c["json"].as_str() { carve::reader::read_tree_json(source) }
                 else { carve::reader::read_tree_value(c["tree"].clone()) };
             match result {
-                Ok(read) => json!({"accepted":true,"tree":serde_json::from_str::<Value>(&carve::reader::write_tree_json(&read)).unwrap_or(Value::Null)}),
+                Ok(read) => match decode(&carve::reader::write_tree_json(&read)) {
+                    Ok(tree) => json!({"accepted":true,"tree":tree}),
+                    Err(error) => error,
+                },
                 Err(e) => {
                     let path = match &e {
                         carve::reader::TreeError::Schema { path, .. }
@@ -422,7 +433,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use super::{run, decode_unbounded};
+    use super::{run, decode};
     use serde_json::json;
 
     #[test]
@@ -480,6 +491,21 @@ mod tests {
         let nested = (0..180).fold(String::from("{\"type\":\"text\",\"value\":\"x\"}"),
             |node, _| format!("{{\"type\":\"strong\",\"children\":[{node}]}}"));
         let source = format!("[{nested}]");
-        assert!(decode_unbounded(&source).is_array());
+        assert!(decode(&source).unwrap().is_array());
+    }
+
+    #[test]
+    fn deep_engine_answer_is_read_not_nulled() {
+        let depth = 150;
+        let html = format!("{}<p>x</p>{}", "<blockquote>".repeat(depth), "</blockquote>".repeat(depth));
+        let output = run(&json!({"kind":"import", "html":html}));
+        assert_eq!(output["carve"], format!("{}x\n", "> ".repeat(depth)), "{output}");
+    }
+
+    #[test]
+    fn unreadable_engine_answer_is_a_harness_error() {
+        let error = decode("{\"ok\":").unwrap_err();
+        assert_eq!(error["error"], "HarnessError");
+        assert!(error["message"].as_str().unwrap().starts_with("engine answer is not readable JSON"), "{error}");
     }
 }
