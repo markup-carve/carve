@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { CaseFileError, checkCase, enumFields, indexClauseCases, loadModel, parseCaseFile, run } from '../scripts/expected-check.mjs'
+import { CaseFileError, agrees, matchDiagnostics, checkCase, enumFields, indexClauseCases, loadModel, parseCaseFile, run } from '../scripts/expected-check.mjs'
 
 const root = resolve(import.meta.dirname, '..')
 const fixtures = resolve(root, 'tests/fixtures/expected-check')
@@ -87,4 +87,16 @@ test('the command exits 1 on the conflicts and 0 on cases the model gives', { sk
 test('a Carve 0.2 level-2 heading starts a case as well', () => {
   const [c] = parseCaseFile('== x\n\n- operation: html\n\n```crv\na\n```\n\n```html\n<p>a</p>\n```\n')
   assert.equal(c.id, 'x')
+})
+
+test('each expected finding takes its own finding', () => {
+  const found = [{ code: 'r', line: 1, column: 1 }, { code: 'r', line: 2, column: 1 }]
+  assert.equal(matchDiagnostics(found, [{ code: 'r', line: 1, column: 1 }, { code: 'r', line: 1, column: 1 }]), false)
+  assert.equal(matchDiagnostics(found, [{ code: 'r' }, { code: 'r', line: 1, column: 1 }]), true)
+  assert.equal(matchDiagnostics(found, [{ code: 'r', severity: 'error' }]), false)
+})
+
+test('html keeps trailing spaces significant', () => {
+  assert.equal(agrees('html', { output: '<p>a</p>\n' }, '<p>a</p>'), true)
+  assert.equal(agrees('html', { output: '<p>a</p>\n' }, '<p>a</p>  '), false)
 })

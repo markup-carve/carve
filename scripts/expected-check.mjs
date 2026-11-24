@@ -142,17 +142,33 @@ function point(source, offset) {
   const lines = Buffer.from(source).subarray(0, offset).toString('utf8').split('\n')
   return { line: lines.length, column: [...lines.at(-1)].length + 1 }
 }
-const lintEntries = (diagnostics, source) => diagnostics.map(d => ({ code: d.code, ...(d.range ? point(source, d.range.startOffset) : {}) }))
+const lintEntries = (diagnostics, source) => diagnostics.map(d => {
+  if (!d.range) return { code: d.code, severity: d.severity, channel: d.channel }
+  const start = point(source, d.range.startOffset)
+  const end = point(source, d.range.endOffset)
+  return { code: d.code, severity: d.severity, channel: d.channel, ...start, endLine: end.line, endColumn: end.column }
+})
 const lintText = entries => entries.map(e => e.line ? `${e.code} ${e.line}:${e.column}` : e.code).join('\n')
-const lintMatches = (actual, expected) => actual.length === expected.length && expected.every(w =>
-  actual.some(a => a.code === w.code && (w.line === undefined || (a.line === w.line && a.column === w.column))))
+const PLACE = ['line', 'column', 'endLine', 'endColumn', 'severity', 'channel']
+const fits = (found, wanted) => found.code === wanted.code && PLACE.every(key => wanted[key] === undefined || found[key] === wanted[key])
+// Each expected entry takes its own finding (augmenting paths), so two expectations never share one finding.
+export function matchDiagnostics(found, wanted) {
+  const owner = new Array(found.length).fill(-1)
+  const assign = (w, seen) => found.some((f, i) => {
+    if (seen.has(i) || !fits(f, wanted[w])) return false
+    seen.add(i)
+    if (owner[i] === -1 || assign(owner[i], seen)) { owner[i] = w; return true }
+    return false
+  })
+  return wanted.every((_, w) => assign(w, new Set()))
+}
 
 export function agrees(operation, actual, expected) {
   if (actual.error) return false
   if (operation === 'fmt') return actual.output === expected
-  if (operation === 'html') return actual.output.replace(/\s+$/, '') === expected.replace(/\s+$/, '')
+  if (operation === 'html') return actual.output.replace(/\n$/, '') === expected.replace(/\n$/, '')
   if (operation === 'ast') return sameTree(actual.output, expected)
-  return lintMatches(actual.output, expected)
+  return actual.output.length === expected.length && matchDiagnostics(actual.output, expected)
 }
 
 export function show(operation, value) {
@@ -169,8 +185,8 @@ export async function loadModel(dir) {
   const js = await import(pathToFileURL(entry))
   const run = (operation, input, options = {}) => {
     try {
-      if (operation === 'fmt') return { output: js.formatWithDiagnostics(input, options).source }
-      if (operation === 'html') return { output: js.renderWithDiagnostics(input, options).html }
+      if (operation === 'fmt') { const r = js.formatWithDiagnostics(input, options); return { output: r.source, diagnostics: lintEntries(r.diagnostics, input) } }
+      if (operation === 'html') { const r = js.renderWithDiagnostics(input, options); return { output: r.html, diagnostics: lintEntries(r.diagnostics, input) } }
       if (operation === 'ast') return { output: js.parse(input, { ...options, positions: false }).children }
       return { output: lintEntries(js.lint(input, options), input) }
     } catch (e) { return { error: `${e.name}: ${e.message}` } }
@@ -288,6 +304,7 @@ function clauseCasePasses(model, c) {
   const operation = kind === 'format' ? 'fmt' : kind === 'lint' ? 'lint' : c.expected.html !== undefined ? 'html' : 'ast'
   const r = model.run(operation, c.input, c.options)
   if (r.error) return !!c.expected.refusal
+  if (!diagnosticsHold(operation === 'lint' ? r.output : r.diagnostics, c.expected)) return false
   if (operation === 'fmt') return c.expected.carve === undefined || r.output === c.expected.carve
   if (operation === 'html') {
     if (r.output !== c.expected.html) return false
@@ -295,9 +312,15 @@ function clauseCasePasses(model, c) {
     return same(model.run('ast', c.input, c.options).output, c.expected.children)
   }
   if (operation === 'ast') return same(r.output, c.expected.children ?? c.expected.tree?.children)
-  const codes = new Set(r.output.map(d => d.code))
-  return (c.expected.diagnostics ?? []).every(d => codes.has(typeof d === 'string' ? d : d.code))
-    && (c.expected.notReported ?? []).every(code => !codes.has(code))
+  return true
+}
+
+// The conformance README's diagnostics: stated fields compared, complete only where the case says so.
+function diagnosticsHold(found = [], expected) {
+  if (!expected.diagnostics && !expected.notReported) return true
+  const wanted = (expected.diagnostics ?? []).map(d => typeof d === 'string' ? { code: d } : d)
+  if (expected.diagnosticsComplete && found.length !== wanted.length) return false
+  return matchDiagnostics(found, wanted) && (expected.notReported ?? []).every(code => !found.some(d => d.code === code))
 }
 
 function expectedOf(c, operation) {
