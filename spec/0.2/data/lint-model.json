@@ -3854,6 +3854,252 @@
       ]
     },
     {
+      "id": "continuation-reading-changed",
+      "over": "block",
+      "types": [
+        "abbreviation_def",
+        "link_reference_definition"
+      ],
+      "let": {
+        "line_start": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "start"
+          }
+        },
+        "line_end": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "end"
+          }
+        },
+        "line_body": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "body_start"
+          }
+        }
+      },
+      "when": {
+        "lt": [
+          {
+            "v": "line_start"
+          },
+          {
+            "f": "end"
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "v": "line_start"
+          },
+          "end": {
+            "v": "line_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-083",
+        "C2-B-084"
+      ]
+    },
+    {
+      "id": "continuation-reading-changed",
+      "over": "line",
+      "when": {
+        "any": [
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "leaf"
+                  },
+                  "definition_term"
+                ]
+              },
+              {
+                "not": {
+                  "f": "leaf_first"
+                }
+              },
+              {
+                "f": "prev.leaf_first"
+              },
+              {
+                "eq": [
+                  {
+                    "f": "prev.leaf_id"
+                  },
+                  {
+                    "f": "leaf_id"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "prev.leaf"
+                  },
+                  "caption"
+                ]
+              },
+              {
+                "not": {
+                  "eq": [
+                    {
+                      "f": "prev.leaf_id"
+                    },
+                    {
+                      "f": "leaf_id"
+                    }
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "f": "blank"
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "f": "quote_marks"
+                  },
+                  {
+                    "f": "prev.quote_marks"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "in": [
+                      {
+                        "f": "shape"
+                      },
+                      [
+                        "block_image",
+                        "bullet",
+                        "description",
+                        "display_math",
+                        "ordered",
+                        "text"
+                      ]
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          {
+                            "f": "shape"
+                          },
+                          "heading"
+                        ]
+                      },
+                      {
+                        "starts": [
+                          {
+                            "f": "body"
+                          },
+                          "="
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "definition_term"
+            ]
+          },
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        },
+        {
+          "message": 2,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-069",
+        "C2-B-148",
+        "C2-B-234"
+      ]
+    },
+    {
       "id": "definition-in-container",
       "over": "line",
       "when": {

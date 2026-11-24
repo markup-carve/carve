@@ -600,16 +600,19 @@ A ruling of 24 November decides #6507: a link definition and an abbreviation def
 | A title or attribute block on the indented line below a link definition: `[a]: /url`, then `  "Title"` | The definition ended at its line, and the indented line was a paragraph, `<p>“Title”</p>`; an indented `{.c}` was an attribute line of the next block. | The line is the definition's tail: `<a href="/url" title="Title">`, and `{.c}` reaches every link that uses the definition. A title line and then an attribute block line may each continue it. | C2-B-083, C2-B-091 |
 | An abbreviation expansion over indented lines: `*[HTML]: Hyper Text`, then `  Markup Language` | The expansion was `Hyper Text`, and the indented line was a paragraph. | The expansion is `Hyper Text Markup Language`. `carve fmt` writes it on one line. An indented fence line, table row, thematic break or region marker line still ends the definition and starts its block, as in 0.1. | C2-B-084, C2-W-055 |
 
+`carve lint --upgrade`, or a document that declares `carve: 0.1`, reports each such line with `continuation-reading-changed` (C2-W-156), once per definition.
+
 ### Ruling of 24 November 2026: labels continue only on indented lines
 
 A ruling of 24 November decides #6508: a caption (`^`, also a quote attribution) and a description term (`::`) continue only on lines indented past their marker, as a heading does (C2-B-154). The three are labels (C2-B-234). Only paragraph text keeps unindented continuation lines.
 
 | You write | Earlier 0.2 | Now |
 | --- | --- | --- |
-| `^ Cap`, then `Next prose.` | one caption of two lines | a caption `Cap` and a paragraph, as in 0.1 |
-| `^ Cap`, then `= Heading`, `> q` or `- x` | caption text | a heading, a quote or a list, as in 0.1 |
+| `^ Cap`, then `Next prose.` | one caption of two lines, as in 0.1 | a caption `Cap` and a paragraph; `continuation-reading-changed` reports the line under `--upgrade` |
+| `^ Cap`, then `= Heading`, `> q` or `- x` | caption text, as in 0.1 for `= Heading` and `- x` | a heading, a quote or a list; `continuation-reading-changed` reports `= Heading` and `- x` under `--upgrade` |
 | `^ one`, then `^ two` | one caption of two lines | a caption `one` and the text `^ two`, which `unattached-caption` reports, as in 0.1 |
 | `:: Term`, then `More prose.` | one term of two lines | a term and a paragraph, as in 0.1 |
+| `:: Term`, then `   more` | term text; 0.1 read a paragraph | term text; `continuation-reading-changed` reports the line under `--upgrade` |
 | `:: Term`, then `   : desc` | term text | term text; `description-term-multi-line` reports the `:` |
 
 Write a two-line caption or term with its second line indented past the marker; `carve fmt` already writes it that way (C2-W-024). `description-term-multi-line` now reports only a term line that starts with a description mark. That shape is suspect in 0.2 itself, so the rule is no migration notice and is on by default again; the second ruling of 24 November on #6499 had made it one. U-010, U-106 and U-107 now render as in 0.1.

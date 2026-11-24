@@ -468,3 +468,8 @@ The same ruling adds the hint `link-definition-indented-line` (C2-B-083): an ind
 The same ruling lets the tail of a link definition span two indented lines: a title line, then an attribute block line, at most one of each (C2-B-083). `fmt` writes such a tail as it writes the same tail on the definition line. Example syntax-blocks-296, clause cases CC-1890 to CC-1899. `carve-js` `next2` `383040ef` takes no tail line, so all ten cases fail there.
 
 - All three engines: take a title line and then an attribute block line as the tail of a link definition, and read a later tail part, a second title or a second attribute block as the next block (syntax-blocks-296, CC-1890 to CC-1899).
+
+The same ruling adds the migration notice `continuation-reading-changed` (default `upgrade`, C2-W-156): the first indented line a link or abbreviation definition takes, the first indented line a term takes, and an unindented text line directly below a caption, which 0.1 took into the caption (measured on `carve-js` 0.1.17 and `carve-rs` 0.1.14). It is stated as two data rows of `lint-model.json`, a block row for the definitions and a line row for terms and captions. Example writer-47, clause cases CC-1900 to CC-1913. Measured on `carve-js` `next2` `383040ef` with the data rows of this change and the rule turned on by `rules`: the term row reports CC-1907; the cases with the option `upgrade` wait for the port of C2-W-156 (carve-js#5500), the definition cases for the port of #6507 and the caption cases for the port of #6508.
+
+- carve-js: the rows arrive with the spec pin; the cases pass once C2-W-156, #6507 and #6508 are ported.
+- carve-php and carve-rs: add `continuation-reading-changed` from its two data rows (writer-47, CC-1900 to CC-1913).

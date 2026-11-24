@@ -78229,6 +78229,338 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1900",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-083"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented title that a link definition takes is reported under upgrade",
+   "kind": "lint",
+   "input": "[a]: /url\n  \"Title\"\n\nSee [a].\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1901",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-084"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented expansion line of an abbreviation definition is reported under upgrade",
+   "kind": "lint",
+   "input": "*[HTML]: Hyper Text\n  Markup Language\n\nHTML\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1902",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231",
+    "C2-B-083"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "a document that declares Carve 0.1 reports the tail line of a link definition",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n[a]: /url\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 5,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1903",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-084"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "an expansion over two lines lints clean by default",
+   "kind": "lint",
+   "input": "*[HTML]: Hyper Text\n  Markup Language\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1904",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-083"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented line that a link definition does not take is a paragraph in both readings and is not reported",
+   "kind": "lint",
+   "input": "[a]: /url\n  more text\n\nSee [a].\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1905",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-084"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented table row below an abbreviation definition is a table in both readings and is not reported",
+   "kind": "lint",
+   "input": "*[HTML]: Hyper Text\n  | a |\n\nHTML\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1906",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-083"
+   ],
+   "why": "Catalog continuation-reading-changed: which 0.1 read as a paragraph (C2-B-083, C2-B-084), once per definition",
+   "summary": "a tail over two lines is reported once, at its first line",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\"\n  {.c}\n\nSee [a].\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1907",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-069",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
+   "summary": "an indented line that continues a term is reported under upgrade",
+   "kind": "lint",
+   "input": ":: t\n  more\n: d\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1908",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-069",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
+   "summary": "an unindented line below a term is a paragraph in both readings and is not reported",
+   "kind": "lint",
+   "input": ":: t\nmore\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1909",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret",
+   "summary": "an unindented text line below a caption is reported under upgrade",
+   "kind": "lint",
+   "input": "| a |\n^ cap\nmore\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1910",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret",
+   "summary": "an unindented list marker line below a caption is reported under upgrade",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n- x\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1911",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret",
+   "summary": "an indented line continues a caption in both readings and is not reported",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n  more\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1912",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: when it carries as many quote marks as that last line and is text, a block image line, a display math line, a list item marker line, a description line or a heading line that starts with `=`",
+   "summary": "a quote line below a caption ended it in 0.1 too and is not reported",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n> q\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1913",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: a heading line that starts with `=`",
+   "summary": "a heading line that starts with = below a caption is reported under upgrade",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n= H\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

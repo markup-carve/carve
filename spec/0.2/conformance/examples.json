@@ -84157,6 +84157,141 @@
    "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
   },
   {
+   "id": "writer-47",
+   "document": "writer.md",
+   "number": 47,
+   "section": "Diagnostics and lint",
+   "clauses": [
+    "C2-W-103",
+    "C2-W-104",
+    "C2-W-105",
+    "C2-W-106",
+    "C2-W-107",
+    "C2-W-153",
+    "C2-W-108",
+    "C2-W-109",
+    "C2-W-110",
+    "C2-W-111",
+    "C2-W-156"
+   ],
+   "clauseScope": "section",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n[a]: /url\n  \"Title\"\n\nSee [a].",
+   "options": {},
+   "expected": {
+    "tree": {
+     "astVersion": "2.0",
+     "children": [
+      {
+       "format": "yaml",
+       "pos": {
+        "endColumn": 4,
+        "endLine": 3,
+        "endOffset": 18,
+        "startColumn": 1,
+        "startLine": 1,
+        "startOffset": 0
+       },
+       "type": "frontmatter",
+       "value": "carve: 0.1\n"
+      },
+      {
+       "href": "/url",
+       "key": "a",
+       "namespace": "link",
+       "pos": {
+        "endColumn": 10,
+        "endLine": 5,
+        "endOffset": 38,
+        "startColumn": 1,
+        "startLine": 4,
+        "startOffset": 19
+       },
+       "tooltip": "Title",
+       "type": "link_reference_definition"
+      },
+      {
+       "children": [
+        {
+         "pos": {
+          "endColumn": 5,
+          "endLine": 7,
+          "endOffset": 44,
+          "startColumn": 1,
+          "startLine": 7,
+          "startOffset": 40
+         },
+         "type": "text",
+         "value": "See "
+        },
+        {
+         "children": [
+          {
+           "pos": {
+            "endColumn": 7,
+            "endLine": 7,
+            "endOffset": 46,
+            "startColumn": 6,
+            "startLine": 7,
+            "startOffset": 45
+           },
+           "type": "text",
+           "value": "a"
+          }
+         ],
+         "href": "/url",
+         "key": "a",
+         "namespace": "link",
+         "pos": {
+          "endColumn": 8,
+          "endLine": 7,
+          "endOffset": 47,
+          "startColumn": 5,
+          "startLine": 7,
+          "startOffset": 44
+         },
+         "refForm": "shortcut",
+         "type": "link"
+        },
+        {
+         "pos": {
+          "endColumn": 9,
+          "endLine": 7,
+          "endOffset": 48,
+          "startColumn": 8,
+          "startLine": 7,
+          "startOffset": 47
+         },
+         "type": "text",
+         "value": "."
+        }
+       ],
+       "pos": {
+        "endColumn": 9,
+        "endLine": 7,
+        "endOffset": 48,
+        "startColumn": 1,
+        "startLine": 7,
+        "startOffset": 40
+       },
+       "type": "paragraph"
+      }
+     ],
+     "srcByteLength": 48,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ],
+     "type": "document"
+    },
+    "diagnostics": [
+     "continuation-reading-changed"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
+  },
+  {
    "id": "writer-8",
    "document": "writer.md",
    "number": 8,
