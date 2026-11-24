@@ -80160,7 +80160,7 @@
     "C2-B-024",
     "C2-B-036"
    ],
-   "why": "Catalog djot-ordered-marker: or a lazy line (C2-B-024), the two places where Djot starts a list: Djot ends a quote or a list item at such a line",
+   "why": "Catalog djot-ordered-marker: or a lazy line (C2-B-024) ... Djot ends a quote or a list item at such a line",
    "summary": "a lazy marker line below a quote is reported under upgrade",
    "kind": "lint",
    "input": "> p\n(1) x\n",
@@ -80176,6 +80176,46 @@
       "channel": "lint",
       "severity": "hint"
      }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1977",
+   "clauses": [
+    "C2-B-024",
+    "C2-B-036"
+   ],
+   "why": "Catalog djot-ordered-marker: whose body starts at or left of the marker column of the innermost list item that holds it",
+   "summary": "a lazy marker line indented past the item marker is item text in Djot too and is not reported",
+   "kind": "lint",
+   "input": "- a\n (2) b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "djot-ordered-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1978",
+   "clauses": [
+    "C2-B-024",
+    "C2-B-036"
+   ],
+   "why": "Catalog djot-ordered-marker: whose body starts at or left of the marker column of the innermost list item that holds it",
+   "summary": "a lazy marker line short of the content column but past the item marker is not reported",
+   "kind": "lint",
+   "input": "1. a\n  (2) b\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "djot-ordered-marker"
     ]
    },
    "from": []

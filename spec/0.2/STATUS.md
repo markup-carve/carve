@@ -480,7 +480,7 @@ The ruling on #6523 keeps the lint default of every rule under `--fix` (C2-T-049
 
 ## Engine gaps from the Djot migration-notice ruling of 24 November (#6522)
 
-The ruling on #6522 adds five migration notices, each a hint with the default `upgrade` (C2-W-156) and no fix, stated as data rows in `lint-model.json`: `djot-emphasis-underscore-braced`, `djot-typography-sign`, `djot-definition-list`, `djot-ordered-marker` and `djot-tag-mention`. Clause cases CC-1952 to CC-1976.
+The ruling on #6522 adds five migration notices, each a hint with the default `upgrade` (C2-W-156) and no fix, stated as data rows in `lint-model.json`: `djot-emphasis-underscore-braced`, `djot-typography-sign`, `djot-definition-list`, `djot-ordered-marker` and `djot-tag-mention`. Clause cases CC-1952 to CC-1978.
 
 - carve-js: the rows arrive with the spec pin, since `lint/catalog.ts` and `lint/data-tables.ts` are generated from the data files; the cases pass with the generated tables and no matcher code.
-- carve-php and carve-rs: add the five rules from their data rows (CC-1952 to CC-1976).
+- carve-php and carve-rs: add the five rules from their data rows (CC-1952 to CC-1978).

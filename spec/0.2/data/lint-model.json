@@ -6644,6 +6644,61 @@
     {
       "id": "djot-ordered-marker",
       "over": "line",
+      "let": {
+        "item_index": {
+          "index_of": [
+            {
+              "f": "ancestors"
+            },
+            "list_item"
+          ]
+        },
+        "item_marker_column": {
+          "if": [
+            {
+              "ge": [
+                {
+                  "v": "item_index"
+                },
+                0
+              ]
+            },
+            {
+              "lookup": {
+                "over": "block",
+                "types": [
+                  "list_item"
+                ],
+                "key": {
+                  "f": "item.identity"
+                },
+                "value": {
+                  "nth": [
+                    {
+                      "f": "ancestor_ids"
+                    },
+                    {
+                      "v": "item_index"
+                    }
+                  ]
+                },
+                "field": "opener_column"
+              }
+            },
+            -1
+          ]
+        },
+        "column": {
+          "column": [
+            {
+              "f": "body_start"
+            },
+            {
+              "f": "quote_depth"
+            }
+          ]
+        }
+      },
       "when": {
         "all": [
           {
@@ -6668,7 +6723,33 @@
                 "f": "leaf_first"
               },
               {
-                "f": "lazy"
+                "all": [
+                  {
+                    "f": "lazy"
+                  },
+                  {
+                    "any": [
+                      {
+                        "lt": [
+                          {
+                            "v": "item_index"
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        "le": [
+                          {
+                            "v": "column"
+                          },
+                          {
+                            "v": "item_marker_column"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
