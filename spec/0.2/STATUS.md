@@ -495,3 +495,9 @@ The same ruling adds the migration notice `code-span-padding-kept` (default `upg
 
 - carve-js: the rows arrive with the spec pin, since `lint/data-tables.ts` is generated from `data/lint-model.json`; CC-1996, CC-1998, CC-1999, CC-2003, CC-2004 and CC-2005 pass once C2-I-016 is ported. Its `upgrade` tool writes U-441 and moves the line-break shape from U-439 to U-258.
 - carve-php and carve-rs: add `code-span-padding-kept` from its data row (CC-1996 to CC-2006).
+
+## Engine gaps from the heading numbers ruling of 24 November (#6531)
+
+The ruling on #6531 numbers headings by depth and has `carve.headingNumbers`, `carve.toc` and `carve.tocPlacement` count only the headings a section wraps. No 0.2 clause covers these extensions; extension cases EXT-095 to EXT-103 cite the ruling. Measured on `carve-js` `next2` `8924bed4` and `carve-php` `next2` `a335b4f5`: all nine pass. `carve-rs` at the head of carve-rs#4697 (`a4458689`) passes eight.
+
+- `carve-rs`: `table_of_contents()` nests the entry after a skipped level by level, not by depth (EXT-101, carve-rs#4701).

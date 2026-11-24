@@ -69,6 +69,9 @@ function optionsOf(array $case): array
         'carve.fencedRender.vega-lite' => static fn () => Extension\FencedRender::vegaLite(),
         'carve.fencedRender.chart' => static fn () => Extension\FencedRender::chart(),
         'carve.externalLinks' => static fn () => Extension\Navigation::externalLinks(),
+        'carve.headingNumbers' => static fn () => Extension\Navigation::headingNumbers(),
+        'carve.toc' => static fn () => Extension\Navigation::tableOfContents(),
+        'carve.tocPlacement' => static fn () => Extension\Navigation::tocPlacement(),
     ];
     $extensions = [];
     foreach ($options['extensions'] ?? [] as $extension) {
@@ -79,6 +82,8 @@ function optionsOf(array $case): array
         $made = $named[$extension]();
         // A transform-only extension is one definition, not a bundle.
         if (!method_exists($made, 'definitions')) {
+            // Such a definition carries its own renderer (carve.toc, carve.tocPlacement).
+            unset($options['renderers'][$extension]);
             $extensions[] = $made;
             continue;
         }

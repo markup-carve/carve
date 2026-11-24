@@ -225,7 +225,10 @@ const namedBundles = {
   'carve.fencedRender.d2': standard.d2, 'carve.fencedRender.graphviz': standard.graphviz, 'carve.fencedRender.dot': standard.graphviz,
   'carve.fencedRender.wavedrom': standard.wavedrom, 'carve.fencedRender.abc': standard.abc, 'carve.fencedRender.plantuml': standard.plantuml,
   'carve.fencedRender.puml': standard.plantuml, 'carve.fencedRender.vega-lite': standard.vegaLite, 'carve.fencedRender.chart': standard.chart,
-  'carve.externalLinks': standard.externalLinks,
+  'carve.externalLinks': standard.externalLinks, 'carve.headingNumbers': standard.headingNumbers,
+  'carve.toc': () => ({ extensions: [standard.tableOfContents()], renderers: { 'carve.toc': standard.tocRenderers['carve.toc'] } }),
+  'carve.tocPlacement': () => ({ extensions: [standard.tocPlacement()],
+    renderers: { 'carve.tocPlacement': standard.tocRenderers['carve.tocPlacement'] } }),
 }
 function namedBundleOptions(options) {
   const transforms = []
