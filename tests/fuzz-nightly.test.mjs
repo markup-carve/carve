@@ -20,6 +20,11 @@ test('mutants and generated shapes are well-formed strings', () => {
   for (const make of Object.values(LONG)) assert.ok(make(4).length > 0)
 })
 
+test('noise never splits a surrogate pair', () => {
+  const r = rng(91124303)
+  for (let i = 0; i < 2000; i++) assert.equal(noise('\u{1F600}\u{1F600}x\n', r).isWellFormed(), true)
+})
+
 test('agreement groups the participants by equal output', () => {
   assert.equal(agreementPattern({ js: 'a', php: 'a', rs: 'a' }), 'js,php,rs')
   assert.equal(agreementPattern({ js: 'a', php: 'b', rs: 'a' }), 'js,rs|php')
