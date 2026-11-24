@@ -172,7 +172,7 @@ These forms are text in Djot and syntax in Carve, so Djot text that happens to c
 
 1. Run `carve lint --upgrade` on the Djot file. It reports `_x_`, `~x~`, `^x^`, `{~x~}`, `+` bullets, folded headings and the removed thematic-break spellings; `carve fix` rewrites the ones that have one replacement. The reference engine also offers `carve import --from djot`, which is outside the specification.
 2. Replace `---` breaks with `***`, and check line 1.
-3. Rewrite definition lists as `::` and `:`, and indent every line that continues a term, a caption or a heading. Only a paragraph takes unindented lines; every other block continues only on lines indented past its marker.
+3. Rewrite definition lists as `::` and `:`, and indent every line that continues a term, a caption or a heading. Only a paragraph takes unindented lines; every other block but a fenced one continues only on lines indented past its marker.
 4. Move attributes off bare words into spans, and remove blank lines between an attribute line and its block.
 5. Check the admonition and directive names of item 8; no migration notice reports them.
 6. Escape `#` and `@` before words that are not tags or mentions.
