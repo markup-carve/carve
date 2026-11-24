@@ -210,7 +210,7 @@ Measured with the readiness runner on the engine heads of `scripts/next2-readine
 Measured with the readiness runner on the engine heads of `scripts/next2-readiness-baseline.json`; the command lines of CC-1352 to CC-1366 were also run against `carve-js` `next2` `7589dbc`.
 
 - All three engines, C2-X-024, C2-X-059 and C2-X-061: an attributed fallback that is the claimed code block writes its attributes on the wrapper only (CC-1348, CC-1349). C2-X-048: an authored id that only starts with `tabs-N-` moves no group in `css` mode (CC-1350); CC-1351 needs the `aria` mode.
-- `carve-js`: the engine at the baseline head has none of the commands of C2-T-047 to C2-T-053; `next2` `7589dbc` passes CC-1352 to CC-1366 but CC-1359, where it writes the include entries before the category line that C2-T-039 puts first. C2-B-109: a `> %%%` line under a comment block opened in `> >` closes it (CC-1369). The upgrade tool has no entry for U-426 to U-429 and still treats U-393 as no change.
+- `carve-js`: the engine at the baseline head has none of the commands of C2-T-047 to C2-T-053; `next2` `7589dbc` passed CC-1352 to CC-1366 as they stood before #6523 changed CC-1352 and CC-1354, but CC-1359, where it writes the include entries before the category line that C2-T-039 puts first. C2-B-109: a `> %%%` line under a comment block opened in `> >` closes it (CC-1369). The upgrade tool has no entry for U-426 to U-429 and still treats U-393 as no change.
 - `carve-php`: the commands and flags of C2-T-047 to C2-T-053 (CC-1352 to CC-1364); `djot-plus-bullet` after a quote marker (CC-1367); the comment closer of C2-B-109 (CC-1369); the `destination-denied` column of CC-1271.
 - `carve-rs`: the commands and flags of C2-T-047 to C2-T-053 (CC-1352 to CC-1365); `djot-plus-bullet` after a quote marker (CC-1367).
 
@@ -473,3 +473,7 @@ The same ruling adds the migration notice `continuation-reading-changed` (defaul
 
 - carve-js: the rows arrive with the spec pin; the cases pass once C2-W-156, #6507 and #6508 are ported.
 - carve-php and carve-rs: add `continuation-reading-changed` from its two data rows (writer-47, CC-1900 to CC-1913, CC-1917).
+
+The ruling on #6523 keeps the lint default of every rule under `--fix` (C2-T-049, C2-W-156): a migration notice that has a fix rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names it, and `--rules` turning it off keeps it off over both. CC-1352 keeps the `+` bullet of a 0.2 document, CC-1354 adds `--upgrade`, and clause cases CC-1926 to CC-1951 cover the five shapes of the ticket in a 0.2 document, under a `carve: 0.1` or `carve-version: 0.1.13` declaration, under `--upgrade`, named in `--rules`, and turned off by `--rules` under `--upgrade`. No default in `data/lint-rules.json` changes.
+
+- All three engines: run `fix` with the lint defaults in place of turning every fixable rule on; `carve upgrade` and `applyMigrationFixes` keep turning the migration rules on.

@@ -29064,7 +29064,7 @@
     "C2-T-009",
     "C2-T-031"
    ],
-   "why": "C2-T-009: A flag given twice takes its last value C2-T-031: A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.",
+   "why": "C2-T-009: A flag given twice takes its last value C2-T-031: A migration notice, as the other `djot-` rules are, is on for a document that declares a Carve version below 0.2 and under `--upgrade`, and `--rules` turns it on or off by its id over both (C2-W-156).",
    "summary": "the last rules value wins and the djot rule stays off",
    "kind": "cli",
    "files": {
@@ -31141,7 +31141,7 @@
    "clauses": [
     "C2-T-031"
    ],
-   "why": "C2-T-031: A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.",
+   "why": "C2-T-031: A migration notice, as the other `djot-` rules are, is on for a document that declares a Carve version below 0.2 and under `--upgrade`, and `--rules` turns it on or off by its id over both (C2-W-156).",
    "summary": "rules turns on the djot plus bullet rule",
    "kind": "cli",
    "files": {
@@ -60053,8 +60053,8 @@
     "C2-T-049",
     "C2-T-050"
    ],
-   "why": "C2-T-049: The command `fix` is `lint --fix` with the same flags. C2-T-050: Without `--write`, `lint --fix` writes the fixed source of each file on standard output and the entries that remain as lines on standard error.",
-   "summary": "fix rewrites a double-star strong, a double-tilde strike and a plus bullet",
+   "why": "C2-T-049: The command `fix` is `lint --fix` with the same flags. ... So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports. C2-T-050: Without `--write`, `lint --fix` writes the fixed source of each file on standard output and the entries that remain as lines on standard error.",
+   "summary": "fix rewrites a double-star strong and a double-tilde strike and keeps a plus bullet, a migration notice that is off",
    "kind": "cli",
    "args": [
     "fix"
@@ -60063,7 +60063,7 @@
    "options": {},
    "expected": {
     "status": 0,
-    "stdout": "a *b* {~c~}\n\n- x\n",
+    "stdout": "a *b* {~c~}\n\n+ x\n",
     "stderrCategory": null
    },
    "from": []
@@ -60096,10 +60096,11 @@
     "C2-T-049"
    ],
    "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other.",
-   "summary": "turning the subscript rule off picks the braced strike",
+   "summary": "under upgrade, turning the subscript rule off picks the braced strike",
    "kind": "cli",
    "args": [
     "fix",
+    "--upgrade",
     "--rules",
     "{\"djot-subscript-tilde\":\"off\"}"
    ],
@@ -79013,6 +79014,582 @@
    "options": {},
    "expected": {
     "carve": "[a]: /u\n%%%\nnote\n%%%\n\n\"Title\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1926",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix keeps an equals pair in a 0.2 document, where deprecated-bare-highlight is off",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "a =x= b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a =x= b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1927",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites an equals pair in a document that declares carve 0.1",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "---\ncarve: 0.1\n---\na =x= b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "---\ncarve: 0.1\n---\na {=x=} b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1928",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade rewrites an equals pair",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade"
+   ],
+   "stdin": "a =x= b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a {=x=} b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1929",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites an equals pair when --rules names deprecated-bare-highlight",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"deprecated-bare-highlight\":\"on\"}"
+   ],
+   "stdin": "a =x= b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a {=x=} b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1930",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade keeps an equals pair when --rules turns deprecated-bare-highlight off",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade",
+    "--rules",
+    "{\"deprecated-bare-highlight\":\"off\"}"
+   ],
+   "stdin": "a =x= b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a =x= b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1931",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix keeps a Djot underscore emphasis in a 0.2 document, where djot-emphasis-underscore is off",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "a _x_ b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a _x_ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1932",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a Djot underscore emphasis in a document that declares carve 0.1",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "---\ncarve: 0.1\n---\na _x_ b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "---\ncarve: 0.1\n---\na /x/ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1933",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade rewrites a Djot underscore emphasis",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade"
+   ],
+   "stdin": "a _x_ b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a /x/ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1934",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a Djot underscore emphasis when --rules names djot-emphasis-underscore",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"djot-emphasis-underscore\":\"on\"}"
+   ],
+   "stdin": "a _x_ b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a /x/ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1935",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade keeps a Djot underscore emphasis when --rules turns djot-emphasis-underscore off",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade",
+    "--rules",
+    "{\"djot-emphasis-underscore\":\"off\"}"
+   ],
+   "stdin": "a _x_ b\n",
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "a _x_ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1936",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix keeps a Djot tilde subscript in a 0.2 document, where djot-subscript-tilde is off",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "H~2~O\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "H~2~O\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1937",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a Djot tilde subscript in a document that declares carve 0.1",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "---\ncarve: 0.1\n---\nH~2~O\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "---\ncarve: 0.1\n---\nH{,2,}O\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1938",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade rewrites a Djot tilde subscript",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade"
+   ],
+   "stdin": "H~2~O\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "H{,2,}O\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1939",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a Djot tilde subscript when --rules names djot-subscript-tilde",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"djot-subscript-tilde\":\"on\"}"
+   ],
+   "stdin": "H~2~O\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "H{,2,}O\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1940",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade keeps a Djot tilde subscript when --rules turns djot-subscript-tilde off",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade",
+    "--rules",
+    "{\"djot-subscript-tilde\":\"off\"}"
+   ],
+   "stdin": "H~2~O\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "H~2~O\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1941",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix keeps a Djot caret superscript in a 0.2 document, where djot-superscript-caret is off",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "x^2^\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "x^2^\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1942",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a Djot caret superscript in a document that declares carve 0.1",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "---\ncarve: 0.1\n---\nx^2^\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "---\ncarve: 0.1\n---\nx{^2^}\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1943",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade rewrites a Djot caret superscript",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade"
+   ],
+   "stdin": "x^2^\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "x{^2^}\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1944",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a Djot caret superscript when --rules names djot-superscript-caret",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"djot-superscript-caret\":\"on\"}"
+   ],
+   "stdin": "x^2^\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "x{^2^}\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1945",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade keeps a Djot caret superscript when --rules turns djot-superscript-caret off",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade",
+    "--rules",
+    "{\"djot-superscript-caret\":\"off\"}"
+   ],
+   "stdin": "x^2^\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "x^2^\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1946",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix keeps a hyphen line in a 0.2 document, where thematic-break-spelling is off",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "a\n\n---\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a\n\n---\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1947",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a hyphen line in a document that declares carve 0.1",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "---\ncarve: 0.1\n---\na\n\n---\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "---\ncarve: 0.1\n---\na\n\n***\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1948",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade rewrites a hyphen line",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade"
+   ],
+   "stdin": "a\n\n---\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a\n\n***\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1949",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites a hyphen line when --rules names thematic-break-spelling",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"thematic-break-spelling\":\"on\"}"
+   ],
+   "stdin": "a\n\n---\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a\n\n***\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1950",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix --upgrade keeps a hyphen line when --rules turns thematic-break-spelling off",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--upgrade",
+    "--rules",
+    "{\"thematic-break-spelling\":\"off\"}"
+   ],
+   "stdin": "a\n\n---\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a\n\n---\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1951",
+   "clauses": [
+    "C2-T-049",
+    "C2-W-156"
+   ],
+   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
+   "summary": "fix rewrites an equals pair in a document that declares carve-version 0.1.13",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "---\ncarve-version: 0.1.13\n---\na =x= b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "---\ncarve-version: 0.1.13\n---\na {=x=} b\n",
+    "stderrCategory": null
    },
    "from": []
   }
