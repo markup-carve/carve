@@ -525,3 +525,24 @@ The ruling on #6540 (option A) keeps a heading cross-reference inside the title 
 The ruling on #6545 (option 2) counts a list marker indented past a marker as interrupter (b) inside a div only when that marker belongs to an item, a description or a footnote body opened inside the div (C2-B-235). Clause cases CC-2013 to CC-2017 are added. Measured on `carve-js` `next2` `ac8afa9f` and `carve-php` `next2` `f6a50999`: all five pass. `carve-rs` `next2` `d2192115` passes CC-2013 and CC-2016.
 
 - `carve-rs`: a bullet below a description inside a div, indented past the item's or the outer description's marker but not past the inner description's mark, closes the description and opens a list in the div; it is a lazy line of the description (CC-2014, CC-2015), and the library lint does not report it (CC-2017).
+
+## Engine gaps from the tree-opener ruling of 24 November (#6566)
+
+The ruling on #6566 (reading 2) makes a construct that opens on the opener of a node of the tree that node, also where it reads on past the tree's closer or ends early at a closer the tree holds as text. It is not reported and gives no kind; C2-W-125 repairs it (C2-W-088). Clause cases CC-2018 to CC-2020 are added. Measured on `carve-js` `next2` `8b4d4a7a` and `carve-php` `next2` `cd08d2e2e`: carve-js passes CC-2019 and escapes the last text `{,` in CC-2018 and CC-2020; carve-php passes CC-2018 and CC-2020 and writes `- {^}^\{a\^}\{^\^}^},,,}` for CC-2019. `carve-rs` was not measured.
+
+- `carve-js`: report no kind for a span on the tree's own opener that reads on (CC-2018, CC-2020).
+- `carve-php`: report no kind for a span on the tree's own opener that ends early (CC-2019).
+- `carve-rs`: measure CC-2018 to CC-2020.
+
+## Engine gaps from the attribute-block opener ruling of 24 November (#6570)
+
+The ruling on #6570 (option A) adds case nine to C2-W-125: where a braced opener reads as the key of a valid attribute block, the first character of its content that makes the block valid gets the backslash, so an underline of `=.` is written `{_\=._}`. Clause case CC-2021 is added. Measured on `carve-js` `next2` `08df6978`: it writes `{_=._}` and reports `structure-unspellable`; `carve-php` `next2` `cd08d2e2` reports `writer-refused`. The issue measured `carve-rs` `next2` `3f79f926` writing `{_=._}` with `structure-unspellable`.
+
+- All three engines: place the backslash of case nine (CC-2021).
+
+## Engine gaps from the brace-kind ruling of 24 November (#6561, #6559)
+
+The rulings on #6561 and #6559 let the text of C2-W-088 win over the older form pinned in CC-1568: every potential opener of a reported kind takes the backslash, and pairing does not count. CC-1568 now expects `\{^\^}` where it expected `\{\^\^}`; no other byte moves. Measured on `carve-js` `next2` `08df6978` and `carve-php` `next2` `cd08d2e2`: both write the old form. The head of carve-js#5550 (`0058adb0`) writes the new one.
+
+- `carve-js`: carve-js#5550 (CC-1568 and the writer-slow fixture `4e78df2a673d1efc.out`).
+- `carve-php` and `carve-rs`: write the new CC-1568 form.

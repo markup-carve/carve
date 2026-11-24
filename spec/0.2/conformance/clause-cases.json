@@ -81516,6 +81516,78 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2018",
+   "clauses": [
+    "C2-W-088",
+    "C2-W-125"
+   ],
+   "why": "C2-W-088: A construct that opens on the opener of a node of the tree is that node, also where it ends elsewhere; it is not reported, and C2-W-125 repairs it. C2-W-125: One: a bare opening brace that reads on into a later construct of the tree gets the backslash",
+   "summary": "a subscript that reads on from the tree's own opener is the tree's node: only the brace that reads on takes a backslash, the last text opener stays bare",
+   "kind": "format",
+   "input": "\\^^},} {,\\{,,}\\},}\\,{,",
+   "options": {},
+   "expected": {
+    "carve": "^^},} {,\\{,,}},},{,\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2019",
+   "clauses": [
+    "C2-W-088",
+    "C2-W-125"
+   ],
+   "why": "C2-W-088: A construct that opens on the opener of a node of the tree is that node, also where it ends elsewhere; it is not reported, and C2-W-125 repairs it. C2-W-125: Five: where a closer, a lone bracket or a sigil inside a bracket label keeps a link or a braced span from forming or ends it early, its first character gets the backslash",
+   "summary": "a superscript that ends early on the tree's own opener is the tree's node: only the early closer takes a backslash, the text empty pair stays bare",
+   "kind": "format",
+   "input": "- {^\\}^{a^\\}{^^}^},,,}",
+   "options": {},
+   "expected": {
+    "carve": "- {^}^{a\\^}{^^}^},,,}\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2020",
+   "clauses": [
+    "C2-W-088",
+    "C2-W-125"
+   ],
+   "why": "C2-W-088: A construct that opens on the opener of a node of the tree is that node, also where it ends elsewhere; it is not reported, and C2-W-125 repairs it. C2-W-125: One: a bare opening brace that reads on into a later construct of the tree gets the backslash",
+   "summary": "a subscript that reads on from the tree's own opener in a list item reports no kind, so the later text subscript openers stay bare",
+   "kind": "format",
+   "input": "- {^^}\\{\\},,{,\\^\\{,},}}}{,,}^{,,},}",
+   "options": {},
+   "expected": {
+    "carve": "- {^^}{},,{,^\\{,},}}}{,,}^{,,},}\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2021",
+   "clauses": [
+    "C2-W-125",
+    "C2-I-043"
+   ],
+   "why": "C2-W-125: Nine: where a braced opener reads as the key of a valid attribute block, the first character of its content that makes the block valid gets the backslash C2-I-043: At an opening brace the scan takes the first of these that matches. One: a valid attribute block.",
+   "summary": "an underline whose bare form reads as an attribute block escapes the character that makes the block valid, not its opener",
+   "kind": "format",
+   "input": "{_=\\._}",
+   "options": {},
+   "expected": {
+    "carve": "{_\\=._}\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
   }
  ]
 }
