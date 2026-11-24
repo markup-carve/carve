@@ -565,3 +565,9 @@ The auto-ruling on #6619 (option A) orders the entries of the writer on a suppli
 Mark's ruling on markup-carve/carve-js#5574 (B) reads the `style` of a `<col>` as CSS declarations (C2-M-041): split at `;`, each declaration trimmed, the property name compared without ASCII case, and the last `width` with a percentage value gives the column width. A col style still keeps no key, so one that gives no width or holds another declaration is reported as before. Cell alignment declarations stay exact (C2-M-040, C2-M-055). Clause cases CC-2046 to CC-2053. Measured on `carve-js` `next2` `3b24e235`: CC-2051 to CC-2053 pass; the ticket measured the exact reading in `carve-php` `next2` `3cd302834` and `carve-rs` `next2` `bd95dbe6`.
 
 - All three engines: read the declarations of a `<col>` style (CC-2046 to CC-2050).
+
+## Engine gaps from the leading header row ruling of 24 November (#6623)
+
+Mark's ruling on #6623 (B) moves the leading rows of the first body of a table with no `<thead>` into the head when every cell of the row is a `<th>` with no `scope` or with `scope` `col` (C2-M-037). The move is not reported, and a body it leaves empty is dropped. A row with a `<th>` of `scope` `row`, a row that holds a `<td>`, and a `<th>` row below a body row stay in the body. CC-1450 and CC-2046 to CC-2052 move to the `|=` head. New clause cases CC-2054 to CC-2064. Measured on `carve-js` `next2` `3b24e23`: CC-2056, CC-2058, CC-2059, CC-2061 and CC-2063 pass; the ticket measured the body header row in `carve-php` and `carve-rs` `next2` as well.
+
+- All three engines: import the leading `<th>` rows as the head (CC-1450, CC-2046 to CC-2052, CC-2054, CC-2055, CC-2057, CC-2060, CC-2062, CC-2064).
