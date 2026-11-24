@@ -473,3 +473,7 @@ The same ruling adds the migration notice `continuation-reading-changed` (defaul
 
 - carve-js: the rows arrive with the spec pin; the cases pass once C2-W-156, #6507 and #6508 are ported.
 - carve-php and carve-rs: add `continuation-reading-changed` from its two data rows (writer-47, CC-1900 to CC-1913, CC-1917).
+
+The ruling on #6523 keeps the lint default of every rule under `--fix` (C2-T-049, C2-W-156): a migration notice that has a fix rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names it, and `--rules` turning it off keeps it off over both. CC-1352 keeps the `+` bullet of a 0.2 document, CC-1354 adds `--upgrade`, and clause cases CC-1926 to CC-1951 cover the five shapes of the ticket in a 0.2 document, under a `carve: 0.1` or `carve-version: 0.1.13` declaration, under `--upgrade`, named in `--rules`, and turned off by `--rules` under `--upgrade`. No default in `data/lint-rules.json` changes.
+
+- All three engines: run `fix` with the lint defaults in place of turning every fixable rule on; `carve upgrade` and `applyMigrationFixes` keep turning the migration rules on.

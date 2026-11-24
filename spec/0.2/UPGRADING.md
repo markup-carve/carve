@@ -589,7 +589,7 @@ A second ruling of 24 November extends #6499 to every rule whose only job is hel
 | `thematic-break-spelling` | a line of `---` or `___`, which is text | a thematic break |
 | the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet or a folded heading line |
 
-The rules that report a likely mistake or an ambiguity in the 0.2 document itself keep their defaults: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented`. `carve fix` still turns on every rule that has a fix (C2-T-049), so it rewrites a deprecated spelling that has a fix without `--upgrade`.
+The rules that report a likely mistake or an ambiguity in the 0.2 document itself keep their defaults: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented`. `carve fix` keeps these defaults (C2-T-049): it rewrites a deprecated or Djot spelling only in a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names the rule.
 
 ### Rulings of 24 November 2026
 
@@ -616,6 +616,20 @@ A ruling of 24 November decides #6508: a caption (`^`, also a quote attribution)
 | `:: Term`, then `   : desc` | term text | term text; `description-term-multi-line` reports the `:` |
 
 Write a two-line caption or term with its second line indented past the marker; `carve fmt` already writes it that way (C2-W-024). `description-term-multi-line` now reports only a term line that starts with a description mark. That shape is suspect in 0.2 itself, so the rule is no migration notice and is on by default again; the second ruling of 24 November on #6499 had made it one. U-010, U-106 and U-107 now render as in 0.1.
+
+### Ruling of 24 November 2026: `carve fix` keeps the lint defaults
+
+A ruling of 24 November decides #6523: under `--fix` a rule keeps the default it has under `lint` (C2-T-049, C2-W-156). Earlier 0.2 turned on every rule that has a fix, so `carve fix` rewrote valid 0.2 text through the migration notices and changed what it renders. Now a migration notice and a `djot-` rule rewrite only a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names the rule, and `--rules` turning a rule off keeps it off over both. A rule with a fix that is on by default, such as `markdown-strong-double-star`, still rewrites.
+
+| 0.2 source | `carve fix`, earlier 0.2 | `carve fix` now | with `--upgrade` or `carve: 0.1` |
+| --- | --- | --- | --- |
+| `a =x= b` | `a {=x=} b` | unchanged | `a {=x=} b` |
+| `a _x_ b` | `a /x/ b` | unchanged | `a /x/ b` |
+| `H~2~O` | `H{,2,}O` | unchanged | `H{,2,}O` |
+| `x^2^` | `x{^2^}` | unchanged | `x{^2^}` |
+| `---` on its own line | `***` | unchanged | `***` |
+
+`carve upgrade` and `applyMigrationFixes` still rewrite these spellings: they turn the rules on.
 
 ### Include expansion
 
