@@ -1389,6 +1389,22 @@
       "clauses": ["C2-B-011", "C2-I-002"]
     },
     {
+      "id": "link-definition-indented-line",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": [
+        "This indented line is not a title or attribute block, so it does not continue the link definition above; it starts a new block."
+      ],
+      "message_origin": "design",
+      "reports": "the line directly below a link definition, its tail lines included, that is indented past column 0 and holds, after its indent, neither a title, nor an attribute block, nor a title, one space and an attribute block, so it is the next block (C2-B-083); a blank line and a comment-only line are not reported; once per definition, the range runs from the first character of that line's text behind its indent to the end of its text",
+      "change": "added with the definition continuation rule",
+      "clauses": [
+        "C2-B-083"
+      ]
+    },
+    {
       "id": "link-gap-before-destination",
       "severity": "warning",
       "channel": "lint",

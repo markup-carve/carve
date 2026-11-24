@@ -2257,7 +2257,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line. The label follows the rules of a footnote reference label (C2-I-087): it may hold spaces, and it holds no unescaped bracket.
 
-**C2-B-083** A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces and tabs. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u"T"` and in `[a]: "T"` the quotes are part of the destination, and `[a]: /u  "T"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs. Any other line ends the definition and is read as if none stood above it; a tail line is no attribute line, so `  {.c}` below `[a]: /u` gives the definition the class `c` (C2-B-091).
+**C2-B-083** A link definition starts with one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces and tabs. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u"T"` and in `[a]: "T"` the quotes are part of the destination, and `[a]: /u  "T"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). The line directly below that is indented past column 0 continues the definition when it holds exactly the part of that tail the first line left out, after its indent: a title, an attribute block, or a title, one space and an attribute block, then only spaces and tabs. Any other line ends the definition and is read as if none stood above it; a tail line is no attribute line, so `  {.c}` below `[a]: /u` gives the definition the class `c` (C2-B-091). An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.
 
 The indented line below the definition is its title.
 
@@ -2277,6 +2277,28 @@ See [a].
 ```
 
 :::
+
+A destination does not continue on the next line: the indented line is a paragraph (C2-B-083).
+
+Example 295 (unverified)
+
+::: compare
+
+```carve
+[a]: /docs/
+  guide.html
+
+See [a].
+```
+
+```html
+<p>guide.html</p>
+<p>See <a href="/docs/">a</a>.</p>
+```
+
+:::
+
+Reported: `link-definition-indented-line`.
 
 **C2-B-084** An abbreviation definition starts with one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty. Exactly one space separates the colon from the expansion: every character after it belongs to the expansion, a leading space or tab included, except the spaces and tabs at the end of the line. Every line directly below it that is indented past column 0 continues the expansion: it loses its leading and trailing spaces and tabs and is joined on with one space, so an expansion holds no line break. An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table, and `  - y` continues the expansion as it continues a heading.
 
@@ -6942,7 +6964,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Nested lists and the marker line | 5 | 0 | 5 | 1 |
 | Tightness | 3 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
-| Definitions | 8 | 0 | 7 | 10 |
+| Definitions | 8 | 0 | 7 | 11 |
 | Attribute lines | 17 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 10 | 0 | 6 | 6 |
 | The fence opener and titles | 7 | 1 | 4 | 9 |
@@ -6956,7 +6978,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **213** | **8** | **170** | **124** |
+| **Total** | **213** | **8** | **170** | **125** |
 
 The chapter has 213 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
 

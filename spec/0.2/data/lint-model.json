@@ -9046,6 +9046,58 @@
       ]
     },
     {
+      "id": "link-definition-indented-line",
+      "over": "block",
+      "types": [
+        "link_reference_definition"
+      ],
+      "when": {
+        "all": [
+          {
+            "matches": [
+              {
+                "f": "last_line.next.text"
+              },
+              "^[ \\t]+[^ \\t]"
+            ]
+          },
+          {
+            "not": {
+              "starts": [
+                {
+                  "f": "last_line.next.raw_body"
+                },
+                "%%"
+              ]
+            }
+          },
+          {
+            "not": {
+              "matches": [
+                {
+                  "f": "last_line.next.raw_body"
+                },
+                "^(?:(?:\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*')(?: \\{.*\\})?|\\{.*\\})$"
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "last_line.next.body_start"
+          },
+          "end": {
+            "f": "last_line.next.body_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-083"
+      ]
+    },
+    {
       "id": "link-gap-before-destination",
       "over": "line",
       "when": {

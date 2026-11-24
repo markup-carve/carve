@@ -20,7 +20,7 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 113 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
+The following 114 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
@@ -95,6 +95,7 @@ The following 113 lint-channel rows, every row except the two with status `void`
 | `include-attributes-unused` | warning | on |
 | `include-lines-table-rows-hint` | hint | on |
 | `indented-code-block` | warning | on |
+| `link-definition-indented-line` | hint | on |
 | `link-gap-before-destination` | warning | on |
 | `list-item-block-overindented` | warning | on |
 | `list-item-body-below-content-column` | hint | on |

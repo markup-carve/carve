@@ -77539,6 +77539,239 @@
     "carve": "*[A]: x - y\n\nA\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1880",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "the rest of a destination on the indented line below a link definition is reported",
+   "kind": "lint",
+   "input": "[a]: /docs/\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1881",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "an indented line of prose below a link definition is reported",
+   "kind": "lint",
+   "input": "[a]: /url\n  more text\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1882",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "a title followed by a word on the indented line is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\" x\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1883",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "an indented line below the tail line of a link definition is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\"\n  x\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 3,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1884",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: neither a title, nor an attribute block, nor a title, one space and an attribute block",
+   "summary": "an indented title, the tail of the definition, is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1885",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: neither a title, nor an attribute block, nor a title, one space and an attribute block",
+   "summary": "an indented second title is a title and is not reported",
+   "kind": "lint",
+   "input": "[a]: /u \"T\"\n  \"U\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1886",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: a blank line and a comment-only line are not reported",
+   "summary": "an indented comment-only line below a link definition is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  %% c\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1887",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: that is indented past column 0",
+   "summary": "an unindented line below a link definition is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\nmore\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1888",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+   "summary": "link definition: the rest of a destination on the indented line is a paragraph",
+   "kind": "render",
+   "input": "[a]: /docs/\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>guide.html</p>\n<p>See <a href=\"/docs/\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/docs/"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "guide.html"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/docs/"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1889",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+   "summary": "fmt: link definition: the rest of a destination on the indented line is a paragraph",
+   "kind": "format",
+   "input": "[a]: /docs/\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /docs/\n\nguide.html\n\nSee [a].\n"
+   },
+   "from": []
   }
  ]
 }
