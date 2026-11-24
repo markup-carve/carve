@@ -81588,6 +81588,141 @@
     "diagnostics": []
    },
    "from": []
+  },
+  {
+   "id": "CC-2022",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-171",
+    "C2-B-182"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a brace block in the cell prefix, `{}`, a braced comment and a block with other text in the cell are not reported C2-B-171: A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093). C2-B-182: In place of the horizontal mark, `?` sets no horizontal alignment; it stands only before a vertical mark, so `{?v}` sets the vertical axis alone.",
+   "summary": "a vertical alignment block in the prefix of the last cell is not reported",
+   "kind": "lint",
+   "input": "| a |{?v} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2023",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-171",
+    "C2-B-182"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a brace block in the cell prefix, `{}`, a braced comment and a block with other text in the cell are not reported C2-B-171: A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093). C2-B-182: In place of the horizontal mark, `?` sets no horizontal alignment; it stands only before a vertical mark, so `{?v}` sets the vertical axis alone.",
+   "summary": "a vertical alignment block in the prefix of a row's only cell is not reported",
+   "kind": "lint",
+   "input": "|{?v} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2024",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-171",
+    "C2-B-182"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a brace block in the cell prefix, `{}`, a braced comment and a block with other text in the cell are not reported C2-B-171: A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093). C2-B-182: In the brace block of a cell prefix the alignment marks come first: a horizontal mark, `<` left, `>` right or `~` center, and directly after it an optional vertical mark, `^` top, `~` middle or `v` bottom.",
+   "summary": "a horizontal alignment block in the prefix of the last cell is not reported",
+   "kind": "lint",
+   "input": "| a |{>} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2025",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-028"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a table row whose last cell holds, behind its cell prefix and padding, nothing but one valid attribute block or a run of glued ones C2-I-028: A valid attribute block is `{`, optional spaces, one or more parts separated by spaces, optional spaces and `}`, all on one line.",
+   "summary": "a superscript span that fills the last cell is not reported",
+   "kind": "lint",
+   "input": "| Value |\n| {^2^} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2026",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
+   "summary": "a code fence closer in a footnote indented under the opener's backticks is reported on its own line",
+   "kind": "lint",
+   "input": "x[^1]\n\n[^1]: ```\n  code\n\n  ```\n\nafter\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 6,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2027",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-028"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a table row whose last cell holds, behind its cell prefix and padding, nothing but one valid attribute block or a run of glued ones C2-I-028: A valid attribute block is `{`, optional spaces, one or more parts separated by spaces, optional spaces and `}`, all on one line.",
+   "summary": "an escaped dot in the brace block of the last cell makes no valid attribute block and is not reported",
+   "kind": "lint",
+   "input": "| a | {\\.x} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2028",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-028"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a table row whose last cell holds, behind its cell prefix and padding, nothing but one valid attribute block or a run of glued ones C2-I-028: A valid attribute block is `{`, optional spaces, one or more parts separated by spaces, optional spaces and `}`, all on one line.",
+   "summary": "an escaped brace block in the last cell is not reported where an earlier cell holds its decoded spelling",
+   "kind": "lint",
+   "input": "| {.x} | {\\.x} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
   }
  ]
 }

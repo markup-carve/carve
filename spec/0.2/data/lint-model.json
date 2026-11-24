@@ -8302,6 +8302,11 @@
           },
           "end": {
             "f": "last_line.end"
+          },
+          "values": {
+            "line": {
+              "f": "line.number"
+            }
           }
         }
       ],
@@ -12667,7 +12672,55 @@
               {
                 "f": "text"
               },
-              "\\|\\s*\\{\\s*[^%}\\s][^|]*\\}\\s*\\|[^|]*$"
+              "\\|\\s*(?<cell>\\{\\s*[^%}\\s][^|]*\\})\\s*\\|[^|]*$"
+            ]
+          },
+          {
+            "has": "node.children.-1.children.0.children.0.value"
+          },
+          {
+            "not": {
+              "has": "node.children.-1.children.0.children.1"
+            }
+          },
+          {
+            "attribute_line": {
+              "f": "node.children.-1.children.0.children.0.value"
+            }
+          },
+          {
+            "contains": [
+              {
+                "slice": [
+                  {
+                    "f": "text"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "cell"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "cell",
+                        "at": "end"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "f": "node.children.-1.children.0.children.0.value"
+              }
             ]
           }
         ]
