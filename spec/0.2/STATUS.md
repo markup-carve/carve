@@ -501,3 +501,9 @@ The same ruling adds the migration notice `code-span-padding-kept` (default `upg
 The ruling on #6531 numbers headings by depth and has `carve.headingNumbers`, `carve.toc` and `carve.tocPlacement` count only the headings a section wraps. No 0.2 clause covers these extensions; extension cases EXT-095 to EXT-103 cite the ruling. Measured on `carve-js` `next2` `8924bed4` and `carve-php` `next2` `a335b4f5`: all nine pass. `carve-rs` at the head of carve-rs#4697 (`a4458689`) passes eight.
 
 - `carve-rs`: `table_of_contents()` nests the entry after a skipped level by level, not by depth (EXT-101, carve-rs#4701).
+
+## Engine gaps from the attribute value line break ruling of 24 November (#6542)
+
+The ruling on #6542 (option A) gives an attribute value of a supplied tree that holds a line feed its nearest form: one space in place of each line feed, in double quotes, with `field-unspellable` at the path of the value; the node and its other attributes are kept (C2-W-050, C2-W-117). Clause cases CC-2010 to CC-2012 are added. Measured on `carve-js` `next2` `fdd53bf7`: the import refuses with `writer-refused`, and the write reports `structure-unspellable` for the span and the document. The issue measured `carve-php` writing the value over two lines with no report and `carve-rs` writing it unquoted over two lines; both read back as text.
+
+- All three engines: write the value with one space per line feed and report `field-unspellable` at the value (CC-2010 to CC-2012).

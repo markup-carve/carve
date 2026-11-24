@@ -81077,6 +81077,104 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-2010",
+   "clauses": [
+    "C2-W-050",
+    "C2-W-117"
+   ],
+   "why": "C2-W-050: A value of a supplied tree that holds a line feed has no spelling, since an attribute block is one line (C2-I-028): its nearest form writes one space in place of each line feed, in double quotes, and the writer reports `field-unspellable` at the path of that value (C2-W-117). The node and its other attributes are kept",
+   "summary": "an imported span attribute value with a line break is written with a space and reported",
+   "kind": "import",
+   "html": "<p><span title=\"a\nb\">[ x</span></p>",
+   "options": {},
+   "expected": {
+    "carve": "[\\[ x]{title=\"a b\"}\n",
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/0/attrs/keyValues/0/1"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2011",
+   "clauses": [
+    "C2-W-050",
+    "C2-W-117"
+   ],
+   "why": "C2-W-050: A value of a supplied tree that holds a line feed has no spelling, since an attribute block is one line (C2-I-028): its nearest form writes one space in place of each line feed, in double quotes, and the writer reports `field-unspellable` at the path of that value (C2-W-117). The node and its other attributes are kept",
+   "summary": "an imported block attribute value with a line break is written with a space on the attribute line",
+   "kind": "import",
+   "html": "<p title=\"a\nb\">x</p>",
+   "options": {},
+   "expected": {
+    "carve": "{title=\"a b\"}\nx\n",
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/attrs/keyValues/0/1"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2012",
+   "clauses": [
+    "C2-W-050",
+    "C2-W-117"
+   ],
+   "why": "C2-W-050: A value of a supplied tree that holds a line feed has no spelling, since an attribute block is one line (C2-I-028): its nearest form writes one space in place of each line feed, in double quotes, and the writer reports `field-unspellable` at the path of that value (C2-W-117). The node and its other attributes are kept",
+   "summary": "a supplied value with two line feeds keeps one space for each and the other attributes",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "attrs": {
+         "classes": [
+          "c"
+         ],
+         "keyValues": [
+          [
+           "data-k",
+           "x\n\ny"
+          ]
+         ]
+        },
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "[t]{.c data-k=\"x  y\"}\n",
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/0/attrs/keyValues/0/1",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
