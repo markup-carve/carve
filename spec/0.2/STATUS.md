@@ -559,3 +559,9 @@ The ruling on #6585 (A1 + A2) has two parts. A1: canonical output also passes `u
 The auto-ruling on #6619 (option A) orders the entries of the writer on a supplied tree by their paths, as C2-L-011 orders sidecar entries: a node's own fields before the nodes in its slots (C2-W-158). CC-2045 compares four entries position by position, with the new conformance field `diagnosticsOrdered`. Measured on carve-js `next2` `9aa2b4d`: it lists `structure-unspellable` first, before the three `field-unspellable` entries. carve-php already lists them in path order.
 
 - `carve-js` and `carve-rs`: list write diagnostics in path order (CC-2045).
+
+## Engine gaps from the col style ruling of 24 November (carve-js#5574)
+
+Mark's ruling on markup-carve/carve-js#5574 (B) reads the `style` of a `<col>` as CSS declarations (C2-M-041): split at `;`, each declaration trimmed, the property name compared without ASCII case, and the last `width` with a percentage value gives the column width. A col style still keeps no key, so one that gives no width or holds another declaration is reported as before. Cell alignment declarations stay exact (C2-M-040, C2-M-055). Clause cases CC-2046 to CC-2053. Measured on `carve-js` `next2` `3b24e235`: CC-2051 to CC-2053 pass; the ticket measured the exact reading in `carve-php` `next2` `3cd302834` and `carve-rs` `next2` `bd95dbe6`.
+
+- All three engines: read the declarations of a `<col>` style (CC-2046 to CC-2050).

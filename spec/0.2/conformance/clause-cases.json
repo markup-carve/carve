@@ -82319,6 +82319,167 @@
     "diagnosticsOrdered": true
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2046",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "summary": "a col style without spaces and without the closing semicolon gives the column its width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width:40%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2047",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "summary": "a col style property name in upper case gives the column its width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"WIDTH:40%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2048",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "summary": "a col style with spaces around the colon and before the semicolon gives the column its width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width : 40% ;\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2049",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152). ... The `style` of a `<col>` is no key: one that gives no width, or that holds any other declaration, is dropped and reported with `import-attribute-dropped`.",
+  "summary": "a col style with a width and another declaration gives the width and reports the other",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40%; color: red\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2050",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152). ... The `style` of a `<col>` is no key: one that gives no width, or that holds any other declaration, is dropped and reported with `import-attribute-dropped`.",
+  "summary": "the last percentage width declaration of a col style gives the width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 30%; width: 50%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=50 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2051",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` is no key: one that gives no width, or that holds any other declaration, is dropped and reported with `import-attribute-dropped`.",
+  "summary": "a col width that is no percentage gives no width and is reported",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40px\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2052",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "summary": "the render spelling of a col width still gives the column its width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40%;\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40 body-rows=1 body-header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2053",
+  "clauses": [
+   "C2-M-040",
+   "C2-M-055"
+  ],
+  "why": "C2-M-040: these spellings are compared exactly, not read as declarations as C2-M-041 reads a `<col>`. C2-M-055: A `style` is a key with its value as written, except the exact declarations of C2-M-040 and C2-M-075 and the `style` of a `<col>`, whose declarations C2-M-041 reads.",
+  "summary": "a cell style that is no exact alignment spelling stays a style key and gives no alignment",
+  "kind": "import",
+  "html": "<table><tr><td style=\"text-align:right\">a</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|{style=text-align:right} a |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ }
  ]
 }

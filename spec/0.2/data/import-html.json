@@ -140,7 +140,7 @@
     {"name": "lang", "match": "name", "on": "any", "treatment": "lang", "clauses": ["C2-M-004", "C2-M-052"]},
     {"name": "on", "match": "prefix", "on": "any", "treatment": "drop", "note": "event handlers", "clauses": ["C2-H-161", "C2-M-052"]},
     {"name": "srcdoc", "match": "name", "on": "any", "treatment": "drop", "clauses": ["C2-H-161", "C2-M-052"]},
-    {"name": "style", "match": "name", "on": "any", "treatment": "key", "note": "exact alignment declarations are read (C2-M-040, C2-M-075)", "clauses": ["C2-M-040", "C2-M-055", "C2-M-075"]}
+    {"name": "style", "match": "name", "on": "any", "treatment": "key", "note": "exact alignment declarations are read (C2-M-040, C2-M-075), and the declarations of a `col` style (C2-M-041)", "clauses": ["C2-M-040", "C2-M-041", "C2-M-055", "C2-M-075"]}
   ],
   "conventions": [
     {"name": "admonition", "element": "aside", "test": "first class `admonition`, second class a kind of C2-H-154", "node": "admonition; `aria-label` and `aria-labelledby` are not kept", "clauses": ["C2-M-035"]},
@@ -155,7 +155,7 @@
     {"name": "tag", "element": "span", "test": "first class `tag`, one `strong` child whose text starts with `#`", "node": "tag", "clauses": ["C2-M-035"]}
   ],
   "codes": [
-    {"id": "import-attribute-dropped", "severity": "warning", "channel": "render-loss", "reports": "an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` or `valign` beside a declaration of its axis, a `col` style that gives no width, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces", "clauses": ["C2-M-004", "C2-M-026", "C2-M-027", "C2-M-030", "C2-M-031", "C2-M-032", "C2-M-040", "C2-M-041", "C2-M-043", "C2-M-052", "C2-M-054", "C2-M-075"]},
+    {"id": "import-attribute-dropped", "severity": "warning", "channel": "render-loss", "reports": "an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` or `valign` beside a declaration of its axis, a `col` style that gives no width or holds another declaration, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces", "clauses": ["C2-M-004", "C2-M-026", "C2-M-027", "C2-M-030", "C2-M-031", "C2-M-032", "C2-M-040", "C2-M-041", "C2-M-043", "C2-M-052", "C2-M-054", "C2-M-075"]},
     {"id": "import-carrier-ignored", "severity": "warning", "channel": "render-loss", "reports": "a reserved name that `html.md` ignores (C2-H-185)", "clauses": ["C2-M-009"]},
     {"id": "import-destination-denied", "severity": "warning", "channel": "render-loss", "reports": "a destination that fails the deny list; the link is its text and the image its alternative text", "clauses": ["C2-M-051"]},
     {"id": "import-element-dropped", "severity": "warning", "channel": "render-loss", "reports": "an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span; a further task box or table caption", "clauses": ["C2-M-005", "C2-M-032", "C2-M-041", "C2-M-046", "C2-M-057", "C2-M-066"]},
