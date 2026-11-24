@@ -78660,6 +78660,361 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1918",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it, a comment-only line (C2-B-137) too, whatever its indent, so an indented line below that comment is the next block C2-B-137: The one exception is an open link or abbreviation definition, which has no child to hold the comment: the line ends it",
+   "summary": "link definition: a comment-only line ends it, and the indented title below the comment is a paragraph",
+   "kind": "render",
+   "input": "[a]: /u\n%% note\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“Title”</p>\n<p>See <a href=\"/u\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "note"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "Title"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1919",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it, a comment-only line (C2-B-137) too, whatever its indent, so an indented line below that comment is the next block C2-B-137: The one exception is an open link or abbreviation definition, which has no child to hold the comment: the line ends it",
+   "summary": "fmt: link definition: a comment-only line ends it, and the indented title below the comment is a paragraph",
+   "kind": "format",
+   "input": "[a]: /u\n%% note\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /u\n%% note\n\n\"Title\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1920",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it, a comment-only line (C2-B-137) too, whatever its indent, so an indented line below that comment is the next block C2-B-137: The one exception is an open link or abbreviation definition, which has no child to hold the comment: the line ends it",
+   "summary": "link definition: an indented comment-only line ends it as well",
+   "kind": "render",
+   "input": "[a]: /u\n  %% note\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“Title”</p>\n<p>See <a href=\"/u\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "note"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "Title"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1921",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it, a comment-only line (C2-B-137) too, whatever its indent, so an indented line below that comment is the next block C2-B-137: The one exception is an open link or abbreviation definition, which has no child to hold the comment: the line ends it",
+   "summary": "fmt: link definition: an indented comment-only line ends it as well",
+   "kind": "format",
+   "input": "[a]: /u\n  %% note\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /u\n%% note\n\n\"Title\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1922",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-084: A comment-only line (C2-B-137) ends the definition as well, whatever its indent, so an indented line below that comment is the next block C2-B-137: The one exception is an open link or abbreviation definition, which has no child to hold the comment: the line ends it",
+   "summary": "abbreviation definition: a comment-only line ends it, and the indented line below the comment is a paragraph",
+   "kind": "render",
+   "input": "*[A]: alpha\n%% note\n  beta\n\nSee A.\n",
+   "options": {},
+   "expected": {
+    "html": "<p>beta</p>\n<p>See <abbr title=\"alpha\">A</abbr>.</p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "alpha",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "note"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "beta"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "abbreviation",
+        "key": "A",
+        "namespace": "abbr",
+        "expansion": "alpha"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1923",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-084: A comment-only line (C2-B-137) ends the definition as well, whatever its indent, so an indented line below that comment is the next block C2-B-137: The one exception is an open link or abbreviation definition, which has no child to hold the comment: the line ends it",
+   "summary": "fmt: abbreviation definition: a comment-only line ends it, and the indented line below the comment is a paragraph",
+   "kind": "format",
+   "input": "*[A]: alpha\n%% note\n  beta\n\nSee A.\n",
+   "options": {},
+   "expected": {
+    "carve": "*[A]: alpha\n%% note\n\nbeta\n\nSee A.\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1924",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-109"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+   "summary": "link definition: a comment block ends it, and the indented title below the block is a paragraph",
+   "kind": "render",
+   "input": "[a]: /u\n%%%\nnote\n%%%\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“Title”</p>\n<p>See <a href=\"/u\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u"
+     },
+     {
+      "type": "comment",
+      "form": "block",
+      "value": "note"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "Title"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1925",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-109"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+   "summary": "fmt: link definition: a comment block ends it, and the indented title below the block is a paragraph",
+   "kind": "format",
+   "input": "[a]: /u\n%%%\nnote\n%%%\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /u\n%%%\nnote\n%%%\n\n\"Title\"\n\nSee [a].\n"
+   },
+   "from": []
   }
  ]
 }
