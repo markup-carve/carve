@@ -269,6 +269,8 @@ These extensions follow the catalog status of the tabs section. Each claims a co
 
 **C2-X-069** A document transform does not see the render option `labels`, so the `index` extension takes the label of its back-links as its own option `backrefLabel`; its default is the default of the label `indexBackref`, `Back to`.
 
+**C2-X-070** In the `number-title` style, `carve.headingNumbers` replaces a heading cross-reference with a link that holds the number and a copy of the target's title. A heading cross-reference inside that copy is not expanded again: it stays a reference and renders as a plain link with its target's title, so copies do not nest and a title that refers to itself ends. With `{#a}` on `= A </#b>`, `{#b}` on `== B </#c>` and `{#c}` on `== C`, the reference in `A` writes `Section 1.1 - B C`, not `Section 1.1 - B Section 1.2 - C`.
+
 ## Writing consistency
 
 **C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`. The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023. A `write` call reads the option `extensions` for this test.
@@ -324,6 +326,6 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | Resolution, rendering and equality | 13 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
-| Standard extensions of the 0.1 catalog | 9 |
+| Standard extensions of the 0.1 catalog | 10 |
 | Writing consistency | 1 |
-| **Total** | **69** |
+| **Total** | **70** |
