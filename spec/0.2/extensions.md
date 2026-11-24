@@ -269,7 +269,7 @@ These extensions follow the catalog status of the tabs section. Each claims a co
 
 **C2-X-069** A document transform does not see the render option `labels`, so the `index` extension takes the label of its back-links as its own option `backrefLabel`; its default is the default of the label `indexBackref`, `Back to`.
 
-**C2-X-070** In the `number-title` style, `carve.headingNumbers` replaces a heading cross-reference with a link that holds the number and a copy of the target's title. A heading cross-reference inside that copy is not expanded again: it stays a reference and renders as a plain link with its target's title, so the output stays linear in the input and a title that refers to itself ends. With `{#a}` on `= A </#b>`, `{#b}` on `== B </#c>` and `{#c}` on `== C`, the reference in `A` writes `Section 1.1 - B C`, not `Section 1.1 - B Section 1.2 - C`.
+**C2-X-070** In the `number-title` style, `carve.headingNumbers` replaces a heading cross-reference with a link that holds the number and a copy of the target's title. A heading cross-reference inside that copy is not expanded again: it stays a reference and renders as a plain link with its target's title, so copies do not nest and a title that refers to itself ends. With `{#a}` on `= A </#b>`, `{#b}` on `== B </#c>` and `{#c}` on `== C`, the reference in `A` writes `Section 1.1 - B C`, not `Section 1.1 - B Section 1.2 - C`.
 
 ## Writing consistency
 
