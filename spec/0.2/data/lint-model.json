@@ -8302,6 +8302,11 @@
           },
           "end": {
             "f": "last_line.end"
+          },
+          "values": {
+            "line": {
+              "f": "line.number"
+            }
           }
         }
       ],

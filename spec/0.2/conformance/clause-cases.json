@@ -81663,6 +81663,30 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2026",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
+   "summary": "a code fence closer in a footnote indented under the opener's backticks is reported on its own line",
+   "kind": "lint",
+   "input": "x[^1]\n\n[^1]: ```\n  code\n\n  ```\n\nafter\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 6,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
