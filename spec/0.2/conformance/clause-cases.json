@@ -81570,6 +81570,24 @@
     "diagnostics": []
    },
    "from": []
+  },
+  {
+   "id": "CC-2021",
+   "clauses": [
+    "C2-W-125",
+    "C2-I-043"
+   ],
+   "why": "C2-W-125: Nine: where a braced opener reads as the key of a valid attribute block, the first character of its content that makes the block valid gets the backslash C2-I-043: At an opening brace the scan takes the first of these that matches. One: a valid attribute block.",
+   "summary": "an underline whose bare form reads as an attribute block escapes the character that makes the block valid, not its opener",
+   "kind": "format",
+   "input": "{_=\\._}",
+   "options": {},
+   "expected": {
+    "carve": "{_\\=._}\n",
+    "diagnosticsComplete": true,
+    "diagnostics": []
+   },
+   "from": []
   }
  ]
 }

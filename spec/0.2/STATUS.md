@@ -533,3 +533,9 @@ The ruling on #6566 (reading 2) makes a construct that opens on the opener of a 
 - `carve-js`: report no kind for a span on the tree's own opener that reads on (CC-2018, CC-2020).
 - `carve-php`: report no kind for a span on the tree's own opener that ends early (CC-2019).
 - `carve-rs`: measure CC-2018 to CC-2020.
+
+## Engine gaps from the attribute-block opener ruling of 24 November (#6570)
+
+The ruling on #6570 (option A) adds case nine to C2-W-125: where a braced opener reads as the key of a valid attribute block, the first character of its content that makes the block valid gets the backslash, so an underline of `=.` is written `{_\=._}`. Clause case CC-2021 is added. Measured on `carve-js` `next2` `08df6978`: it writes `{_=._}` and reports `structure-unspellable`; `carve-php` `next2` `cd08d2e2` reports `writer-refused`. The issue measured `carve-rs` `next2` `3f79f926` writing `{_=._}` with `structure-unspellable`.
+
+- All three engines: place the backslash of case nine (CC-2021).
