@@ -81687,6 +81687,24 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2027",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-028"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. Catalog table-row-attribute-as-cell: a table row whose last cell holds, behind its cell prefix and padding, nothing but one valid attribute block or a run of glued ones C2-I-028: A valid attribute block is `{`, optional spaces, one or more parts separated by spaces, optional spaces and `}`, all on one line.",
+   "summary": "an escaped dot in the brace block of the last cell makes no valid attribute block and is not reported",
+   "kind": "lint",
+   "input": "| a | {\\.x} |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
   }
  ]
 }

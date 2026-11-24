@@ -12687,6 +12687,16 @@
             "attribute_line": {
               "f": "node.children.-1.children.0.children.0.value"
             }
+          },
+          {
+            "contains": [
+              {
+                "f": "text"
+              },
+              {
+                "f": "node.children.-1.children.0.children.0.value"
+              }
+            ]
           }
         ]
       },
