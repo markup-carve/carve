@@ -26,7 +26,7 @@ An extension renderer is trusted host code. Its returned HTML is inserted unchan
 
 ## Changed in 0.2
 
-The old `--no-raw-html` and `--safe` behavior is now the default. Use `--raw-html` only when raw markup is required and allowed. The 0.2 CLI has no Markdown, plain text, or ANSI render target. See [the upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#command-line-and-missing-features).
+The old `--no-raw-html` and `--safe` behavior is now the default. Use `--raw-html` only when raw markup is required and allowed. The Markdown, plain text, and ANSI targets (`--to markdown`, `--to plain`, `--to ansi`) are export renderers whose output the specification does not define (C2-T-003). See [the upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#command-line-and-missing-features).
 
 ## Resource limits (denial of service)
 

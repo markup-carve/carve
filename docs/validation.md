@@ -20,7 +20,7 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given. The data file is authoritative if a row changes.
+The following 113 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
@@ -83,6 +83,7 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `figure-group-single-panel` | warning | on |
 | `footnote-labels-differ-only-in-whitespace` | warning | on |
 | `footnotes-placement-in-container` | warning | on |
+| `frontmatter-crossref` | error | on |
 | `frontmatter-shaped-thematic-break` | warning | on |
 | `github-alert-marker` | warning | on |
 | `glob-shaped-strong` | hint | on |
@@ -105,8 +106,8 @@ The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `non-descriptive-link-text` | warning | off |
 | `ordered-list-kind-split` | warning | on |
 | `ordered-marker-right-aligned` | warning | on |
-| `platform-issue-reference` | warning | undefined |
-| `platform-mention-token` | warning | undefined |
+| `platform-issue-reference` | warning | platforms |
+| `platform-mention-token` | warning | platforms |
 | `quote-fence-ends-the-quote-above` | warning | on |
 | `region-marker-renders-as-text` | warning | on |
 | `semantic-attribute-outside-span` | warning | on |

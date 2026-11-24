@@ -1,10 +1,10 @@
 ---
-description: Claim an inline extension form and render it in static HTML.
+description: Claim an inline extension form and render it as HTML.
 ---
 
 # Writing an extension: a badge
 
-This example claims an existing inline extension form and renders it in static HTML. It runs with Node.js 26 from a `carve-js` `next2` checkout. The interface is provisional; pin a reference revision before using it in production. See [registration and matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching) and [extension status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md).
+This example claims an existing inline extension form and renders it as HTML. It runs with Node.js 26 from a `carve-js` `next2` checkout. The interface is provisional; pin a reference revision before using it in production. See [registration and matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching) and [extension status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md).
 
 The source is a core inline extension before registration:
 
@@ -46,7 +46,6 @@ const badgeRenderer = {
 const source = ':badge[Ready]'
 console.log(render(source, {
   extensions: [badge],
-  mode: 'static',
   renderers: { 'org.example.badge': badgeRenderer },
 }))
 ```
@@ -59,4 +58,4 @@ The program prints:
 
 The transform maps one claimed core node to one qualified inline node. The fallback is plain inline content, so a reader without the extension can still show `Ready`. The source record lets a writer recover the claimable `:badge[Ready]` form. The renderer uses `host.inlines` to escape and render child content. Do not concatenate untrusted source into raw HTML. See [transform and carriage](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#transformation-and-carriage) and [rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#resolution-rendering-and-equality).
 
-The renderer is selected in static mode. A missing renderer uses the fallback and reports `extension-fallback-rendered`. Test both paths when an extension carries content that must remain readable without the host code.
+This `render` method serves interactive mode, the default. In `static` mode only a build-time renderer, a `buildTime` method, is selected (C2-X-052). A missing renderer uses the fallback and reports `extension-fallback-rendered`. Test both paths when an extension carries content that must remain readable without the host code.
