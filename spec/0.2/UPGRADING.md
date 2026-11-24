@@ -587,7 +587,7 @@ A second ruling of 24 November extends #6499 to every rule whose only job is hel
 | `deprecated-substitution-arrow` | `~>` in a braced strike, which is text | a substitution |
 | `deprecated-table-attribute` | `header-rows` on a pipe table, which does not apply | the head rows of the table |
 | `thematic-break-spelling` | a line of `---` or `___`, which is text | a thematic break |
-| the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet or a folded heading line |
+| the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet, a folded heading line, a definition list, an ordered list, or text where Carve makes a sign, a tag or a mention |
 
 The rules that report a likely mistake or an ambiguity in the 0.2 document itself keep their defaults: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented`. `carve fix` keeps these defaults (C2-T-049): it rewrites a deprecated or Djot spelling only in a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names the rule.
 
@@ -630,6 +630,20 @@ A ruling of 24 November decides #6523: under `--fix` a rule keeps the default it
 | `---` on its own line | `***` | unchanged | `***` |
 
 `carve upgrade` and `applyMigrationFixes` still rewrite these spellings: they turn the rules on.
+
+### Ruling of 24 November 2026: Djot constructs that change meaning
+
+A ruling of 24 November decides #6522: five Djot constructs that Carve 0.2 reads otherwise, with no other finding, get a `djot-` migration notice each. They are hints with the default `upgrade` (C2-W-156), so `carve lint --upgrade` or a document that declares `carve: 0.1` reports them, and none has a fix.
+
+| Djot source | Djot reads | Carve 0.2 reads | Rule |
+| --- | --- | --- | --- |
+| `{_x_}` | emphasis | underline (C2-I-055) | `djot-emphasis-underscore-braced` |
+| `-->`, `==>`, `!=`, `<=`, `>=`, `+-`, `(tm)` | text as typed | an arrow or a sign (C2-I-115, C2-I-117) | `djot-typography-sign` |
+| `: term`, a blank line, an indented definition | a definition list | paragraphs (C2-B-074); write `:: term` and `: definition` | `djot-definition-list` on the first line |
+| `(1) x`, `(a) x`, `A. x` | an ordered list | text (C2-B-036, C2-B-040) | `djot-ordered-marker` |
+| `#word`, `@word` | text | a tag or a mention (C2-I-090) | `djot-tag-mention` |
+
+A `: ` line below the first line of a paragraph stays with `markdown-definition-paragraph`, which is on by default. Quotes, dashes and the ellipsis are replaced in both, so `djot-typography-sign` does not report them. Escape a sigil or the punctuation of a run, `\#word` or `\!=`, to keep it as text.
 
 ### Include expansion
 

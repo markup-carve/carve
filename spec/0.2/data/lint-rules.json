@@ -564,6 +564,18 @@
       "clauses": ["C2-H-082", "C2-H-132"]
     },
     {
+      "id": "djot-definition-list",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": ["Djot reads a line that starts with `: ` as the term of a definition list; Carve reads it as paragraph text. Write the term as `:: term` and the definition as `: definition` on the line below it."],
+      "message_origin": "design",
+      "change": "added with the ruling on #6522 (24 November): a Djot reading that Carve 0.2 changes with no other finding",
+      "reports": "the first line of a paragraph that after its container prefixes and indent starts with `:`, a space or a tab and a further character, which Djot reads as the term of a definition list and Carve as text, a description line with no term above it being text (C2-B-074); once per paragraph, the range is that line; a later line of a paragraph is left to `markdown-definition-paragraph` (C2-B-067, C2-B-074)",
+      "clauses": ["C2-B-067", "C2-B-074"]
+    },
+    {
       "id": "djot-emphasis-underscore",
       "severity": "warning",
       "channel": "lint",
@@ -575,6 +587,18 @@
       "change": "opt-in Djot check; new message text",
       "reports": "a pair of underscores that Djot reads as emphasis and Carve as text (C2-I-046): an opening `_` not behind an odd run of backslashes, not after an ASCII letter, digit or `_` and not before whitespace, and the next `_` not after whitespace and not before an ASCII letter, digit or `_`, with at least one character and no blank line between; once per pair (C2-I-046, C2-I-047)",
       "clauses": ["C2-I-046", "C2-I-047"]
+    },
+    {
+      "id": "djot-emphasis-underscore-braced",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": ["Djot emphasis `{_x_}` is underline in Carve. Carve emphasis is `/x/` or the braced `{/x/}`."],
+      "message_origin": "design",
+      "change": "added with the ruling on #6522 (24 November): a Djot reading that Carve 0.2 changes with no other finding",
+      "reports": "each underline node whose source starts with `{_`, a braced underline that formed and survived delimiter pairing, which Djot reads as emphasis; once per node, the range is the node (C2-I-043, C2-I-055, C2-I-059, C2-I-060)",
+      "clauses": ["C2-I-043", "C2-I-055", "C2-I-059", "C2-I-060"]
     },
     {
       "id": "djot-heading-continuation",
@@ -614,6 +638,18 @@
       "change": "opt-in Djot check",
       "reports": "a pair of underscores inside a word, which Djot reads as emphasis: an opening `_` after an ASCII letter or digit, not behind an odd run of backslashes and not before whitespace, and the next `_` not after whitespace and before an ASCII letter or digit, with no blank line between, as `snake_case_name`; once per pair (C2-I-046, C2-I-047)",
       "clauses": ["C2-I-046", "C2-I-047"]
+    },
+    {
+      "id": "djot-ordered-marker",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": ["Djot reads this line as an ordered list item; Carve reads it as paragraph text. Carve has no marker in parentheses such as `(1)`, and an uppercase marker with a dot needs two spaces before its text."],
+      "message_origin": "design",
+      "change": "added with the ruling on #6522 (24 November): a Djot reading that Carve 0.2 changes with no other finding",
+      "reports": "a parsed paragraph line whose body starts with a Djot ordered marker, one or more digits, one ASCII letter, or a run of the letters `ivxlcdm` or of `IVXLCDM`, followed by `.` or `)` or enclosed in parentheses, and then a space, a tab or the end of the line, where the line is the first line of its paragraph or a lazy line (C2-B-024) whose body starts at or left of the marker column of the innermost list item that holds it, if one does, the places where Djot starts a list: Djot ends a quote or a list item at such a line, keeps a line indented past the item marker as text of the item and does not end a paragraph at it; Carve reads it as text because the marker is no ordered marker (C2-B-036) or because an uppercase marker with a dot has only one space (C2-B-040); once per line, the range is the line",
+      "clauses": ["C2-B-024", "C2-B-036", "C2-B-040"]
     },
     {
       "id": "djot-plus-bullet",
@@ -665,6 +701,30 @@
       "change": "opt-in Djot check",
       "reports": "each pair of bare carets in text, where the opening caret is not escaped, not directly after an unescaped `{` and not followed by whitespace, `}` or `[`, the closing caret is the next caret of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`x^2^` is reported); whole-cell row span markers do not count; once per pair (C2-I-046)",
       "clauses": ["C2-I-046"]
+    },
+    {
+      "id": "djot-tag-mention",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": ["Djot reads `#word` and `@word` as text; Carve reads them as a tag or a mention. Escape the sigil as `\\#` or `\\@` to keep it as text."],
+      "message_origin": "design",
+      "change": "added with the ruling on #6522 (24 November): a Djot reading that Carve 0.2 changes with no other finding",
+      "reports": "each tag and each mention node, which Djot reads as text (C2-I-090, C2-I-091, C2-I-092); once per node, the range is the node",
+      "clauses": ["C2-I-090", "C2-I-091", "C2-I-092"]
+    },
+    {
+      "id": "djot-typography-sign",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": ["Djot keeps this run as typed; Carve smart typography writes it as a sign. Escape its punctuation characters to keep it as typed."],
+      "message_origin": "design",
+      "change": "added with the ruling on #6522 (24 November): a Djot reading that Carve 0.2 changes with no other finding",
+      "reports": "each smart punctuation node of an arrow, a comparison sign, the plus-minus sign or the trademark sign, which Djot keeps as typed: every replaced run but a quote, a dash and the ellipsis, the three Djot replaces too (C2-I-115, C2-I-117); once per node, the range is the node",
+      "clauses": ["C2-I-115", "C2-I-117"]
     },
     {
       "id": "duplicate-abbreviation-definition",

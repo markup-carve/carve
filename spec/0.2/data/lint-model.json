@@ -6170,6 +6170,47 @@
       ]
     },
     {
+      "id": "djot-definition-list",
+      "over": "line",
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "paragraph"
+            ]
+          },
+          {
+            "f": "leaf_first"
+          },
+          {
+            "matches": [
+              {
+                "f": "body"
+              },
+              "^:[ \\t]+[^ \\t]"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "body_start"
+          },
+          "end": {
+            "f": "body_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-067",
+        "C2-B-074"
+      ]
+    },
+    {
       "id": "djot-emphasis-underscore",
       "over": "inline",
       "types": [
@@ -6386,6 +6427,37 @@
       ]
     },
     {
+      "id": "djot-emphasis-underscore-braced",
+      "over": "inline",
+      "types": [
+        "underline"
+      ],
+      "when": {
+        "starts": [
+          {
+            "f": "text"
+          },
+          "{_"
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-059",
+        "C2-I-060"
+      ]
+    },
+    {
       "id": "djot-heading-continuation",
       "over": "line",
       "when": {
@@ -6567,6 +6639,136 @@
       "clauses": [
         "C2-I-046",
         "C2-I-047"
+      ]
+    },
+    {
+      "id": "djot-ordered-marker",
+      "over": "line",
+      "let": {
+        "item_index": {
+          "index_of": [
+            {
+              "f": "ancestors"
+            },
+            "list_item"
+          ]
+        },
+        "item_marker_column": {
+          "if": [
+            {
+              "ge": [
+                {
+                  "v": "item_index"
+                },
+                0
+              ]
+            },
+            {
+              "lookup": {
+                "over": "block",
+                "types": [
+                  "list_item"
+                ],
+                "key": {
+                  "f": "item.identity"
+                },
+                "value": {
+                  "nth": [
+                    {
+                      "f": "ancestor_ids"
+                    },
+                    {
+                      "v": "item_index"
+                    }
+                  ]
+                },
+                "field": "opener_column"
+              }
+            },
+            -1
+          ]
+        },
+        "column": {
+          "column": [
+            {
+              "f": "body_start"
+            },
+            {
+              "f": "quote_depth"
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "paragraph"
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "body"
+              },
+              "^(?:\\((?:[0-9]+|[A-Za-z]|[ivxlcdm]+|[IVXLCDM]+)\\)|(?:[0-9]+|[A-Za-z]|[ivxlcdm]+|[IVXLCDM]+)[.)])(?:[ \\t]|$)"
+            ]
+          },
+          {
+            "any": [
+              {
+                "f": "leaf_first"
+              },
+              {
+                "all": [
+                  {
+                    "f": "lazy"
+                  },
+                  {
+                    "any": [
+                      {
+                        "lt": [
+                          {
+                            "v": "item_index"
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        "le": [
+                          {
+                            "v": "column"
+                          },
+                          {
+                            "v": "item_marker_column"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "body_start"
+          },
+          "end": {
+            "f": "body_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-024",
+        "C2-B-036",
+        "C2-B-040"
       ]
     },
     {
@@ -7124,6 +7326,68 @@
       ],
       "clauses": [
         "C2-I-046"
+      ]
+    },
+    {
+      "id": "djot-tag-mention",
+      "over": "inline",
+      "types": [
+        "mention",
+        "tag"
+      ],
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-090",
+        "C2-I-091",
+        "C2-I-092"
+      ]
+    },
+    {
+      "id": "djot-typography-sign",
+      "over": "inline",
+      "types": [
+        "smart_punctuation"
+      ],
+      "when": {
+        "not": {
+          "in": [
+            {
+              "f": "node.kind"
+            },
+            [
+              "ellipsis",
+              "em_dash",
+              "en_dash",
+              "left_double_quote",
+              "left_single_quote",
+              "right_double_quote",
+              "right_single_quote"
+            ]
+          ]
+        }
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-115",
+        "C2-I-117"
       ]
     },
     {

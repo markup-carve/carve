@@ -20,7 +20,7 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 115 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
+The following 120 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
@@ -62,14 +62,19 @@ The following 115 lint-channel rows, every row except the two with status `void`
 | `deprecated-table-attribute` | warning | upgrade |
 | `description-separator-below-content-column` | warning | on |
 | `description-term-multi-line` | hint | on |
+| `djot-definition-list` | hint | upgrade |
 | `djot-emphasis-underscore` | warning | upgrade |
+| `djot-emphasis-underscore-braced` | hint | upgrade |
 | `djot-heading-continuation` | warning | upgrade |
 | `djot-highlight-braces` | warning | off |
 | `djot-intraword-underscore` | warning | upgrade |
+| `djot-ordered-marker` | hint | upgrade |
 | `djot-plus-bullet` | warning | upgrade |
 | `djot-subscript-tilde` | warning | upgrade |
 | `djot-subscript-tilde-braced` | warning | upgrade |
 | `djot-superscript-caret` | warning | upgrade |
+| `djot-tag-mention` | hint | upgrade |
+| `djot-typography-sign` | hint | upgrade |
 | `duplicate-reference-url` | warning | off |
 | `emphasis-as-heading` | warning | off |
 | `emphasis-marker-before-attributes` | warning | on |

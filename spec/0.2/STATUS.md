@@ -477,3 +477,10 @@ The same ruling adds the migration notice `continuation-reading-changed` (defaul
 The ruling on #6523 keeps the lint default of every rule under `--fix` (C2-T-049, C2-W-156): a migration notice that has a fix rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names it, and `--rules` turning it off keeps it off over both. CC-1352 keeps the `+` bullet of a 0.2 document, CC-1354 adds `--upgrade`, and clause cases CC-1926 to CC-1951 cover the five shapes of the ticket in a 0.2 document, under a `carve: 0.1` or `carve-version: 0.1.13` declaration, under `--upgrade`, named in `--rules`, and turned off by `--rules` under `--upgrade`. No default in `data/lint-rules.json` changes.
 
 - All three engines: run `fix` with the lint defaults in place of turning every fixable rule on; `carve upgrade` and `applyMigrationFixes` keep turning the migration rules on.
+
+## Engine gaps from the Djot migration-notice ruling of 24 November (#6522)
+
+The ruling on #6522 adds five migration notices, each a hint with the default `upgrade` (C2-W-156) and no fix, stated as data rows in `lint-model.json`: `djot-emphasis-underscore-braced`, `djot-typography-sign`, `djot-definition-list`, `djot-ordered-marker` and `djot-tag-mention`. Clause cases CC-1952 to CC-1978.
+
+- carve-js: the rows arrive with the spec pin, since `lint/catalog.ts` and `lint/data-tables.ts` are generated from the data files; the cases pass with the generated tables and no matcher code.
+- carve-php and carve-rs: add the five rules from their data rows (CC-1952 to CC-1978).

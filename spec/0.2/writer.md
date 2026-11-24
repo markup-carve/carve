@@ -1383,7 +1383,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Nine findings of the syntax chapters, one of the tree and writer chapters, and two differences to 0.1 that stay (U-340 and the continuation rulings of 24 November) had no rule. Their ids are new in this document.
+Nine findings of the syntax chapters, one of the tree and writer chapters, two differences to 0.1 that stay (U-340 and the continuation rulings of 24 November), and five Djot constructs that Carve 0.2 reads otherwise with no other finding (the ruling on #6522 of 24 November) had no rule. Their ids are new in this document. The five `djot-` rules have no fix.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -1399,6 +1399,11 @@ Nine findings of the syntax chapters, one of the tree and writer chapters, and t
 | `blank-reference-label` | warning, migration notice (C2-W-156) | a footnote or link reference or definition whose label holds only spaces, tabs or a line break, `[^ ]: x` and `a[^ ]`: it is no label and stays text, where 0.1 read it as a label (C2-I-079, U-340) |
 | `link-definition-indented-line` | hint | the line directly below a link definition or its tail that is indented past column 0 and holds neither a title nor an attribute block, so it is the next block and no part of a destination (C2-B-083) |
 | `continuation-reading-changed` | warning, migration notice (C2-W-156) | a line that 0.2 reads otherwise than 0.1: the first indented line a link or abbreviation definition takes, the first indented line a term takes, and an unindented text line directly below a caption, which 0.1 took into the caption (C2-B-083, C2-B-084, C2-B-234) |
+| `djot-emphasis-underscore-braced` | hint, migration notice (C2-W-156) | a braced underline `{_x_}`, which Djot reads as emphasis (C2-I-043, C2-I-055) |
+| `djot-typography-sign` | hint, migration notice (C2-W-156) | a replaced run that is an arrow, a comparison sign, `+-` or `(tm)`, which Djot keeps as typed; quotes, dashes and the ellipsis are replaced in both (C2-I-115, C2-I-117) |
+| `djot-definition-list` | hint, migration notice (C2-W-156) | the first line of a paragraph that starts with `:` and a space or a tab, which Djot reads as the term of a definition list; a later line is left to `markdown-definition-paragraph` (C2-B-067, C2-B-074) |
+| `djot-ordered-marker` | hint, migration notice (C2-W-156) | the first line of a paragraph, or a lazy line at or left of the marker column of the list item that holds it, that starts with an ordered marker Djot reads and Carve does not: a marker in parentheses such as `(1)`, or an uppercase marker with a dot and one space such as `A. x` (C2-B-036, C2-B-040) |
+| `djot-tag-mention` | hint, migration notice (C2-W-156) | a tag `#word` or a mention `@word`, which Djot reads as text (C2-I-090 to C2-I-092) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
