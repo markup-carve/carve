@@ -82671,6 +82671,677 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2065",
+  "clauses": [
+   "C2-B-187",
+   "C2-B-230"
+  ],
+  "why": "C2-B-187: An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body. C2-B-230: `0` is an empty body, and an empty value gives no body.",
+  "summary": "an empty body-rows ends the head above a footer row of header cells",
+  "input": "{footer-rows=1 body-rows}\n|= A |= B |\n|= F |= G |\n",
+  "options": {},
+  "expected": {
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th><th scope=\"col\">B</th></tr>\n  </thead>\n  <tfoot>\n    <tr><th scope=\"row\">F</th><th scope=\"row\">G</th></tr>\n  </tfoot>\n</table>",
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "B"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "table_foot",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "F"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "G"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2066",
+  "clauses": [
+   "C2-B-187",
+   "C2-B-230"
+  ],
+  "why": "C2-B-187: An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body. C2-B-230: `0` is an empty body, and an empty value gives no body.",
+  "summary": "an empty body-rows gives a footer of a header row and a data row below one head row",
+  "input": "{footer-rows=2 body-rows}\n|= h |\n|= f1 |\n| f2 |\n",
+  "options": {},
+  "expected": {
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">h</th></tr>\n  </thead>\n  <tfoot>\n    <tr><th scope=\"row\">f1</th></tr>\n    <tr><td>f2</td></tr>\n  </tfoot>\n</table>",
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "h"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "table_foot",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "f1"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "f2"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2067",
+  "clauses": [
+   "C2-B-187"
+  ],
+  "why": "C2-B-187: `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. C2-B-187: Without `body-rows`, or with a count of all the rows or more, the head takes its rows as before.",
+  "summary": "without body-rows a footer count does not take a row of header cells after the head",
+  "input": "{footer-rows=1}\n|= A |\n|= F |\n",
+  "options": {},
+  "expected": {
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th></tr>\n    <tr><th scope=\"col\">F</th></tr>\n  </thead>\n</table>",
+   "children": [
+    {
+     "type": "table",
+     "columns": [
+      {
+       "type": "table_column"
+      }
+     ],
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "F"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2068",
+  "clauses": [
+   "C2-B-187"
+  ],
+  "why": "C2-B-187: `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. C2-B-187: Without `body-rows`, or with a count of all the rows or more, the head takes its rows as before.",
+  "summary": "with an empty body-rows a footer count of all the rows leaves every row in the head",
+  "input": "{footer-rows=2 body-rows}\n|= A |\n|= F |\n",
+  "options": {},
+  "expected": {
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th></tr>\n    <tr><th scope=\"col\">F</th></tr>\n  </thead>\n</table>",
+   "children": [
+    {
+     "type": "table",
+     "columns": [
+      {
+       "type": "table_column"
+      }
+     ],
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "F"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2069",
+  "clauses": [
+   "C2-B-187"
+  ],
+  "why": "C2-B-187: An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body.",
+  "summary": "an empty body-rows footer count that ends the head is not reported as clamped",
+  "kind": "lint",
+  "input": "{footer-rows=1 body-rows}\n|= A |\n|= F |\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "table-row-count-clamped"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2070",
+  "clauses": [
+   "C2-B-187",
+   "C2-W-136",
+   "C2-W-049"
+  ],
+  "why": "C2-W-136: A table with a head and a foot and no body whose first foot row has header cells only is written with `footer-rows` and an empty `body-rows`, which ends the head above the foot (C2-B-187) C2-W-049: A key whose value is the empty string is written as the bare key",
+  "summary": "fmt writes an empty body-rows bare and keeps it on a head and header footer table",
+  "kind": "format",
+  "input": "{footer-rows=1 body-rows=\"\"}\n|= A |\n|= F |\n",
+  "options": {},
+  "expected": {
+   "carve": "{footer-rows=1 body-rows}\n|= A |\n|= F |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2071",
+  "clauses": [
+   "C2-W-136",
+   "C2-B-187"
+  ],
+  "why": "C2-W-136: A table with a head and a foot and no body whose first foot row has header cells only is written with `footer-rows` and an empty `body-rows`, which ends the head above the foot (C2-B-187) C2-B-187: An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body.",
+  "summary": "a supplied table with a head, a footer of header cells and no body is written with an empty body-rows",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "B"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "table_foot",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "F"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "G"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": "{footer-rows=1 body-rows}\n|= A |= B |\n|= F |= G |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2072",
+  "clauses": [
+   "C2-W-136"
+  ],
+  "why": "C2-W-136: A table with a head and a foot and no body whose first foot row has header cells only is written with `footer-rows` and an empty `body-rows`, which ends the head above the foot (C2-B-187)",
+  "summary": "a supplied table with a head and a footer of data cells and no body needs no body-rows",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "table_foot",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "F"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": "{footer-rows=1}\n|= A |\n| F |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2073",
+  "clauses": [
+   "C2-M-037",
+   "C2-W-136",
+   "C2-B-187"
+  ],
+  "why": "C2-M-037: `<thead>` is a `table_head`, `<tbody>` a `table_body` and `<tfoot>` a `table_foot`. C2-W-136: A table with a head and a foot and no body whose first foot row has header cells only is written with `footer-rows` and an empty `body-rows`, which ends the head above the foot (C2-B-187) C2-B-187: An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body.",
+  "summary": "a thead and a tfoot of th cells with no tbody import as a head and a footer",
+  "kind": "import",
+  "html": "<table><thead><tr><th>A</th><th>B</th></tr></thead><tfoot><tr><th>F</th><th>G</th></tr></tfoot></table>",
+  "options": {},
+  "expected": {
+   "carve": "{footer-rows=1 body-rows}\n|= A |= B |\n|= F |= G |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2074",
+  "clauses": [
+   "C2-M-037",
+   "C2-W-136",
+   "C2-B-187"
+  ],
+  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped. C2-W-136: A table with a head and a foot and no body whose first foot row has header cells only is written with `footer-rows` and an empty `body-rows`, which ends the head above the foot (C2-B-187) C2-B-187: An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body.",
+  "summary": "a leading th row and a tfoot of th cells import as a head and a footer",
+  "kind": "import",
+  "html": "<table><tr><th>A</th><th>B</th></tr><tfoot><tr><th>F</th><th>G</th></tr></tfoot></table>",
+  "options": {},
+  "expected": {
+   "carve": "{footer-rows=1 body-rows}\n|= A |= B |\n|= F |= G |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2075",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-082"
+  ],
+  "why": "C2-M-037: The attributes of a body dropped that way are dropped with it and reported with one `import-attribute-dropped` entry at its `<tbody>` (C2-M-082). C2-M-082: Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported.",
+  "summary": "the class of a tbody that the head move empties is dropped and reported",
+  "kind": "import",
+  "html": "<table><tbody class=\"x\"><tr><th>A</th><th>B</th></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |= B |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "line": 1,
+     "column": 8,
+     "severity": "warning",
+     "channel": "render-loss"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2076",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-082"
+  ],
+  "why": "C2-M-037: The attributes of a body dropped that way are dropped with it and reported with one `import-attribute-dropped` entry at its `<tbody>` (C2-M-082). C2-M-082: Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported.",
+  "summary": "the id and class of a tbody that the head move empties give one entry",
+  "kind": "import",
+  "html": "<table><tbody id=\"a\" class=\"x\"><tr><th>A</th></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "line": 1,
+     "column": 8,
+     "severity": "warning",
+     "channel": "render-loss"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
  }
  ]
 }
