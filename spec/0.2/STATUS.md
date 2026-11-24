@@ -73,10 +73,10 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `writer.md` | C2-W | 131 | 295 | 87 | 6 | 46 |
 | `source-layout.md` | C2-L | 54 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 41 |
-| `extensions.md` | C2-X | 69 | 89 | 9 | 0 | 0 |
+| `extensions.md` | C2-X | 70 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 85 | 239 | 46 | 1 | 64 |
 | `tooling.md` | C2-T | 46 | 105 | 7 | 0 | 0 |
-| **Total** | | **1,191** | **2,287** | **450** | **40** | **657** |
+| **Total** | | **1,192** | **2,287** | **450** | **40** | **657** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule other clauses state or give; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay. Candidate 8 recounts the row of `tooling.md`: one rule per sentence of its clauses and one exception per carve-out (C2-T-002, C2-T-009, C2-T-010, C2-T-016, C2-T-031, C2-T-032, C2-T-038), which corrects the author's count of candidate 7. Candidate 9 adds C2-W-138 and C2-L-059 and amends other clauses; it moves the column Clauses, and Rules and Exceptions wait for a recount.
 
@@ -513,3 +513,9 @@ The ruling on #6542 (option A) gives an attribute value of a supplied tree that 
 The ruling on #6544 places a backslash in link text only where a C2-W-088 round or a C2-W-125 case for a node that did not form places it; a nested link alone is no reason. For a tree from a parse whose bare text reads back, the text brackets around a nested link stay bare (C2-W-088, C2-W-091). CC-1567 now expects its input unchanged. Measured on `carve-js` `next2` `fdd53bf7` and `carve-php` `next2` `2fb117558`: both escape every text bracket around the nested links; `carve-rs` `next2` writes the same escapes.
 
 - All three engines: write CC-1567 unchanged, without `\[` and `\]` around the nested links.
+
+## Engine gaps from the copied heading title ruling of 24 November (#6540)
+
+The ruling on #6540 (option A) keeps a heading cross-reference inside the title copy of a `number-title` reference a reference: it is not expanded again and renders as a plain link with its target's title, so the output is linear in the input (C2-X-070). It moves the column Clauses of `extensions.md`; Rules and Exceptions wait for a recount. Extension cases EXT-104 to EXT-106 are added. Measured on `carve-js` `next2` `ac8afa9f` and `carve-php` `next2` `f6a50999`: both expand the copy again and fail EXT-104 and EXT-105; on EXT-106, a title that references its own heading, carve-js writes no numbers and carve-php exhausts 1 GiB of memory. The issue measured `carve-rs` `next2` with the same growth.
+
+- All three engines: leave a cross-reference inside a title copy unexpanded (EXT-104 to EXT-106).

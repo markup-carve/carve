@@ -2165,6 +2165,66 @@
       "expected": {
         "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <h2 id=\"In-note\">In note</h2>\n  </aside>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>"
       }
+    },
+    {
+      "id": "EXT-104",
+      "extension": "carve.headingNumbers",
+      "summary": "a cross-reference inside a copied title stays a reference and is not expanded again (carve#6540)",
+      "clauses": [
+        "C2-X-070",
+        "C2-H-081"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#a}\n= A </#b>\n\n{#b}\n== B </#c>\n\n{#c}\n== C\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"a\">\n  <h1><span class=\"section-number\">1</span> A <a href=\"#b\">Section 1.1 - B C</a></h1>\n  <section id=\"b\">\n    <h2><span class=\"section-number\">1.1</span> B <a href=\"#c\">Section 1.2 - C</a></h2>\n  </section>\n  <section id=\"c\">\n    <h2><span class=\"section-number\">1.2</span> C</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-105",
+      "extension": "carve.headingNumbers",
+      "summary": "titles that reference the next two headings copy each title once (carve#6540 reproduction)",
+      "clauses": [
+        "C2-X-070",
+        "C2-H-081"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#h0}\n= T0 </#h1> </#h2>\n\n{#h1}\n= T1 </#h2> </#h3>\n\n{#h2}\n= T2 </#h3> </#h4>\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "htmlIncludes": "<h1><span class=\"section-number\">1</span> T0 <a href=\"#h1\">Section 2 - T1 T2"
+      }
+    },
+    {
+      "id": "EXT-106",
+      "extension": "carve.headingNumbers",
+      "summary": "a title that references its own heading ends after one copy (carve#6540)",
+      "clauses": [
+        "C2-X-070",
+        "C2-H-081"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#a}\n= Ref </#a>\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "htmlIncludes": "<h1><span class=\"section-number\">1</span> Ref <a href=\"#a\">Section 1 - Ref Ref"
+      }
     }
   ]
 }
