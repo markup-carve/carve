@@ -77139,6 +77139,1527 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1868",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-014",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "abbreviation definition: an indented fence line ends the expansion and opens a code block",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  ```\n  code\n  ```\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<pre><code>code\n</code></pre>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "code_block",
+      "value": "code\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1869",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-014",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "fmt: abbreviation definition: an indented fence line ends the expansion and opens a code block",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  ```\n  code\n  ```\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n\n```\ncode\n```\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1870",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table",
+   "summary": "abbreviation definition: an indented table row ends the expansion and opens a table",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  | a |\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1871",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table",
+   "summary": "fmt: abbreviation definition: an indented table row ends the expansion and opens a table",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  | a |\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n\n| a |\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1872",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-200",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "abbreviation definition: an indented thematic break ends the expansion",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  ***\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<hr>\n<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "thematic_break"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1873",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-200",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "fmt: abbreviation definition: an indented thematic break ends the expansion",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  ***\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n\n***\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1874",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-137",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "abbreviation definition: an indented region marker line ends the expansion",
+   "kind": "render",
+   "input": "*[HTML]: Hyper Text\n  %% #region a\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "html": "<p><abbr title=\"Hyper Text\">HTML</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "Hyper Text",
+      "key": "HTML",
+      "namespace": "abbr"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region a"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "HTML",
+        "namespace": "abbr",
+        "expansion": "Hyper Text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1875",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-137",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block",
+   "summary": "fmt: abbreviation definition: an indented region marker line ends the expansion",
+   "kind": "format",
+   "input": "*[HTML]: Hyper Text\n  %% #region a\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "carve": "*[HTML]: Hyper Text\n%% #region a\n\nHTML\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1876",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "abbreviation definition: a text line continues the expansion and a table row below it ends the definition",
+   "kind": "render",
+   "input": "*[A]: x\n  y\n  | a |\n\nA\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p><abbr title=\"x y\">A</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "x y",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "A",
+        "namespace": "abbr",
+        "expansion": "x y"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1877",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-019",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion",
+   "summary": "fmt: abbreviation definition: a text line continues the expansion and a table row below it ends the definition",
+   "kind": "format",
+   "input": "*[A]: x\n  y\n  | a |\n\nA\n",
+   "options": {},
+   "expected": {
+    "carve": "*[A]: x y\n\n| a |\n\nA\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1878",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-154",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table, and `  - y` continues the expansion as it continues a heading.",
+   "summary": "abbreviation definition: an indented list marker line is no block line and continues the expansion",
+   "kind": "render",
+   "input": "*[A]: x\n  - y\n\nA\n",
+   "options": {},
+   "expected": {
+    "html": "<p><abbr title=\"x - y\">A</abbr></p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "x - y",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "abbreviation",
+        "key": "A",
+        "namespace": "abbr",
+        "expansion": "x - y"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1879",
+   "clauses": [
+    "C2-B-084",
+    "C2-B-154",
+    "C2-B-234"
+   ],
+   "why": "C2-B-084: An indented line that ends a heading continuation (C2-B-154, C2-B-234), a fence line, a table row, a thematic break or a region marker line, ends the definition instead and starts its block, so only text lines continue the expansion: below `*[A]: x`, `  | a |` is a table, and `  - y` continues the expansion as it continues a heading.",
+   "summary": "fmt: abbreviation definition: an indented list marker line is no block line and continues the expansion",
+   "kind": "format",
+   "input": "*[A]: x\n  - y\n\nA\n",
+   "options": {},
+   "expected": {
+    "carve": "*[A]: x - y\n\nA\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1880",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "the rest of a destination on the indented line below a link definition is reported",
+   "kind": "lint",
+   "input": "[a]: /docs/\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1881",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "an indented line of prose below a link definition is reported",
+   "kind": "lint",
+   "input": "[a]: /url\n  more text\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1882",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "a title followed by a word on the indented line is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\" x\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1883",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: An indented line that is neither a title nor an attribute block, as the rest of a destination, is the next block as well, and `link-definition-indented-line` reports it with a hint.",
+   "summary": "an indented line below the tail line of a link definition is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\"\n  x\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 3,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1884",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: neither a title, nor an attribute block, nor a title, one space and an attribute block",
+   "summary": "an indented title, the tail of the definition, is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1885",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: neither a title, nor an attribute block, nor a title, one space and an attribute block",
+   "summary": "an indented second title is a title and is not reported",
+   "kind": "lint",
+   "input": "[a]: /u \"T\"\n  \"U\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1886",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: comment-only lines between are skipped (C2-B-137), and a blank line is not reported",
+   "summary": "an indented comment-only line below a link definition is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  %% c\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1887",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "Catalog link-definition-indented-line: that is indented past column 0",
+   "summary": "an unindented line below a link definition is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\nmore\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-definition-indented-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1888",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+   "summary": "link definition: the rest of a destination on the indented line is a paragraph",
+   "kind": "render",
+   "input": "[a]: /docs/\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>guide.html</p>\n<p>See <a href=\"/docs/\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/docs/"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "guide.html"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/docs/"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1889",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: Any other line ends the definition and is read as if none stood above it",
+   "summary": "fmt: link definition: the rest of a destination on the indented line is a paragraph",
+   "kind": "format",
+   "input": "[a]: /docs/\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /docs/\n\nguide.html\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1890",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: When that line holds a title alone, the line directly below it continues the definition in the same way when it holds an attribute block alone, so a title and an attribute block may each stand on their own indented line, in that order, and a definition takes at most one of each.",
+   "summary": "link definition tail: a title and an attribute block on two indented lines",
+   "kind": "render",
+   "input": "[a]: /url\n  \"Title\"\n  {.c}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"/url\" title=\"Title\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/url",
+      "tooltip": "Title",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/url"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1891",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: When that line holds a title alone, the line directly below it continues the definition in the same way when it holds an attribute block alone, so a title and an attribute block may each stand on their own indented line, in that order, and a definition takes at most one of each.",
+   "summary": "fmt: link definition tail: a title and an attribute block on two indented lines",
+   "kind": "format",
+   "input": "[a]: /url\n  \"Title\"\n  {.c}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "{.c}\n[a]: /url \"Title\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1892",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: When that line holds a title alone, the line directly below it continues the definition in the same way when it holds an attribute block alone",
+   "summary": "link definition tail: a single-quoted title and a tab-indented attribute block on two lines",
+   "kind": "render",
+   "input": "[a]: /u\n   'T'  \n\t{.c}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1893",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: so a title and an attribute block may each stand on their own indented line, in that order",
+   "summary": "link definition tail: a title below an attribute block line is no tail and is a paragraph",
+   "kind": "render",
+   "input": "[a]: /u\n  {.c}\n  \"T\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“T”</p>\n<p>See <a href=\"/u\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "T"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1894",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: so a title and an attribute block may each stand on their own indented line, in that order",
+   "summary": "fmt: link definition tail: a title below an attribute block line is no tail and is a paragraph",
+   "kind": "format",
+   "input": "[a]: /u\n  {.c}\n  \"T\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "{.c}\n[a]: /u\n\n\"T\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1895",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "link definition tail: a second title line is no tail and is a paragraph",
+   "kind": "render",
+   "input": "[a]: /u\n  \"T\"\n  \"U\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p>“U”</p>\n<p>See <a href=\"/u\" title=\"T\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "left_double_quote",
+        "glyph": "“",
+        "source": "\""
+       },
+       {
+        "type": "text",
+        "value": "U"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "right_double_quote",
+        "glyph": "”",
+        "source": "\""
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1896",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "fmt: link definition tail: a second title line is no tail and is a paragraph",
+   "kind": "format",
+   "input": "[a]: /u\n  \"T\"\n  \"U\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "[a]: /u \"T\"\n\n\"U\"\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1897",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-091"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "link definition tail: a second attribute block line is an attribute line of the next block",
+   "kind": "render",
+   "input": "[a]: /u\n  \"T\"\n  {.c}\n  {.d}\nPara\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p class=\"d\">Para</p>\n<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Para"
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "d"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1898",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-091"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "fmt: link definition tail: a second attribute block line is an attribute line of the next block",
+   "kind": "format",
+   "input": "[a]: /u\n  \"T\"\n  {.c}\n  {.d}\nPara\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "carve": "{.c}\n[a]: /u \"T\"\n\n{.d}\nPara\n\nSee [a].\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1899",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-091"
+   ],
+   "why": "C2-B-083: and a definition takes at most one of each.",
+   "summary": "link definition tail: an attribute block line below a full tail line is an attribute line of the next block",
+   "kind": "render",
+   "input": "[a]: /u\n  \"T\" {.c}\n  {.d}\nPara\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "html": "<p class=\"d\">Para</p>\n<p>See <a href=\"/u\" title=\"T\" class=\"c\">a</a>.</p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Para"
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "d"
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "/u"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1900",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-083"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented title that a link definition takes is reported under upgrade",
+   "kind": "lint",
+   "input": "[a]: /url\n  \"Title\"\n\nSee [a].\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1901",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-084"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented expansion line of an abbreviation definition is reported under upgrade",
+   "kind": "lint",
+   "input": "*[HTML]: Hyper Text\n  Markup Language\n\nHTML\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1902",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-231",
+    "C2-B-083"
+   ],
+   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
+   "summary": "a document that declares Carve 0.1 reports the tail line of a link definition",
+   "kind": "lint",
+   "input": "---\ncarve: 0.1\n---\n[a]: /url\n  \"Title\"\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 5,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1903",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-084"
+   ],
+   "why": "C2-W-156: Such a rule is off by default.",
+   "summary": "an expansion over two lines lints clean by default",
+   "kind": "lint",
+   "input": "*[HTML]: Hyper Text\n  Markup Language\n\nHTML\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1904",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-083"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented line that a link definition does not take is a paragraph in both readings and is not reported",
+   "kind": "lint",
+   "input": "[a]: /url\n  more text\n\nSee [a].\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1905",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-084"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph",
+   "summary": "an indented table row below an abbreviation definition is a table in both readings and is not reported",
+   "kind": "lint",
+   "input": "*[HTML]: Hyper Text\n  | a |\n\nHTML\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1906",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-083"
+   ],
+   "why": "Catalog continuation-reading-changed: which 0.1 read as a paragraph (C2-B-083, C2-B-084), once per definition",
+   "summary": "a tail over two lines is reported once, at its first line",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\"\n  {.c}\n\nSee [a].\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1907",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-069",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term, comment-only lines skipped, that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
+   "summary": "an indented line that continues a term is reported under upgrade",
+   "kind": "lint",
+   "input": ":: t\n  more\n: d\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1908",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-069",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term, comment-only lines skipped, that continues the term, which is indented past the term mark and which 0.1 read as a paragraph",
+   "summary": "an unindented line below a term is a paragraph in both readings and is not reported",
+   "kind": "lint",
+   "input": ":: t\nmore\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1909",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret",
+   "summary": "an unindented text line below a caption is reported under upgrade",
+   "kind": "lint",
+   "input": "| a |\n^ cap\nmore\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1910",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret",
+   "summary": "an unindented list marker line below a caption is reported under upgrade",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n- x\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1911",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret",
+   "summary": "an indented line continues a caption in both readings and is not reported",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n  more\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1912",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: when it carries as many quote marks as that last line and is text, a block image line, a display math line, a list item marker line, a description line or a heading line that starts with `=`",
+   "summary": "a quote line below a caption ended it in 0.1 too and is not reported",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n> q\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "notReported": [
+     "continuation-reading-changed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1913",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: a heading line that starts with `=`",
+   "summary": "a heading line that starts with = below a caption is reported under upgrade",
+   "kind": "lint",
+   "input": "| a |\n^ cap\n= H\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1914",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-137"
+   ],
+   "why": "Catalog link-definition-indented-line: comment-only lines between are skipped (C2-B-137)",
+   "summary": "a comment-only line between a link definition and the indented line is skipped",
+   "kind": "lint",
+   "input": "[a]: /u\n%% note\n  guide.html\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 3,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1915",
+   "clauses": [
+    "C2-B-083",
+    "C2-I-028"
+   ],
+   "why": "Catalog link-definition-indented-line: an attribute block is a valid one (C2-I-028)",
+   "summary": "an indented brace line that is no valid attribute block is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  {#}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1916",
+   "clauses": [
+    "C2-B-083",
+    "C2-I-028"
+   ],
+   "why": "Catalog link-definition-indented-line: an attribute block is a valid one (C2-I-028)",
+   "summary": "a title followed by a brace block that is not valid is reported",
+   "kind": "lint",
+   "input": "[a]: /u\n  \"T\" {#}\n\nSee [a].\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-definition-indented-line",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1917",
+   "clauses": [
+    "C2-W-156",
+    "C2-B-137",
+    "C2-B-234"
+   ],
+   "why": "Catalog continuation-reading-changed: the first line below the mark line of a term, comment-only lines skipped, that continues the term",
+   "summary": "a term continuation line below a comment-only line is reported under upgrade",
+   "kind": "lint",
+   "input": ":: t\n%% note\n  more\n: d\n",
+   "options": {
+    "upgrade": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "continuation-reading-changed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

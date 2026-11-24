@@ -3854,6 +3854,272 @@
       ]
     },
     {
+      "id": "continuation-reading-changed",
+      "over": "block",
+      "types": [
+        "abbreviation_def",
+        "link_reference_definition"
+      ],
+      "let": {
+        "line_start": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "start"
+          }
+        },
+        "line_end": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "end"
+          }
+        },
+        "line_body": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "opener_start"
+            },
+            "field": "body_start"
+          }
+        }
+      },
+      "when": {
+        "lt": [
+          {
+            "v": "line_start"
+          },
+          {
+            "f": "end"
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "v": "line_start"
+          },
+          "end": {
+            "v": "line_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-083",
+        "C2-B-084"
+      ]
+    },
+    {
+      "id": "continuation-reading-changed",
+      "over": "line",
+      "let": {
+        "term_next": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "leaf_head.end"
+            },
+            "field": "start"
+          }
+        }
+      },
+      "when": {
+        "any": [
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "leaf"
+                  },
+                  "definition_term"
+                ]
+              },
+              {
+                "not": {
+                  "f": "leaf_first"
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "v": "term_next"
+                  },
+                  {
+                    "f": "start"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "prev.leaf"
+                  },
+                  "caption"
+                ]
+              },
+              {
+                "not": {
+                  "eq": [
+                    {
+                      "f": "prev.leaf_id"
+                    },
+                    {
+                      "f": "leaf_id"
+                    }
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "f": "blank"
+                }
+              },
+              {
+                "eq": [
+                  {
+                    "f": "quote_marks"
+                  },
+                  {
+                    "f": "prev.quote_marks"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "in": [
+                      {
+                        "f": "shape"
+                      },
+                      [
+                        "block_image",
+                        "bullet",
+                        "description",
+                        "display_math",
+                        "ordered",
+                        "text"
+                      ]
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          {
+                            "f": "shape"
+                          },
+                          "heading"
+                        ]
+                      },
+                      {
+                        "starts": [
+                          {
+                            "f": "body"
+                          },
+                          "="
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "definition_term"
+            ]
+          },
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        },
+        {
+          "message": 2,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-069",
+        "C2-B-148",
+        "C2-B-234"
+      ]
+    },
+    {
       "id": "definition-in-container",
       "over": "line",
       "when": {
@@ -9043,6 +9309,172 @@
       "clauses": [
         "C2-B-011",
         "C2-I-002"
+      ]
+    },
+    {
+      "id": "link-definition-indented-line",
+      "over": "block",
+      "types": [
+        "link_reference_definition"
+      ],
+      "let": {
+        "next_text": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "text"
+          }
+        },
+        "next_raw": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "raw_body"
+          }
+        },
+        "next_body": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "body_start"
+          }
+        },
+        "next_end": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "not": {
+                "starts": [
+                  {
+                    "f": "item.raw_body"
+                  },
+                  "%%"
+                ]
+              }
+            },
+            "value": true,
+            "after": true,
+            "from": {
+              "f": "end"
+            },
+            "field": "body_end"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "matches": [
+              {
+                "v": "next_text"
+              },
+              "^[ \\t]+[^ \\t]"
+            ]
+          },
+          {
+            "not": {
+              "any": [
+                {
+                  "matches": [
+                    {
+                      "v": "next_raw"
+                    },
+                    "^(?:\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*')$"
+                  ]
+                },
+                {
+                  "attribute_line": {
+                    "v": "next_raw"
+                  }
+                },
+                {
+                  "all": [
+                    {
+                      "matches": [
+                        {
+                          "v": "next_raw"
+                        },
+                        "^(?:\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*') (?<attr>\\{.*)$"
+                      ]
+                    },
+                    {
+                      "attribute_line": {
+                        "slice": [
+                          {
+                            "v": "next_raw"
+                          },
+                          {
+                            "match": "attr"
+                          },
+                          {
+                            "len": {
+                              "v": "next_raw"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "v": "next_body"
+          },
+          "end": {
+            "v": "next_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-083"
       ]
     },
     {

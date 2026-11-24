@@ -296,6 +296,38 @@
       "clauses": ["C2-W-106"]
     },
     {
+      "id": "continuation-reading-changed",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "upgrade",
+      "messages": [
+        {
+          "when": "the line continues a link definition or an abbreviation definition",
+          "text": "This indented line continues the definition above in 0.2; in 0.1 it started a paragraph. Remove the indent to make it a separate block again."
+        },
+        {
+          "when": "the line continues a term",
+          "text": "This indented line continues the term above in 0.2; in 0.1 it started a paragraph. Remove the indent to make it a separate block again."
+        },
+        {
+          "when": "the line stands directly below a caption and is not indented past its caret",
+          "text": "This line ends the caption above in 0.2; in 0.1 it continued the caption. Indent it past the caret to keep it in the caption."
+        }
+      ],
+      "message_origin": "design",
+      "reports": "a line whose reading changed between 0.1 and 0.2, where 0.2 reads it as C2-B-083, C2-B-084 and C2-B-234 say: the first line below the first line of a link definition or an abbreviation definition that the definition takes, a tail line or an expansion line, which 0.1 read as a paragraph (C2-B-083, C2-B-084), once per definition; the first line below the mark line of a term, comment-only lines skipped, that continues the term, which is indented past the term mark and which 0.1 read as a paragraph (C2-B-069, C2-B-234), once per term; and the line directly below the last line of a caption that the caption does not take, because it is not indented past the caret, when it carries as many quote marks as that last line and is text, a block image line, a display math line, a list item marker line, a description line or a heading line that starts with `=`, which 0.1 read as a lazy line of the caption (C2-B-148, C2-B-234); the range is that line",
+      "change": "added with the continuation rulings of 24 November (#6507, #6508)",
+      "clauses": [
+        "C2-B-069",
+        "C2-B-083",
+        "C2-B-084",
+        "C2-B-148",
+        "C2-B-234",
+        "C2-W-156"
+      ]
+    },
+    {
       "id": "definition-in-container",
       "severity": "warning",
       "channel": "lint",
@@ -1387,6 +1419,22 @@
       "message_origin": "engine_0_1",
       "reports": "a top-level paragraph that starts on line 2 or later directly after a blank line, whose previous block is not a list, and whose first line starts with four or more spaces and then a non-space; only that first line is reported (C2-B-011, C2-I-002)",
       "clauses": ["C2-B-011", "C2-I-002"]
+    },
+    {
+      "id": "link-definition-indented-line",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": [
+        "This indented line is not a title or attribute block, so it does not continue the link definition above; it starts a new block."
+      ],
+      "message_origin": "design",
+      "reports": "the line directly below a link definition, its tail lines included, that is indented past column 0 and holds, after its indent, neither a title, nor an attribute block, nor a title, one space and an attribute block, so it is the next block (C2-B-083); an attribute block is a valid one (C2-I-028); comment-only lines between are skipped (C2-B-137), and a blank line is not reported; once per definition, the range runs from the first character of that line's text behind its indent to the end of its text",
+      "change": "added with the definition continuation rule",
+      "clauses": [
+        "C2-B-083"
+      ]
     },
     {
       "id": "link-gap-before-destination",

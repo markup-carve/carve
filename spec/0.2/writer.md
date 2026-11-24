@@ -1190,7 +1190,7 @@ Written:
 
 **C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1 (C2-B-215, C2-B-216). A rule that is off by default is turned on by its id. There is no named group of rules, except the migration notices that the option `upgrade` turns on (C2-W-156).
 
-**C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are migration notices of C2-W-156 through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id.
+**C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are migration notices of C2-W-156 through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id. `continuation-reading-changed` reports no removed spelling either: it is the migration notice of C2-W-156 for a line that a definition, a term or a caption reads otherwise than 0.1 did (C2-B-083, C2-B-084, C2-B-234).
 
 `_a_` was underline in 0.1 and is a deprecated spelling in 0.2; a document that declares Carve 0.1 reports it (C2-W-110, C2-W-156).
 
@@ -1207,10 +1207,28 @@ _a_
 
 Reported: `deprecated-bare-underline`.
 
+An indented title below a link definition is its tail in 0.2 and was a paragraph in 0.1, so a document that declares Carve 0.1 reports the line (C2-W-110, C2-W-156).
+
+Example 47 (unverified)
+
+Input:
+
+```carve
+---
+carve: 0.1
+---
+[a]: /url
+  "Title"
+
+See [a].
+```
+
+Reported: `continuation-reading-changed`.
+
 
 **C2-W-111** Each `deprecated-` rule states its trigger on the 0.2 tokens and tree. The 0.2 engine holds no 0.1 parsing code for them.
 
-**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 only because 0.1 or Djot read the same text otherwise, or a spelling that 0.2 removed. A valid 0.2 document lints clean of them with the default options. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. The migration notices are the `deprecated-` rules (C2-W-110), the `djot-` rules except `djot-highlight-braces`, which reports a spelling that Djot and Carve read alike and stays off, `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label`, `tight-list-item-with-blank-line` and `thematic-break-spelling`. A rule that reports a likely mistake or an ambiguity in the 0.2 document itself is no migration notice and keeps its default, even where Markdown or 0.1 read the text otherwise: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented` are such rules.
+**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 only because 0.1 or Djot read the same text otherwise, or a spelling that 0.2 removed. A valid 0.2 document lints clean of them with the default options. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. The migration notices are the `deprecated-` rules (C2-W-110), the `djot-` rules except `djot-highlight-braces`, which reports a spelling that Djot and Carve read alike and stays off, `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label`, `tight-list-item-with-blank-line`, `thematic-break-spelling` and `continuation-reading-changed`. A rule that reports a likely mistake or an ambiguity in the 0.2 document itself is no migration notice and keeps its default, even where Markdown or 0.1 read the text otherwise: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented` are such rules.
 
 ### Rules kept from 0.1
 
@@ -1365,7 +1383,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Eight findings of the syntax chapters, one of the tree and writer chapters, and one difference to 0.1 that stays (U-340) had no rule. Their ids are new in this document.
+Nine findings of the syntax chapters, one of the tree and writer chapters, and two differences to 0.1 that stay (U-340 and the continuation rulings of 24 November) had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -1379,6 +1397,8 @@ Eight findings of the syntax chapters, one of the tree and writer chapters, and 
 | `include-attributes-unused` | warning | an attribute line on an include without `code`, which applies to nothing (C2-N-072) |
 | `table-span-marker-attribute` | warning | a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174) |
 | `blank-reference-label` | warning, migration notice (C2-W-156) | a footnote or link reference or definition whose label holds only spaces, tabs or a line break, `[^ ]: x` and `a[^ ]`: it is no label and stays text, where 0.1 read it as a label (C2-I-079, U-340) |
+| `link-definition-indented-line` | hint | the line directly below a link definition or its tail that is indented past column 0 and holds neither a title nor an attribute block, so it is the next block and no part of a destination (C2-B-083) |
+| `continuation-reading-changed` | warning, migration notice (C2-W-156) | a line that 0.2 reads otherwise than 0.1: the first indented line a link or abbreviation definition takes, the first indented line a term takes, and an unindented text line directly below a caption, which 0.1 took into the caption (C2-B-083, C2-B-084, C2-B-234) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -1603,7 +1623,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 17 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 24 | 0 | 0 | 2 |
-| **Total** | **148** | **6** | **6** | **40** |
+| Diagnostics and lint | 24 | 0 | 0 | 3 |
+| **Total** | **148** | **6** | **6** | **41** |
 
-The document has 148 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 148 clauses, 6 of them marked with the word "Exception", and 47 examples, 6 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
