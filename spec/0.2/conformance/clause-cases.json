@@ -83290,6 +83290,58 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2075",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-082"
+  ],
+  "why": "C2-M-037: The attributes of a body dropped that way are dropped with it and reported with one `import-attribute-dropped` entry at its `<tbody>` (C2-M-082). C2-M-082: Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported.",
+  "summary": "the class of a tbody that the head move empties is dropped and reported",
+  "kind": "import",
+  "html": "<table><tbody class=\"x\"><tr><th>A</th><th>B</th></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |= B |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "line": 1,
+     "column": 8,
+     "severity": "warning",
+     "channel": "render-loss"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2076",
+  "clauses": [
+   "C2-M-037",
+   "C2-M-082"
+  ],
+  "why": "C2-M-037: The attributes of a body dropped that way are dropped with it and reported with one `import-attribute-dropped` entry at its `<tbody>` (C2-M-082). C2-M-082: Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported.",
+  "summary": "the id and class of a tbody that the head move empties give one entry",
+  "kind": "import",
+  "html": "<table><tbody id=\"a\" class=\"x\"><tr><th>A</th></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= A |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "line": 1,
+     "column": 8,
+     "severity": "warning",
+     "channel": "render-loss"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
  }
  ]
 }

@@ -577,3 +577,9 @@ Mark's ruling on #6623 (B) moves the leading rows of the first body of a table w
 Mark's ruling on #6637 (C) gives a table with a head, a foot whose first row has header cells only, and no body a spelling: with an empty `body-rows`, a `footer-rows` count smaller than the number of rows ends the head above the foot when the head would take one of its rows (C2-B-187), and the writer writes that form (C2-W-136). The ruling's sample put `body-rows` first; the made keys keep the C2-W-136 order, and the empty value is written bare (C2-W-049), so the form is `{footer-rows=1 body-rows}`. 0.1 wrote this table as `{header-rows=1 footer-rows=1 body-rows}`, which now reads as head and foot again. Clause cases CC-2065 to CC-2074. Measured on `carve-js` `next2` `8ae9ecdd`: CC-2067, CC-2068 and CC-2072 pass; the imports of CC-2073 and CC-2074 refuse with `structure-unspellable`. `carve-php` `next2` `fbcd050a` and `carve-rs` `next2` `441bc045` read CC-2065 as two head rows as well.
 
 - All three engines: end the head above the foot (CC-2065, CC-2066, CC-2069), write the empty `body-rows` (CC-2070, CC-2071) and import such tables (CC-2073, CC-2074).
+
+## Engine gaps from the dropped body attributes of the head move (#6640)
+
+The head move of C2-M-037 drops a body it leaves empty. The text decides what happens to that body's attributes: C2-M-037 exempts only the move from the report, and C2-M-082 reports every fact the tree no longer holds, so they are reported with one `import-attribute-dropped` entry at the `<tbody>`. C2-M-037 now says so, and the code row cites it. Clause cases CC-2075 and CC-2076. Measured on `carve-js` `next2` `8ae9ecdd`: both pass. `carve-php` and `carve-rs` have not ported the #6623 move yet.
+
+- `carve-php`, `carve-rs`: report the attributes of a body the head move drops (CC-2075, CC-2076).
