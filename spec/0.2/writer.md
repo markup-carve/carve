@@ -2,7 +2,7 @@
 
 Status: part of the freeze candidate of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md` names the candidate).
 
-This document defines the canonical writer, which turns a tree into Carve source, the formatter `carve fmt` built on it, and lint. It ports the clauses of PART 11 of the 0.1 grammar that 0.2 keeps and adds the 0.2 decisions. The Markdown, plain-text and ANSI writers are not part of 0.2.0 (section "Out of scope").
+This document defines the canonical writer, which turns a tree into Carve source, the formatter `carve fmt` built on it, and lint. It ports the clauses of PART 11 of the 0.1 grammar that 0.2 keeps and adds the 0.2 decisions. The Markdown, plain-text and ANSI exports are not defined here: every engine offers them as export renderers (C2-T-003), and the section "Out of scope" lists the 0.1 clauses that stay with them.
 
 Conventions:
 
@@ -1512,7 +1512,7 @@ Reported: `comment-splits-table-row`, severity hint, on line 2, offsets 6 to 10.
 
 ## Out of scope
 
-The Markdown, plain-text and ANSI writers are not part of 0.2.0, and neither are the importers other than the HTML importer, which the HTML document defines (C2-H-120). These 0.1 clauses define only those targets and are not ported. Nobody should port them into the canonical writer.
+Every engine offers Markdown, plain-text and ANSI export renderers, whose output is engine behavior outside this specification (C2-T-003). The importers other than the HTML importer, which the HTML document defines (C2-H-120), are outside it as well. These 0.1 clauses define only those targets and are not ported. Nobody should port them into the canonical writer.
 
 - The 24 of the PART 11 review: CARVE-P11-022, 023, 024, 025, 026, 028, 031, 032, 033, 034, 035, 038, 044, 045, 047, 049, 060, 062, 063, 067, 068, 069, 075 and 082.
 - Sixteen more, found while porting. Each states a rule of the Markdown target, the plain-text target or the HTML importer in its own text: CARVE-P11-017 (HTML import), 048, 050, 051, 052, 053, 054, 055, 056, 057, 058, 059, 061, 064 and 065 (Markdown target), and 072 (plain-text target).
