@@ -12672,7 +12672,7 @@
               {
                 "f": "text"
               },
-              "\\|\\s*\\{\\s*[^%}\\s][^|]*\\}\\s*\\|[^|]*$"
+              "\\|\\s*(?<cell>\\{\\s*[^%}\\s][^|]*\\})\\s*\\|[^|]*$"
             ]
           },
           {
@@ -12691,7 +12691,32 @@
           {
             "contains": [
               {
-                "f": "text"
+                "slice": [
+                  {
+                    "f": "text"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "cell"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "cell",
+                        "at": "end"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "f": "node.children.-1.children.0.children.0.value"

@@ -11,9 +11,9 @@ test('table-row-attribute-as-cell reads the last cell content as an attribute li
   const value = { f: 'node.children.-1.children.0.children.0.value' }
   assert.ok(row.when.all.some((test) => JSON.stringify(test) === JSON.stringify({ attribute_line: value })))
   assert.ok(row.when.all.some((test) => test.not?.has === 'node.children.-1.children.0.children.1'))
-  assert.ok(row.when.all.some((test) => JSON.stringify(test) === JSON.stringify({ contains: [{ f: 'text' }, value] })))
+  assert.ok(row.when.all.some((test) => test.contains?.[0]?.slice?.[1]?.sub?.[0]?.match === 'cell' && JSON.stringify(test.contains[1]) === JSON.stringify(value)))
   const byId = new Map(cases.map((entry) => [entry.id, entry]))
-  for (const id of ['CC-2022', 'CC-2023', 'CC-2024', 'CC-2025', 'CC-2027']) {
+  for (const id of ['CC-2022', 'CC-2023', 'CC-2024', 'CC-2025', 'CC-2027', 'CC-2028']) {
     assert.ok(byId.get(id)?.expected.notReported.includes('table-row-attribute-as-cell'), id)
   }
   assert.ok(byId.get('CC-825')?.expected.diagnostics.some(({ code }) => code === 'table-row-attribute-as-cell'))
