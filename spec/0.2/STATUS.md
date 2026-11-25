@@ -596,3 +596,9 @@ Mark's ruling on #6656 (A) keeps the escape of a kind that a round reports besid
 
 - `carve-js`: carve-js#5587 (CC-2079, CC-2080).
 - `carve-php`: measure CC-2079 and CC-2080.
+
+## Engine gaps from the task box line block ruling of 25 November (#6670)
+
+The auto-ruling on #6670 (A) strips the lines of a line block behind a task box by the item's content column only, the task mark's column (C2-B-027), so a line aligned under the opener keeps the spaces past that column (C2-B-130). C2-B-029 strips only a code fence, and CC-001 already pins that a line block keeps its opener's indent. The text decided the case, so no clause changes. Clause cases CC-2081 to CC-2084: behind a task box, in a div behind a task box, behind the task box of a nested item, and at the top level. Measured on `carve-js` `next2` `d8ee8f2a`: it strips the lines to the opener column in CC-2081 to CC-2083 and passes CC-2084. `carve-php` `next2` `9de538c9` gives all four. The ticket measured `carve-rs` `next2` as `carve-js`.
+
+- `carve-js` and `carve-rs`: keep the spaces past the task mark column (CC-2081 to CC-2083).
