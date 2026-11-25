@@ -1167,12 +1167,15 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`, without the 0.1 member `attrs`, and is final: where it returns nothing or throws, the template is not used and the mention or tag is the inert span. A resolver that needs the attributes resolves on the tree. A linked mention or tag holds its text directly, `<a class="mention" href="URL">@NAME</a>`, as in 0.1. A template takes `{name}` only: the 0.1 aliases `{user}` and `{tag}` are refused (U-341). |
 | `profile` object and `profileBaseHost` | `profile` string: `full`, `article`, `comment`, or `minimal`; default `full`. The base host is the `baseHost` option of the `linkPolicy()` navigation extension, which carve-js ships in `@markup-carve/carve/extensions` and the provisional extension catalog does not list yet: with `allowExternal: false`, a link to `https://<baseHost>/...` stays and a link to another host is written as its text. With a named profile, 0.1 `profileBaseHost` changed no output, because no named profile limits link hosts. |
 | `mode`, `sections`, `roundtrip` | Same names and defaults: `interactive`, true, false. Review changed HTML semantics. |
-| `smartTypography` | Boolean, default true; 0.1 accepted a richer option shape. |
+| `smartTypography` | Boolean, default true. The 0.1 value `'source'` is `false`: each smart-punctuation node writes its source (C2-H-078). The 0.1 value `{ quotes: false }` (carve#2875), straight quotes with the other substitutions on, has no 0.2 spelling, since a render option of 0.2 has one type (C2-H-127). Register `smartQuotes()` with `openDoubleQuote` and `closeDoubleQuote` set to `"` and `openSingleQuote` and `closeSingleQuote` set to `'` instead (C2-X-075). |
 | `labels`, `symbols` | Same names; labels are escaped text, symbols are host-supplied output. |
 | `positions` | Parse option, default true. |
 | `extensions`, `includes`, `renderers` | `includes` holds a resolver and two limits (C2-N-003). `extensions` and `renderers` follow the [extension interface](extensions.md). |
 | `strictLosses` | Same name, default false. `renderWithDiagnostics` returns empty HTML on a render loss when true. |
-| `defaultFrontmatterFormat`, parser callbacks, `semanticSpanNames`, `codeBlockTabWidth` | No 0.2 option. An unknown option throws `CarveOptionError`. |
+| `defaultFrontmatterFormat` | No 0.2 option: a bare `---` opener gives the format `yaml` (C2-A-049). Write any other format on the opener, as `---toml` (C2-B-164). |
+| `semanticSpanNames` | The `semanticSpan()` extension, `carve.semanticSpan` (C2-X-066, C2-X-072). It writes the semantic keys `samp`, `var`, `kbd`, `cite` and `dfn` as their elements; a list of names is not carried. |
+| `codeBlockTabWidth` | The `tabNormalize(width)` transform, `carve.tabNormalize` (C2-X-073), which replaces each tab in a code block or code span with `width` spaces, 2 by default. |
+| parser callbacks | No 0.2 option. An unknown option throws `CarveOptionError`. |
 | 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
 | 0.1 lint options | `lint` reads `rules`, `platforms` and `upgrade`; `carve lint` takes them as `--rules` and `--platforms` with JSON values and the switch `--upgrade` (C2-T-010, C2-W-156). |
 
@@ -1284,10 +1287,19 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `--citation-mode numbered\|author-date` of the Rust engine | `--extension-options '{"carve.cite":{"mode":"author-date"}}'` with `--extensions '["carve.cite"]'` (C2-T-010, C2-X-068) |
 | `--extension KEY` of the Rust engine for the other keys of its registry | the name of the catalog row in `--extensions` (C2-T-010, C2-X-072): `autolink` is `carve.autolink`, `code-callouts` `carve.codeCallouts`, `color-swatch` `carve.colorSwatch`, `external-links` `carve.externalLinks`, `fenced-render-abc`, `-chart`, `-d2`, `-plantuml`, `-vega-lite` and `-wavedrom` `carve.fencedRender.abc` and so on, `fenced-render-graphviz` `carve.fencedRender.dot` and `carve.fencedRender.graphviz`, `glossary` `carve.glossary`, `heading-numbers` `carve.headingNumbers`, `heading-permalinks` `carve.headingPermalinks`, `heading-reference` `carve.headingReference`, `index` `carve.index`, `list-table` `carve.listTable`, `semantic-span` `carve.semanticSpan`, `smart-quotes` `carve.smartQuotes`, `tab-normalize` `carve.tabNormalize`, `table-of-contents` `carve.toc`, `toc` `carve.tocPlacement`, `wikilinks` `carve.wiki`; `heading-level-shift` is the core option `headingShift` |
 | `--quote-locale LOCALE` of the Rust engine | `--extension-options '{"carve.smartQuotes":{"locale":"de"}}'` with `--extensions '["carve.smartQuotes"]'` and `--smart-typography` (C2-T-010, C2-X-075) |
+| `--carve`, `--to carve` | `carve fmt`, which writes the canonical source, and `carve fmt --from-ast` for a 2.0 tree (C2-W-100); `render --to` takes `markdown`, `plain` and `ansi` (C2-T-003) |
+| `--static` | `--mode static` (C2-H-122) |
+| `--symbol NAME=VALUE`, repeatable | `--symbols` with a JSON object, as `--symbols '{"rocket":"🚀"}'` (C2-T-010) |
+| `--mention-url TEMPLATE`, `--tag-url TEMPLATE` | `--social '{"mentionUrl":"/users/{name}","tagUrl":"/topics/{name}"}'` (C2-T-010) |
 | `-h`, `-V` | `--help`, `--version` |
+
+The Rust engine keeps its directory migration helpers `try_migrate_markdown_for_directory` and `try_migrate_markdown_for_directory_with_destinations` (carve-rs#4588). Each reads one GFM file and returns the 0.2 import result; `carve import --from gfm --directory` runs them over a tree of files.
 
 Not carried over:
 
+- The PHP engine's `PlusBulletExtension`, which read `+` as a bullet. An extension adds no line shape in 0.2.0 (C2-X-013), and a line that starts with `+ ` is a paragraph. `carve lint --fix --rules '{"djot-plus-bullet":"on"}'` rewrites each such line to a `-` item (C2-T-049).
+- The `icons` argument of the PHP engine's `AdmonitionExtension`, which wrote `<span class="admonition-icon">` into the title. The admonition HTML is core output and an extension does not change it; the class of the admonition, as `admonition note`, carries the kind, so a stylesheet rule such as `.admonition.note > .admonition-title::before` gives the icon.
+- The `./editor` web component of carve-grammars, which edited the 0.1 tree (carve-grammars#903). It is dropped for good; an editor builds on the 0.2 Tiptap kit, `@markup-carve/carve-grammars/tiptap` (carve-grammars#913).
 - `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
 
 0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). Callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows; the editor adapters of the HTML importer are the import option `adapter` (C2-M-102).
