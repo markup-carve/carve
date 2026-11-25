@@ -1407,7 +1407,7 @@ Nine findings of the syntax chapters, one of the tree and writer chapters, three
 | `djot-ordered-marker` | hint, migration notice (C2-W-156) | the first line of a paragraph, or a lazy line at or left of the marker column of the list item that holds it, that starts with an ordered marker Djot reads and Carve does not: a marker in parentheses such as `(1)`, or an uppercase marker with a dot and one space such as `A. x` (C2-B-036, C2-B-040) |
 | `djot-tag-mention` | hint, migration notice (C2-W-156) | a tag `#word` or a mention `@word`, which Djot reads as text (C2-I-090 to C2-I-092) |
 | `code-span-padding-kept` | warning, migration notice (C2-W-156) | a code, literal-text, math or raw inline span whose value differs from the 0.1 value: 0.1 removed one space from each end when both ends held one, and 0.2 removes only a space between a backtick and the run (C2-I-016, U-441) |
-| `reserved-syntax` | warning | a directive with a section and no path, `{{ #id }}`, inside a sentence or on its own line, and the first line of a top-level paragraph that starts with `{#id}: `, both reserved for snippets in a later 0.2 release (C2-N-089, C2-B-236, #6395) |
+| `reserved-syntax` | warning | a directive with a section and no path, `{{ #id }}`, inside a sentence or on its own line, and the first line of a top-level paragraph that starts with a definition marker such as `{#id}:` or `{#id .c}:` and a space, both reserved for snippets in a later 0.2 release (C2-N-089, C2-B-236, #6395) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 

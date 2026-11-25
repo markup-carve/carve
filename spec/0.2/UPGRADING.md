@@ -40,7 +40,7 @@ A typed `---yaml`, `---toml` or `---json` opener at column 0 may now introduce a
 A later 0.2 release adds snippets, content reused from the same document (#6395). Two shapes are reserved for them now, so that release changes no document that a 0.2.0 tool accepted without a finding. In 0.2.0 both stay text, and `reserved-syntax` reports them:
 
 - `{{ #id }}`, a directive with a section and no path, inside a sentence or on its own line (C2-N-089). Until now `empty-include-path` reported it.
-- A line at column 0 outside every container that starts with `{#id}: ` and content (C2-B-236), when it is the first line of a paragraph.
+- A line at column 0 outside every container that starts with `{#id}: ` and content, also with attributes after the id as in `{#id .c}: ` or `{#id}{.c}: ` (C2-B-236), when it is the first line of a paragraph.
 
 To keep either as text, escape the opening brace: `\{{ #id }}`, `\{#id}: text`.
 

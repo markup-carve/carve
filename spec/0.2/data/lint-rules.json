@@ -1775,12 +1775,12 @@
           "text": "This \"${text}\" is reserved for an include from the same document in a later 0.2 release and renders as literal text. Write \\{{ to keep the text."
         },
         {
-          "when": "a line that starts with an id in braces and a colon",
+          "when": "a line that starts with an id in braces, optional attributes and a colon",
           "text": "A line that starts with \"${text}\" is reserved for a definition in a later 0.2 release and renders as literal text. Write \\{# to keep the text."
         }
       ],
       "message_origin": "design",
-      "reports": "each directive with a section and no path in a text leaf or a table row: `{{`, spaces, `#` and a section name, spaces and `}}`, with no option, whose braces are not escaped and stand in no code, math, raw or literal span, once per directive, the range is the directive (C2-N-089); and the first line of a top-level paragraph that starts at column 0 with `{#`, a section name, `}:`, one space and content, once per line, the range is the braced id and the colon (C2-B-236)",
+      "reports": "each directive with a section and no path in a text leaf or a table row: `{{`, spaces, `#` and a section name, spaces and `}}`, with no option, whose braces are not escaped and stand in no code, math, raw or literal span, once per directive, the range is the directive (C2-N-089); and the first line of a top-level paragraph that starts at column 0 with a definition marker (`{#`, a section name, optional attributes without braces, `}`, glued brace groups, `:`), one or more spaces and content, once per line, the range is the marker (C2-B-236)",
       "clauses": ["C2-N-089", "C2-B-236"]
     },
     {
