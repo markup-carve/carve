@@ -67,7 +67,8 @@ test('carve#6557 as filed conflicts with the model', { skip }, async () => {
   const { model, fields, index } = await setup()
   const r = checkCase(model, index, fields, caseNamed('6557'))
   assert.equal(r.agrees, false)
-  assert.ok(r.atRisk.some(hit => hit.case.clauses.includes('C2-W-075')), `no C2-W-075 case in ${r.atRisk.map(hit => hit.case.id)}`)
+  // Since carve-js#5459 (C2-I-089 tie-break) the expected text parses to the output's tree, so case eight leads, not C2-W-075.
+  assert.ok(r.atRisk.some(hit => hit.case.clauses.includes('C2-W-125')), `no C2-W-125 case in ${r.atRisk.map(hit => hit.case.id)}`)
 })
 
 test('the command exits 1 on the conflicts and 0 on cases the model gives', { skip }, async () => {
