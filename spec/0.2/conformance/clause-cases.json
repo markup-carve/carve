@@ -85241,6 +85241,93 @@
     "stderrCategory": null
    },
    "from": []
+  },
+  {
+   "id": "CC-2127",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-068"
+   ],
+   "why": "C2-T-010: The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render` C2-X-068: The standard cite renderer takes the host option `mode`, `numbered` or `author-date`, with `numbered` the default",
+   "summary": "--extensions renders citations with the standard cite renderer in its default numbered mode",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "See :cite[doe].\n\n::: bibliography\n:: [doe]{author=\"Doe\" year=\"2020\"}\n: Doe, J. A book.\n:::\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.cite\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>See [<a href=\"#ref-doe\" data-cite-key=\"doe\">1</a>].</p>\n<div class=\"bibliography\">\n  <ol class=\"references\">\n    <li id=\"ref-doe\">Doe, J. A book.</li>\n  </ol>\n</div>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2128",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-068"
+   ],
+   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name C2-X-068: The standard cite renderer takes the host option `mode`, `numbered` or `author-date`, with `numbered` the default C2-X-068: In `author-date` mode the author and year of a reference entry come from a span around its key in the description term",
+   "summary": "--extension-options gives the cite renderer its author-date mode",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "See :cite[doe].\n\n::: bibliography\n:: [doe]{author=\"Doe\" year=\"2020\"}\n: Doe, J. A book.\n:::\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.cite\"]",
+    "--extension-options",
+    "{\"carve.cite\":{\"mode\":\"author-date\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>See (<a href=\"#ref-doe\" data-cite-key=\"doe\">Doe 2020</a>).</p>\n<div class=\"bibliography\">\n  <ul class=\"references\">\n    <li id=\"ref-doe\">Doe, J. A book.</li>\n  </ul>\n</div>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2129",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-068"
+   ],
+   "why": "C2-T-010: A value the option refuses is refused with the category `usage`. C2-X-068: creating the renderer with another value fails.",
+   "summary": "a cite mode outside numbered and author-date is a usage error",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "See :cite[doe].\n\n::: bibliography\n:: [doe]{author=\"Doe\" year=\"2020\"}\n: Doe, J. A book.\n:::\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.cite\"]",
+    "--extension-options",
+    "{\"carve.cite\":{\"mode\":\"other\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
   }
  ]
 }
