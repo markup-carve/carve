@@ -85189,6 +85189,30 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2125",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... A shape whose opening brace is escaped, or that stands in a code span or another verbatim span, is not reported.",
+   "summary": "an escaped backslash before a section-only directive leaves its brace unescaped, so it is reported as reserved",
+   "kind": "lint",
+   "input": "\\\\{{ #dj }}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

@@ -11898,7 +11898,7 @@
           {
             "f": "text"
           },
-          "(?<bs>\\\\*)(?<use>\\{\\{ +#[A-Za-z0-9_][A-Za-z0-9_-]* +\\}\\})"
+          "(?<use>\\{\\{ +#[A-Za-z0-9_][A-Za-z0-9_-]* +\\}\\})"
         ]
       },
       "report": [
@@ -11910,21 +11910,11 @@
                   {
                     "f": "text"
                   },
+                  0,
                   {
                     "sub": [
                       {
-                        "match": "bs"
-                      },
-                      {
-                        "f": "start"
-                      }
-                    ]
-                  },
-                  {
-                    "sub": [
-                      {
-                        "match": "bs",
-                        "at": "end"
+                        "match": "use"
                       },
                       {
                         "f": "start"
@@ -11933,7 +11923,7 @@
                   }
                 ]
               },
-              "^(?:\\\\\\\\)*$"
+              "(?:^|[^\\\\])(?:\\\\\\\\)*$"
             ]
           },
           "message": 0,
@@ -11983,35 +11973,16 @@
     {
       "id": "reserved-syntax",
       "over": "line",
-      "let": {
-        "text_above": {
-          "lookup": {
-            "over": "line",
-            "key": {
-              "if": [
-                {
-                  "not": {
-                    "attribute_line": {
-                      "f": "item.raw_body"
-                    }
-                  }
-                },
-                {
-                  "f": "item.leaf_id"
-                },
-                false
-              ]
-            },
-            "value": {
-              "f": "leaf_id"
-            },
-            "before": true,
-            "field": "number"
-          }
-        }
-      },
       "when": {
         "all": [
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "^(?<def>\\{#[A-Za-z0-9_][A-Za-z0-9_-]*\\}:) .*[^ \\t]"
+            ]
+          },
           {
             "eq": [
               {
@@ -12032,19 +12003,33 @@
             "not": {
               "ge": [
                 {
-                  "v": "text_above"
+                  "lookup": {
+                    "over": "line",
+                    "key": {
+                      "if": [
+                        {
+                          "not": {
+                            "attribute_line": {
+                              "f": "item.raw_body"
+                            }
+                          }
+                        },
+                        {
+                          "f": "item.leaf_id"
+                        },
+                        false
+                      ]
+                    },
+                    "value": {
+                      "f": "leaf_id"
+                    },
+                    "before": true,
+                    "field": "number"
+                  }
                 },
                 1
               ]
             }
-          },
-          {
-            "matches": [
-              {
-                "f": "text"
-              },
-              "^(?<def>\\{#[A-Za-z0-9_][A-Za-z0-9_-]*\\}:) .*[^ \\t]"
-            ]
           }
         ]
       },
