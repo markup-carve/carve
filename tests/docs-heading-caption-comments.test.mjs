@@ -30,7 +30,14 @@ function tokenAt(source, needle, theme) {
 
 for (const theme of ['github-dark', 'github-light']) {
   for (const prefix of ['# a ', '> # a ', '![alt](x.png)\n^ cap ', '> ![alt](x.png)\n> ^ cap ']) {
-    for (const code of ['`x %% b`', '``x %% b``', '!`x %% b`', '$`x %% b`', '`x %% b']) {
+    // An unclosed backtick run is text and the scan goes on behind it (C2-I-017).
+    test(`${theme}: a comment follows an unclosed backtick in ${prefix.trim()}`, () => {
+      const source = prefix + '`x %% b\n\nplain tail'
+      assert.match(tokenAt(source, '%%', theme).leaf, /^comment\./)
+      assert.doesNotMatch(tokenAt(source, '`x', theme).scopes, /markup\.raw|comment/)
+      assert.doesNotMatch(tokenAt(source, 'plain tail', theme).scopes, /heading|caption|comment|code|string/)
+    })
+    for (const code of ['`x %% b`', '``x %% b``', '!`x %% b`', '$`x %% b`']) {
       test(`${theme}: percent runs stay verbatim in ${prefix.trim()} ${code}`, () => {
         const source = prefix + code + '\n\nplain tail'
         const token = tokenAt(source, '%%', theme)
