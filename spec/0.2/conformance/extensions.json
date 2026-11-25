@@ -2203,7 +2203,7 @@
         ]
       },
       "expected": {
-        "htmlIncludes": "<h1><span class=\"section-number\">1</span> T0 <a href=\"#h1\">Section 2 - T1 T2"
+        "html": "<section id=\"h0\">\n  <h1><span class=\"section-number\">1</span> T0 <a href=\"#h1\">Section 2 - T1 T2   &lt;/#h3&gt;</a> <a href=\"#h2\">Section 3 - T2 &lt;/#h3&gt; &lt;/#h4&gt;</a></h1>\n</section>\n<section id=\"h1\">\n  <h1><span class=\"section-number\">2</span> T1 <a href=\"#h2\">Section 3 - T2 &lt;/#h3&gt; &lt;/#h4&gt;</a> &lt;/#h3&gt;</h1>\n</section>\n<section id=\"h2\">\n  <h1><span class=\"section-number\">3</span> T2 &lt;/#h3&gt; &lt;/#h4&gt;</h1>\n</section>"
       }
     },
     {
@@ -2223,7 +2223,7 @@
         ]
       },
       "expected": {
-        "htmlIncludes": "<h1><span class=\"section-number\">1</span> Ref <a href=\"#a\">Section 1 - Ref Ref"
+        "html": "<section id=\"a\">\n  <h1><span class=\"section-number\">1</span> Ref <a href=\"#a\">Section 1 - Ref Ref </a></h1>\n</section>"
       }
     }
   ]

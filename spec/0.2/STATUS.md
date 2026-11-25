@@ -608,3 +608,9 @@ The auto-ruling on #6670 (A) strips the lines of a line block behind a task box 
 The auto-ruling on #6691 keeps the 0.1 order (PART 9 section 5 T6) for continuation fragments under a cell that covers several grid positions: position by position, the positions in row-major order with the cell's own first, and the fragments of one position in the order of their rows. C2-B-184 states the order and C2-A-094 points at it. Clause cases CC-2088 (render) and CC-2089 (tree) pin the reproduction. Measured on `carve-js` `next2` `40bb405d` and `carve-php` `next2` `b4272403`: both join in source order, `a b c d e`. `carve-rs` `next2` `fb77a058` gives `a b d c e`.
 
 - `carve-js` and `carve-php`: join the fragments column by column (CC-2088, CC-2089).
+
+## Engine gaps from the strengthened copied title cases of 25 November (#6701)
+
+EXT-105 and EXT-106 checked only the start of the first heading, so an engine that still expanded a reference inside a copied title passed them (#6540). Both now expect the whole document, as EXT-104 does. No clause changes: the reference inside the copy stays a reference (C2-X-070), inside link text it writes its generated plain text (C2-H-081, C2-H-096), and that is the plain text of the heading untrimmed (C2-H-143), so the copy of `Ref </#a>` writes `Ref Ref ` with a trailing space. Measured on `carve-js` `next2` `252cfc09` and `carve-php` `next2` `7bfa56f8`: both trim that text and fail EXT-105 and EXT-106. `carve-rs` `next2` `fb77a058` passes both.
+
+- `carve-js` and `carve-php`: write the untrimmed plain text of a reference inside a copied title (C2-X-070, EXT-105 and EXT-106).
