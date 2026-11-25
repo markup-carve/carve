@@ -84040,6 +84040,282 @@
    ]
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2095",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-148: A caption of two lines indents its second line. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
+   "summary": "the upgrade spelling of a 0.1 image caption of two lines (U-442)",
+   "input": "![a](a.png)\n^ cap one\n  continued\n",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"a.png\" alt=\"a\">\n  <figcaption>cap one\ncontinued</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "a.png",
+        "alt": "a"
+       }
+      ],
+      "role": "image",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "cap one"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "continued"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2096",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-148: A caption of two lines indents its second line. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
+   "summary": "the upgrade spelling of a 0.1 table caption of two lines (U-442)",
+   "input": "| a |\n^ cap\n  Next prose.\n",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <caption>cap\nNext prose.</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "cap"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "Next prose."
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2097",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-148: A caption of two lines indents its second line. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
+   "summary": "the upgrade spelling of a 0.1 quote attribution of two lines (U-442)",
+   "input": "> q\n^ Author\n  more\n",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <blockquote><p>q</p></blockquote>\n  <figcaption>Author\nmore</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "q"
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Author"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "more"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2098",
+   "clauses": [
+    "C2-B-148",
+    "C2-B-234"
+   ],
+   "why": "C2-B-148: A caption of two lines indents its second line. C2-B-234: A label holds its marker line and every line directly below it that is indented past the column of its marker",
+   "summary": "a list marker indented past the caret outside an item is caption text (U-442)",
+   "input": "![a](a.png)\n^ cap\n  - c\n",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"a.png\" alt=\"a\">\n  <figcaption>cap\n- c</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "a.png",
+        "alt": "a"
+       }
+      ],
+      "role": "image",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "cap"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "- c"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2099",
+   "clauses": [
+    "C2-B-071",
+    "C2-B-234"
+   ],
+   "why": "C2-B-234: A line that is not indented past the marker ends the label and is read with no label open: a caption line among such lines is still tested against its host (C2-B-018, C2-B-146, C2-B-149), and below a term the line closes the list unless it is a description line or a term line at the list's column (C2-B-071).",
+   "summary": "a description mark at the term column across a comment line is a description (#6716)",
+   "input": ":: t\n %% c\n: d\n",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c"
+         }
+        ]
+       },
+       {
+        "type": "definition_description",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "d"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  }
  ]
 }
