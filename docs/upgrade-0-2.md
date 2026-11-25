@@ -1781,6 +1781,21 @@ Tool: Review the cell.
 ```
 :::
 
+**[U-442](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#ruling-of-24-november-2026-labels-continue-only-on-indented-lines)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A caption with an unindented second line, `^ cap one`, then `continued`
+
+::: compare no-render
+```text
+![a](a.png)
+^ cap one
+continued
+```
+```crv
+![a](a.png)
+^ cap one
+  continued
+```
+:::
+
 ## Emphasis and inline marks {#inline}
 
 Bare `_`, `~` and `=` pairs collided with prose and identifiers such as `snake_case`, `~/config` and `x =1, y= 2`. In 0.2 only `/` and `*` pair bare; underline, strike and highlight use the braced forms `{_x_}`, `{~x~}` and `{=x=}` ([technical rationale](./technical-rationale#reduce-punctuation-collisions), C2-I-043, C2-I-046).

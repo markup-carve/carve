@@ -453,6 +453,7 @@ Mark's ruling on #6508 makes the caption and the term labels like the heading (C
 - All three engines: an unindented line below a caption or a term still continues it. CC-070 (the last line captions the outer quote, C2-B-018), CC-721, CC-791, CC-1853 to CC-1860, CC-1865 to CC-1867, syntax-blocks-168 and syntax-blocks-293.
 - All three engines: a second caret line directly below a caption continues it instead of being unattached text (CC-1861).
 - All three engines: `description-term-multi-line` still reports every term continuation line (CC-982).
+- carve-js `upgrade`: U-442 (#6716) writes a line 0.1 joined to a caption at the column of the caption text; a description mark 0.1 read below a term across a comment line is U-180. Clause cases CC-2095 to CC-2099 pin the spellings.
 
 ## Engine gaps from the follow-up ruling on #6507 (24 November)
 

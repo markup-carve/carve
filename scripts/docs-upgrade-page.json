@@ -38,7 +38,7 @@
       "key": "tables",
       "title": "Tables and captions",
       "why": "The GFM separator row mixed the choice of header row with column alignment. In 0.2 every pipe row is a row of cells: header cells start with `|=`, and alignment sits on the cell as `|={<}`, `|={~}` or `|={>}` ([#5091](https://github.com/markup-carve/carve/issues/5091), C2-B-171, C2-B-182). A caption line must stand directly below its table or image (C2-B-146).",
-      "rows": ["U-055", "U-056", "U-057", "U-058", "U-059", "U-060", "U-061", "U-062", "U-063", "U-064", "U-138", "U-140", "U-147", "U-150", "U-152", "U-162", "U-165", "U-167", "U-168", "U-194", "U-214", "U-226", "U-259", "U-269", "U-271", "U-279", "U-303", "U-369", "U-377"]
+      "rows": ["U-055", "U-056", "U-057", "U-058", "U-059", "U-060", "U-061", "U-062", "U-063", "U-064", "U-138", "U-140", "U-147", "U-150", "U-152", "U-162", "U-165", "U-167", "U-168", "U-194", "U-214", "U-226", "U-259", "U-269", "U-271", "U-279", "U-303", "U-369", "U-377", "U-442"]
     },
     {
       "key": "inline",

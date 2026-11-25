@@ -3360,6 +3360,16 @@
       "meaning02": "<p>a <code> x </code> b</p> C2-I-016 keeps the spaces at the ends of a code span and removes only a space between a backtick and the opening or closing run; 0.1 removed one space from each end when both ends held one. Writing the 0.1 value as C2-W-077 spells it keeps <p>a <code>x</code> b</p>. This holds for a literal-text, math or raw inline span too. A 0.1 value that starts with a space and a backtick or ends with a backtick and a space has no 0.2 spelling (C2-W-077): report the span; do not rewrite. `code-span-padding-kept` reports the span under the lint option `upgrade` (C2-W-156).",
       "toolEntry": "U-441",
       "silent": true
+    },
+    {
+      "id": "U-442",
+      "kind": "rewrite",
+      "group": "rulings of 24 November",
+      "from": "![a](a.png)\n^ cap one\ncontinued\n",
+      "to": "![a](a.png)\n^ cap one\n  continued\n",
+      "meaning02": "<figure>\n  <img src=\"a.png\" alt=\"a\">\n  <figcaption>cap one</figcaption>\n</figure>\n<p>continued</p> A caption is a label (C2-B-148, C2-B-234): it holds only the lines directly below it that are indented past its caret. 0.1 joined an unindented line to a caption. Write each line 0.1 joined to a caption at the column of the caption text, behind the caret and its space (C2-W-024). This holds for the caption of an image, a table, a code block, a quote and a figure group, in every container. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; a line that ends the caption even when indented, such as a fence line, a table row or a thematic break, is not rewritten. A description mark 0.1 read below a term, indented past the term mark, is U-180.",
+      "toolEntry": "U-442",
+      "silent": true
     }
   ],
   "tree": [
