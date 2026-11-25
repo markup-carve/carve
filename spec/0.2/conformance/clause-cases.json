@@ -84525,6 +84525,83 @@
   "html": "<table><tr><td>a</td><td rowspan=\"2\">r</td></tr><tr><td colspan=\"2\">w</td></tr></table>",
   "options": {},
   "expected": {
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "a"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "r"
+              }
+             ]
+            }
+           ],
+           "rowspan": 2
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "w"
+              }
+             ]
+            }
+           ],
+           "colspan": 2
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ],
    "carve": "| a | r |\n| w | < |\n",
    "diagnostics": [
     {
@@ -84547,6 +84624,83 @@
   "html": "<table><thead><tr><th>a</th><th rowspan=\"2\">r</th></tr><tr><th colspan=\"2\">w</th></tr></thead></table>",
   "options": {},
   "expected": {
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "a"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "r"
+              }
+             ]
+            }
+           ],
+           "rowspan": 2
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "w"
+              }
+             ]
+            }
+           ],
+           "colspan": 2
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ],
    "carve": "|= a |= r |\n|= w |= < |\n",
    "diagnostics": [
     {
