@@ -118,6 +118,7 @@ The following 121 lint-channel rows, every row except the two with status `void`
 | `platform-mention-token` | warning | platforms |
 | `quote-fence-ends-the-quote-above` | warning | on |
 | `region-marker-renders-as-text` | warning | on |
+| `reserved-syntax` | warning | on |
 | `semantic-attribute-outside-span` | warning | on |
 | `semantic-attribute-value-ignored` | warning | on |
 | `setext-heading-underline` | warning | on |

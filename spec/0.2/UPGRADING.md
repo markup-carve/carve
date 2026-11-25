@@ -35,6 +35,15 @@ Each construct links to its section of the [upgrade page](https://markup-carve.g
 
 A typed `---yaml`, `---toml` or `---json` opener at column 0 may now introduce an opaque metadata block after a blank line or top-level attribute lines. A bare `---` after line 1 stays text. Later blocks appear as top-level `frontmatter` nodes in source order, may carry an `id` for lookup, and render nothing. An unclosed block consumes the rest of the document and reports `unclosed-frontmatter`. The `carve` and `carve-version` keys still declare a version only in the line-1 block. Hosts that assumed at most one frontmatter node should filter the document's children and use `attrs.id` where needed (C2-B-231 to C2-B-233, C2-A-049).
 
+## Reserved in 0.2.0: two shapes for snippets
+
+A later 0.2 release adds snippets, content reused from the same document (#6395). Two shapes are reserved for them now, so that release changes no document that a 0.2.0 tool accepted without a finding. In 0.2.0 both stay text, and `reserved-syntax` reports them:
+
+- `{{ #id }}`, a directive with a section and no path, inside a sentence or on its own line (C2-N-089). Until now `empty-include-path` reported it.
+- A line at column 0 outside every container that starts with `{#id}: ` and content (C2-B-236), when it is the first line of a paragraph.
+
+To keep either as text, escape the opening brace: `\{{ #id }}`, `\{#id}: text`.
+
 ## Part 1. Authors: your documents
 
 | Check first | 0.1 habit | 0.2 result | Action |

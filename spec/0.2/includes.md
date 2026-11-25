@@ -18,6 +18,8 @@ Conventions:
 
 **C2-N-002** Only an `include` node is expanded, and only a block line makes one (C2-B-156). There is no inline include: `{{ ... }}` inside inline content is text, each of its braces read on its own (inline chapter, braced forms), so a directive in a sentence, in a heading, in a table cell or on a lazy line of a paragraph (C2-B-024) stays text and is never passed to a resolver.
 
+**C2-N-089** A directive with a section and no path is reserved for an include from the same document in a later 0.2 release: `{{`, one or more spaces, `#` and a section name (C2-B-203), one or more spaces and `}}`, as `{{ #intro }}`. A section-only shape with options stays a finding of `empty-include-path`. In 0.2.0 it is text where it stands, on its own line, since a bare path has at least one character (C2-B-202), and in inline content (C2-N-002), and `reserved-syntax` reports it in place of `empty-include-path`. A shape whose opening brace is escaped, or that stands in a code span or another verbatim span, is not reported.
+
 Example 1 (unverified)
 
 File `part.crv`:
@@ -1480,7 +1482,7 @@ I13 and I14 were unassigned in 0.1.
 
 | Section | Clauses | Exceptions | Examples |
 | --- | --- | --- | --- |
-| Scope and defaults | 6 | 0 | 1 |
+| Scope and defaults | 7 | 0 | 1 |
 | The resolver | 8 | 0 | 1 |
 | Expansion | 9 | 0 | 8 |
 | Selection, transforms and mode | 29 | 0 | 17 |
@@ -1491,6 +1493,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **41** |
+| **Total** | **89** | **2** | **41** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 41 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 89 clauses, 2 of them marked with the word "Exception", and 41 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

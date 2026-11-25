@@ -832,7 +832,7 @@
         "This \"${text}\" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces."
       ],
       "message_origin": "engine_0_1",
-      "reports": "each `{{` and `}}` pair in inline text with no brace between them, whose body is empty or only spaces and tabs, or holds an empty quoted path (`\"\"` or a pair of curly quotes) behind at least one space, or, behind at least one space or tab, starts with `#` or an at-sign (a section or option with no path in front), so it is no include directive and stays text; `{{#if}}` is not reported; every pair on a line and in headings counts (C2-B-201, C2-B-202)",
+      "reports": "each `{{` and `}}` pair in inline text with no brace between them, whose body is empty or only spaces and tabs, or holds an empty quoted path (`\"\"` or a pair of curly quotes) behind at least one space, or, behind at least one space or tab, starts with `#` or an at-sign (a section or option with no path in front), so it is no include directive and stays text; `{{#if}}` is not reported, nor a directive with a section and no path that `reserved-syntax` reports (C2-N-089); every pair on a line and in headings counts (C2-B-201, C2-B-202)",
       "clauses": ["C2-B-201", "C2-B-202"]
     },
     {
@@ -1762,6 +1762,26 @@
       "message_origin": "data_file",
       "reports": "a line outside a code block, a raw block, a math block, a comment and frontmatter that holds, after spaces and tabs and an optional `//`, `--`, `/*` or `<!--` with spaces or tabs, `#region` or `#endregion` in any letter case not followed by an ASCII letter, digit or `_`; and a `%%` line comment whose keyword is `#region` or `#endregion` in another letter case; once per line, the range from its first character that is not a space or tab to the end of the line (C2-B-217, C2-N-038)",
       "clauses": ["C2-B-217", "C2-N-038", "C2-N-039"]
+    },
+    {
+      "id": "reserved-syntax",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": [
+        {
+          "when": "a directive with a section and no path",
+          "text": "This \"${text}\" is reserved for an include from the same document in a later 0.2 release and renders as literal text. Write \\{{ to keep the text."
+        },
+        {
+          "when": "a line that starts with an id in braces and a colon",
+          "text": "A line that starts with \"${text}\" is reserved for a definition in a later 0.2 release and renders as literal text. Write \\{# to keep the text."
+        }
+      ],
+      "message_origin": "design",
+      "reports": "each directive with a section and no path in a text leaf or a table row: `{{`, spaces, `#` and a section name, spaces and `}}`, with no option, whose braces are not escaped and stand in no code, math, raw or literal span, once per directive, the range is the directive (C2-N-089); and the first line of a top-level paragraph that starts at column 0 with `{#`, a section name, `}:`, one space and content, once per line, the range is the braced id and the colon (C2-B-236)",
+      "clauses": ["C2-N-089", "C2-B-236"]
     },
     {
       "id": "semantic-attribute-outside-span",
