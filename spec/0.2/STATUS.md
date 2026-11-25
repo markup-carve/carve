@@ -583,3 +583,9 @@ Mark's ruling on #6637 (C) gives a table with a head, a foot whose first row has
 The head move of C2-M-037 drops a body it leaves empty. The text decides what happens to that body's attributes: C2-M-037 exempts only the move from the report, and C2-M-082 reports every fact the tree no longer holds, so they are reported with one `import-attribute-dropped` entry at the `<tbody>`. C2-M-037 now says so, and the code row cites it. Clause cases CC-2075 and CC-2076. Measured on `carve-js` `next2` `8ae9ecdd`: both pass. `carve-php` and `carve-rs` have not ported the #6623 move yet.
 
 - `carve-php`, `carve-rs`: report the attributes of a body the head move drops (CC-2075, CC-2076).
+
+## Engine gaps from the headless table alignment ruling of 25 November (#6607)
+
+Mark's ruling on #6607 (C) adds a guard to the last sentence of C2-M-040: in a table with no head, a column gives its cells' shared alignment to the column only on an axis where every column before it gives one too, since an `aligns` or `valigns` list has no empty entry (C2-B-211). The cells of the other columns keep their own marks. Clause cases CC-2077 and CC-2078. Measured on `carve-js` `next2` `0f1cba78` with the #6637 port on top: CC-2077 writes `{aligns=,right}` and CC-2078 `{aligns=right,right valigns=,bottom}`, both with `field-unspellable`. The ticket measured the same list in `carve-rs` `next2`, and `carve-php` `next2` drops the alignment.
+
+- All three engines: keep the cell mark where a column before it has no alignment on that axis (CC-2077, CC-2078).
