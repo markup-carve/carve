@@ -7979,6 +7979,41 @@
       },
       "report": [
         {
+          "when": {
+            "not": {
+              "matches": [
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "include"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "include",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "^\\{\\{ +#[A-Za-z0-9_][A-Za-z0-9_-]* +\\}\\}$"
+              ]
+            }
+          },
           "start": {
             "match": "include"
           },
@@ -8020,7 +8055,8 @@
       ],
       "clauses": [
         "C2-B-201",
-        "C2-B-202"
+        "C2-B-202",
+        "C2-N-089"
       ]
     },
     {
@@ -11841,6 +11877,221 @@
         "C2-B-217",
         "C2-N-038",
         "C2-W-150"
+      ]
+    },
+    {
+      "id": "reserved-syntax",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "{{"
+        ]
+      },
+      "each": {
+        "matches": [
+          {
+            "f": "text"
+          },
+          "(?<bs>\\\\*)(?<use>\\{\\{ +#[A-Za-z0-9_][A-Za-z0-9_-]* +\\}\\})"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "matches": [
+              {
+                "slice": [
+                  {
+                    "f": "text"
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "bs"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  },
+                  {
+                    "sub": [
+                      {
+                        "match": "bs",
+                        "at": "end"
+                      },
+                      {
+                        "f": "start"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "^(?:\\\\\\\\)*$"
+            ]
+          },
+          "message": 0,
+          "start": {
+            "match": "use"
+          },
+          "end": {
+            "match": "use",
+            "at": "end"
+          },
+          "values": {
+            "text": {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "use"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "use",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-N-089"
+      ]
+    },
+    {
+      "id": "reserved-syntax",
+      "over": "line",
+      "let": {
+        "text_above": {
+          "lookup": {
+            "over": "line",
+            "key": {
+              "if": [
+                {
+                  "not": {
+                    "attribute_line": {
+                      "f": "item.raw_body"
+                    }
+                  }
+                },
+                {
+                  "f": "item.leaf_id"
+                },
+                false
+              ]
+            },
+            "value": {
+              "f": "leaf_id"
+            },
+            "before": true,
+            "field": "number"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "leaf"
+              },
+              "paragraph"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "ancestors.0"
+              },
+              "document"
+            ]
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "v": "text_above"
+                },
+                1
+              ]
+            }
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "^(?<def>\\{#[A-Za-z0-9_][A-Za-z0-9_-]*\\}:) .*[^ \\t]"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "message": 1,
+          "start": {
+            "match": "def"
+          },
+          "end": {
+            "match": "def",
+            "at": "end"
+          },
+          "values": {
+            "text": {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "def"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "def",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-236"
       ]
     },
     {

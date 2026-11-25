@@ -1385,7 +1385,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Nine findings of the syntax chapters, one of the tree and writer chapters, three differences to 0.1 that stay (U-340, the continuation rulings of 24 November and the code span padding ruling of 24 November, U-441), and five Djot constructs that Carve 0.2 reads otherwise with no other finding (the ruling on #6522 of 24 November) had no rule. Their ids are new in this document. The five `djot-` rules have no fix.
+Nine findings of the syntax chapters, one of the tree and writer chapters, three differences to 0.1 that stay (U-340, the continuation rulings of 24 November and the code span padding ruling of 24 November, U-441), five Djot constructs that Carve 0.2 reads otherwise with no other finding (the ruling on #6522 of 24 November), and the two shapes reserved for snippets (the ruling on #6395 of 25 November) had no rule. Their ids are new in this document. The five `djot-` rules have no fix.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -1407,6 +1407,7 @@ Nine findings of the syntax chapters, one of the tree and writer chapters, three
 | `djot-ordered-marker` | hint, migration notice (C2-W-156) | the first line of a paragraph, or a lazy line at or left of the marker column of the list item that holds it, that starts with an ordered marker Djot reads and Carve does not: a marker in parentheses such as `(1)`, or an uppercase marker with a dot and one space such as `A. x` (C2-B-036, C2-B-040) |
 | `djot-tag-mention` | hint, migration notice (C2-W-156) | a tag `#word` or a mention `@word`, which Djot reads as text (C2-I-090 to C2-I-092) |
 | `code-span-padding-kept` | warning, migration notice (C2-W-156) | a code, literal-text, math or raw inline span whose value differs from the 0.1 value: 0.1 removed one space from each end when both ends held one, and 0.2 removes only a space between a backtick and the run (C2-I-016, U-441) |
+| `reserved-syntax` | warning | a directive with a section and no path, `{{ #id }}`, inside a sentence or on its own line, and the first line of a top-level paragraph that starts with `{#id}: `, both reserved for snippets in a later 0.2 release (C2-N-089, C2-B-236, #6395) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -1483,6 +1484,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | a `%%%` line with other text inside a comment block | `comment-fence-closer-with-text` |
 | a list marker directly after term or description text | `list-marker-without-blank-line` |
 | a definition inside a container | `definition-in-container` |
+| `{{ #id }}` or a line `{#id}: text`, reserved for snippets | `reserved-syntax` |
 | an attribute line after a paragraph line | `block-opener-without-blank-line` |
 | an unclosed fence, div or comment block | `unclosed-code-fence`, `unclosed-container-fence`, `unclosed-comment-fence` |
 | unclosed frontmatter | `unclosed-frontmatter` |

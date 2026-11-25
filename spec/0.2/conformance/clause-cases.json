@@ -49829,17 +49829,18 @@
    "clauses": [
     "C2-W-106",
     "C2-B-201",
-    "C2-B-202"
+    "C2-B-202",
+    "C2-N-089"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-201: An include directive is `{{`, one or more spaces, a path, an optional section, zero or more options, one or more spaces and `}}`, with only spaces and tabs after it on the line. C2-B-202: An empty path in any form makes the line text (`empty-include-path`).",
-   "summary": "an include brace pair with only a section after a space",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-201: An include directive is `{{`, one or more spaces, a path, an optional section, zero or more options, one or more spaces and `}}`, with only spaces and tabs after it on the line. C2-B-202: An empty path in any form makes the line text (`empty-include-path`). C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`.",
+   "summary": "an include brace pair with only a section after a space is reserved, not an empty path",
    "kind": "lint",
    "input": "{{ #a }}\n",
    "options": {},
    "expected": {
     "diagnostics": [
      {
-      "code": "empty-include-path",
+      "code": "reserved-syntax",
       "line": 1,
       "column": 1,
       "channel": "lint",
@@ -84870,6 +84871,324 @@
    "diagnostics": []
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2111",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`.",
+   "summary": "a section-only directive inside a sentence is reported as reserved",
+   "kind": "lint",
+   "input": "a {{ #dj }} b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2112",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089",
+    "C2-B-202"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`. C2-B-202: An empty path in any form makes the line text (`empty-include-path`).",
+   "summary": "a section-only directive with an option is no reserved shape, so empty-include-path reports it",
+   "kind": "lint",
+   "input": "{{ #dj @shift:1 }}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-include-path",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2113",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`.",
+   "summary": "a section-only directive in a heading, a list item and a table row is reported in each",
+   "kind": "lint",
+   "input": "# {{ #a }}\n\n- {{ #b }}\n\n| {{ #c }} |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "reserved-syntax",
+      "line": 3,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     },
+     {
+      "code": "reserved-syntax",
+      "line": 5,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2114",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`.",
+   "summary": "an escaped opening brace keeps a section-only directive unreported",
+   "kind": "lint",
+   "input": "\\{{ #dj }}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax",
+     "empty-include-path"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2115",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`.",
+   "summary": "a section-only directive in a code span is not reported",
+   "kind": "lint",
+   "input": "`{{ #dj }}`\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax",
+     "empty-include-path"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2116",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089",
+    "C2-B-201",
+    "C2-B-202"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`. C2-B-202: An empty path in any form makes the line text (`empty-include-path`).",
+   "summary": "a tab after the opening braces is no reserved shape, so empty-include-path reports it",
+   "kind": "lint",
+   "input": "{{\t#dj }}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-include-path",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2117",
+   "clauses": [
+    "C2-W-106",
+    "C2-N-089",
+    "C2-B-202",
+    "C2-B-203"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-N-089: A directive with a section and no path is reserved for an include from the same document in a later 0.2 release ... `reserved-syntax` reports it in place of `empty-include-path`. C2-B-202: An empty path in any form makes the line text (`empty-include-path`).",
+   "summary": "a section that is no section name is no reserved shape, so empty-include-path reports it",
+   "kind": "lint",
+   "input": "{{ #a.b }}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-include-path",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2118",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "a line that starts with a braced id and a colon is reported as reserved",
+   "kind": "lint",
+   "input": "{#dj}: [The Djot Language](https://github.com/jgm/djot)\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2119",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236",
+    "C2-B-090"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "a braced id alone on its line is an attribute line and is not reported",
+   "kind": "lint",
+   "input": "{#dj}\n[x](u)\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2120",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "an escaped opening brace keeps a definition-shaped line unreported",
+   "kind": "lint",
+   "input": "\\{#dj}: x\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2121",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236",
+    "C2-B-081"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "a definition-shaped line inside a list item is not reported",
+   "kind": "lint",
+   "input": "- {#dj}: x\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2122",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "a definition-shaped line that continues a paragraph is not reported",
+   "kind": "lint",
+   "input": "text\n{#dj}: x\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2123",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "a braced id and a colon with no content is not reported",
+   "kind": "lint",
+   "input": "{#dj}:\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2124",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236",
+    "C2-B-090"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "summary": "a definition-shaped line below an attribute line is the first line of its paragraph and is reported",
+   "kind": "lint",
+   "input": "{.c}\n{#dj}: x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  }
  ]
 }
