@@ -87740,6 +87740,40 @@
     "stderrCategory": null
    },
    "from": []
+  },
+  {
+   "id": "CC-2165",
+   "clauses": [
+    "C2-W-088",
+    "C2-W-075",
+    "C2-W-003"
+   ],
+   "why": "C2-W-088: The rounds read every reference of the block as written from the tree, also one the sidecar records verbatim C2-W-075: The verbatim text goes back after the rounds of C2-W-088, which read every reference from the tree C2-W-003: For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte.",
+   "summary": "the escape rounds read a verbatim reference from the tree, so the slash before it keeps its backslash (carve#6772, pass 1)",
+   "kind": "format",
+   "input": "^[/\\`[`[/[^]]][<]",
+   "options": {},
+   "expected": {
+    "carve": "^\\[\\/\\`[\\`\\[\\/\\[^\\]\\]][<]\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2166",
+   "clauses": [
+    "C2-W-088",
+    "C2-W-075",
+    "C2-W-003"
+   ],
+   "why": "C2-W-088: The rounds read every reference of the block as written from the tree, also one the sidecar records verbatim C2-W-075: The verbatim text goes back after the rounds of C2-W-088, which read every reference from the tree C2-W-003: For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte.",
+   "summary": "formatting the pass-1 output of carve#6772 again gives the same bytes (carve#6772, pass 2)",
+   "kind": "format",
+   "input": "^\\[\\/\\`[\\`\\[\\/\\[^\\]\\]][<]\n",
+   "options": {},
+   "expected": {
+    "carve": "^\\[\\/\\`[\\`\\[\\/\\[^\\]\\]][<]\n"
+   },
+   "from": []
   }
  ]
 }
