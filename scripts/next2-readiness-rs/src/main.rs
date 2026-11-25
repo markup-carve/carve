@@ -272,28 +272,19 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
     })
 }
 
-/// The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209). A set
-/// `headingShift` reaches the export as `Some(n)`, 0 included, so plain and ANSI refuse it.
-fn export_case(c: &Value, input: &str) -> Value {
-    let refused = |e: carve::api::Error| json!({"accepted":false,"error":e.spec_name(),"message":e.to_string(),"path":e.path()});
-    let Some(target) = c["to"].as_str().and_then(carve::export::Target::from_name) else {
-        return json!({"unsupported":format!("export to {} is not offered", c["to"])});
-    };
-    let tree = match carve::api::parse(input, &carve::api::Options::default()) { Ok(tree) => tree, Err(e) => return refused(e) };
-    let mut eo = carve::export::ExportOptions::default();
-    if let Some(n) = c["options"]["headingShift"].as_u64() { eo.heading_shift = Some(n as u8); }
-    if let Some(b) = c["options"]["smartTypography"].as_bool() { eo.smart_typography = b; }
-    if let Some(b) = c["options"]["strictLosses"].as_bool() { eo.strict_losses = b; }
-    match carve::export::export_to(target, &tree, &eo) {
-        Ok(written) => json!({"output":written.output,"diagnostics":written.diagnostics}),
-        Err(e) => refused(e),
-    }
+/// The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209), through the
+/// boundary's `write` to an export target, which validates the options as the export reads them.
+fn export_case(c: &Value) -> Result<Value, Value> {
+    let tree = call(c, "parse", json!({}))?["tree"].take();
+    let opts = c.get("options").cloned().unwrap_or_else(|| json!({}));
+    let r = invoke(json!({"call":"writeWithDiagnostics","target":c["to"],"tree":tree,"options":opts}))?;
+    Ok(json!({"output": r["output"], "diagnostics": r["diagnostics"]}))
 }
 
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
-    if kind == "export" { return export_case(c, input); }
+    if kind == "export" { return export_case(c).unwrap_or_else(|refused| refused); }
     let unhandled_option = c["options"].as_object().is_some_and(|values| values.keys().any(|name|
         !matches!(name.as_str(), "roundtrip" | "rawHtml" | "sections" | "smartTypography"
             | "sourceLines" | "strictLosses" | "headingIds" | "profile" | "mode"
@@ -328,6 +319,11 @@ fn run(c: &Value) -> Value {
         let validation = invoke(json!({"call":"render","source":"",
             "options":{"codeBlockRenderer":c["options"]["codeBlockRenderer"]}}));
         if let Err(refused) = validation { return refused; }
+    }
+    if let Some(shift) = c["options"].get("headingShift").filter(|_| c.get("files").is_some()) {
+        // options() reads the value unchecked, so the boundary refuses it first where the call does.
+        let name = match kind { "parse" | "lint" => kind, "layout" => "parseWithLayout", _ => "render" };
+        if let Err(refused) = invoke(json!({"call":name,"source":"","options":{"headingShift":shift}})) { return refused; }
     }
     let o = options(&c["options"], c.get("files"));
     match kind {
@@ -511,6 +507,16 @@ mod tests {
         let output = run(&json!({"kind":"export", "to":"ansi", "input":"= A\n", "options":{"headingShift":0}}));
         assert_eq!(output["error"], "CarveOptionError");
         assert_eq!(output["path"], "/headingShift");
+    }
+
+    #[test]
+    fn invalid_heading_shift_is_refused_not_dropped() {
+        for (kind, shift) in [("export", json!(-1)), ("export", json!(256)), ("render", json!(6)), ("parse", json!(1))] {
+            let output = run(&json!({"kind":kind, "to":"markdown", "input":"= A\n", "files":{},
+                "options":{"headingShift":shift}}));
+            assert_eq!(output["error"], "CarveOptionError", "{kind} {shift}: {output}");
+            assert_eq!(output["path"], "/headingShift", "{kind} {shift}: {output}");
+        }
     }
 
     #[test]
