@@ -628,3 +628,10 @@ Mark's ruling on #6712 (option 1) adds `col` to the wraps of a cell that covers 
 Mark's ruling on #6663 (A) reads every `<td>` of the `<thead>` that becomes the `table_head` as a header cell, since no source spells a head of data cells (C2-B-178), and reports the change with one `import-structure-repaired` entry at the `<thead>` (C2-M-037). The `<td>` of a further `<thead>`, which is read as a body, stays a data cell. Clause cases CC-2100 to CC-2104. Measured on the carve-js draft markup-carve/carve-js#5593 (`6c02a54`): all five pass. The ticket measured `carve-js` `next2` `9cddeb2` writing the head row of CC-2100 into the body with `structure-unspellable`; `carve-php` and `carve-rs` were not measured.
 
 - All three engines: read the `<td>` of the head as header cells and report it once (CC-2100 to CC-2103).
+
+## Engine gaps from the overlapping row span ruling of 25 November (#6737)
+
+The ruling on #6737 (B) keeps both counts where an imported row span runs into a column span of the next row. The writer writes the nearest form and reports `field-unspellable` for the row span (C2-M-074, C2-W-117), and `carve import` fails with `writer-refused` (C2-T-034). Clause cases CC-2107 and CC-2108; no text changes. Measured on `carve-js` `next2` `64bbfacb`: both import with no report, exit 0. `carve-rs` `next2` `1741fa8` reports the row span on both.
+
+- carve-js: report the row span instead of dropping it (CC-2107, CC-2108).
+- carve-php: not measured.
