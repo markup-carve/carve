@@ -83944,6 +83944,102 @@
    "carve": "| a | < |\n+ b | c |\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-2094",
+  "clauses": [
+   "C2-A-082",
+   "C2-A-145"
+  ],
+  "why": "C2-A-082: Below a delimited table, whose closing fence stands before the comment line and which holds no comment children, it is likewise the sibling after the table (C2-A-145).",
+  "summary": "comment between delimited table and caption (carve#6702)",
+  "input": "{table}\n```csv\nName\nAda\n```\n%% source: survey\n^ Members",
+  "options": {},
+  "expected": {
+   "html": "<table>\n  <caption>Members</caption>\n  <thead>\n    <tr><th scope=\"col\">Name</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Ada</td></tr>\n  </tbody>\n</table>",
+   "children": [
+    {
+     "type": "table",
+     "columns": [
+      {
+       "type": "table_column"
+      }
+     ],
+     "children": [
+      {
+       "type": "table_head",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": true,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "Name"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "Ada"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "caption": {
+      "type": "caption",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Members"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "comment",
+     "form": "line",
+     "value": "source: survey"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
