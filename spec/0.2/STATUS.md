@@ -602,3 +602,9 @@ Mark's ruling on #6656 (A) keeps the escape of a kind that a round reports besid
 The auto-ruling on #6670 (A) strips the lines of a line block behind a task box by the item's content column only, the task mark's column (C2-B-027), so a line aligned under the opener keeps the spaces past that column (C2-B-130). C2-B-029 strips only a code fence, and CC-001 already pins that a line block keeps its opener's indent. The text decided the case, so no clause changes. Clause cases CC-2081 to CC-2084: behind a task box, in a div behind a task box, behind the task box of a nested item, and at the top level. Measured on `carve-js` `next2` `d8ee8f2a`: it strips the lines to the opener column in CC-2081 to CC-2083 and passes CC-2084. `carve-php` `next2` `9de538c9` gives all four. The ticket measured `carve-rs` `next2` as `carve-js`.
 
 - `carve-js` and `carve-rs`: keep the spaces past the task mark column (CC-2081 to CC-2083).
+
+## Engine gaps from the spanned cell fragment order ruling of 25 November (#6691)
+
+The auto-ruling on #6691 keeps the 0.1 order (PART 9 section 5 T6) for continuation fragments under a cell that covers several grid positions: position by position, the positions in row-major order with the cell's own first, and the fragments of one position in the order of their rows. C2-B-184 states the order and C2-A-094 points at it. Clause cases CC-2088 (render) and CC-2089 (tree) pin the reproduction. Measured on `carve-js` `next2` `40bb405d` and `carve-php` `next2` `b4272403`: both join in source order, `a b c d e`. `carve-rs` `next2` `fb77a058` gives `a b d c e`.
+
+- `carve-js` and `carve-php`: join the fragments column by column (CC-2088, CC-2089).

@@ -83666,6 +83666,82 @@
    "html": "<p style=\"text-align: center;\" k=\"v\">Text.</p>"
   },
   "from": []
+ },
+ {
+  "id": "CC-2088",
+  "clauses": [
+   "C2-B-184"
+  ],
+  "why": "C2-B-184: A cell that covers several grid positions holds its fragments position by position: the positions it covers in row-major order, its own first, and the fragments of one position in the order of their rows, as in 0.1.",
+  "summary": "continuation fragments under a column span join the cell column by column (carve#6691)",
+  "kind": "render",
+  "input": "| a | < |\n+ b | c |\n+ d | e |",
+  "options": {},
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td colspan=\"2\">a b d c e</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2089",
+  "clauses": [
+   "C2-A-094"
+  ],
+  "why": "C2-A-094: In a cell that covers several grid positions the fragments stand in the order of C2-B-184, position by position, and not in source order.",
+  "summary": "the text of a spanned cell with two continuation rows follows column order in the tree (carve#6691)",
+  "kind": "parse",
+  "input": "| a | < |\n+ b | c |\n+ d | e |",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "table",
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ],
+     "children": [
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "a b d c e"
+              }
+             ]
+            }
+           ],
+           "colspan": 2
+          },
+          {
+           "type": "table_cell",
+           "header": false,
+           "span": "colspan",
+           "children": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

@@ -372,7 +372,7 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 
 **C2-A-093** A supplied count that contradicts an authored `span` mark is refused; a parser derives counts from marks according to C2-B-172 to C2-B-174. A `rowspan` that reaches past the last row of its cell's group, head, body or foot, is refused too, since no span crosses a group (C2-B-174). The mark decides the effective span, and counts without a mark describe an imported span. Column `align` is authored and `resolvedAlign` is derived under C2-A-089 and C2-B-213.
 
-**C2-A-094** A continuation row leaves no node and no field. Each fragment is read as inline content by itself, and the cell holds the nodes of its fragments in order with one space of ordinary text between two fragments (C2-B-184). Where the row broke is spelling and is in the sidecar.
+**C2-A-094** A continuation row leaves no node and no field. Each fragment is read as inline content by itself, and the cell holds the nodes of its fragments in order with one space of ordinary text between two fragments (C2-B-184). Where the row broke is spelling and is in the sidecar. In a cell that covers several grid positions the fragments stand in the order of C2-B-184, position by position, and not in source order.
 
 **C2-A-095** A table has no field for the widths of a separator row, since 0.2 has no such row; no field for the kind of source content of a cell, since `cell_paragraph` says it; no field for whether it was written as a pipe table or a delimited table, which is spelling; and no field for whether the source spelled a column, which its `align` and `width` say (C2-B-211, C2-B-212).
 
