@@ -2225,6 +2225,135 @@
       "expected": {
         "html": "<section id=\"a\">\n  <h1><span class=\"section-number\">1</span> Ref <a href=\"#a\">Section 1 - Ref Ref </a></h1>\n</section>"
       }
+    },
+    {
+      "id": "EXT-107",
+      "extension": "carve.colorSwatch",
+      "summary": "a hex color gets a swatch chip",
+      "clauses": [
+        "C2-X-074"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "A :color[#ff0000] dot.\n",
+      "options": {
+        "extensions": [
+          "carve.colorSwatch"
+        ],
+        "renderers": {
+          "carve.colorSwatch": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>A <span class=\"swatch\"><span class=\"swatch-chip\" style=\"background-color:#ff0000\"></span> #ff0000</span> dot.</p>"
+      }
+    },
+    {
+      "id": "EXT-108",
+      "extension": "carve.term",
+      "summary": "a term links to its glossary entry",
+      "clauses": [
+        "C2-X-067",
+        "C2-X-072"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "See :term[API].\n\n::: glossary\n:: API\n: An interface.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.glossary",
+          "carve.term"
+        ],
+        "renderers": {
+          "carve.glossary": "standard",
+          "carve.term": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>See <a href=\"#gloss-API\" class=\"term\">API</a>.</p>\n<div class=\"glossary\">\n  <dl class=\"glossary\">\n    <dt id=\"gloss-API\">API</dt>\n    <dd>An interface.</dd>\n  </dl>\n</div>"
+      }
+    },
+    {
+      "id": "EXT-109",
+      "extension": "carve.indexTerm",
+      "summary": "an index marker is listed with a back-link",
+      "clauses": [
+        "C2-X-069",
+        "C2-X-072"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "A :index[cat] here.\n\n::: index\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.index",
+          "carve.indexTerm"
+        ],
+        "renderers": {
+          "carve.index": "standard",
+          "carve.indexTerm": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>A <span id=\"idx-cat-1\" class=\"index-term\"></span> here.</p>\n<div class=\"index\">\n  <ul class=\"index\">\n    <li>cat <a href=\"#idx-cat-1\" class=\"index-backref\" aria-label=\"Back to cat\">↩</a></li>\n  </ul>\n</div>"
+      }
+    },
+    {
+      "id": "EXT-110",
+      "extension": "carve.headingPermalinks",
+      "summary": "a heading with an id gets a permalink",
+      "clauses": [
+        "C2-X-073"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#a}\n= A\n",
+      "options": {
+        "extensions": [
+          "carve.headingPermalinks"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"a\">\n  <h1>A <a href=\"#a\" class=\"permalink\" aria-label=\"Permalink\">¶</a></h1>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-111",
+      "extension": "carve.autolink",
+      "summary": "a bare URL and an email become autolinks",
+      "clauses": [
+        "C2-X-073"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "mail a@b.org or http://x.org/p.\n",
+      "options": {
+        "extensions": [
+          "carve.autolink"
+        ]
+      },
+      "expected": {
+        "html": "<p>mail <a href=\"mailto:a@b.org\">a@b.org</a> or <a href=\"http://x.org/p\">http://x.org/p</a>.</p>"
+      }
+    },
+    {
+      "id": "EXT-112",
+      "extension": "carve.tabNormalize",
+      "summary": "a tab in a code span becomes two spaces",
+      "clauses": [
+        "C2-X-073"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "a `\tb`\n",
+      "options": {
+        "extensions": [
+          "carve.tabNormalize"
+        ]
+      },
+      "expected": {
+        "html": "<p>a <code>  b</code></p>"
+      }
     }
   ]
 }

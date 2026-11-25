@@ -2,6 +2,19 @@
   "$schema": "schemas/extensions.schema.json",
   "extensions": [
     {
+      "name": "carve.autolink",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-013",
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
       "name": "carve.cite",
       "version": "1",
       "matcher": {
@@ -30,6 +43,19 @@
       }
     },
     {
+      "name": "carve.codeCallouts",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-053",
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
       "name": "carve.codeGroup",
       "version": "1",
       "matcher": {
@@ -48,6 +74,30 @@
       ],
       "slotOrder": [
         "panels"
+      ]
+    },
+    {
+      "name": "carve.colorSwatch",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "color"
+      },
+      "props": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "value": {
+          "kind": "inline"
+        }
+      },
+      "clauses": [
+        "C2-X-074"
+      ],
+      "slotOrder": [
+        "value"
       ]
     },
     {
@@ -76,6 +126,113 @@
       ]
     },
     {
+      "name": "carve.externalLinks",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.abc",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "abc"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.chart",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "chart"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.d2",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "d2"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.dot",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "dot"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.graphviz",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "graphviz"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
       "name": "carve.fencedRender.mermaid",
       "version": "1",
       "matcher": {
@@ -90,6 +247,136 @@
       "slots": {},
       "clauses": [
         "C2-X-061"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.plantuml",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "plantuml"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.puml",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "puml"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.vega-lite",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "vega-lite"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.wavedrom",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "wavedrom"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.glossary",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-067",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "body"
+      ]
+    },
+    {
+      "name": "carve.headingNumbers",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-070",
+        "C2-X-072"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.headingPermalinks",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.headingReference",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
       ],
       "slotOrder": []
     },
@@ -132,6 +419,81 @@
       "slotOrder": []
     },
     {
+      "name": "carve.index",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-069",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "body"
+      ]
+    },
+    {
+      "name": "carve.indexTerm",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "index"
+      },
+      "props": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "term": {
+          "kind": "inline",
+          "optional": true
+        }
+      },
+      "clauses": [
+        "C2-X-069",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "term"
+      ]
+    },
+    {
+      "name": "carve.listTable",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "list-table"
+      },
+      "props": {
+        "label": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "rows": {
+          "kind": "block",
+          "minItems": 1
+        },
+        "caption": {
+          "kind": "inline",
+          "optional": true
+        }
+      },
+      "clauses": [
+        "C2-B-188",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "rows",
+        "caption"
+      ]
+    },
+    {
       "name": "carve.mathBlock",
       "version": "1",
       "matcher": {
@@ -149,6 +511,60 @@
         "C2-X-062"
       ],
       "slotOrder": []
+    },
+    {
+      "name": "carve.semanticSpan",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-066",
+        "C2-X-072"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.smartQuotes",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-075"
+      ],
+      "slotOrder": [],
+      "rendererOptions": {
+        "locale": {
+          "values": [
+            "en",
+            "de",
+            "de-CH",
+            "fr",
+            "pl",
+            "ru",
+            "ja",
+            "zh",
+            "sv",
+            "da",
+            "fi",
+            "cs",
+            "hu",
+            "it",
+            "es",
+            "pt",
+            "nl",
+            "nb",
+            "nn",
+            "uk"
+          ],
+          "default": "en",
+          "clauses": [
+            "C2-X-075"
+          ]
+        }
+      }
     },
     {
       "name": "carve.spoiler",
@@ -219,6 +635,18 @@
       ]
     },
     {
+      "name": "carve.tabNormalize",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
       "name": "carve.tabs",
       "version": "1",
       "matcher": {
@@ -264,6 +692,91 @@
           ]
         }
       }
+    },
+    {
+      "name": "carve.term",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "term"
+      },
+      "props": {
+        "href": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "text": {
+          "kind": "inline",
+          "optional": true
+        }
+      },
+      "clauses": [
+        "C2-X-067",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "text"
+      ]
+    },
+    {
+      "name": "carve.toc",
+      "version": "1",
+      "transform": true,
+      "props": {
+        "collapsible": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "open": {
+          "type": "boolean"
+        }
+      },
+      "slots": {
+        "list": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-053",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "list"
+      ]
+    },
+    {
+      "name": "carve.tocPlacement",
+      "version": "1",
+      "transform": true,
+      "props": {
+        "label": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        },
+        "list": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-053",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "title",
+        "body",
+        "list"
+      ]
     },
     {
       "name": "carve.wiki",

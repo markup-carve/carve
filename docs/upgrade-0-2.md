@@ -2884,7 +2884,7 @@ two
 ```
 :::
 
-**[U-130](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1.
+**[U-130](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes four `&amp;nbsp;` before `x`, and 0.2 writes the same since the ruling on #6762 (C2-H-043). An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1.
 Tool: The tool checks removal of trailing no-break spaces in plain line-block lines under C2-H-043. Other ownership differences need review.
 
 :::: compare no-render
@@ -2894,7 +2894,7 @@ Tool: The tool checks removal of trailing no-break spaces in plain line-block li
 ```
 ```html
 <div class="line-block">
-  <p>	x</p>
+  <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>
 </div>
 ```
 ::::
@@ -3068,7 +3068,7 @@ Violets are blue*
 ```
 ::::
 
-**[U-265](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-H-043, a run of spaces inside a line of a line block, `Roses  are red`, was written as `&amp;nbsp;` in 0.1.
+**[U-265](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="info" text="none" /> Under C2-H-043, a run of spaces inside a line of a line block, `Roses  are red`, is written as `&amp;nbsp;`, one per space, in 0.1.
 
 :::: compare no-render
 ```text
@@ -3076,10 +3076,10 @@ Violets are blue*
 Roses  are red
 :::
 ```
-```crv
-::: |
-Roses\ \ are red
-:::
+```text
+<div class="line-block">
+  <p>Roses&nbsp;&nbsp;are red</p>
+</div> C2-H-043 writes a run of two or more spaces inside a line as `&nbsp;`, one per space, as 0.1 did (ruling on #6762).
 ```
 ::::
 

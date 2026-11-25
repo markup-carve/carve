@@ -115,6 +115,10 @@
               }
             }
           },
+          "transform": {
+            "description": "A document extension: no matcher claims a core node for it. Its transform rewrites the render view or it sets what the core renderer writes (C2-X-072).",
+            "const": true
+          },
           "slotOrder": {
             "type": "array",
             "uniqueItems": true,
@@ -174,6 +178,14 @@
             },
             "required": [
               "parent"
+            ]
+          },
+          {
+            "properties": {
+              "transform": {}
+            },
+            "required": [
+              "transform"
             ]
           }
         ]

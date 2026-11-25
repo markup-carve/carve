@@ -249,7 +249,7 @@ Open the app.
 
 ## Standard extensions of the 0.1 catalog
 
-These extensions follow the catalog status of the tabs section. Each claims a core node by the matcher its row of `data/extensions.json` names, and with no renderer in the selected channel C2-X-035 writes its fallback.
+These extensions follow the catalog status of the tabs section. Each with a matcher claims a core node by the matcher its row of `data/extensions.json` names, and with no renderer in the selected channel C2-X-035 writes its fallback. A row marked `transform` is a document extension (C2-X-072).
 
 **C2-X-061** A diagram extension of the fenced renderers, as `carve.fencedRender.mermaid`, and `carve.mathBlock` claim a code block by its language (C2-X-010), and their fallback is that core code block without its attributes (C2-X-024). A diagram extension has a build-time renderer (C2-X-052) only where the host gives it a build function, and the engine makes no network call. In `static` mode without one, C2-X-035 writes the fallback, the plain code block `<pre><code class="language-mermaid">`, and no `<pre class="mermaid">` source element as in 0.1.
 
@@ -270,6 +270,16 @@ These extensions follow the catalog status of the tabs section. Each claims a co
 **C2-X-069** A document transform does not see the render option `labels`, so the `index` extension takes the label of its back-links as its own option `backrefLabel`; its default is the default of the label `indexBackref`, `Back to`.
 
 **C2-X-070** In the `number-title` style, `carve.headingNumbers` replaces a heading cross-reference with a link that holds the number and a copy of the target's title. A heading cross-reference inside that copy is not expanded again: it stays a reference and renders as a plain link with its target's title, so copies do not nest and a title that refers to itself ends. With `{#a}` on `= A </#b>`, `{#b}` on `== B </#c>` and `{#c}` on `== C`, the reference in `A` writes `Section 1.1 - B C`, not `Section 1.1 - B Section 1.2 - C`.
+
+**C2-X-071** The diagram presets are fenced renderers as `carve.fencedRender.mermaid` is, with one row per fence language: `abc`, `chart`, `d2`, `dot`, `graphviz`, `plantuml`, `puml`, `vega-lite` and `wavedrom`. The renderer writes the code text, without its last line break, in a `<pre>` whose class is `graphviz` for `dot` and `graphviz`, `plantuml` for `plantuml` and `puml`, and the language otherwise, with `role="img"` and an `aria-label` of that class, escaping `&` and `<`: `<pre class="d2" role="img" aria-label="d2">a -> b</pre>`. `chart` and `vega-lite` write a `<div>` with that class, role and label around `<script type="application/json">`, which holds the text with each `</` written as `<\/`. An authored `role`, `aria-label` or `aria-labelledby` replaces the generated one.
+
+**C2-X-072** A row of `data/extensions.json` marked `transform` has no matcher: its extension is a document transform (C2-X-053), or it sets what the core renderer writes, as `carve.semanticSpan` (C2-X-066) and `carve.smartQuotes` (C2-X-075) do. `--extensions` registers such a row as it registers any other, with its standard renderer on `render` and the default of each host option it takes (C2-T-010). The rows are `carve.autolink`, `carve.codeCallouts`, `carve.externalLinks`, `carve.glossary`, `carve.headingNumbers`, `carve.headingPermalinks`, `carve.headingReference`, `carve.index`, `carve.semanticSpan`, `carve.smartQuotes`, `carve.tabNormalize`, `carve.toc` and `carve.tocPlacement`. Registering `carve.glossary` registers `carve.term` with it, and `carve.index` registers `carve.indexTerm`; the transforms of `carve.glossary`, `carve.index` and `carve.tocPlacement` claim the directive of that name, and the transform of `carve.toc` inserts its table before the first block. `carve.codeCallouts` makes the nodes `carve.codeCallouts.code` and `carve.codeCallouts.list`, which have no row of their own.
+
+**C2-X-073** `carve.autolink` turns a bare `http`, `https` or `mailto` URL or email address in text into a core autolink, outside links, autolinks, images, references, code, math, raw and literal spans. `carve.externalLinks` writes `rel="noopener noreferrer"` and `target="_blank"` on a link or autolink whose URL has the scheme `http` or `https`. `carve.headingPermalinks` writes, after the content of each heading with an id, one space and `<a href="#id" class="permalink" aria-label="Permalink">¶</a>`. `carve.headingReference` adds the class `heading-ref` to a link that a heading resolves (C2-H-083). `carve.tabNormalize` replaces each tab in the value of a code block or a code span with two spaces. `carve.codeCallouts` claims a code block whose lines end in `<n>` together with the paragraph of `<n> text` lines directly below it: the code writes each mark as `<b class="callout" data-callout="n">n</b>`, and the paragraph becomes `<ol class="callouts">` with one `<li value="n">` per line.
+
+**C2-X-074** The `color` inline matcher of `carve.colorSwatch` claims `:color[value]`, with the value in its `value` slot. A hex color, an `rgb()`, `rgba()`, `hsl()` or `hsla()` color or a CSS color name renders as `<span class="swatch"><span class="swatch-chip" style="background-color:V"></span> V</span>`, with V the value; any other value writes the fallback.
+
+**C2-X-075** `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, one of the values of its row with `en` the default, so that `de` writes `„a“`. It changes nothing while `smartTypography` is off. A locale that is not in the row falls back to its language, then to `en`.
 
 ## Writing consistency
 
@@ -326,6 +336,6 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | Resolution, rendering and equality | 13 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
-| Standard extensions of the 0.1 catalog | 10 |
+| Standard extensions of the 0.1 catalog | 15 |
 | Writing consistency | 1 |
-| **Total** | **70** |
+| **Total** | **75** |
