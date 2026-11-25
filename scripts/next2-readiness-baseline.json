@@ -3,7 +3,7 @@
   "engineHeads": {
     "js": "fdddc7f38fb8ef53ac218351f1340f7ce344d2bc",
     "php": "9a83de62e328f6eae6087c400bbec5e4d3b2cca9",
-    "rs": "e68d59b7844b571b480b5788d81baff21e8ec5ff"
+    "rs": "cd4f5bdd5c6f19ec7a1bb241f52601ed58d80a7d"
   },
   "cases": {
     "clauses/render/CC-001": "9472afcc6dd08244",
