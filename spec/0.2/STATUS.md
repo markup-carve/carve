@@ -622,3 +622,9 @@ Mark's ruling on #6712 (option 1) adds `col` to the wraps of a cell that covers 
 
 - All three engines: record `col` on the wraps of a cell with `colspan` above 1, read it in the writer, and refuse a sidecar whose wraps are not sorted by `line`, `row` and `col` (CC-2090 to CC-2093).
 - `carve-rs`: also record the wrap of every fragment and the range of such a cell (carve-rs#4805).
+
+## Engine gaps from the head data cell ruling of 25 November (#6663)
+
+Mark's ruling on #6663 (A) reads every `<td>` of the `<thead>` that becomes the `table_head` as a header cell, since no source spells a head of data cells (C2-B-178), and reports the change with one `import-structure-repaired` entry at the `<thead>` (C2-M-037). The `<td>` of a further `<thead>`, which is read as a body, stays a data cell. Clause cases CC-2100 to CC-2104. Measured on the carve-js draft markup-carve/carve-js#5593 (`6c02a54`): all five pass. The ticket measured `carve-js` `next2` `9cddeb2` writing the head row of CC-2100 into the body with `structure-unspellable`; `carve-php` and `carve-rs` were not measured.
+
+- All three engines: read the `<td>` of the head as header cells and report it once (CC-2100 to CC-2103).
