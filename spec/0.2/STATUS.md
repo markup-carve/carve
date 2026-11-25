@@ -589,3 +589,10 @@ The head move of C2-M-037 drops a body it leaves empty. The text decides what ha
 Mark's ruling on #6607 (C) adds a guard to the last sentence of C2-M-040: in a table with no head, a column gives its cells' shared alignment to the column only on an axis where every column before it gives one too, since an `aligns` or `valigns` list has no empty entry (C2-B-211). The cells of the other columns keep their own marks. Clause cases CC-2077 and CC-2078. Measured on `carve-js` `next2` `0f1cba78` with the #6637 port on top: CC-2077 writes `{aligns=,right}` and CC-2078 `{aligns=right,right valigns=,bottom}`, both with `field-unspellable`. The ticket measured the same list in `carve-rs` `next2`, and `carve-php` `next2` drops the alignment.
 
 - All three engines: keep the cell mark where a column before it has no alignment on that axis (CC-2077, CC-2078).
+
+## Engine gaps from the case backslash ruling of 25 November (#6656)
+
+Mark's ruling on #6656 (A) keeps the escape of a kind that a round reports beside a C2-W-125 backslash placed in the same round, also where that backslash alone would already break the reported construct. C2-W-125 now says so in one sentence; the text of C2-W-088 already decided it. Clause cases CC-2079 and CC-2080 are CommonMark examples 526 and 538. Measured on `carve-js` `next2` `68b21a39`: it writes both inputs back unchanged, without the escape of the kind `[`. The ticket measured `carve-rs` `next2` writing the expected forms; `carve-php` was not measured.
+
+- `carve-js`: carve-js#5587 (CC-2079, CC-2080).
+- `carve-php`: measure CC-2079 and CC-2080.

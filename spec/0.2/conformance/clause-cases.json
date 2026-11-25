@@ -83378,6 +83378,42 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2079",
+  "clauses": [
+   "C2-W-088",
+   "C2-W-125"
+  ],
+  "why": "C2-W-088: For each kind reported in a block, the round escapes every potential opener of that kind in that block, not only the reported ones, and the text is then parsed again. C2-W-125: A round of C2-W-088 that reports a construct the tree does not hold may also place the backslash of one of these cases in the same round, beside the escapes of its kinds ... A case backslash does not cancel a kind that the same parse reports.",
+  "summary": "an outer link on the text `[foo` reports the kind `[`, and the case-five backslash on the inner link's closer does not cancel its escape (CommonMark example 526)",
+  "kind": "format",
+  "input": "[foo[https://example.com/?search=\\](uri)](https://example.com/?search=%5D(uri))",
+  "options": {},
+  "expected": {
+   "carve": "\\[foo[https://example.com/?search=\\](uri)](https://example.com/?search=%5D(uri))\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2080",
+  "clauses": [
+   "C2-W-088",
+   "C2-W-125"
+  ],
+  "why": "C2-W-088: For each kind reported in a block, the round escapes every potential opener of that kind in that block, not only the reported ones, and the text is then parsed again. C2-W-125: A round of C2-W-088 that reports a construct the tree does not hold may also place the backslash of one of these cases in the same round, beside the escapes of its kinds ... A case backslash does not cancel a kind that the same parse reports.",
+  "summary": "the reported kind `[` also escapes the text `[ref` inside the link, beside the case-five backslash (CommonMark example 538)",
+  "kind": "format",
+  "input": "[foo[https://example.com/?search=\\][ref]](https://example.com/?search=%5D%5Bref%5D)",
+  "options": {},
+  "expected": {
+   "carve": "\\[foo[https://example.com/?search=\\]\\[ref\\]](https://example.com/?search=%5D%5Bref%5D)\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
  }
  ]
 }
