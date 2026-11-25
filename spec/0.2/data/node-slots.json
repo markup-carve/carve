@@ -531,7 +531,17 @@
     }
   },
   "extensions": {
+    "carve.autolink": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
     "carve.cite": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.codeCallouts": {
       "version": "1",
       "slotOrder": [],
       "slots": {}
@@ -545,6 +555,17 @@
         "panels": {
           "kind": "block",
           "minItems": 1
+        }
+      }
+    },
+    "carve.colorSwatch": {
+      "version": "1",
+      "slotOrder": [
+        "value"
+      ],
+      "slots": {
+        "value": {
+          "kind": "inline"
         }
       }
     },
@@ -564,7 +585,83 @@
         }
       }
     },
+    "carve.externalLinks": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.abc": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.chart": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.d2": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.dot": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.graphviz": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
     "carve.fencedRender.mermaid": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.plantuml": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.puml": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.vega-lite": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.fencedRender.wavedrom": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.glossary": {
+      "version": "1",
+      "slotOrder": [
+        "body"
+      ],
+      "slots": {
+        "body": {
+          "kind": "block"
+        }
+      }
+    },
+    "carve.headingNumbers": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.headingPermalinks": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.headingReference": {
       "version": "1",
       "slotOrder": [],
       "slots": {}
@@ -579,7 +676,57 @@
       "slotOrder": [],
       "slots": {}
     },
+    "carve.index": {
+      "version": "1",
+      "slotOrder": [
+        "body"
+      ],
+      "slots": {
+        "body": {
+          "kind": "block"
+        }
+      }
+    },
+    "carve.indexTerm": {
+      "version": "1",
+      "slotOrder": [
+        "term"
+      ],
+      "slots": {
+        "term": {
+          "kind": "inline",
+          "optional": true
+        }
+      }
+    },
+    "carve.listTable": {
+      "version": "1",
+      "slotOrder": [
+        "rows",
+        "caption"
+      ],
+      "slots": {
+        "rows": {
+          "kind": "block",
+          "minItems": 1
+        },
+        "caption": {
+          "kind": "inline",
+          "optional": true
+        }
+      }
+    },
     "carve.mathBlock": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.semanticSpan": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.smartQuotes": {
       "version": "1",
       "slotOrder": [],
       "slots": {}
@@ -621,6 +768,11 @@
         }
       }
     },
+    "carve.tabNormalize": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
     "carve.tabs": {
       "version": "1",
       "slotOrder": [
@@ -631,6 +783,49 @@
           "kind": "block_extension",
           "name": "carve.tab",
           "minItems": 1
+        }
+      }
+    },
+    "carve.term": {
+      "version": "1",
+      "slotOrder": [
+        "text"
+      ],
+      "slots": {
+        "text": {
+          "kind": "inline",
+          "optional": true
+        }
+      }
+    },
+    "carve.toc": {
+      "version": "1",
+      "slotOrder": [
+        "list"
+      ],
+      "slots": {
+        "list": {
+          "kind": "block"
+        }
+      }
+    },
+    "carve.tocPlacement": {
+      "version": "1",
+      "slotOrder": [
+        "title",
+        "body",
+        "list"
+      ],
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        },
+        "list": {
+          "kind": "block"
         }
       }
     },

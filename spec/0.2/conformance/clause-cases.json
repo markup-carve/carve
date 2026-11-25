@@ -86240,6 +86240,97 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2146",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-071",
+    "C2-X-072",
+    "C2-X-073"
+   ],
+   "why": "C2-T-010: The standard extensions of `data/extensions.json` have names: on `render`, `fmt`, `lint` and `ast`, `--extensions` takes a JSON list of them and registers each, with its standard renderer on `render` C2-X-072: `--extensions` registers such a row as it registers any other, with its standard renderer on `render` and the default of each host option it takes (C2-T-010). C2-X-071: `<pre class=\"d2\" role=\"img\" aria-label=\"d2\">a -> b</pre>` C2-X-073: `carve.headingPermalinks` writes, after the content of each heading with an id, one space and `<a href=\"#id\" class=\"permalink\" aria-label=\"Permalink\">¶</a>`",
+   "summary": "--extensions takes a diagram preset and a document extension of the catalog",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "{#a}\n= A\n\n```d2\na -> b\n```\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.fencedRender.d2\",\"carve.headingPermalinks\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<section id=\"a\">\n  <h1>A <a href=\"#a\" class=\"permalink\" aria-label=\"Permalink\">¶</a></h1>\n  <pre class=\"d2\" role=\"img\" aria-label=\"d2\">a -> b</pre>\n</section>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2147",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, one of the values of its row with `en` the default, so that `de` writes `„a“`.",
+   "summary": "--extension-options gives the smart quotes their locale",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":\"de\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>„a“ b</p>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2148",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-T-010: A value the option refuses is refused with the category `usage`. C2-X-075: one of the values of its row with `en` the default",
+   "summary": "a smart quotes locale outside its row is a usage error on the command line",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":\"xx\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
   }
  ]
 }

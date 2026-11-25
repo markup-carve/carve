@@ -275,7 +275,7 @@ Spaces and tabs that a writer would leave at the end of a source line in text ar
 
 `headingShift` is a core render option (C2-H-208, C2-H-209, #6325). Clause cases CC-1505 to CC-1541.
 
-- No clause case pins `headingNumbers` after the shift, since that extension is not in `data/extensions.json`; C2-H-208 states that every transform sees the shifted levels.
+- No clause case pins `headingNumbers` after the shift; C2-H-208 states that every transform sees the shifted levels.
 
 ## Engine gaps from the pinned lint cases of 21 November
 
@@ -668,6 +668,14 @@ The ruling on #6759 (option 1) lists a cited key that only the host's citation d
 
 - carve-js: list a pool-only key in the last claimed directive (C2-X-058).
 - carve-rs: the same, in the port of the citations transform (markup-carve/carve-rs#4834).
+
+## Engine gaps from the catalog keys ruling of 25 November (#6766)
+
+The ruling on #6766 (option B) adds 26 rows to `data/extensions.json`: the diagram presets, `carve.colorSwatch`, `carve.listTable`, `carve.term` and `carve.indexTerm` with a matcher, and 13 document extensions marked `transform` (C2-X-071 to C2-X-075). `--extensions` takes them as it takes the other rows (C2-T-010), and `carve.smartQuotes` takes the renderer option `locale`. Clause cases CC-2146 to CC-2148, extension cases EXT-107 to EXT-112. Read from the sources of `carve-js` `next2` `ba51e9e5`, `carve-php` `next2` `1b55e1f6` and `carve-rs` `next2` `d52b1fbd`: each CLI refuses every new name, while each library has all of them.
+
+- `carve-js`: add the rows to the `STANDARD` table of `cli/standard-extensions.ts`.
+- `carve-php`: add the rows to `Standard::definitions()` and the renderer-option check of `Options`.
+- `carve-rs`: register the rows marked `transform`, which the CLI skips today as rows without a matcher; declare the `title`, `body` and `list` slots of `carve.tocPlacement`.
 
 ## Engine gaps from the verse whitespace ruling of 25 November (#6762)
 
