@@ -2278,6 +2278,8 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 22 | `rowHeadColumns` of a body | `{body-rows=2 body-header-cols=1}⏎\| a \| b \|⏎\| c \| d \|` | `\|= a \| b \|⏎\|= c \| d \|`: header cells, since `<th scope="row">` (C2-H-056) carries no count (C2-H-153) |
 | 23 | the absence of a final line feed in a supplied nonempty code block value | a supplied `code_block` with value `a` | a `code_block` with value `a⏎`: C2-M-030 appends a line feed when the `<pre><code>` text has none |
 | 24 | loose spacing of a supplied list with one item, even when the item starts with a paragraph | a supplied one-item `list` with `spacing` `loose` and paragraph `a` | a tight list with the same item: C2-M-033 makes every one-item list tight |
+| 25 | a tab in a line of a line block, outside a code, math, raw or literal span | `::: \|⏎wide`, two tabs, `gap⏎:::` | `::: \|⏎wide        gap⏎:::`: the spaces of its columns, which C2-H-043 writes as the same `&nbsp;` |
+| 26 | a U+00A0 in a line of a line block that leads the line, stands beside another U+00A0, or stands beside a run of spaces and tabs of two or more columns | `::: \|⏎a`, U+00A0, U+00A0, `b⏎:::` | `::: \|⏎a  b⏎:::`: spaces, which C2-H-043 writes as the same `&nbsp;` |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names, nor a fact the render does not write (C2-H-188), is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 
