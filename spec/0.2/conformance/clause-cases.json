@@ -83742,6 +83742,208 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2090",
+  "clauses": [
+   "C2-L-020",
+   "C2-L-048"
+  ],
+  "why": "C2-L-020: A wrap in a cell that covers more than one column also has `col`, the index of the covered column that holds the fragment, counted from the cell's own column, which is 0. C2-L-048: The `wraps` of a cell are sorted by `line`, those of one line by `row`, and those of one row by `col`",
+  "summary": "a cell that covers two columns records the column of each wrap (carve#6712)",
+  "kind": "layout",
+  "input": "| a | < |\n+ | b |\n+ e | |\n",
+  "options": {},
+  "expected": {
+   "layout": {
+    "nodes": [
+     {
+      "path": "/children/0/children/0/children/0/children/0",
+      "startByte": 1,
+      "endByte": 22,
+      "wraps": [
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+        "offset": 4,
+        "col": 1
+       },
+       {
+        "line": 2,
+        "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+        "offset": 2,
+        "col": 0
+       }
+      ]
+     }
+    ]
+   },
+   "children": [
+    {
+     "type": "table",
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ],
+     "children": [
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "a e b"
+              }
+             ]
+            }
+           ],
+           "colspan": 2
+          },
+          {
+           "type": "table_cell",
+           "header": false,
+           "span": "colspan",
+           "children": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2091",
+  "clauses": [
+   "C2-L-020",
+   "C2-W-067"
+  ],
+  "why": "C2-L-020: A wrap in a cell that covers more than one column also has `col`, the index of the covered column that holds the fragment, counted from the cell's own column, which is 0. C2-W-067: Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020).",
+  "summary": "the formatter writes each fragment of a cell that covers two columns under its column (carve#6712)",
+  "kind": "format",
+  "input": "| a | < |\n+ | b |\n+ e | |\n",
+  "options": {},
+  "expected": {
+   "carve": "| a | < |\n+ | b |\n+ e | |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2092",
+  "clauses": [
+   "C2-L-020",
+   "C2-L-048"
+  ],
+  "why": "C2-L-020: A wrap in a cell that covers more than one column also has `col`, the index of the covered column that holds the fragment, counted from the cell's own column, which is 0. C2-L-048: The `wraps` of a cell are sorted by `line`, those of one line by `row`, and those of one row by `col`",
+  "summary": "two wraps of one continuation row in a cell that covers two columns are sorted by col (carve#6712)",
+  "kind": "layout",
+  "input": "| a | < |\n+ b | c |\n",
+  "options": {},
+  "expected": {
+   "layout": {
+    "nodes": [
+     {
+      "path": "/children/0/children/0/children/0/children/0",
+      "startByte": 1,
+      "endByte": 18,
+      "wraps": [
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+        "offset": 2,
+        "col": 0
+       },
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+        "offset": 4,
+        "col": 1
+       }
+      ]
+     }
+    ]
+   },
+   "children": [
+    {
+     "type": "table",
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ],
+     "children": [
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "a b c"
+              }
+             ]
+            }
+           ],
+           "colspan": 2
+          },
+          {
+           "type": "table_cell",
+           "header": false,
+           "span": "colspan",
+           "children": []
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2093",
+  "clauses": [
+   "C2-L-020",
+   "C2-W-067"
+  ],
+  "why": "C2-L-020: A wrap in a cell that covers more than one column also has `col`, the index of the covered column that holds the fragment, counted from the cell's own column, which is 0. C2-W-067: Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020).",
+  "summary": "the formatter keeps a continuation row of a cell that covers two columns as written (carve#6712)",
+  "kind": "format",
+  "input": "| a | < |\n+ b | c |\n",
+  "options": {},
+  "expected": {
+   "carve": "| a | < |\n+ b | c |\n"
+  },
+  "from": []
  }
  ]
 }

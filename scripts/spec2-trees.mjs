@@ -389,8 +389,9 @@ function layoutProblems (layout) {
     paths.add(node.path)
     if (node.startByte > node.endByte || node.endByte > bytes.length) problems.push(`${node.path} has a range outside the input (C2-L-012)`)
     if (('openerRaw' in node) !== ('closerRaw' in node) || node.openerRaw === '') problems.push(`${node.path} breaks the delimiter pair (C2-L-027)`)
-    const lines = (node.wraps ?? []).map(wrap => wrap.line)
-    if (lines.some((line, i) => i > 0 && line < lines[i - 1])) problems.push(`${node.path} has unsorted wraps (C2-L-020)`)
+    const keys = (node.wraps ?? []).map(wrap => [wrap.line, wrap.row ?? 0, wrap.col ?? 0])
+    const before = (x, y) => x[0] - y[0] || x[1] - y[1] || x[2] - y[2]
+    if (keys.some((key, i) => i > 0 && before(key, keys[i - 1]) < 0)) problems.push(`${node.path} has unsorted wraps (C2-L-020)`)
   }
   return { problems, bytes }
 }
