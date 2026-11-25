@@ -683,3 +683,10 @@ The ruling on #6762 has a line block keep the whitespace of its lines as 0.1 did
 
 - All three engines: write the runs of C2-H-043 in a line block.
 - `carve-js`: `carve upgrade` stops the U-265 rewrite to `Roses\ \ are red`.
+
+## Engine gaps from the line-block no-break space ruling of 25 November (#6777)
+
+The ruling on #6777 adds C2-M-111: in a line block read from `data-carve-line-block`, a run of U+00A0 with no space or tab of its text node beside it reads as spaces when it leads the line or holds two or more characters, and a lone one inside the line stays. Row 26 of C2-H-195 names the exception. Clause cases CC-2149 to CC-2154. Measured on `carve-js` `next2` `c1da7a6`: CC-2149 to CC-2152 pass; CC-2153 and CC-2154 fail, since it reads a run beside a space as spaces. `carve-php` was not run; its importer (carve-php#6025) keeps such a run by its source. `carve-rs` was not measured.
+
+- `carve-js`: keep a U+00A0 run beside a space or tab (carve-js#5638).
+- `carve-rs`: check its HTML importer against CC-2149 to CC-2154.

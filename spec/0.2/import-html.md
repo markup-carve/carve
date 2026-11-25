@@ -245,6 +245,8 @@ b
 
 **C2-M-022** The text of `<pre>` is read verbatim, with no rule of this section, and so is the value of a code span, a math node and a raw node.
 
+**C2-M-111** In a line block read from `data-carve-line-block` (C2-H-186), a run of U+00A0 in a text node of a line, with no space or tab of that text node beside it, reads as that many spaces when it leads the line or holds two or more characters: it is the whitespace C2-H-043 writes. A lone U+00A0 inside the line stays (C2-H-195 row 3). These spaces are content of the line: C2-M-018 does not remove them, and they are not reported.
+
 Example 3 (verified)
 
 ::: compare
@@ -1822,6 +1824,6 @@ The reference names `_ftn1`, the marker anchor of the note, whose nearest block 
 
 ## Counts
 
-**C2-M-099** This document holds 94 clauses: 93 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
+**C2-M-099** This document holds 95 clauses: 94 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.
