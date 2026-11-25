@@ -45,14 +45,15 @@
     "C2-B-130",
     "C2-B-003",
     "C2-B-007",
-    "C2-B-123"
+    "C2-B-123",
+    "C2-H-043"
    ],
-   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content. C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text.",
+   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content. C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text. C2-H-043: It keeps the whitespace of its lines as 0.1 did: the run of spaces and tabs that leads a line is written as `&nbsp;`, one per column, and so is a run of spaces and tabs inside a line that covers two or more columns, while a run that covers one column is one space.",
    "summary": "line block in quote in item keeps tab",
    "input": "- > a\n  > \t::: |\n  > \tx\n  > \t:::",
    "options": {},
    "expected": {
-    "html": "<ul>\n  <li>\n    <blockquote>\n      <p>a</p>\n      <div class=\"line-block\">\n        <p>\tx</p>\n      </div>\n    </blockquote>\n  </li>\n</ul>",
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <p>a</p>\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n      </div>\n    </blockquote>\n  </li>\n</ul>",
     "children": [
      {
       "type": "list",
@@ -86098,6 +86099,145 @@
    "options": {},
    "expected": {
     "carve": "- :: t\n     \\- x\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2143",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: It keeps the whitespace of its lines as 0.1 did: the run of spaces and tabs that leads a line is written as `&nbsp;`, one per column, and so is a run of spaces and tabs inside a line that covers two or more columns, while a run that covers one column is one space.",
+   "summary": "tabs and space runs in a line block keep their columns",
+   "input": "::: |\ntab\tgap\nwide\t\tgap\n\tlead\nwide  two\na b\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>tab gap<br>\nwide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>\n&nbsp;&nbsp;&nbsp;&nbsp;lead<br>\nwide&nbsp;&nbsp;two<br>\na b</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "tab\tgap"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "wide\t\tgap"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "\tlead"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "wide  two"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2144",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: Runs and columns are taken within one text node of the line, at any inline depth.",
+   "summary": "a space run inside emphasis in a line block keeps its columns",
+   "input": "::: |\n/a  b/ c\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p><em>a&nbsp;&nbsp;b</em> c</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "emphasis",
+          "children": [
+           {
+            "type": "text",
+            "value": "a  b"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "value": " c"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2145",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: The text of a code, math, raw or literal span is written as it stands.",
+   "summary": "a code span in a line block keeps its spaces and tab",
+   "input": "::: |\n`a  b\tc`  d\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p><code>a  b\tc</code>&nbsp;&nbsp;d</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "code",
+          "value": "a  b\tc"
+         },
+         {
+          "type": "text",
+          "value": "  d"
+         }
+        ]
+       }
+      ]
+     }
+    ]
    },
    "from": []
   }

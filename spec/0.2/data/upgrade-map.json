@@ -1057,7 +1057,7 @@
       "group": "fences, quotes, comments",
       "from": "::: |\n\tx",
       "to": "",
-      "meaning02": "<div class=\"line-block\">\n  <p>\tx</p>\n</div>",
+      "meaning02": "<div class=\"line-block\">\n  <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n</div>",
       "toolEntry": "U-130",
       "silent": true
     },
@@ -2213,13 +2213,13 @@
     },
     {
       "id": "U-265",
-      "kind": "rewrite",
+      "kind": "none",
       "group": "third review",
       "from": "::: |\nRoses  are red\n:::\n",
-      "to": "::: |\nRoses\\ \\ are red\n:::\n",
-      "meaning02": "<div class=\"line-block\">\n  <p>Roses  are red</p>\n</div> C2-H-043 writes only the leading spaces of a line as `&nbsp;`; 0.1 wrote every run of spaces in the line that way. A non-breaking space escape keeps the 0.1 HTML.",
+      "to": "::: |\nRoses  are red\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>Roses&nbsp;&nbsp;are red</p>\n</div> C2-H-043 writes a run of two or more spaces inside a line as `&nbsp;`, one per space, as 0.1 did (ruling on #6762).",
       "toolEntry": "U-265",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-267",

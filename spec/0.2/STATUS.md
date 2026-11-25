@@ -668,3 +668,10 @@ The ruling on #6759 (option 1) lists a cited key that only the host's citation d
 
 - carve-js: list a pool-only key in the last claimed directive (C2-X-058).
 - carve-rs: the same, in the port of the citations transform (markup-carve/carve-rs#4834).
+
+## Engine gaps from the verse whitespace ruling of 25 November (#6762)
+
+The ruling on #6762 has a line block keep the whitespace of its lines as 0.1 did (C2-H-043): the leading run and every inner run of two or more columns are written as `&nbsp;`, one per column, a tab advancing to the next multiple of 4 from the start of its text node. Clause cases CC-002 (changed) and CC-2143 to CC-2145. Measured on `carve-js` `next2` `ba51e9e5`: CC-002, CC-2143, CC-2144 and CC-2145 fail, since it writes the tabs and runs as they stand.
+
+- All three engines: write the runs of C2-H-043 in a line block.
+- `carve-js`: `carve upgrade` stops the U-265 rewrite to `Roses\ \ are red`.
