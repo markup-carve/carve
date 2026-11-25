@@ -3962,6 +3962,20 @@ See </#Intro>.
 ```
 :::
 
+**[U-443](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-24-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An indented line below an abbreviation definition, `*[A]: B`, then `  x`
+
+::: compare no-render
+```text
+*[A]: B
+  x
+```
+```crv
+*[A]: B
+
+x
+```
+:::
+
 ## Footnotes {#footnotes}
 
 A footnote body owns only its indented continuation, so an unindented line after it starts a new block (C2-B-081, C2-B-087). A footnote mark inside link text is written after the link anchor (C2-H-088).

@@ -75,7 +75,7 @@
       "key": "links",
       "title": "Links, references and definitions",
       "why": "Definitions stand at column 0 outside quotes and items (C2-B-081), and a duplicate definition no longer replaces the first one. Reference labels may wrap across a line break, so hard-wrapping prose no longer turns a reference into literal brackets ([#1092](https://github.com/markup-carve/carve/issues/1092)).",
-      "rows": ["U-038", "U-039", "U-040", "U-041", "U-075", "U-131", "U-132", "U-134", "U-158", "U-161", "U-164", "U-166", "U-171", "U-175", "U-187", "U-206", "U-221", "U-234", "U-235", "U-280", "U-281", "U-284", "U-285", "U-286", "U-340", "U-367", "U-371", "U-376", "U-429"]
+      "rows": ["U-038", "U-039", "U-040", "U-041", "U-075", "U-131", "U-132", "U-134", "U-158", "U-161", "U-164", "U-166", "U-171", "U-175", "U-187", "U-206", "U-221", "U-234", "U-235", "U-280", "U-281", "U-284", "U-285", "U-286", "U-340", "U-367", "U-371", "U-376", "U-429", "U-443"]
     },
     {
       "key": "footnotes",

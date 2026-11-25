@@ -460,6 +460,7 @@ Mark's ruling on #6508 makes the caption and the term labels like the heading (C
 The follow-up ruling on #6507 ends an abbreviation definition at every indented line that ends a heading continuation (C2-B-154, C2-B-234): a fence line, a table row, a thematic break or a region marker line starts its block, and only text lines continue the expansion. Example syntax-blocks-294, clause cases CC-1868 to CC-1879. Measured on `carve-js` `next2` `383040ef`, which reads every definition as one line: CC-1868 to CC-1875 pass and pin the end of the expansion for the port of #6507; CC-1876 to CC-1879 fail.
 
 - All three engines: end the expansion of an abbreviation definition at an indented fence line, table row, thematic break or region marker line, and continue it on every other indented line (syntax-blocks-294, CC-1868 to CC-1879).
+- carve-js `upgrade`: U-443 (#6717) writes a blank line between an abbreviation definition and an indented line 0.1 read as a paragraph. Clause cases CC-2105 and CC-2106 pin the spelling.
 
 The same ruling adds the hint `link-definition-indented-line` (C2-B-083): an indented line below a link definition or its tail that is neither a title nor an attribute block is the next block, so a destination never continues on the next line. Example syntax-blocks-295, clause cases CC-1880 to CC-1889 and CC-1914 to CC-1916. Measured on `carve-js` `next2` `383040ef` with the data rows of this change: every case passes except CC-1883, whose tail line `carve-js` does not take yet.
 
