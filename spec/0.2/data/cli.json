@@ -363,6 +363,18 @@
       ]
     },
     {
+      "name": "list-table",
+      "commands": [
+        "import"
+      ],
+      "kind": "switch",
+      "option": "listTable",
+      "clauses": [
+        "C2-T-010",
+        "C2-M-112"
+      ]
+    },
+    {
       "name": "max-render-losses",
       "commands": [
         "import",
