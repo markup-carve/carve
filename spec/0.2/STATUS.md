@@ -614,3 +614,10 @@ The auto-ruling on #6691 keeps the 0.1 order (PART 9 section 5 T6) for continuat
 EXT-105 and EXT-106 checked only the start of the first heading, so an engine that still expanded a reference inside a copied title passed them (#6540). Both now expect the whole document, as EXT-104 does. No clause changes: the reference inside the copy stays a reference (C2-X-070), inside link text it writes its generated plain text (C2-H-081, C2-H-096), and that is the plain text of the heading untrimmed (C2-H-143), so the copy of `Ref </#a>` writes `Ref Ref ` with a trailing space. Measured on `carve-js` `next2` `252cfc09` and `carve-php` `next2` `7bfa56f8`: both trim that text and fail EXT-105 and EXT-106. `carve-rs` `next2` `fb77a058` passes both.
 
 - `carve-js` and `carve-php`: write the untrimmed plain text of a reference inside a copied title (C2-X-070, EXT-105 and EXT-106).
+
+## Engine gaps from the wrap column ruling of 25 November (#6712)
+
+Mark's ruling on #6712 (option 1) adds `col` to the wraps of a cell that covers more than one column, the index of the covered column that holds the fragment, counted from the cell's own column (C2-L-020), on every wrap of such a cell and sorted after `line` and `row` (C2-L-048). The writer writes each fragment under its column on its line (C2-W-067). Clause cases CC-2090 to CC-2093, layout fixtures `layout-wrap-columns` and `unsorted-layout-wrap-columns`. Measured on `carve-js` `next2` `6fb89a38`, `carve-php` `next2` `2d16d069` and `carve-rs` `next2` `6d42c38a`: no engine records `col`, so all four cases fail in each.
+
+- All three engines: record `col` on the wraps of a cell with `colspan` above 1, read it in the writer, and refuse a sidecar whose wraps are not sorted by `line`, `row` and `col` (CC-2090 to CC-2093).
+- `carve-rs`: also record the wrap of every fragment and the range of such a cell (carve-rs#4805).
