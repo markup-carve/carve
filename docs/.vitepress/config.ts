@@ -6,7 +6,7 @@ import container from 'markdown-it-container'
 import { carveMarkdown } from '@markup-carve/carve-grammars/shiki'
 import carve from '@markup-carve/vite-plugin-carve'
 // @ts-expect-error - local ESM helper without TS resolution context
-import { carveExtensions } from './carve-extensions.js'
+import { carveExtensions, carveRenderers } from './carve-extensions.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const generatedExamplesFile = resolve(__dirname, 'generated-examples.json')
@@ -63,7 +63,7 @@ export default defineConfig({
   vite: {
     // Render build-time .crv imports with the full extension set too, so
     // dogfooded demos match the Playground's all-extensions-on rendering.
-    plugins: [carve({ render: { extensions: carveExtensions() } })],
+    plugins: [carve({ render: { extensions: carveExtensions(), renderers: carveRenderers() } })],
   },
 
   markdown: {

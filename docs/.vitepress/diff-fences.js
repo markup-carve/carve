@@ -8,9 +8,8 @@ export function isDiffPre(pre) {
   return parent?.tagName === 'FIGURE' && parent.classList.contains('diff')
 }
 
-/** True when an AST `code_block` is a diff fence, given its parent node (a figure carries the classes). */
-export function isDiffCodeBlock(node, parent) {
+/** True when an AST `code_block` is a diff fence; a captioned one keeps its classes in the tree. */
+export function isDiffCodeBlock(node) {
   if (node?.type !== 'code_block') return false
-  if (node.lang?.toLowerCase() === 'diff' || node.attrs?.classes?.includes('diff')) return true
-  return parent?.type === 'figure' && parent.target === node && parent.attrs?.classes?.includes('diff') === true
+  return node.syntax?.toLowerCase() === 'diff' || node.attrs?.classes?.includes('diff') === true
 }

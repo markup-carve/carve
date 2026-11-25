@@ -95,16 +95,19 @@ function diffMarkerRanges(text: string, doc: EditorState['doc'], ast: unknown): 
     }
     const node = value as {
       type?: string
-      lang?: string
+      syntax?: string
       attrs?: { classes?: string[] }
-      content?: string
+      value?: string
       pos?: { startLine?: number; endLine?: number }
     }
-    if (isDiffCodeBlock(node, parent) && node.pos?.startLine && node.content) {
-      node.content.split('\n').forEach((contentLine, index) => {
+    if (isDiffCodeBlock(node) && node.pos?.startLine && node.value) {
+      // The node starts at its attribute line, when it has one, not at the fence.
+      let opener = node.pos.startLine
+      while (opener < doc.lines && !/^[ \t>]*(?:`{3,}|~{3,})/.test(doc.line(opener).text)) opener++
+      node.value.split('\n').forEach((contentLine, index) => {
         const marker = contentLine[0]
         if (marker !== '+' && marker !== '-') return
-        const lineNumber = node.pos!.startLine! + index + 1
+        const lineNumber = opener + index + 1
         if (lineNumber > doc.lines) return
         if (node.pos?.endLine && lineNumber >= node.pos.endLine && node.pos.endLine <= doc.lines
           && /^[ \t>]*(?:`{3,}|~{3,})[ \t]*$/.test(doc.line(node.pos.endLine).text)) return

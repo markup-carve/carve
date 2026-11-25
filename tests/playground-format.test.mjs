@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToCarve } from '@markup-carve/carve'
+import { format as carveToCarve } from '@markup-carve/carve'
 import { formatCarve, wasmWriter } from '../docs/.vitepress/playground-format.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
