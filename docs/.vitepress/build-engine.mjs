@@ -6,8 +6,8 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 
-// Ahead of the package pin: definitions continuing on indented lines (carve#6507) landed on carve-js next2 after it.
-const ENGINE_REVISION = 'a333bbc52fef189ff67d70b57d735599c3ef8fdd'
+// Same commit as the @markup-carve/carve package pin.
+const ENGINE_REVISION = 'a5a7bbd2c474873b82c3cc01bda2e6948adb3473'
 
 const checkout = resolve(process.argv[2] ?? '../carve-js')
 const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: checkout, encoding: 'utf8' }).trim()

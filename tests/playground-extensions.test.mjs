@@ -15,7 +15,7 @@
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { carveToHtml } from '@markup-carve/carve'
+import { render as carveToHtml } from '@markup-carve/carve'
 import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 import { createHighlighter } from 'shiki'
 import {

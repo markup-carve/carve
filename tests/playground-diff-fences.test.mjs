@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { carveToHtml, parse } from '@markup-carve/carve'
+import { render as carveToHtml, parse } from '@markup-carve/carve'
 import { isDiffCodeBlock, isDiffPre } from '../docs/.vitepress/diff-fences.js'
 
 function element(tagName, className = '', parentElement = null) {
@@ -13,7 +13,7 @@ function diffBlocks(source) {
   const visit = (value, parent) => {
     if (value === null || typeof value !== 'object') return
     if (Array.isArray(value)) return value.forEach((item) => visit(item, parent))
-    if (isDiffCodeBlock(value, parent)) found.push(value.content)
+    if (isDiffCodeBlock(value, parent)) found.push(value.value)
     for (const [key, child] of Object.entries(value)) {
       if (key !== 'pos' && key !== 'attrs') visit(child, value)
     }

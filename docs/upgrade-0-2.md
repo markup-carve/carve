@@ -1492,11 +1492,10 @@ let x = 1
 >
 ^ p
 ```
-<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 >
 
-^ p
+\^ p
 ```
 :::
 
@@ -1576,7 +1575,6 @@ Tool: Review.
 ```text
 |?v |
 ```
-<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 |{?v} |
 ```
@@ -2006,7 +2004,6 @@ C2-I-047 pairs slash delimiters at a different boundary after raw HTML is escape
 ```text
 an _a=b_ word
 ```
-<!-- carve-sample {"skip":"the carve-js build the docs pin refuses to write this source; carve-js next2 b967be5 writes it (CC-2021)"} -->
 ```crv
 an {_a\=b_} word
 ```
@@ -2019,7 +2016,7 @@ an {_a\=b_} word
 /This /does not/ nest/
 ```
 ```crv
-/This \/does not/ nest/
+{/This /does not/} nest/
 ```
 :::
 
@@ -2177,12 +2174,11 @@ more term text
 ^ first
 ^ second
 ```
-<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 | a | b |
 ^ first
 
-^ second
+\^ second
 ```
 :::
 
@@ -2383,7 +2379,7 @@ x^\[]
 <!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
 ```crv
 \![a][nope]
-^ cap
+\^ cap
 ```
 :::
 
@@ -2416,10 +2412,9 @@ d[\^]{}
 > a
  ^ cap
 ```
-<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 > a
-> ^ cap
+> \^ cap
 ```
 :::
 
@@ -4121,12 +4116,11 @@ See[^f]
 
 [^f]
 ```
-<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ```crv
 [^f]: :: t
       : | a |
 
-^ cap
+\^ cap
 
 [^f]
 ```
@@ -4200,7 +4194,6 @@ x[^1]
 
 after
 ````
-<!-- carve-sample {"lint":"canonical fmt output that 0.2 lint reports, carve#6585"} -->
 ````crv
 x[^1]
 
@@ -4774,7 +4767,7 @@ Tool: Review references in the selected lines.
 ```crv
 {{ a.txt @code }}
 
-^ cap
+\^ cap
 ```
 :::
 

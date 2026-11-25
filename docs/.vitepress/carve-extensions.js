@@ -1,4 +1,4 @@
-// Compatibility list for the 0.1 Vite plugin still configured in config.ts.
+// Extension list for the Vite plugin configured in config.ts.
 // The 0.2 Playground and build-time snippet call renderDocsCarve below, so
 // neither consumes this list's rendered HTML. The plugin only supplies the
 // source of the two imported .crv examples.
@@ -13,6 +13,7 @@
 // The extension objects are imported from the pinned `@markup-carve/carve`
 // dependency (see package.json) so they come from the same Carve build the
 // Playground renders with.
+import { tabsExtensions } from '@markup-carve/carve'
 import {
   details,
   mermaid,
@@ -22,14 +23,14 @@ import {
   wikilinks,
   autolink,
   codeGroup,
-  tabs,
   listTable,
   headingPermalinks,
   citations,
   externalLinks,
-} from '@markup-carve/carve'
+  standardTabsRenderer,
+} from '@markup-carve/carve/extensions'
 
-import * as lib from '@markup-carve/carve'
+import * as lib from '@markup-carve/carve/extensions'
 import { render as renderEngine } from './engine.js'
 
 // Build-time snippets use the 0.2 renderer. The legacy extension list below
@@ -77,7 +78,6 @@ const EXCLUDED = {
 
   // 2. Need config / no zero-config visible effect.
   defaultAttributes: 'needs per-document default-attribute config',
-  headingLevelShift: 'removed in 0.2, replaced by the core render option headingShift (C2-H-208); listed while the 0.1 package pin exports it',
   headingReference: 'needs config / overlaps core cross-references',
   tabNormalize: 'invisible whitespace transform, nothing to show',
   glossary: 'needs a ::: glossary definition block plus :term[…] uses, nothing to show zero-config',
@@ -90,6 +90,11 @@ const EXCLUDED = {
   // Classified AHEAD of the pin: carve-js main exports semanticSpan, 0.1.3
   // does not. Without this entry the guard fires the moment the pin moves.
   semanticSpan: 'DENY: consumes samp/var/cite/dfn, so the live render of the core semantic-name example would contradict its corpus-pinned HTML (PART 9 sections 9 and 10)',
+  smartQuotes: 'DENY: rewrites the quotes of every example, so the preview would not show what the source spells',
+  inlineFootnotesToParentheses: 'DENY: turns the footnote examples into parentheses',
+  linkPolicy: 'needs a link policy config, nothing to show zero-config',
+  presets: 'bundles the fenced-render presets, each classified on its own below',
+  withExtensions: 'helper that merges bundles, not an extension',
 
   // 3. FencedRender presets with no client library loaded in the docs.
   d2: 'needs the D2 client library, not loaded in the docs',
@@ -111,36 +116,28 @@ const ENABLED_FACTORIES = {
   wikilinks,
   autolink,
   codeGroup,
-  tabs,
+  tabs: () => ({ extensions: tabsExtensions, renderers: { 'carve.tabs': standardTabsRenderer() } }),
   listTable,
   headingPermalinks,
   citations,
   externalLinks,
 }
 
-/** Construct a fresh array of the demo-useful extensions (defaults only). */
+/** Construct a fresh array of the demo-useful extension registrations (defaults only). */
 export function carveExtensions() {
-  return ENABLED.map((name) => ENABLED_FACTORIES[name]())
+  return ENABLED.flatMap((name) => {
+    const entry = ENABLED_FACTORIES[name]()
+    return entry.extensions ?? [entry]
+  })
 }
 
-// The lifecycle hook keys an extension object may carry (extension contract).
-// An object that exposes its `name` plus at least one of these is an extension.
-const HOOK_KEYS = [
-  'matchInline',
-  'matchBlock',
-  'afterParse',
-  'beforeRender',
-  'renderers',
-  'blockRenderers',
-  'inlineRenderers',
-]
+/** The renderers of the enabled bundles, for the `renderers` render option. */
+export function carveRenderers() {
+  return Object.assign({}, ...ENABLED.map((name) => ENABLED_FACTORIES[name]().renderers ?? {}))
+}
 
-/**
- * True when calling `factory()` returns an extension-shaped object: a string
- * `name` plus at least one lifecycle hook. Anything that throws or returns a
- * different shape (parser/renderer helpers, profile classes, ...) is not an
- * extension factory.
- */
+// A 0.2 extension factory returns a bundle (`extensions`, `renderers`) or a
+// registration with a `name` and a `documentTransform`.
 function looksLikeExtensionFactory(factory) {
   if (typeof factory !== 'function') return false
   let result
@@ -150,8 +147,8 @@ function looksLikeExtensionFactory(factory) {
     return false
   }
   if (!result || typeof result !== 'object') return false
-  if (typeof result.name !== 'string' || result.name.length === 0) return false
-  return HOOK_KEYS.some((key) => key in result)
+  if (Array.isArray(result.extensions)) return true
+  return typeof result.name === 'string' && result.name.length > 0 && 'documentTransform' in result
 }
 
 /**
