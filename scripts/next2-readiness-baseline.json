@@ -3,7 +3,7 @@
   "engineHeads": {
     "js": "fdddc7f38fb8ef53ac218351f1340f7ce344d2bc",
     "php": "9a83de62e328f6eae6087c400bbec5e4d3b2cca9",
-    "rs": "e68d59b7844b571b480b5788d81baff21e8ec5ff"
+    "rs": "cd4f5bdd5c6f19ec7a1bb241f52601ed58d80a7d"
   },
   "cases": {
     "clauses/render/CC-001": "9472afcc6dd08244",
@@ -6403,8 +6403,8 @@
   },
   "upgrade": {
     "total": 15100,
-    "blocked": 1217,
-    "mismatches": 1217,
+    "blocked": 1218,
+    "mismatches": 1218,
     "noMappedRow": 118,
     "blockedIds": [
       "pack/attributes-01.json/attributes-000ce3108871",
@@ -6472,6 +6472,7 @@
       "pack/attributes-01.json/attributes-d74aa636bbaf",
       "pack/attributes-01.json/attributes-d74c7cc506ca",
       "pack/attributes-01.json/attributes-d8d263f71839",
+      "pack/attributes-01.json/attributes-d8e3f4f8db72",
       "pack/attributes-01.json/attributes-da33a1d97d64",
       "pack/attributes-01.json/attributes-da4e9abbbe33",
       "pack/attributes-01.json/attributes-e03458e3587f",
@@ -7626,7 +7627,7 @@
       "example/tests/upgrade-replay/examples/edge-cases/1077-a-column-after-an-astral-character-is-one-code-point.md/4"
     ],
     "classes": {
-      "a": 717,
+      "a": 718,
       "b": 41,
       "c": 454,
       "d": 5
@@ -7697,6 +7698,7 @@
       "pack/attributes-01.json/attributes-d74aa636bbaf": "c",
       "pack/attributes-01.json/attributes-d74c7cc506ca": "a",
       "pack/attributes-01.json/attributes-d8d263f71839": "c",
+      "pack/attributes-01.json/attributes-d8e3f4f8db72": "a",
       "pack/attributes-01.json/attributes-da33a1d97d64": "a",
       "pack/attributes-01.json/attributes-da4e9abbbe33": "c",
       "pack/attributes-01.json/attributes-e03458e3587f": "a",

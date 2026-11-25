@@ -47,6 +47,7 @@ fn options(v: &Value, files: Option<&Value>) -> carve::Options {
         o.allow_losses = codes.iter().filter_map(Value::as_str).map(str::to_owned).collect();
     }
     if let Some(n) = v["maxLosses"].as_u64() { o.max_losses = n as usize; }
+    if let Some(n) = v["headingShift"].as_u64() { o.heading_shift = n as u8; }
     if let Some(social) = v["social"].as_object() {
         o.social = Some(carve::options::Social {
             mention_url: social.get("mentionUrl").and_then(Value::as_str).map(str::to_owned),
@@ -271,9 +272,19 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
     })
 }
 
+/// The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209), through the
+/// boundary's `write` to an export target, which validates the options as the export reads them.
+fn export_case(c: &Value) -> Result<Value, Value> {
+    let tree = call(c, "parse", json!({}))?["tree"].take();
+    let opts = c.get("options").cloned().unwrap_or_else(|| json!({}));
+    let r = invoke(json!({"call":"writeWithDiagnostics","target":c["to"],"tree":tree,"options":opts}))?;
+    Ok(json!({"output": r["output"], "diagnostics": r["diagnostics"]}))
+}
+
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
+    if kind == "export" { return export_case(c).unwrap_or_else(|refused| refused); }
     let unhandled_option = c["options"].as_object().is_some_and(|values| values.keys().any(|name|
         !matches!(name.as_str(), "roundtrip" | "rawHtml" | "sections" | "smartTypography"
             | "sourceLines" | "strictLosses" | "headingIds" | "profile" | "mode"
@@ -308,6 +319,11 @@ fn run(c: &Value) -> Value {
         let validation = invoke(json!({"call":"render","source":"",
             "options":{"codeBlockRenderer":c["options"]["codeBlockRenderer"]}}));
         if let Err(refused) = validation { return refused; }
+    }
+    if let Some(shift) = c["options"].get("headingShift").filter(|_| c.get("files").is_some()) {
+        // options() reads the value unchecked, so the boundary refuses it first where the call does.
+        let name = match kind { "parse" | "lint" => kind, "layout" => "parseWithLayout", _ => "render" };
+        if let Err(refused) = invoke(json!({"call":name,"source":"","options":{"headingShift":shift}})) { return refused; }
     }
     let o = options(&c["options"], c.get("files"));
     match kind {
@@ -484,6 +500,30 @@ mod tests {
         }));
         assert_eq!(output["error"], "CarveOptionError");
         assert_eq!(output["path"], "/alignTables");
+    }
+
+    #[test]
+    fn export_passes_a_zero_heading_shift_so_ansi_refuses_it() {
+        let output = run(&json!({"kind":"export", "to":"ansi", "input":"= A\n", "options":{"headingShift":0}}));
+        assert_eq!(output["error"], "CarveOptionError");
+        assert_eq!(output["path"], "/headingShift");
+    }
+
+    #[test]
+    fn invalid_heading_shift_is_refused_not_dropped() {
+        for (kind, shift) in [("export", json!(-1)), ("export", json!(256)), ("render", json!(6)), ("parse", json!(1))] {
+            let output = run(&json!({"kind":kind, "to":"markdown", "input":"= A\n", "files":{},
+                "options":{"headingShift":shift}}));
+            assert_eq!(output["error"], "CarveOptionError", "{kind} {shift}: {output}");
+            assert_eq!(output["path"], "/headingShift", "{kind} {shift}: {output}");
+        }
+    }
+
+    #[test]
+    fn heading_shift_reaches_a_render_with_files() {
+        let output = run(&json!({"kind":"render", "input":"{{ a.crv }}\n", "files":{"a.crv":"= A\n"},
+            "options":{"headingShift":1, "includes":{"file":"main.crv"}}}));
+        assert!(output["html"].as_str().unwrap().contains("<h2>A</h2>"), "{output}");
     }
 
     #[test]

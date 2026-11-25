@@ -275,7 +275,6 @@ Spaces and tabs that a writer would leave at the end of a source line in text ar
 
 `headingShift` is a core render option (C2-H-208, C2-H-209, #6325). Clause cases CC-1505 to CC-1541.
 
-- All three engines: the option, its carrier and its import, the code `heading-shift-above-6`, the Markdown export reading and the plain-text and ANSI refusals are not offered yet (CC-1505 to CC-1541); `headingLevelShift()` is still exported. carve-js leads; carve-php and carve-rs port once it is proven.
 - No clause case pins `headingNumbers` after the shift, since that extension is not in `data/extensions.json`; C2-H-208 states that every transform sees the shifted levels.
 
 ## Engine gaps from the pinned lint cases of 21 November
