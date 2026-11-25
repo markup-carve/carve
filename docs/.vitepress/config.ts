@@ -118,6 +118,35 @@ export default defineConfig({
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] })
 })()`,
     ],
+    // Every deploy replaces the whole site, so the hashed assets of the previous
+    // build 404. Chrome restores a discarded tab from its cached HTML, which still
+    // points at those, and the page stays unhydrated (empty playground editor).
+    // A failed asset reloads the page once, which revalidates the HTML.
+    [
+      'script',
+      {},
+      `(function () {
+  var KEY = 'carve-stale-asset-reload'
+  function reload() {
+    try {
+      if (Date.now() - Number(sessionStorage.getItem(KEY) || 0) < 10000) return false
+      sessionStorage.setItem(KEY, String(Date.now()))
+    } catch (e) {
+      return false
+    }
+    location.reload()
+    return true
+  }
+  window.addEventListener('error', function (e) {
+    var t = e.target
+    var url = t && (t.src || t.href)
+    if (url && (t.tagName === 'SCRIPT' || t.tagName === 'LINK') && url.indexOf('/assets/') !== -1) reload()
+  }, true)
+  window.addEventListener('vite:preloadError', function (e) {
+    if (reload()) e.preventDefault()
+  })
+})()`,
+    ],
     // The unreleased series must not compete with the released docs in search results.
     ...(process.env.VITE_DOCS_SERIES === 'dev' ? [['meta', { name: 'robots', content: 'noindex' }] as [string, Record<string, string>]] : []),
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${docsBase}logo.svg` }],
