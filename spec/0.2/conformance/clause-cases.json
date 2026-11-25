@@ -83414,6 +83414,213 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2081",
+  "clauses": [
+   "C2-B-130",
+   "C2-B-027"
+  ],
+  "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content. C2-B-027: In a task item, the task mark is item text, and the content column is the task mark’s column after the list marker and any spaces before it, regardless of the task state.",
+  "summary": "a line block behind a task box keeps the spaces its line has past the task mark column, not stripped to the opener column (carve#6670)",
+  "input": "- [ ] ::: |\n      a\n  :::",
+  "options": {},
+  "expected": {
+   "html": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled> \n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;a</p>\n    </div>\n  </li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "line_block",
+         "children": [
+          {
+           "type": "line",
+           "children": [
+            {
+             "type": "text",
+             "value": "    a"
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "task": {
+        "mark": " "
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2082",
+  "clauses": [
+   "C2-B-130",
+   "C2-B-027"
+  ],
+  "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content. C2-B-027: In a task item, the task mark is item text, and the content column is the task mark’s column after the list marker and any spaces before it, regardless of the task state.",
+  "summary": "a line block in a div behind a task box keeps the spaces its line has past the task mark column (carve#6670)",
+  "input": "- [ ] ::: note\n      ::: |\n      a\n      :::\n  :::",
+  "options": {},
+  "expected": {
+   "html": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled> \n    <aside class=\"admonition note\" aria-label=\"Note\">\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;&nbsp;&nbsp;a</p>\n      </div>\n    </aside>\n  </li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "admonition",
+         "kind": "note",
+         "children": [
+          {
+           "type": "line_block",
+           "children": [
+            {
+             "type": "line",
+             "children": [
+              {
+               "type": "text",
+               "value": "    a"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "task": {
+        "mark": " "
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2083",
+  "clauses": [
+   "C2-B-130",
+   "C2-B-027"
+  ],
+  "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content. C2-B-027: In a task item, the task mark is item text, and the content column is the task mark’s column after the list marker and any spaces before it, regardless of the task state.",
+  "summary": "a line block behind the task box of a nested item keeps the spaces its line has past that task mark column (carve#6670)",
+  "input": "- a\n  - [ ] ::: |\n        a\n    :::",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li>a\n    <ul class=\"task-list\">\n      <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled> \n        <div class=\"line-block\">\n          <p>&nbsp;&nbsp;&nbsp;&nbsp;a</p>\n        </div>\n      </li>\n    </ul>\n  </li>\n</ul>",
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "type": "list",
+         "marker": {
+          "kind": "bullet",
+          "char": "-"
+         },
+         "spacing": "tight",
+         "children": [
+          {
+           "type": "list_item",
+           "children": [
+            {
+             "type": "line_block",
+             "children": [
+              {
+               "type": "line",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "    a"
+                }
+               ]
+              }
+             ]
+            }
+           ],
+           "task": {
+            "mark": " "
+           }
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2084",
+  "clauses": [
+   "C2-B-130"
+  ],
+  "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content.",
+  "summary": "a top-level line block keeps every space that leads its line, also those under the opener indent (carve#6670)",
+  "input": "  ::: |\n      a\n  :::",
+  "options": {},
+  "expected": {
+   "html": "<div class=\"line-block\">\n  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a</p>\n</div>",
+   "children": [
+    {
+     "type": "line_block",
+     "children": [
+      {
+       "type": "line",
+       "children": [
+        {
+         "type": "text",
+         "value": "      a"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
