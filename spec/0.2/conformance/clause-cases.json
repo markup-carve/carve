@@ -84441,6 +84441,77 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-2105",
+   "clauses": [
+    "C2-B-084"
+   ],
+   "why": "C2-B-084: Every line directly below it that is indented past column 0 continues the expansion",
+   "summary": "the upgrade spelling of a 0.1 paragraph indented below an abbreviation definition (U-443)",
+   "kind": "render",
+   "input": "*[A]: B\n\n  x\n",
+   "options": {},
+   "expected": {
+    "html": "<p>x</p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "B",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2106",
+   "clauses": [
+    "C2-B-084"
+   ],
+   "why": "C2-B-084: Every line directly below it that is indented past column 0 continues the expansion",
+   "summary": "the upgrade spelling of a 0.1 paragraph of two indented lines below an abbreviation definition (U-443)",
+   "kind": "render",
+   "input": "*[A]: B\n\n  x\n  y\n",
+   "options": {},
+   "expected": {
+    "html": "<p>x\ny</p>",
+    "children": [
+     {
+      "type": "abbreviation_def",
+      "expansion": "B",
+      "key": "A",
+      "namespace": "abbr"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "y"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
