@@ -84316,6 +84316,131 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2100",
+   "clauses": [
+    "C2-M-037"
+   ],
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, except that every `<td>` of the `<thead>` that becomes the `table_head` is a `table_cell` with `header` true, since no source spells a head of data cells (C2-B-178); a `<thead>` that holds a `<td>` is reported with one `import-structure-repaired` entry at the `<thead>`.",
+   "summary": "a thead row of td cells imports as the head of header cells, reported once at the thead",
+   "kind": "import",
+   "html": "<table><thead><tr><td>a</td><td>b</td></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>",
+   "options": {},
+   "expected": {
+    "carve": "|= a |= b |\n| 1 | 2 |\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 8
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2101",
+   "clauses": [
+    "C2-M-037"
+   ],
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, except that every `<td>` of the `<thead>` that becomes the `table_head` is a `table_cell` with `header` true, since no source spells a head of data cells (C2-B-178); a `<thead>` that holds a `<td>` is reported with one `import-structure-repaired` entry at the `<thead>`.",
+   "summary": "an empty td corner cell and td column labels in the thead import as header cells",
+   "kind": "import",
+   "html": "<table><thead><tr><td></td><td>Q1</td><td>Q2</td></tr></thead><tbody><tr><th>North</th><td>1</td><td>2</td></tr></tbody></table>",
+   "options": {},
+   "expected": {
+    "carve": "|= |= Q1 |= Q2 |\n|= North | 1 | 2 |\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 8
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2102",
+   "clauses": [
+    "C2-M-037"
+   ],
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, except that every `<td>` of the `<thead>` that becomes the `table_head` is a `table_cell` with `header` true, since no source spells a head of data cells (C2-B-178); a `<thead>` that holds a `<td>` is reported with one `import-structure-repaired` entry at the `<thead>`.",
+   "summary": "an empty td corner cell beside th column labels in the thead imports as a header cell",
+   "kind": "import",
+   "html": "<table><thead><tr><td></td><th>Q1</th><th>Q2</th></tr></thead><tbody><tr><th>North</th><td>1</td><td>2</td></tr></tbody></table>",
+   "options": {},
+   "expected": {
+    "carve": "|= |= Q1 |= Q2 |\n|= North | 1 | 2 |\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 8
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2103",
+   "clauses": [
+    "C2-M-037"
+   ],
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, except that every `<td>` of the `<thead>` that becomes the `table_head` is a `table_cell` with `header` true, since no source spells a head of data cells (C2-B-178); a `<thead>` that holds a `<td>` is reported with one `import-structure-repaired` entry at the `<thead>`.",
+   "summary": "td cells in two rows of one thead give one report entry at the thead",
+   "kind": "import",
+   "html": "<table><thead><tr><td>a</td></tr><tr><td>b</td></tr></thead><tbody><tr><td>1</td></tr></tbody></table>",
+   "options": {},
+   "expected": {
+    "carve": "|= a |\n|= b |\n| 1 |\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 8
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2104",
+   "clauses": [
+    "C2-M-037"
+   ],
+   "why": "C2-M-037: each further `<thead>` or `<tfoot>` is a `table_body` at its place and is reported with `import-structure-repaired`. ... every `<td>` of the `<thead>` that becomes the `table_head` is a `table_cell` with `header` true",
+   "summary": "a td of a further thead, which is read as a body, stays a data cell",
+   "kind": "import",
+   "html": "<table><thead><tr><th>h</th></tr></thead><thead><tr><td>x</td></tr></thead><tbody><tr><td>1</td></tr></tbody></table>",
+   "options": {},
+   "expected": {
+    "carve": "{body-rows=1,1}\n|= h |\n| x |\n| 1 |\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 42
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }

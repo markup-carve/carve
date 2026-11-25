@@ -1187,7 +1187,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "reports": "content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key",
+      "reports": "content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a data cell of the table head, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key",
       "clauses": ["C2-M-034", "C2-M-036", "C2-M-037", "C2-M-039", "C2-M-041", "C2-M-048", "C2-M-061", "C2-M-069", "C2-M-070"]
     },
     {
