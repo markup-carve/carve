@@ -85328,6 +85328,778 @@
     "stderrCategory": "usage"
    },
    "from": []
+  },
+  {
+   "id": "CC-2130",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-015",
+    "C2-B-069"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "a bullet indented past the term mark in an item ends the term and opens a nested list, as below a heading",
+   "kind": "render",
+   "input": "- :: t\n     - x\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n    <ul>\n      <li>x</li>\n    </ul>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "definition_list",
+          "children": [
+           {
+            "type": "definition_term",
+            "children": [
+             {
+              "type": "text",
+              "value": "t"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "bullet",
+           "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2131",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-015",
+    "C2-B-069"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "an ordered marker of value 1 indented past the term mark in an ordered item ends the term and opens a nested list",
+   "kind": "render",
+   "input": "1. :: t\n      1. x\n",
+   "options": {},
+   "expected": {
+    "html": "<ol>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n    <ol>\n      <li>x</li>\n    </ol>\n  </li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "definition_list",
+          "children": [
+           {
+            "type": "definition_term",
+            "children": [
+             {
+              "type": "text",
+              "value": "t"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "ordered",
+           "style": "1",
+           "delimiter": "."
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2132",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-015",
+    "C2-B-069"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "a bullet indented past the term mark in a footnote body ends the term and opens a nested list",
+   "kind": "render",
+   "input": "a[^1]\n\n[^1]: :: t\n       - x\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <dl>\n        <dt>t</dt>\n      </dl>\n      <ul>\n        <li>x</li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "definition_list",
+        "children": [
+         {
+          "type": "definition_term",
+          "children": [
+           {
+            "type": "text",
+            "value": "t"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2133",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-015",
+    "C2-B-003"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "a bullet indented past the term mark in an item inside a quote ends the term and opens a nested list",
+   "kind": "render",
+   "input": "> - :: t\n>      - x\n",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <ul>\n    <li>\n      <dl>\n        <dt>t</dt>\n      </dl>\n      <ul>\n        <li>x</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "definition_list",
+            "children": [
+             {
+              "type": "definition_term",
+              "children": [
+               {
+                "type": "text",
+                "value": "t"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "x"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2134",
+   "clauses": [
+    "C2-B-015",
+    "C2-B-234",
+    "C2-B-024"
+   ],
+   "why": "C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "near miss: an ordered marker of another value indented past the term mark in an item stays term text",
+   "kind": "render",
+   "input": "- :: t\n     2. x\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t\n2. x</dt>\n    </dl>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "definition_list",
+          "children": [
+           {
+            "type": "definition_term",
+            "children": [
+             {
+              "type": "text",
+              "value": "t"
+             },
+             {
+              "type": "soft_break"
+             },
+             {
+              "type": "text",
+              "value": "2. x"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2135",
+   "clauses": [
+    "C2-B-235",
+    "C2-B-015",
+    "C2-B-234"
+   ],
+   "why": "C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count, as C2-B-020 limits interrupters (b) and (c) for quotes. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "near miss: a bullet below a term in a div inside an item stays term text, since the item marker outside the div does not count",
+   "kind": "render",
+   "input": "- ::::\n  :: t\n     - x\n  ::::\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div>\n      <dl>\n        <dt>t\n- x</dt>\n      </dl>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "div",
+          "children": [
+           {
+            "type": "definition_list",
+            "children": [
+             {
+              "type": "definition_term",
+              "children": [
+               {
+                "type": "text",
+                "value": "t"
+               },
+               {
+                "type": "soft_break"
+               },
+               {
+                "type": "text",
+                "value": "- x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2136",
+   "clauses": [
+    "C2-B-069",
+    "C2-B-071",
+    "C2-B-015"
+   ],
+   "why": "C2-B-069: A line that is not indented past the mark ends the term, and because a term owns no lines it closes the list unless it is a description line or a term line at the list's column (C2-B-071). C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "control: a bullet at the description list's column below a term in an item closes the list and opens a nested list",
+   "kind": "render",
+   "input": "- :: t\n  - x\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n    <ul>\n      <li>x</li>\n    </ul>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "definition_list",
+          "children": [
+           {
+            "type": "definition_term",
+            "children": [
+             {
+              "type": "text",
+              "value": "t"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "bullet",
+           "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2137",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-015"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker.",
+   "summary": "control: a blank line ends the term and the bullet past the term mark opens a nested list",
+   "kind": "render",
+   "input": "- :: t\n\n     - x\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n    </dl>\n    <ul>\n      <li>x</li>\n    </ul>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "definition_list",
+          "children": [
+           {
+            "type": "definition_term",
+            "children": [
+             {
+              "type": "text",
+              "value": "t"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "bullet",
+           "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2138",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-154",
+    "C2-B-015"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "control: the same bullet below a heading in an item ends the heading and opens a nested list",
+   "kind": "render",
+   "input": "- = t\n     - x\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <h1 id=\"t\">t</h1>\n    <ul>\n      <li>x</li>\n    </ul>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "heading",
+          "level": 1,
+          "children": [
+           {
+            "type": "text",
+            "value": "t"
+           }
+          ],
+          "generatedId": "t"
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "bullet",
+           "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2139",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-148",
+    "C2-B-015"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "control: the same bullet below a caption in an item ends the caption and opens a nested list",
+   "kind": "render",
+   "input": "- ![a](a.png)\n  ^ c\n    - x\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <figure>\n      <img src=\"a.png\" alt=\"a\">\n      <figcaption>c</figcaption>\n    </figure>\n    <ul>\n      <li>x</li>\n    </ul>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "image",
+            "src": "a.png",
+            "alt": "a"
+           }
+          ],
+          "role": "image",
+          "caption": {
+           "type": "caption",
+           "children": [
+            {
+             "type": "paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "c"
+              }
+             ]
+            }
+           ]
+          }
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "bullet",
+           "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2140",
+   "clauses": [
+    "C2-B-234",
+    "C2-B-015",
+    "C2-B-022"
+   ],
+   "why": "C2-B-234: Each such line is tested in this order: ownership first, as for every line (C2-B-025, C2-B-026), with the column counted behind the marks of the open quotes (C2-B-003); then a comment-only line, which is not seen (C2-B-137); then a blank line, a region marker line (C2-B-137) and every interrupter (C2-B-014 to C2-B-020, C2-B-200), which end the label as they end a paragraph (C2-B-013): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1.",
+   "summary": "a bullet past the term mark in an item opens a list, so it takes no term advice",
+   "kind": "lint",
+   "input": "- :: t\n     - x\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-marker-without-blank-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2141",
+   "clauses": [
+    "C2-B-022",
+    "C2-B-015",
+    "C2-W-106"
+   ],
+   "why": "C2-B-015: A marker indented past an item's, description's or footnote body's marker (inside a div, one opened in the div, C2-B-235), and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. C2-B-022: A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.",
+   "summary": "near miss: an ordered marker of another value past the term mark in an item is term text and takes term advice",
+   "kind": "lint",
+   "input": "- :: t\n     2. x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-marker-without-blank-line",
+      "line": 2,
+      "column": 6,
+      "messageWhen": "the marker is term or description text"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2142",
+   "clauses": [
+    "C2-W-026",
+    "C2-W-024",
+    "C2-B-234"
+   ],
+   "why": "C2-W-026: A continuation line whose text would read as a list marker is kept text by an escape, not by a smaller indent. C2-W-024: A continuation line of a caption or of a term is written at the column of the first character of its text, behind the mark and its space.",
+   "summary": "a term continuation in an item that would read as a bullet keeps its escape at the term text column",
+   "kind": "format",
+   "input": "- :: t\n     \\- x\n",
+   "options": {},
+   "expected": {
+    "carve": "- :: t\n     \\- x\n"
+   },
+   "from": []
   }
  ]
 }
