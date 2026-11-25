@@ -694,3 +694,10 @@ The ruling on #6777 adds C2-M-111: in a line block read from `data-carve-line-bl
 ## Engine gaps from the list-table import ruling of 25 November (#6771)
 
 The ruling on #6771 brings back the 0.1 list-table import as the option `listTable` (C2-M-112, flag `--list-table`, #6100 item 3): a table one of whose cells holds two or more blocks, or one block that is not a paragraph, is imported as a `list-table` div. Clause cases CC-2156 to CC-2164. No engine at `next2` offers it: `carve-js` implements it first, then `carve-php` and `carve-rs`.
+
+## Engine gaps from the escape-round ruling of 25 November (#6772)
+
+The ruling on #6772 makes the escape rounds of C2-W-088 read every reference from the tree; the verbatim text of C2-W-075 goes back after them, so `fmt` stays stable beside a verbatim reference (C2-W-003). Clause cases CC-2165 and CC-2166.
+
+- `carve-js`: implements it (carve-js#5632).
+- `carve-php` and `carve-rs`: check their writers against CC-2165 and CC-2166.
