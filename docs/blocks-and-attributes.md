@@ -36,6 +36,32 @@ For a heading, place an attribute line such as `{#overview .lead}` directly abov
 
 An attribute line immediately above its block can attach. A blank line between them prevents attachment. A brace block after inline content can attribute that inline node when the inline rules allow it. See [attribute blocks](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md#attribute-blocks).
 
+## A block with its attribute line and caption
+
+```crv
+{#harbor .wide}
+![Boats in the harbor](harbor.jpg)
+^ The harbor at dawn.
+```
+
+The attribute line, the image and the caption line belong together, so no blank line stands between them. The three lines make one `<figure>`: the image goes inside it, the caption becomes its `<figcaption>`, and the id and class sit on the figure.
+
+```html
+<figure id="harbor" class="wide">
+  <img src="harbor.jpg" alt="Boats in the harbor">
+  <figcaption>The harbor at dawn.</figcaption>
+</figure>
+```
+
+A caption attaches to an image, a table, a code block, a quote, a math block or a figure group. On a quote it names the source:
+
+```crv
+> Measure twice, cut once.
+^ A carpenter's proverb
+```
+
+A blank line breaks the group apart. An attribute line with a blank line below it attaches to nothing, and a caption line after a blank line has no block above it. Both then render as paragraph text, so `{#harbor .wide}` and `^ The harbor at dawn.` show up in the page. `carve lint` reports them as `unattached-block-attribute` and `unattached-caption`. See [captions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#captions) and [attribute lines](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#attribute-lines).
+
 ## Fences and raw content
 
 A backtick fence makes a code block. A colon fence makes a container. A raw fence, such as `` ```=html ``, is explicit and requires the host to allow raw HTML for HTML output. Unclosed fences remain fences and produce a diagnostic. See [fences](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks) and [raw HTML options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
