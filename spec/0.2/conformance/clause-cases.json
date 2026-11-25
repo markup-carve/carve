@@ -85213,6 +85213,34 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2126",
+   "clauses": [
+    "C2-T-034",
+    "C2-T-025",
+    "C2-T-027"
+   ],
+   "why": "C2-T-034: `import` applies C2-T-025 to C2-T-029 to the entries of the importer (C2-M-080) and of the writer C2-T-025: A loss is a render-loss entry of a file whose code is not on the allow list. C2-T-027: An allowed code is neither written on standard error nor in the report.",
+   "summary": "an allowed writer code is no loss, so the import writes the nearest source and exits 0",
+   "kind": "cli",
+   "args": [
+    "import",
+    "--from",
+    "html",
+    "--allow-loss",
+    "field-unspellable",
+    "-"
+   ],
+   "stdin": "<table><tr><td>a</td><td rowspan=\"2\">r</td></tr><tr><td colspan=\"2\">w</td></tr></table>",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "| a | r |\n| w | < |\n",
+    "stderrDiagnostics": [],
+    "stderrCategory": null
+   },
+   "from": []
   }
  ]
 }
