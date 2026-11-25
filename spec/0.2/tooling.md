@@ -30,7 +30,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `write` | a tree, optionally its sidecar, `alignTables`, `extensions` | Carve source | C2-W-001, C2-W-102 |
 | `writeWithDiagnostics` | as `write` | Carve source and the record | C2-W-134 |
 | `lint` | Carve source, `rules`, `platforms`, `upgrade`, `includes`, `extensions`, `headingIds` | the record | C2-W-103, C2-W-109, C2-W-156, C2-N-085, C2-T-042 |
-| `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels`, `adapter` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100, C2-M-102 |
+| `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels`, `adapter`, `listTable` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100, C2-M-102, C2-M-112 |
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
 | `encodeTree` | a tree | its JSON text | C2-A-012, C2-A-217 |
 | `encodeEnvelope` | a tree | the JSON text of its envelope | C2-A-012 |
@@ -262,6 +262,7 @@ This document defines what every engine offers a caller: the library calls and t
 |---|---|---|
 | `--from` | `html` | the input format; required |
 | `--adapter` | `generic`, `tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word`, `google-docs` | the option `adapter` of the importer (C2-M-102) |
+| `--list-table` | switch | the option `listTable` of the importer (C2-M-112) |
 | `--raw-html` | switch | the option `rawHtml` of the importer (C2-M-065, C2-M-066) |
 | `--strict-losses` | switch | the option `strictLosses` of the importer (C2-M-082) |
 | `--report-losses` | path | writes the losses as a diagnostics report (C2-T-021) |

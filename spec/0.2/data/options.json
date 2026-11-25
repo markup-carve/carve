@@ -98,6 +98,14 @@
       "clauses": ["C2-H-091", "C2-H-125", "C2-H-137", "C2-H-155", "C2-M-101"]
     },
     {
+      "name": "listTable",
+      "kind": "import",
+      "read_by": "import",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-137", "C2-M-112"]
+    },
+    {
       "name": "maxLosses",
       "kind": "render",
       "read_by": ["import", "render"],

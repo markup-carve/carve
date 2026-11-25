@@ -46,6 +46,7 @@
         },
         "adapter": { "type": "string" },
         "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+        "listTable": { "type": "boolean" },
         "maxLosses": { "type": "number" },
         "mode": { "type": "string" },
         "normalize": { "type": "boolean" },

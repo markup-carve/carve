@@ -86559,6 +86559,1187 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2156",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: With it on, a table one of whose cells holds two or more blocks, or one block that is not a paragraph, is imported as the list table that `carve.listTable` reads (C2-B-188) ... The div takes, in this order behind the table's attributes, `header-rows` with the number of rows of the `table_head`",
+   "summary": "a cell of two paragraphs makes the table a list table with header rows",
+   "kind": "import",
+   "html": "<table><tr><th>A</th><th>B</th></tr><tr><td><p>x</p><p>y</p></td><td>z</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "A"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "B"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "loose",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "x"
+                 }
+                ]
+               },
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "y"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "z"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ],
+       "keyValues": [
+        [
+         "header-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{header-rows=1}\n::: list-table\n- - A\n  - B\n- - x\n\n    y\n\n  - z\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2157",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: The importer reads the option `listTable`, off by default.",
+   "summary": "without listTable a cell of two paragraphs stays a table cell",
+   "kind": "import",
+   "html": "<table><tr><th>A</th><th>B</th></tr><tr><td><p>x</p><p>y</p></td><td>z</td></tr></table>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "table",
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "A"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "B"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             },
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "z"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2158",
+   "clauses": [
+    "C2-M-112",
+    "C2-M-038"
+   ],
+   "why": "C2-M-112: and every other table as this section states",
+   "summary": "with listTable a table whose cells hold at most one paragraph stays a table",
+   "kind": "import",
+   "html": "<table><tr><td>x</td><td><p>z</p></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "table",
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "z"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2159",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item holds the cell's blocks, a `cell_paragraph` as a `paragraph`",
+   "summary": "a nested list in a cell is the block of its cell item",
+   "kind": "import",
+   "html": "<table><tr><td><ul><li>a</li><li>b<ul><li>c</li></ul></li></ul></td><td>z</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "b"
+                     }
+                    ]
+                   },
+                   {
+                    "type": "list",
+                    "marker": {
+                     "kind": "bullet",
+                     "char": "-"
+                    },
+                    "spacing": "tight",
+                    "children": [
+                     {
+                      "type": "list_item",
+                      "children": [
+                       {
+                        "type": "paragraph",
+                        "children": [
+                         {
+                          "type": "text",
+                          "value": "c"
+                         }
+                        ]
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "z"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - - a\n    - b\n      - c\n  - z\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2160",
+   "clauses": [
+    "C2-M-112",
+    "C2-W-145"
+   ],
+   "why": "C2-M-112: A slot that a span covers holds an item with the text `<` or `^`, placed as C2-W-145 places the marks",
+   "summary": "column and row spans of a list table are span mark items",
+   "kind": "import",
+   "html": "<table><tr><th colspan=\"2\">H</th></tr><tr><td rowspan=\"2\"><p>x</p><p>y</p></td><td>z</td></tr><tr><td>w</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "H"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "<"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "loose",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "x"
+                 }
+                ]
+               },
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "y"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "z"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "^"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "w"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ],
+       "keyValues": [
+        [
+         "header-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{header-rows=1}\n::: list-table\n- - H\n  - <\n- - x\n\n    y\n\n  - z\n- - ^\n  - w\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2161",
+   "clauses": [
+    "C2-M-112",
+    "C2-W-145"
+   ],
+   "why": "C2-M-112: the row span of a cell with both counts above 1 is dropped and reported with `import-structure-repaired`",
+   "summary": "a list table keeps the column span of a cell that spans both ways",
+   "kind": "import",
+   "html": "<table><tr><td rowspan=\"2\" colspan=\"2\"><ul><li>a</li></ul></td><td>b</td></tr><tr><td>c</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "<"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "c"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - - a\n  - <\n  - b\n- - c\n:::\n",
+    "diagnostics": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2162",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: `footer-rows` with the number of rows of the `table_foot` ... A caption that holds one paragraph gives the div its `title`, the inlines of that paragraph.",
+   "summary": "head and foot rows are counts and the caption is the title of the list table",
+   "kind": "import",
+   "html": "<table><caption>Q <em>t</em></caption><thead><tr><th>h</th></tr></thead><tbody><tr><td><ul><li>a</li></ul></td></tr></tbody><tfoot><tr><td>f</td></tr></tfoot></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "title": [
+       {
+        "type": "text",
+        "value": "Q "
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         }
+        ]
+       }
+      ],
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "h"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "f"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ],
+       "keyValues": [
+        [
+         "header-rows",
+         "1"
+        ],
+        [
+         "footer-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{header-rows=1 footer-rows=1}\n::: list-table \"Q /t/\"\n- - h\n- - - a\n- - f\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2163",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: `header-cols` with the smallest number of leading header cells ... A header cell outside those rows and columns takes the attribute `header` with an empty value. ... with its own `align` and `valign`, not resolved backward (C2-M-040), as the attributes of the same names ... a row's attributes",
+   "summary": "header columns, a header cell elsewhere, cell attributes and a dropped row attribute",
+   "kind": "import",
+   "html": "<table class=\"k\"><tr><th>R</th><td><ul><li>a</li></ul></td><td>1</td></tr><tr class=\"r\"><th>S</th><td id=\"c\" style=\"text-align: right;\">b</td><th>T</th></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "R"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "1"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "S"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ],
+              "attrs": {
+               "id": "c",
+               "keyValues": [
+                [
+                 "align",
+                 "right"
+                ]
+               ]
+              }
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "T"
+                 }
+                ]
+               }
+              ],
+              "attrs": {
+               "keyValues": [
+                [
+                 "header",
+                 ""
+                ]
+               ]
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table",
+        "k"
+       ],
+       "keyValues": [
+        [
+         "header-cols",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{.k header-cols=1}\n::: list-table\n- - R\n  - - a\n  - 1\n- - S\n  -{#c align=right} b\n  -{header} T\n:::\n",
+    "diagnostics": [
+     "import-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2164",
+   "clauses": [
+    "C2-M-112",
+    "C2-T-010"
+   ],
+   "why": "C2-T-010: A flag that sets an option is named by the option in lower case with hyphens",
+   "summary": "import --list-table writes a list table",
+   "kind": "cli",
+   "args": [
+    "import",
+    "--from",
+    "html",
+    "--list-table",
+    "-"
+   ],
+   "stdin": "<table><tr><th>A</th><th>B</th></tr><tr><td><p>x</p><p>y</p></td><td>z</td></tr></table>",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "{header-rows=1}\n::: list-table\n- - A\n  - B\n- - x\n\n    y\n\n  - z\n:::\n",
+    "stderrCategory": null
+   },
+   "from": []
   }
  ]
 }

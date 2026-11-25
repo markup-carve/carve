@@ -24,7 +24,7 @@ Conventions:
 
 **C2-M-005** `<head>` and everything in it are dropped and reported once with `import-element-dropped`: the title, `<meta>`, `<link>`, `<base>`, and the scripts and styles of the head. The doctype is dropped and reported in the same way.
 
-**C2-M-100** An import option that changes the imported tree is an option of this document, which every engine offers: `rawHtml` (C2-M-066), `labels` (C2-M-101), `adapter` (C2-M-102) and those that later rulings add. The mapping rows of such an option stand in `data/import-html.json` next to the element rows. What only the command line does with imported files, as importing a directory, is reference tooling (C2-T-003).
+**C2-M-100** An import option that changes the imported tree is an option of this document, which every engine offers: `rawHtml` (C2-M-066), `labels` (C2-M-101), `adapter` (C2-M-102), `listTable` (C2-M-112) and those that later rulings add. The mapping rows of such an option stand in `data/import-html.json` next to the element rows. What only the command line does with imported files, as importing a directory, is reference tooling (C2-T-003).
 
 **C2-M-101** The importer reads `labels` (C2-H-125), the map the HTML was rendered with, a key left out taking its default. An accessible name or text that the renderer writes from a label string, and that equals the string of that key, is generated: it gives no node and no attribute, and the importer reports nothing for it, as for the `aria-label` of an admonition without a title (C2-H-155).
 
@@ -818,6 +818,8 @@ Example 53 (unverified)
 A width above 100 percent is no width of C2-B-212.
 
 Reported: `import-attribute-dropped`.
+
+**C2-M-112** The importer reads the option `listTable`, off by default. With it on, a table one of whose cells holds two or more blocks, or one block that is not a paragraph, is imported as the list table that `carve.listTable` reads (C2-B-188), and every other table as this section states. The list table is a `div` with the class `list-table` before the table's classes and with the table's other attributes. It holds a tight bullet list with one item per row, in the order of the groups, and each item holds a bullet list with one item per cell, loose when one of its items holds more than one block. A cell's item holds the cell's blocks, a `cell_paragraph` as a `paragraph`, and the cell's attributes, with its own `align` and `valign`, not resolved backward (C2-M-040), as the attributes of the same names. A slot that a span covers holds an item with the text `<` or `^`, placed as C2-W-145 places the marks; the row span of a cell with both counts above 1 is dropped and reported with `import-structure-repaired`. The div takes, in this order behind the table's attributes, `header-rows` with the number of rows of the `table_head`, `header-cols` with the smallest number of leading header cells, a covered slot counting as its cell, over the other rows, and `footer-rows` with the number of rows of the `table_foot`, each only when it is above 0. A header cell outside those rows and columns takes the attribute `header` with an empty value. A caption that holds one paragraph gives the div its `title`, the inlines of that paragraph. What a list table has no place for is dropped: a row's attributes, a cell's `scope` and `headerIds`, and a column's width, each reported with `import-attribute-dropped`; another caption, reported with `import-element-dropped`; and the boundary between two bodies, reported with `import-structure-repaired`.
 
 ## Figures
 
@@ -1824,6 +1826,6 @@ The reference names `_ftn1`, the marker anchor of the note, whose nearest block 
 
 ## Counts
 
-**C2-M-099** This document holds 95 clauses: 94 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
+**C2-M-099** This document holds 96 clauses: 95 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.

@@ -690,3 +690,7 @@ The ruling on #6777 adds C2-M-111: in a line block read from `data-carve-line-bl
 
 - `carve-js`: keep a U+00A0 run beside a space or tab (carve-js#5638).
 - `carve-rs`: check its HTML importer against CC-2149 to CC-2155.
+
+## Engine gaps from the list-table import ruling of 25 November (#6771)
+
+The ruling on #6771 brings back the 0.1 list-table import as the option `listTable` (C2-M-112, flag `--list-table`, #6100 item 3): a table one of whose cells holds two or more blocks, or one block that is not a paragraph, is imported as a `list-table` div. Clause cases CC-2156 to CC-2164. No engine at `next2` offers it: `carve-js` implements it first, then `carve-php` and `carve-rs`.

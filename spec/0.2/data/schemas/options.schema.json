@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 options",
-  "description": "The 27 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
+  "description": "The 28 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "options"],
@@ -28,7 +28,7 @@
               { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree", "export-markdown"] },
               { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree", "export-markdown"] } }
             ],
-            "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-H-131). `import` is the HTML importer, which reads `rawHtml` (C2-M-066) and `adapter` (C2-M-102). `export-markdown` is the Markdown export, which reads `headingShift` (C2-H-209)."
+            "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-H-131). `import` is the HTML importer, which reads `rawHtml` (C2-M-066), `adapter` (C2-M-102) and `listTable` (C2-M-112). `export-markdown` is the Markdown export, which reads `headingShift` (C2-H-209)."
           },
           "type": {
             "enum": ["boolean", "count", "enum", "list", "map", "structure"],
@@ -58,7 +58,7 @@
         }
       },
       "minItems": 24,
-      "maxItems": 27
+      "maxItems": 28
     }
   }
 }
