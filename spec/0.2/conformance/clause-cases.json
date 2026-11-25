@@ -84512,6 +84512,50 @@
     ]
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2107",
+  "clauses": [
+   "C2-M-074",
+   "C2-W-117"
+  ],
+  "why": "C2-M-074: A tree that holds a fact the writer has no spelling for in that place, such as blocks in a table cell, a row span the source cannot express or a `dir`, is returned as it stands. The writer reports it with `field-unspellable` or `structure-unspellable` (C2-W-117), in the same record. C2-W-117: No such loss is silent.",
+  "summary": "an imported row span that runs into a column span of the next row is kept and reported, not dropped",
+  "kind": "import",
+  "html": "<table><tr><td>a</td><td rowspan=\"2\">r</td></tr><tr><td colspan=\"2\">w</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "| a | r |\n| w | < |\n",
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/children/0/children/1/rowspan"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2108",
+  "clauses": [
+   "C2-M-074",
+   "C2-W-117"
+  ],
+  "why": "C2-M-074: A tree that holds a fact the writer has no spelling for in that place, such as blocks in a table cell, a row span the source cannot express or a `dir`, is returned as it stands. The writer reports it with `field-unspellable` or `structure-unspellable` (C2-W-117), in the same record. C2-W-117: No such loss is silent.",
+  "summary": "an imported head row span that runs into a column span of the next head row is kept and reported",
+  "kind": "import",
+  "html": "<table><thead><tr><th>a</th><th rowspan=\"2\">r</th></tr><tr><th colspan=\"2\">w</th></tr></thead></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= a |= r |\n|= w |= < |\n",
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/children/0/children/1/rowspan"
+    }
+   ]
+  },
+  "from": []
+ }
  ]
 }
