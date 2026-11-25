@@ -83342,6 +83342,42 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2077",
+  "clauses": [
+   "C2-M-040",
+   "C2-B-211"
+  ],
+  "why": "C2-M-040: A column gives it only on an axis where every column before it gives one too, as an `aligns` or `valigns` list has no empty entry (C2-B-211); the cells of the other columns keep their own marks. C2-B-211: an empty or malformed entry makes the whole value invalid, so that it sets no column.",
+  "summary": "a right-aligned second column of a table with no head keeps the cell mark when the first column has no alignment",
+  "kind": "import",
+  "html": "<table><tbody><tr><td>a</td><td style=\"text-align: right;\">b</td></tr></tbody></table>",
+  "options": {},
+  "expected": {
+   "carve": "| a |{>} b |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2078",
+  "clauses": [
+   "C2-M-040",
+   "C2-B-211"
+  ],
+  "why": "C2-M-040: A column gives it only on an axis where every column before it gives one too, as an `aligns` or `valigns` list has no empty entry (C2-B-211); the cells of the other columns keep their own marks. C2-B-211: an empty or malformed entry makes the whole value invalid, so that it sets no column.",
+  "summary": "each axis on its own: both columns take the right alignment, and the bottom mark stays on its cell",
+  "kind": "import",
+  "html": "<table><tr><td align=\"right\">a</td><td align=\"right\" valign=\"bottom\">b</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{aligns=right,right}\n| a |{?v} b |\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
  }
  ]
 }
