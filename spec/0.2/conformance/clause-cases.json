@@ -86331,6 +86331,234 @@
     "stderrCategory": "usage"
    },
    "from": []
+  },
+  {
+   "id": "CC-2149",
+   "clauses": [
+    "C2-M-111"
+   ],
+   "why": "C2-M-111: In a line block read from `data-carve-line-block` (C2-H-186), a run of U+00A0 in a `text` node of a line, with no space or tab of that node beside it, reads as that many spaces when it leads the line or holds two or more characters: it is the whitespace C2-H-043 writes. C2-M-111: These spaces are content of the line: C2-M-018 does not remove them, and they are not reported.",
+   "summary": "a leading no-break space of a line-block line reads as a space that stays",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>&nbsp;a</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": " a"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\n a\n:::\n",
+    "notReported": [
+     "import-whitespace-normalized"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2150",
+   "clauses": [
+    "C2-M-111"
+   ],
+   "why": "C2-M-111: In a line block read from `data-carve-line-block` (C2-H-186), a run of U+00A0 in a `text` node of a line, with no space or tab of that node beside it, reads as that many spaces when it leads the line or holds two or more characters: it is the whitespace C2-H-043 writes.",
+   "summary": "a run of two no-break spaces inside a line-block line reads as two spaces",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>wide&nbsp;&nbsp;gap</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "wide  gap"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\nwide  gap\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2151",
+   "clauses": [
+    "C2-M-111"
+   ],
+   "why": "C2-M-111: A lone U+00A0 inside the line stays (C2-H-195 row 3), and so does the value of a code span, a math node and a raw node (C2-M-022).",
+   "summary": "a lone no-break space inside a line-block line stays U+00A0",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a&nbsp;b</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na b\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2152",
+   "clauses": [
+    "C2-M-111"
+   ],
+   "why": "C2-M-111: In a line block read from `data-carve-line-block` (C2-H-186), a run of U+00A0 in a `text` node of a line, with no space or tab of that node beside it, reads as that many spaces when it leads the line or holds two or more characters: it is the whitespace C2-H-043 writes.",
+   "summary": "a no-break space run inside emphasis in a line-block line reads as spaces",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p><em>a&nbsp;&nbsp;b</em> c</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "emphasis",
+          "children": [
+           {
+            "type": "text",
+            "value": "a  b"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "value": " c"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\n/a  b/ c\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2153",
+   "clauses": [
+    "C2-M-111"
+   ],
+   "why": "C2-M-111: In a line block read from `data-carve-line-block` (C2-H-186), a run of U+00A0 in a `text` node of a line, with no space or tab of that node beside it, reads as that many spaces when it leads the line or holds two or more characters: it is the whitespace C2-H-043 writes.",
+   "summary": "a no-break space run beside a space in a line-block line stays U+00A0",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a&nbsp;&nbsp; b</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a   b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na   b\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2154",
+   "clauses": [
+    "C2-M-111"
+   ],
+   "why": "C2-M-111: In a line block read from `data-carve-line-block` (C2-H-186), a run of U+00A0 in a `text` node of a line, with no space or tab of that node beside it, reads as that many spaces when it leads the line or holds two or more characters: it is the whitespace C2-H-043 writes.",
+   "summary": "a leading no-break space beside a space in a line-block line stays U+00A0",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>&nbsp; x</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "  x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2155",
+   "clauses": [
+    "C2-M-111",
+    "C2-M-022"
+   ],
+   "why": "C2-M-111: A lone U+00A0 inside the line stays (C2-H-195 row 3), and so does the value of a code span, a math node and a raw node (C2-M-022). C2-M-022: The text of `<pre>` is read verbatim, with no rule of this section, and so is the value of a code span, a math node and a raw node.",
+   "summary": "a no-break space run in a code span of a line-block line stays U+00A0",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p><code>a&nbsp;&nbsp;b</code></p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "code",
+          "value": "a  b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
