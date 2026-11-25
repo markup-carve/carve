@@ -87774,6 +87774,235 @@
     "carve": "^\\[\\/\\`[\\`\\[\\/\\[^\\]\\]][<]\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-2167",
+   "clauses": [
+    "C2-H-195",
+    "C2-I-102"
+   ],
+   "why": "C2-H-195: Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24. C2-I-102: A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line.",
+   "summary": "a space before the hard break of a line-block line keeps the break on import (CC-156, carve#6786)",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a <br>\nb</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         },
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na \\\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2168",
+   "clauses": [
+    "C2-H-195",
+    "C2-A-069"
+   ],
+   "why": "C2-H-195: Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24. C2-A-069: An empty line of the body is a `line` with no children, and it ends a stanza.",
+   "summary": "a line-block line that holds only a hard break keeps it on import, so the stanza stays one (CC-157, carve#6786)",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a<br>\n<br>\nb</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na\n\\\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2169",
+   "clauses": [
+    "C2-H-195",
+    "C2-I-102"
+   ],
+   "why": "C2-H-195: Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24. C2-I-102: A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line.",
+   "summary": "a space after a code span before the hard break of a line-block line keeps the break on import (carve#6786)",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a <code>x</code> <br>\nb</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         },
+         {
+          "type": "code",
+          "value": "x"
+         },
+         {
+          "type": "text",
+          "value": " "
+         },
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na `x` \\\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2170",
+   "clauses": [
+    "C2-H-195",
+    "C2-I-102"
+   ],
+   "why": "C2-H-195: Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24. C2-I-102: A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line.",
+   "summary": "the no-break spaces a tab writes before the hard break of a line-block line come back as spaces and keep the break (carve#6786)",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a&nbsp;&nbsp;&nbsp;<br>\nb</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a   "
+         },
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na   \\\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2171",
+   "clauses": [
+    "C2-H-195"
+   ],
+   "why": "C2-H-195: Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it.",
+   "summary": "the hard break of a line-block line that ends in no whitespace reads as the line end on import (C2-H-195 row 18)",
+   "kind": "import",
+   "html": "<div class=\"line-block\" data-carve-line-block>\n  <p>a<br>\nb</p>\n</div>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "::: |\na\nb\n:::\n"
+   },
+   "from": []
   }
  ]
 }
