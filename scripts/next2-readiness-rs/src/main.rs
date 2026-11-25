@@ -47,6 +47,7 @@ fn options(v: &Value, files: Option<&Value>) -> carve::Options {
         o.allow_losses = codes.iter().filter_map(Value::as_str).map(str::to_owned).collect();
     }
     if let Some(n) = v["maxLosses"].as_u64() { o.max_losses = n as usize; }
+    if let Some(n) = v["headingShift"].as_u64() { o.heading_shift = n as u8; }
     if let Some(social) = v["social"].as_object() {
         o.social = Some(carve::options::Social {
             mention_url: social.get("mentionUrl").and_then(Value::as_str).map(str::to_owned),
@@ -271,9 +272,28 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
     })
 }
 
+/// The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209). A set
+/// `headingShift` reaches the export as `Some(n)`, 0 included, so plain and ANSI refuse it.
+fn export_case(c: &Value, input: &str) -> Value {
+    let refused = |e: carve::api::Error| json!({"accepted":false,"error":e.spec_name(),"message":e.to_string(),"path":e.path()});
+    let Some(target) = c["to"].as_str().and_then(carve::export::Target::from_name) else {
+        return json!({"unsupported":format!("export to {} is not offered", c["to"])});
+    };
+    let tree = match carve::api::parse(input, &carve::api::Options::default()) { Ok(tree) => tree, Err(e) => return refused(e) };
+    let mut eo = carve::export::ExportOptions::default();
+    if let Some(n) = c["options"]["headingShift"].as_u64() { eo.heading_shift = Some(n as u8); }
+    if let Some(b) = c["options"]["smartTypography"].as_bool() { eo.smart_typography = b; }
+    if let Some(b) = c["options"]["strictLosses"].as_bool() { eo.strict_losses = b; }
+    match carve::export::export_to(target, &tree, &eo) {
+        Ok(written) => json!({"output":written.output,"diagnostics":written.diagnostics}),
+        Err(e) => refused(e),
+    }
+}
+
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
+    if kind == "export" { return export_case(c, input); }
     let unhandled_option = c["options"].as_object().is_some_and(|values| values.keys().any(|name|
         !matches!(name.as_str(), "roundtrip" | "rawHtml" | "sections" | "smartTypography"
             | "sourceLines" | "strictLosses" | "headingIds" | "profile" | "mode"
@@ -484,6 +504,20 @@ mod tests {
         }));
         assert_eq!(output["error"], "CarveOptionError");
         assert_eq!(output["path"], "/alignTables");
+    }
+
+    #[test]
+    fn export_passes_a_zero_heading_shift_so_ansi_refuses_it() {
+        let output = run(&json!({"kind":"export", "to":"ansi", "input":"= A\n", "options":{"headingShift":0}}));
+        assert_eq!(output["error"], "CarveOptionError");
+        assert_eq!(output["path"], "/headingShift");
+    }
+
+    #[test]
+    fn heading_shift_reaches_a_render_with_files() {
+        let output = run(&json!({"kind":"render", "input":"{{ a.crv }}\n", "files":{"a.crv":"= A\n"},
+            "options":{"headingShift":1, "includes":{"file":"main.crv"}}}));
+        assert!(output["html"].as_str().unwrap().contains("<h2>A</h2>"), "{output}");
     }
 
     #[test]

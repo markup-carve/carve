@@ -39,7 +39,7 @@ const extensionsOnly = args.has('--extensions-only')
 const isExtension = c => c.area === 'extensions'
 const core = extensionsOnly ? [] : Number.isFinite(limit) ? cases.slice(0, limit) : cases
 const work = [...core, ...extensionCases]
-const expectedFields = new Set(['html', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'diagnosticsOrdered', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed', 'line', 'column', 'applies', 'patch', 'fingerprint'])
+const expectedFields = new Set(['html', 'output', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'diagnosticsOrdered', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed', 'line', 'column', 'applies', 'patch', 'fingerprint'])
 const normalize = value => {
   if (Array.isArray(value)) return value.map(normalize)
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, normalize(v)]))

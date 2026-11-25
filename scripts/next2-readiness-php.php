@@ -315,6 +315,19 @@ function runCase(array $case): array
                     ? ['fingerprint' => Carve2::treeFingerprint(positionlessTree($case['fingerprintOf']))] : [];
                 $tree = Carve2::applyPatch(positionlessTree($source), $case['patch'], $fingerprint);
                 return ['tree' => json_decode(Carve2::encodeTree($tree), true, 4096, JSON_THROW_ON_ERROR)];
+            case 'export':
+                // The Markdown, plain-text and ANSI exports (C2-T-003, C2-H-209).
+                $exporters = [
+                    'markdown' => 'MarkupCarve\\Carve\\Export\\MarkdownExporter',
+                    'plain' => 'MarkupCarve\\Carve\\Export\\PlainTextExporter',
+                    'ansi' => 'MarkupCarve\\Carve\\Export\\AnsiExporter',
+                ];
+                $exporter = $exporters[$case['to'] ?? ''] ?? null;
+                if ($exporter === null || !class_exists($exporter)) {
+                    return ['unsupported' => 'export to ' . ($case['to'] ?? '?') . ' is not offered'];
+                }
+                $result = (new $exporter())->export(Carve2::parse($source, parseOptions($options)), $options);
+                return ['output' => $result->output, 'diagnostics' => findings($result->diagnostics)];
             case 'tree-fixture':
                 return ['accepted' => true, 'tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR)];
             default:
