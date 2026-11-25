@@ -647,3 +647,11 @@ The ruling on #6738 (A) has the importer count a table's `columns` as a parse co
 The ruling on #6746 (A) reads an allowed code as no loss for the writer's entries too (C2-T-025, C2-T-034), so `carve import --allow-loss field-unspellable` writes the nearest source and exits 0 (C2-T-026). Clause case CC-2126; no text changes. carve-rs fixed it in markup-carve/carve-rs#4826; carve-php already did this.
 
 - carve-js: decide `writer-refused` on the entries left after `--allow-loss` (CC-2126).
+
+## Engine gaps from the cite mode ruling of 25 November (#6752)
+
+The ruling on #6752 (option 1) gives the `carve.cite` row the renderer option `mode`, `numbered` or `author-date` with `numbered` the default, so `--extension-options '{"carve.cite":{"mode":"author-date"}}'` reaches it (C2-T-010, C2-X-068). C2-X-068 states the values and the default, as C2-X-056 does for tabs. Clause cases CC-2127 to CC-2129. Measured on `carve-js` `next2` `ba51e9e5`, `carve-php` `next2` `1b55e1f6` and `carve-rs` `next2` `d52b1fbd`: CC-2129 passes in all three, since each refuses every `mode` as an unknown option.
+
+- All three engines: take the `mode` of the `carve.cite` row in `--extension-options` and pass it to the citations renderer (CC-2128).
+- `carve-php` and `carve-rs`: render citations with the standard cite renderer on `render --extensions '["carve.cite"]'`; both write the fallback with `extension-fallback-rendered` (CC-2127).
+- `carve-js`: the library `citations()` takes a `mode` outside the two values without failing (C2-X-068).

@@ -11,9 +11,23 @@
       "props": {},
       "slots": {},
       "clauses": [
-        "C2-X-058"
+        "C2-X-058",
+        "C2-X-068"
       ],
-      "slotOrder": []
+      "slotOrder": [],
+      "rendererOptions": {
+        "mode": {
+          "values": [
+            "numbered",
+            "author-date"
+          ],
+          "default": "numbered",
+          "clauses": [
+            "C2-X-058",
+            "C2-X-068"
+          ]
+        }
+      }
     },
     {
       "name": "carve.codeGroup",

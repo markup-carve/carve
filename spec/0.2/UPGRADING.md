@@ -1281,6 +1281,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | include option `maxWarnings` (default 100) and `suppressedWarnings` | the fixed cap `include_diagnostics` of 100 and `suppressedDiagnostics` (C2-T-024) |
 | `--extension KEY` and `--extensions` of the Rust engine; the tabs, mermaid and details extensions the PHP engine rendered by default | `--extensions` with a JSON list of the standard extension names of `data/extensions.json`, as `--extensions '["carve.tabs","carve.fencedRender.mermaid","carve.details"]'`, on `render`, `fmt`, `lint` and `ast` (C2-T-010); a host extension stays library-only |
 | `--tabs-mode css\|aria` of the Rust engine | `--extension-options '{"carve.tabs":{"mode":"aria"}}'` (C2-T-010, C2-X-056) |
+| `--citation-mode numbered\|author-date` of the Rust engine | `--extension-options '{"carve.cite":{"mode":"author-date"}}'` with `--extensions '["carve.cite"]'` (C2-T-010, C2-X-068) |
 | `-h`, `-V` | `--help`, `--version` |
 
 Not carried over:

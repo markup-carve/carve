@@ -265,7 +265,7 @@ These extensions follow the catalog status of the tabs section. Each claims a co
 
 **C2-X-067** The `glossary` transform writes its definition lists inside the core `<div class="glossary">` wrapper of the directive, which carries the directive's attributes; it does not put those attributes on a list.
 
-**C2-X-068** In `author-date` mode the author and year of a reference entry come from a span around its key in the description term, `:: [doe]{author="Doe" year="2020"}`, since a term takes no attributes in source, or from data the host gives the extension.
+**C2-X-068** In `author-date` mode the author and year of a reference entry come from a span around its key in the description term, `:: [doe]{author="Doe" year="2020"}`, since a term takes no attributes in source, or from data the host gives the extension. The standard cite renderer takes the host option `mode`, `numbered` or `author-date`, with `numbered` the default; creating the renderer with another value fails.
 
 **C2-X-069** A document transform does not see the render option `labels`, so the `index` extension takes the label of its back-links as its own option `backrefLabel`; its default is the default of the label `indexBackref`, `Back to`.
 
