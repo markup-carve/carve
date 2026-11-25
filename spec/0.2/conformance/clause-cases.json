@@ -83621,6 +83621,51 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2085",
+  "clauses": [
+   "C2-H-009"
+  ],
+  "why": "C2-H-009: A generated `style` merged with an authored `style` stands at the place of the authored `style` key, wherever the `align` key stands; without an authored `style`, the `style` of an `align` key stands at the place of the `align` key",
+  "summary": "the merged style stands at the authored style key when align comes first with a key between (carve#6688)",
+  "kind": "render",
+  "input": "{align=center k=v style=\"c: d\"}\nText.\n",
+  "options": {},
+  "expected": {
+   "html": "<p k=\"v\" style=\"c: d; text-align: center;\">Text.</p>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2086",
+  "clauses": [
+   "C2-H-009"
+  ],
+  "why": "C2-H-009: A generated `style` merged with an authored `style` stands at the place of the authored `style` key, wherever the `align` key stands; without an authored `style`, the `style` of an `align` key stands at the place of the `align` key",
+  "summary": "the merged style stands at the authored style key when style comes first with a key between",
+  "kind": "render",
+  "input": "{style=\"c: d\" k=v align=center}\nText.\n",
+  "options": {},
+  "expected": {
+   "html": "<p style=\"c: d; text-align: center;\" k=\"v\">Text.</p>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2087",
+  "clauses": [
+   "C2-H-009"
+  ],
+  "why": "C2-H-009: A generated `style` merged with an authored `style` stands at the place of the authored `style` key, wherever the `align` key stands; without an authored `style`, the `style` of an `align` key stands at the place of the `align` key",
+  "summary": "without an authored style the align style stands at the align key's place",
+  "kind": "render",
+  "input": "{align=center k=v}\nText.\n",
+  "options": {},
+  "expected": {
+   "html": "<p style=\"text-align: center;\" k=\"v\">Text.</p>"
+  },
+  "from": []
  }
  ]
 }
