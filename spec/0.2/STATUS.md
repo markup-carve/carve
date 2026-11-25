@@ -635,3 +635,9 @@ The ruling on #6737 (B) keeps both counts where an imported row span runs into a
 
 - carve-js: report the row span instead of dropping it (CC-2107, CC-2108).
 - carve-php: not measured.
+
+## Engine gaps from the row span column count ruling of 25 November (#6738)
+
+The ruling on #6738 (A) has the importer count a table's `columns` as a parse counts them, with the slots that row spans from above take (C2-M-039, C2-M-068, C2-B-172). C2-M-039 gains the sentence that states the count. Clause cases CC-2109 and CC-2110. Measured on `carve-js` `next2` `d7decb40`: both report `field-unspellable` at `/children/0/columns`, with 2 and 1 columns. The ticket measured `carve-rs` `next2` `1741fa8` reporting the same entry and `carve-php` `next2` `543b9b67` giving 2 columns with no report.
+
+- All three engines: count the columns with the row span slots (CC-2109, CC-2110).

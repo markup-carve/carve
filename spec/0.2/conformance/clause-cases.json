@@ -84710,6 +84710,166 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2109",
+  "clauses": [
+   "C2-M-039",
+   "C2-M-068"
+  ],
+  "why": "C2-M-039: The table's `columns` holds one `table_column` for each column the cells fill, counted as a parse counts the columns of a row with spans (C2-B-172), with the slots that row spans from above take in each row. C2-M-068: The importer returns a tree that the 0.2 reader accepts and that the writer can spell wherever the HTML holds a fact Carve can hold.",
+  "summary": "a row span from above takes its slot in the next row, so a column span there widens the table to three columns",
+  "kind": "import",
+  "html": "<table><tr><td rowspan=\"2\">r</td></tr><tr><td colspan=\"2\">w</td></tr></table>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "r"
+              }
+             ]
+            }
+           ],
+           "rowspan": 2
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "w"
+              }
+             ]
+            }
+           ],
+           "colspan": 2
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ],
+   "carve": "| r |\n| ^ | w | < |\n",
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2110",
+  "clauses": [
+   "C2-M-039",
+   "C2-M-068"
+  ],
+  "why": "C2-M-039: The table's `columns` holds one `table_column` for each column the cells fill, counted as a parse counts the columns of a row with spans (C2-B-172), with the slots that row spans from above take in each row. C2-M-068: The importer returns a tree that the 0.2 reader accepts and that the writer can spell wherever the HTML holds a fact Carve can hold.",
+  "summary": "a row span from above takes its slot in the next row, so a cell there starts in the second column",
+  "kind": "import",
+  "html": "<table><tr><td rowspan=\"2\">r</td></tr><tr><td>w</td></tr></table>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "table",
+     "children": [
+      {
+       "type": "table_body",
+       "children": [
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "r"
+              }
+             ]
+            }
+           ],
+           "rowspan": 2
+          }
+         ]
+        },
+        {
+         "type": "table_row",
+         "children": [
+          {
+           "type": "table_cell",
+           "header": false,
+           "children": [
+            {
+             "type": "cell_paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "w"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "columns": [
+      {
+       "type": "table_column"
+      },
+      {
+       "type": "table_column"
+      }
+     ]
+    }
+   ],
+   "carve": "| r |\n| ^ | w |\n",
+   "diagnostics": []
+  },
+  "from": []
  }
  ]
 }
