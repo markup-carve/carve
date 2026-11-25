@@ -6403,8 +6403,8 @@
   },
   "upgrade": {
     "total": 15100,
-    "blocked": 1217,
-    "mismatches": 1217,
+    "blocked": 1218,
+    "mismatches": 1218,
     "noMappedRow": 118,
     "blockedIds": [
       "pack/attributes-01.json/attributes-000ce3108871",
@@ -6472,6 +6472,7 @@
       "pack/attributes-01.json/attributes-d74aa636bbaf",
       "pack/attributes-01.json/attributes-d74c7cc506ca",
       "pack/attributes-01.json/attributes-d8d263f71839",
+      "pack/attributes-01.json/attributes-d8e3f4f8db72",
       "pack/attributes-01.json/attributes-da33a1d97d64",
       "pack/attributes-01.json/attributes-da4e9abbbe33",
       "pack/attributes-01.json/attributes-e03458e3587f",
@@ -7626,7 +7627,7 @@
       "example/tests/upgrade-replay/examples/edge-cases/1077-a-column-after-an-astral-character-is-one-code-point.md/4"
     ],
     "classes": {
-      "a": 717,
+      "a": 718,
       "b": 41,
       "c": 454,
       "d": 5
@@ -7697,6 +7698,7 @@
       "pack/attributes-01.json/attributes-d74aa636bbaf": "c",
       "pack/attributes-01.json/attributes-d74c7cc506ca": "a",
       "pack/attributes-01.json/attributes-d8d263f71839": "c",
+      "pack/attributes-01.json/attributes-d8e3f4f8db72": "a",
       "pack/attributes-01.json/attributes-da33a1d97d64": "a",
       "pack/attributes-01.json/attributes-da4e9abbbe33": "c",
       "pack/attributes-01.json/attributes-e03458e3587f": "a",
