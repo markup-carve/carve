@@ -1344,6 +1344,8 @@ Reported: `include-unresolved`.
 
 **C2-H-171** When an unexpanded include is written, a path that holds a space, a tab, `#`, `@`, `}`, `"` or `“` stands in double quotes, with a backslash before each `"` and `\` in it, as the writer writes it (C2-B-202, C2-W-058), so the text reads back as the same directive. An option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds. An invalid option is written as the source spelled it (C2-A-181), so `@cols:"a,,b"`, which is no list of names (C2-B-205), stays `@cols:"a,,b"`. A `cols` list of names is written as its names joined by commas in one pair of double quotes; the tree keeps no quotes (C2-A-181). The writer does the same (C2-W-058). A value that starts with a double or a single quote is written in double quotes too, since bare it would read as the start of a quoted value (C2-B-204).
 
+**C2-H-214** A snippet definition renders nothing. A snippet use renders the copy that the expansion put at its place (C2-N-091): an inline use the nodes of the copy, inside a `<span>` that carries the definition's attributes when it has any, and a block use one `<p>` that holds the copy and carries those attributes. A use that was not expanded renders its source spelling `{{ $name }}` as text, a block use inside a `<p>` (C2-N-093). The copy renders as the same nodes elsewhere would: a link in a copy that stands in link text is unwrapped (C2-H-081), and a note mark in it moves behind the outermost link (C2-H-088).
+
 ## Inline elements
 
 **C2-H-072** The inline nodes map to elements as follows.
@@ -1792,7 +1794,7 @@ HTML and *HTML* and `HTML`.
 
 :::
 
-**C2-H-201** One render has a budget for derived text: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the source length in UTF-8 bytes, whichever is more. The source length is the byte length of the source the renderer parsed; for a supplied tree it is the root's `srcByteLength` (C2-A-010), 0 where that is absent, and, for a tree read from JSON text, never more than the byte length of that text; a call given a tree as a value has no such text, and the cap does not apply. Abbreviation nodes written as `<abbr>` (C2-H-098) and resolved cross-references (C2-H-096) draw on the one budget in the order the renderer writes them. An abbreviation costs the UTF-8 byte length of its expansion as the definition holds it, before escaping; a cross-reference costs the byte length of its generated text as written in HTML, after escaping. A node whose cost is more than what remains draws nothing and is written in its plain form: an abbreviation as its term, with no `<abbr>` and no `title`, and a cross-reference as `<a href="#ID">` around its key. A later node that fits what remains still draws on it. The first node of a render that does not fit reports `derived-text-budget` in the render-loss channel, once per render. The source length is an input of the render beside the tree: tree equality skips `srcByteLength` (C2-A-162), so two equal trees with different lengths can render different HTML where the budget binds. A supplied tree without `srcByteLength` has the fixed budget of 1,000,000 bytes, whatever the length of its JSON text. A host may raise neither number. As in 0.1, which reported nothing.
+**C2-H-201** One render has a budget for derived text: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the source length in UTF-8 bytes, whichever is more. The source length is the byte length of the source the renderer parsed; for a supplied tree it is the root's `srcByteLength` (C2-A-010), 0 where that is absent, and, for a tree read from JSON text, never more than the byte length of that text; a call given a tree as a value has no such text, and the cap does not apply. Snippet copies draw on it first, when the expansion admits them, before any document transform (C2-N-094). Abbreviation nodes written as `<abbr>` (C2-H-098) and resolved cross-references (C2-H-096) then draw on what remains, in the order the renderer writes them. An abbreviation costs the UTF-8 byte length of its expansion as the definition holds it, before escaping; a cross-reference costs the byte length of its generated text as written in HTML, after escaping. A node whose cost is more than what remains draws nothing and is written in its plain form: an abbreviation as its term, with no `<abbr>` and no `title`, and a cross-reference as `<a href="#ID">` around its key. A later node that fits what remains still draws on it. The first node of a render that does not fit reports `derived-text-budget` in the render-loss channel, once per render. The source length is an input of the render beside the tree: tree equality skips `srcByteLength` (C2-A-162), so two equal trees with different lengths can render different HTML where the budget binds. A supplied tree without `srcByteLength` has the fixed budget of 1,000,000 bytes, whatever the length of its JSON text. A host may raise neither number. As in 0.1, which reported nothing.
 
 ## Mentions, tags and symbols
 
@@ -1888,7 +1890,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 ## Roundtrip carriers
 
-**C2-H-112** With `roundtrip` on, the renderer adds attributes that carry tree facts HTML has no spelling for, and writes the abbreviation definitions as templates (C2-H-178). The option adds the carriers, the carrier element of a raw span (C2-H-051) and the abbreviation templates, and changes no rendered text. It is off by default.
+**C2-H-112** With `roundtrip` on, the renderer adds attributes that carry tree facts HTML has no spelling for, and writes the abbreviation and snippet definitions as templates (C2-H-178, C2-H-216). The option adds the carriers, the carrier element of a raw span (C2-H-051) and the abbreviation templates, and changes no rendered text. It is off by default.
 
 **C2-H-113** A carrier exists only for a fact the tree holds. A spelling that the sidecar holds has no carrier, and neither has a field that 0.2 deleted.
 
@@ -1919,11 +1921,15 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-div` | `<div>` | a div with no other attribute written, `data-source-line` included | stays |
 | `data-carve-line-block` | `<div>` | a line block | stays |
 | `data-carve-substitution` | `<span>` | a substitution node | goes: a replacement is a `delete` and an `insert` (C2-A-097) |
+| `data-carve-snippet` | the root element of a snippet copy, or a `<span>` around it | an expanded snippet use, its ordinal, mode and name | new in 0.2 (C2-H-215) |
+| `data-carve-snippet-mark` | the reference `<a>` | a note mark moved out of a snippet copy | new in 0.2 (C2-H-215) |
+| `data-carve-snippet-scope` | an element with `data-carve-snippet`, `<template>` | the snippet came from an included file | new in 0.2 (C2-H-215) |
+| `data-carve-snippets` | `<template>` | a run of snippet definitions, as Carve source (C2-H-216) | new in 0.2 (C2-H-216) |
 | `data-carve-src` | none | reserved, never written | stays reserved |
 
 Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data-carve-col-widths` and `data-carve-substitution`.
 
-**C2-H-115** The reserved names are the 19 names of this table that stay, are new or stay reserved: 15 stay, 3 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
+**C2-H-115** The reserved names are the 23 names of this table that stay, are new or stay reserved: 15 stay, 7 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
 
 **C2-H-116** An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. The attribute line of a definition inside an abbreviation template (C2-H-179) is text and not an attribute of an element: it keeps every key it holds, a reserved name included.
 
@@ -1949,7 +1955,7 @@ Reported: `carrier-attribute-dropped`.
 
 **C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form, the declared head count of a delimited table and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023, C2-L-057) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
-**C2-H-120** The HTML importer is part of 0.2.0. It reads the 18 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
+**C2-H-120** The HTML importer is part of 0.2.0. It reads the 22 carriers of C2-H-115, the abbreviation and snippet templates among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
 
 The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
 
@@ -2142,6 +2148,12 @@ A b
 
 Reported: `profile-construct-degraded`.
 
+**C2-H-215** With `roundtrip` on, each expanded snippet use carries `data-carve-snippet` with the value `N:MODE:$NAME`: `N` is the place of the use among the expanded uses of the render in the order the pass admits them, counted from 1 and written without a leading zero, `MODE` is `inline` or `block`, and `NAME` the snippet name. A block use carries it on its `<p>`. An inline use carries it on the one element its copy renders as, when the copy renders as one element and nothing else, the `<span>` of the definition's attributes included; otherwise its copy is enclosed in a `<span>` that carries only the snippet carriers. A note mark that C2-H-088 moves behind a link and out of the element of its use carries `data-carve-snippet-mark="N"`, the `N` of the innermost expanded use whose copy holds its reference. A use whose definition stands in an included file, and the template that holds such a definition (C2-H-216), carry `data-carve-snippet-scope="include"` on the same element. A use that was not expanded carries nothing and renders its text.
+
+**C2-H-216** With `roundtrip` on, each maximal run of consecutive `snippet_definition` nodes in the rendered flow, the children of an expanded include in their place, is written at the place of the run as one `<template data-carve-snippets>`, whose text is the run as the canonical writer spells it (C2-W-159), as C2-H-179 says for the abbreviation template, with one blank line between two definitions. A node of any other type ends the run. A losing duplicate is in the run too.
+
+**C2-H-217** The importer reads the snippet carriers as C2-H-186 states, so Carve HTML rendered with `roundtrip` gives back each expanded use and each definition. An accepted `data-carve-snippet` replaces its element with one `snippet_use` with the name and mode of the value; the content of the element is generated and is not read, carriers inside it included, as for the text of a cross-reference (C2-H-096). A footnote reference `<a>` with an accepted `data-carve-snippet-mark` is dropped and gives no `footnote_ref`; the note it points to is read from the footnote section as usual (C2-H-194). The importer reports `snippet-scope-loss` at each element whose `data-carve-snippet-scope` it accepts, once per element, since the include it names is gone from the HTML: the definition reads back into the importing document. Where a sanitizer removed a carrier, the importer reads the HTML that is left and makes no use from it.
+
 ## Import
 
 **C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 19 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as `import-html.md` maps that element (C2-M-007). Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
@@ -2176,6 +2188,10 @@ Reported: `profile-construct-degraded`.
 | `data-carve-caption-number` | a `<span>` inside a `<figcaption>` or a `<caption>` | a `caption_number` node in place of the span; the digits it holds are not read | the span holds an element or carries another attribute |
 | `data-carve-div` | `<div>` | a `div` | the `<div>` carries another attribute, since the renderer writes the carrier only on a div with none (C2-H-114); it carries `data-carve-line-block` |
 | `data-carve-line-block` | `<div>` with the class `line-block` | a `line_block`: each `<p>` is a stanza, each `<br>` ends a `line`, and an empty `line` stands between two stanzas (C2-A-069, C2-H-043) | the `<div>` lacks the class or holds anything but `<p>` children; it carries `data-carve-div` |
+| `data-carve-snippet` | an element that stands as one inline node in inline content, or a `<p>` that stands as a block | one `snippet_use` in place of the element, whose `name` and `mode` are those of the value (C2-H-217) | the value is not `N:MODE:$NAME` with `N` a decimal integer of at least 1 without a leading zero, `MODE` `inline` or `block` and `NAME` a snippet name (C2-B-236); `MODE` is `block` on an element in inline content or `inline` on a `<p>` that stands as a block; another accepted carrier of the render holds the same `N`; the element stands inside an element whose `data-carve-snippet` is read |
+| `data-carve-snippet-mark` | a footnote reference `<a>` (C2-H-088) | the reference is dropped (C2-H-217) | the value is no `N` of an accepted `data-carve-snippet` |
+| `data-carve-snippet-scope` | an element whose `data-carve-snippet` is read; a `<template data-carve-snippets>` that is read | `snippet-scope-loss` at the element (C2-H-217) | the value is not `include` |
+| `data-carve-snippets` | `<template>` at the top level of the flow, as `data-carve-abbreviations` (C2-H-187) | the `snippet_definition` nodes of its text, at its place: its text is read as C2-H-187 reads the abbreviation template | it stands elsewhere; its template contents hold anything but text; its text gives a block that is no snippet definition |
 | `data-carve-src` | any | none: the name is removed | never: no fact is read from it |
 
 **C2-H-187** A `<template data-carve-abbreviations>` is read only at the top level of the flow: as a child of the fragment, or of a `<section>` that the importer reads as the section of a heading (C2-H-026). Its text is parsed with the Carve block reader as a document of its own, with no second grammar. When that document holds at least one block and every block is an `abbreviation_def`, those nodes are inserted, in their order, among the children of the document at the place of the template, with their attributes and without `pos` (C2-A-159). Otherwise the template gives no definition.
@@ -2821,18 +2837,18 @@ A paged renderer or a print stylesheet starts a new page at that break, for exam
 | Code and raw content | 14 | 0 | 1 | 1 |
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
-| Comments, frontmatter and definitions | 5 | 0 | 1 | 3 |
+| Comments, frontmatter and definitions | 6 | 0 | 1 | 3 |
 | Inline elements | 9 | 0 | 1 | 2 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 9 | 0 | 3 | 4 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 1 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 3 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
-| Roundtrip carriers | 14 | 0 | 0 | 8 |
+| Roundtrip carriers | 17 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
 | Options | 29 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 3 |
-| **Total** | **205** | **6** | **33** | **53** |
+| **Total** | **209** | **6** | **33** | **53** |
 
-The document has 205 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 209 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.

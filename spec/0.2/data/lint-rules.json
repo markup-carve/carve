@@ -1897,8 +1897,8 @@
       "status": "new",
       "messages": ["This snippet came from an included file. The include is gone from the HTML, so the imported snippet resolves in this document only."],
       "message_origin": "design",
-      "reports": "an element whose `data-carve-snippet-scope` the importer reads, once per element (C2-H-215)",
-      "clauses": ["C2-H-215"]
+      "reports": "an element whose `data-carve-snippet-scope` the importer reads, once per element (C2-H-217)",
+      "clauses": ["C2-H-217"]
     },
     {
       "id": "snippet-unexpanded-transform",
