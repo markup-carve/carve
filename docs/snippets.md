@@ -2,9 +2,9 @@
 
 Carve 0.2 lets you name a short piece of inline text once and repeat it anywhere in the document. Define it on one line with `{$name}:` and use it with <code v-pre>{{ $name }}</code>.
 
-<!-- carve-sample {"skip":"The pinned engine has not yet implemented snippets."} -->
 ````carve
 {$ver}: 0.2.3
+
 {$rel .badge}: [release notes](https://github.com/markup-carve/carve/releases/v0.2.3)
 
 Install {{ $ver }} today. Read the {{ $rel }}.

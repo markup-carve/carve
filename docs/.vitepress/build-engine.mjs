@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 
 // Same commit as the @markup-carve/carve package pin.
-const ENGINE_REVISION = 'a5a7bbd2c474873b82c3cc01bda2e6948adb3473'
+const ENGINE_REVISION = 'ecd06647f26f3755b1e65faa48aa063abe257b62'
 
 const checkout = resolve(process.argv[2] ?? '../carve-js')
 const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: checkout, encoding: 'utf8' }).trim()

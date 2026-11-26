@@ -1,7 +1,7 @@
 // Every example the playground offers is canonical 0.2 source and lints clean.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { format, lint } from '../docs/.vitepress/engine.js'
+import { format, lint, render } from '../docs/.vitepress/engine.js'
 import { SNIPPETS } from '../docs/.vitepress/examples/snippets.js'
 
 test('the picker offers six to ten examples with unique ids', () => {
@@ -15,3 +15,11 @@ for (const snippet of SNIPPETS) {
     assert.deepEqual(lint(snippet.source), [])
   })
 }
+
+test('the snippets example expands its uses in the playground engine', () => {
+  const snippet = SNIPPETS.find((s) => s.id === 'snippets')
+  assert.equal(
+    render(snippet.source).trim(),
+    '<p>Carve 0.2 repeats named text. Read the <span class="badge"><a href="https://github.com/markup-carve/carve">release notes</a></span>.</p>',
+  )
+})
