@@ -817,3 +817,11 @@ Mark's option A on #6812 ships the audit finding on #6099 in 0.2.0. The auto-rul
 - `carve-js`: reads `9007199254740993`, `12345678901234567890`, `0.10000000000000000001` and `2e-324` as rounded values. Failing: CC-2313 to CC-2316, CC-2318, CC-2319.
 - `carve-php`: the same, and writes `1e400` as `null`. Failing: CC-2313 to CC-2319.
 - `carve-rs`: the same as `carve-js`, refuses `1e400` with no path, and writes `1.0` and `-0` as `1.0` and `-0.0`. Failing: CC-2313 to CC-2319 (CC-2317 on the path), CC-2321, CC-2322.
+
+## Engine gaps from the provisional key ruling of 26 November (#6813)
+
+The ruling on #6813 adds a sentence to C2-W-075: a reference whose key differs only in a form the rounds of C2-W-088 read for a time incurs no loss when the whole output, after the rounds, their fallback and the verbatim restoration, reads back as the tree. 0.1.17 and 0.1.18 write such a document unchanged. Clause cases CC-2323 (122 lines of collapsed references past the C2-I-118 cap, no loss) and CC-2324 (121 lines, with the output bytes). Measured on 26 November: `carve-php` `next2` `8fd0c4af` and a `carve-rs` `next2` release build pass CC-2324, and so does `carve-js` with its key-loss report deferred; `carve-js` `next2` `d4331d7e` reports `field-unspellable` on 14 keys there. On CC-2323 `carve-js` reports 15 keys, `carve-php` refuses with `writer-refused` and `carve-rs` reports `structure-unspellable` and refuses. In `carve-js` the rounds at 122 lines escape openers outside the references that the verbatim restoration does not read back with, so deferring the report alone does not pass CC-2323 there.
+
+- `carve-js`: defer the key-loss report of the rounds and check the final output (CC-2323, CC-2324).
+- `carve-php`: end the repair cycle and check the final output (CC-2323).
+- `carve-rs`: defer the structure-loss report and check the final output (CC-2323).
