@@ -105,7 +105,8 @@ function diagMatches(d, wanted, c) {
   const source = d.file ? c.files?.[d.file]?.text : (c.html ?? sourceOf(c))
   const place = diagPlace(d, source)
   for (const key of ['line', 'column', 'endLine', 'endColumn']) if (wanted[key] !== undefined && place[key] !== wanted[key]) return false
-  return messageMatches(d, wanted)
+  // The message is engine text (C2-T-020); a case compares it only through messageWhen.
+  return wanted.messageWhen === undefined || messageMatches(d, wanted)
 }
 function compare(c, actual) {
   if (actual?.unsupported) return { status: 'unsupported', fields: [actual.unsupported] }
