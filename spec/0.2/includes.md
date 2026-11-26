@@ -16,9 +16,9 @@ Conventions:
 
 **C2-N-001** Expansion is part of 0.2.0. Every engine that offers the `includes` option (C2-H-137) expands include directives as this document states, and an engine that does not offer the option refuses it (C2-H-137).
 
-**C2-N-002** Only an `include` node is expanded, and only a block line makes one (C2-B-156). There is no inline include: `{{ ... }}` inside inline content is text, each of its braces read on its own (inline chapter, braced forms), so a directive in a sentence, in a heading, in a table cell or on a lazy line of a paragraph (C2-B-024) stays text and is never passed to a resolver.
+**C2-N-002** Only an `include` node is expanded, and only a block line makes one (C2-B-156). There is no inline include: `{{ ... }}` inside inline content is text, each of its braces read on its own (inline chapter, braced forms), so a directive in a sentence, in a heading, in a table cell or on a lazy line of a paragraph (C2-B-024) stays text and is never passed to a resolver. A snippet use (C2-I-128, C2-B-237) is no include: it copies a snippet of the expanded document (C2-N-090) and is never passed to a resolver.
 
-**C2-N-089** A directive with a section and no path is reserved for an include from the same document in a later 0.2 release: `{{`, one or more spaces, `#` and a section name (C2-B-203), one or more spaces and `}}`, as `{{ #intro }}`. A section-only shape with options stays a finding of `empty-include-path`. In 0.2.0 it is text where it stands, on its own line, since a bare path has at least one character (C2-B-202), and in inline content (C2-N-002), and `reserved-syntax` reports it in place of `empty-include-path`. A shape whose opening brace is escaped, or that stands in a code span or another verbatim span, is not reported.
+**C2-N-089** A directive with a section and no path is reserved: `{{`, one or more spaces, `#` and a section name (C2-B-203), one or more spaces and `}}`, as `{{ #intro }}`. A section-only shape with options stays a finding of `empty-include-path`. It is text where it stands, on its own line, since a bare path has at least one character (C2-B-202), and in inline content (C2-N-002), and `reserved-syntax` reports it in place of `empty-include-path`. A shape whose opening brace is escaped, or that stands in a code span or another verbatim span, is not reported.
 
 Example 1 (unverified)
 
@@ -221,7 +221,7 @@ Top.
 }
 ```
 
-**C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1. A selection starting at line 1 may open leading frontmatter (C2-B-161); a selection starting later may open typed metadata blocks under C2-B-232, using the selected lines as its document and their original file coordinates for `pos`. A bare `---` on a later file line remains ordinary content. Its children are the blocks of the selected lines and then, as under a section (C2-N-031), in source order, every definition of the file that the selection did not take: each link reference, footnote, abbreviation and citation definition of the file parsed whole whose first line is not selected. Its references therefore resolve against the definitions of their whole file (C2-N-054).
+**C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1. A selection starting at line 1 may open leading frontmatter (C2-B-161); a selection starting later may open typed metadata blocks under C2-B-232, using the selected lines as its document and their original file coordinates for `pos`. A bare `---` on a later file line remains ordinary content. Its children are the blocks of the selected lines and then, as under a section (C2-N-031), in source order, every definition of the file that the selection did not take: each link reference, footnote, abbreviation, citation and snippet definition of the file parsed whole whose first line is not selected. Its references therefore resolve against the definitions of their whole file (C2-N-054).
 
 **C2-N-021** In Carve mode a leading frontmatter block of an included file is the first child of the include node when the selection takes it from line 1 (C2-N-020). Later typed metadata blocks taken by the selection remain among the include children in source order. Every such block renders nothing (C2-H-070) and is not metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
 
@@ -529,7 +529,7 @@ A [word]{#item} here.
 
 :::
 
-**C2-N-031** Under a section the children are the selected blocks and then, in source order, every definition of the file that the selection did not take: link reference, footnote, abbreviation and citation definitions. The references of the selected blocks therefore resolve against the definitions of their whole file (C2-N-053). A definition renders nothing on its own, and a footnote that nothing references is not written (C2-H-092).
+**C2-N-031** Under a section the children are the selected blocks and then, in source order, every definition of the file that the selection did not take: link reference, footnote, abbreviation, citation and snippet definitions. The references of the selected blocks therefore resolve against the definitions of their whole file (C2-N-053). A definition renders nothing on its own, and a footnote that nothing references is not written (C2-H-092).
 
 Example 12 (unverified)
 
@@ -1452,6 +1452,22 @@ The dependencies are four include nodes in this order: `a.crv` read, `b.crv` rea
 
 **C2-N-088** On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`.
 
+## Snippets
+
+**C2-N-090** A snippet is the inline content of a snippet definition (C2-B-236), copied where a snippet use (C2-I-128, C2-B-237) names it. Snippet names have a registry of their own. It holds the snippet definitions of the expanded authored tree in document order, those an include appends under C2-N-020 and C2-N-031 too, and a file the expansion did not take adds none. The first definition of a name wins; each later one stays in the tree, renders nothing and reports `duplicate-snippet` at its name. Lookup is global over the expanded tree, so a use may stand before its definition and in another file. A name is never an anchor, a cross-reference target, a fragment target or a reserved slug, and it is never compared with an id: `{$v}: x` and an element with the id `v` stand together with no finding, the id rules (C2-A-039, C2-H-024, C2-N-058) do not see the name, and `</#v>` or `[t](#v)` where only a snippet is named `v` finds nothing, as for any missing id.
+
+**C2-N-091** Snippets are expanded in one pass over the render view, after includes and before ordinary resolution and document transforms (C2-X-053). The pass walks the view in structural slot order (C2-A-024), depth first. At each use it takes the winning definition of the name and tests a cycle, the depth, the node limit and the derived-text budget, in that order (C2-N-093, C2-N-094). A use that passes all four is replaced by a copy of the definition's inline children, and the walk goes on inside the copy, so a use in a copy is expanded when the walk reaches it and charged then. An inline use becomes its copy where it stands, and a block use a paragraph that holds the copy. The non-id attributes of the definition go on a span around an inline copy and on the paragraph of a block use. The authored tree, the source record and the tree the Carve writer reads keep the uses.
+
+**C2-N-092** A copy has no positions and no authored ids: it drops `attrs.id`, `pos`, `segments`, annotation ids and every resolution field of the nodes it copies (C2-A-158). A link, an image and a footnote reference in a copy resolve against the definitions of the file that holds the snippet definition, as C2-N-053 and C2-N-054 say for included content; that origin is never written to a tree. A footnote reference in a copy is an ordinary reference to its note, so each rendered copy gives its own reference mark and backlink (C2-H-089).
+
+**C2-N-093** A use is not expanded when no definition carries its name (`snippet-unresolved`), when its winning definition is already on the stack of definitions being expanded (`snippet-cycle`), when the stack would then hold more than `snippet_depth` of `data/limits.json`, 16, definitions (`snippet-depth`), and when the nodes its copy adds would bring the render's total past `snippet_nodes`, 100,000 (`snippet-node-budget`). The nodes a copy adds are each copied node, a use inside the copy among them, and the span or paragraph the use adds. The cycle is tested first, so a definition that uses itself reports `snippet-cycle` under any depth limit. A use that is not expanded, and one whose copy does not fit the derived-text budget (C2-N-094), is written as its source spelling `{{ $name }}` as text, a block use as a paragraph that holds that text, and charges nothing, so a later, smaller use may still fit.
+
+**C2-N-094** Each admitted copy draws on the derived-text budget of C2-H-201 when the pass admits it, before every abbreviation and cross-reference of the render. Its cost is 32 times the nodes it adds (C2-N-093), plus the UTF-8 byte length of every string value those nodes keep, `type`, attribute values and strings inside opaque `data` included, plus the byte length of every key of an object inside opaque `data`, `metadata`, extension `props` or `payload`. The names of the tree's own fields are not counted, nor the fields a copy drops (C2-N-092). A copy whose cost equals what remains fits; one that does not fit reports `derived-text-budget` under C2-H-201. So a text node `X` costs 32 + 4 + 1 = 37 bytes.
+
+**C2-N-095** Document transforms see each copy as ordinary nodes, and snippets are not expanded again. A `snippet_use` that a transform inserts, or with which it replaces a node, is written as its source spelling as text and reports `snippet-unexpanded-transform` at its path; a `snippet_definition` that a transform inserts renders nothing, enters no registry and reports the same code. A transform that removes a copy refunds nothing, and one that repeats copied nodes draws nothing. Plain text read from the view for a slug, a label, alt text or an export reads the final view and starts no expansion of its own; a use that was not expanded gives its source spelling.
+
+**C2-N-096** `unused-snippet` reports, as a hint, a winning snippet definition that no use of the authored tree names, at the `$` and the name of its marker. A use inside another definition counts, also when its expansion fails. A definition that loses to an earlier one of its name reports `duplicate-snippet` and no hint.
+
 ## What 0.1 rules became
 
 | 0.1 rule | In 0.2 |
@@ -1493,6 +1509,7 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **89** | **2** | **41** |
+| Snippets | 7 | 0 | 0 |
+| **Total** | **96** | **2** | **41** |
 
-The document has 89 clauses, 2 of them marked with the word "Exception", and 41 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 96 clauses, 2 of them marked with the word "Exception", and 41 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

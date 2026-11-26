@@ -689,7 +689,7 @@ Example 31 (generated)
 
 **C2-I-043** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the content. Three: `{#`, an editorial comment, when `#}` follows in the content with at least one character between. Four: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack.
 
-There are no braced quote forms: `{'` and `{"` are a brace followed by a quote. An include directive `{{ ... }}` is a block line; inside inline content each of its braces is read on its own.
+There are no braced quote forms: `{'` and `{"` are a brace followed by a quote. An include directive `{{ ... }}` is a block line; inside inline content each of its braces is read on its own, except in a snippet use (C2-I-128).
 
 Example 32 (generated)
 
@@ -748,6 +748,8 @@ a {'x'} b and {"a": "b"}
 ```
 
 :::
+
+**C2-I-128** An inline snippet use is `{{`, one or more spaces, `$` and a snippet name (C2-B-236), one or more spaces and `}}`, as `{{ $ver }}`. It is read at the opening brace before the four forms of C2-I-043, wherever inline content is read, in a heading, a table cell and a lazy line of a paragraph too; it is a `snippet_use` with `mode` `inline` (C2-A-221). A tab is not such a space, so `{{	$v }}` is text, and so are `{{$v}}`, a use with an option such as `{{ $v @shift:1 }}`, and a name of another shape. An escaped opening brace, `\{{ $v }}`, makes no use, and a code, math, literal or raw span or a comment holds none. A use carries no attributes: an attribute block glued after it is text, so `{{ $v }}{.c}` is a use and the text `{.c}`. A use is never read in a link destination, an attribute value, an include path or any other value, which holds `{{ $v }}` as written.
 
 ## Emphasis and strong
 
@@ -2516,7 +2518,7 @@ There is no fixed budget for the inline chapter.
 | Raw inline | 1 | 0 | 2 | 1 |
 | Comments | 4 | 1 | 4 | 2 |
 | Attribute blocks | 12 | 2 | 7 | 5 |
-| The opening brace | 1 | 0 | 3 | 1 |
+| The opening brace | 2 | 0 | 3 | 1 |
 | Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 1 | 0 | 2 | 0 |
@@ -2532,9 +2534,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **109** | **14** | **69** | **62** |
+| **Total** | **110** | **14** | **69** | **62** |
 
-The chapter has 109 clauses, 14 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-022, C2-I-041 and C2-I-045, whose rule other clauses state or give; their ids are not reused.
+The chapter has 110 clauses, 14 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-022, C2-I-041 and C2-I-045, whose rule other clauses state or give; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
