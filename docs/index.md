@@ -13,8 +13,8 @@ hero:
       text: Get Started
       link: /get-started
     - theme: alt
-      text: Upgrade from 0.1
-      link: /upgrade-0-2
+      text: What's new in 0.2
+      link: /whats-new-0-2
 
 features:
   - title: Defined syntax
