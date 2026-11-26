@@ -92610,6 +92610,41 @@
    "fingerprint": "sha256:142980e5e7472291b1480c89bf69a048589a88b6db43e2815a2cc40f971be1c5"
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2323",
+   "clauses": [
+    "C2-W-075",
+    "C2-W-088"
+   ],
+   "why": "C2-W-075: A reference whose key differs only in a temporary form read by C2-W-088 incurs no loss if, after that procedure including its fallback and this clause's verbatim restoration, the emitted whole output reads back as the tree.",
+   "summary": "collapsed references past the depth cap whose key the escape rounds cannot spell are no loss where the output with their verbatim text reads back",
+   "kind": "format",
+   "input": "[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2324",
+   "clauses": [
+    "C2-W-075",
+    "C2-W-088"
+   ],
+   "why": "C2-W-075: A reference whose key differs only in a temporary form read by C2-W-088 incurs no loss if, after that procedure including its fallback and this clause's verbatim restoration, the emitted whole output reads back as the tree.",
+   "summary": "121 lines of collapsed references past the depth cap: the rounds brace the emphasis on lines 115, 116 and 119, the references take their verbatim text, and the output reads back with no loss",
+   "kind": "format",
+   "input": "[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n",
+   "options": {},
+   "expected": {
+    "carve": "[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]{*[x]: /u\n[a {*[a][]*}[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*}[x]: /u\n[a *[a][]*[x]: /u\n[a *[a][]*[x]: /u\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  }
  ]
 }
