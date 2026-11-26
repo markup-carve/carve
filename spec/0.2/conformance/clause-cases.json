@@ -91524,6 +91524,76 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2263",
+   "clauses": [
+    "C2-B-029",
+    "C2-B-007",
+    "C2-B-123"
+   ],
+   "why": "C2-B-029: The content of a fence, the body of a code fence or a comment block, is stripped by at most the indent of its opener, also where the comment block stands in a line block (C2-B-123). C2-B-007: Indent stripping removes whole characters, so a tab that straddles the strip column is kept.",
+   "summary": "a comment block in a line block in an item loses the straddling tab of its opener from each body line (carve#6465)",
+   "kind": "parse",
+   "input": "- ::: |\n\t%%%\n\tc\td\n\t%%%\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "form": "block",
+            "type": "comment",
+            "value": "c\td"
+           }
+          ],
+          "type": "line_block"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2264",
+   "clauses": [
+    "C2-B-029",
+    "C2-B-123"
+   ],
+   "why": "C2-B-029: The content of a fence, the body of a code fence or a comment block, is stripped by at most the indent of its opener, also where the comment block stands in a line block (C2-B-123).",
+   "summary": "a comment block in a line block is stripped by its opener's indent (carve#6465)",
+   "kind": "parse",
+   "input": "::: |\n  %%%\n  c\n  %%%\n:::\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "children": [
+       {
+        "form": "block",
+        "type": "comment",
+        "value": "c"
+       }
+      ],
+      "type": "line_block"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
