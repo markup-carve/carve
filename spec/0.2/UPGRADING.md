@@ -723,8 +723,8 @@ A ruling of 26 November decides #6804: an image whose alt text is unknown has ne
 
 | HTML input or tree | 0.1 | 0.2 |
 | --- | --- | --- |
-| `<img src="x">` imported | `![](x)` | the image has no `alt` (unknown); `carve import` reports `field-unspellable` and fails with `writer-refused` unless `--allow-loss field-unspellable` is given, then writes `![](x)` |
-| `<img src="x" alt="">` imported | `![](x)` | the image is decorative; the same loss and refusal |
+| `<img src="x">` imported | `![](x)` | the image has no `alt` (unknown); `carve import` writes `![](x)`, reports `image-alt-unknown` on standard error and exits 0; `--strict-losses` fails it with `render-loss` |
+| `<img src="x" alt="">` imported | `![](x)` | the image is decorative; `carve import` writes `![](x)` and reports nothing |
 | an image with no `alt` rendered from a tree | `alt=""` | no `alt` attribute: `<img src="x">` (C2-H-080) |
 
 ### Include expansion

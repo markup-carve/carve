@@ -27130,44 +27130,45 @@
    "from": []
   },
   {
-   "id": "CC-479",
-   "clauses": [
-    "C2-A-129",
-    "C2-W-011"
-   ],
-   "why": "C2-A-129: A writer that cannot carry it reports the loss with its JSON path. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative`, `xref.display` and root `metadata.fields`.",
-   "summary": "the imported decorative flag of an image is reported at its path by the writer",
-   "kind": "write",
-   "tree": {
-    "type": "document",
-    "astVersion": "2.0",
-    "children": [
-     {
-      "type": "paragraph",
-      "role": "image",
-      "children": [
-       {
-        "type": "image",
-        "src": "x.png",
-        "decorative": true
-       }
-      ]
-     }
-    ]
-   },
-   "options": {},
-   "expected": {
-    "diagnostics": [
-     {
-      "code": "field-unspellable",
-      "path": "/children/0/children/0/decorative",
-      "severity": "warning",
-      "channel": "render-loss"
-     }
-    ]
-   },
-   "from": []
+  "id": "CC-479",
+  "clauses": [
+   "C2-A-129",
+   "C2-W-011"
+  ],
+  "why": "C2-A-129: A writer that cannot carry it reports the loss with its JSON path. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative`, `xref.display` and root `metadata.fields`.",
+  "summary": "an explicit decorative false on an image with alt text is reported at its path by the writer",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x.png",
+       "decorative": false,
+       "alt": "a"
+      }
+     ]
+    }
+   ]
   },
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/decorative",
+     "severity": "warning",
+     "channel": "render-loss"
+    }
+   ]
+  },
+  "from": []
+ },
   {
    "id": "CC-480",
    "clauses": [
@@ -28705,49 +28706,50 @@
    "from": []
   },
   {
-   "id": "CC-515",
-   "clauses": [
-    "C2-T-006",
-    "C2-T-040",
-    "C2-W-011",
-    "C2-W-134"
-   ],
-   "why": "C2-T-006: A call refuses with the typed error of its row in the table of C2-T-040, and with no other error C2-T-040: The failure categories, their status and the library error each comes from are the rows of this table. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative` C2-W-134: A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`",
-   "summary": "a write call of a tree with decorative throws CarveWriteError carrying field-unspellable",
-   "kind": "write",
-   "tree": {
-    "type": "document",
-    "astVersion": "2.0",
-    "children": [
-     {
-      "type": "paragraph",
-      "role": "image",
-      "children": [
-       {
-        "type": "image",
-        "src": "i.png",
-        "decorative": true
-       }
-      ]
-     }
-    ]
-   },
-   "options": {},
-   "expected": {
-    "refusal": {
-     "error": "CarveWriteError"
-    },
-    "diagnostics": [
-     {
-      "code": "field-unspellable",
-      "path": "/children/0/children/0/decorative",
-      "channel": "render-loss",
-      "severity": "warning"
-     }
-    ]
-   },
-   "from": []
+  "id": "CC-515",
+  "clauses": [
+   "C2-T-006",
+   "C2-T-040",
+   "C2-W-011",
+   "C2-W-134"
+  ],
+  "why": "C2-T-006: A call refuses with the typed error of its row in the table of C2-T-040, and with no other error C2-T-040: The failure categories, their status and the library error each comes from are the rows of this table. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative` C2-W-134: A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`",
+  "summary": "a write call of a tree with decorative false throws CarveWriteError carrying field-unspellable",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "i.png",
+       "decorative": false,
+       "alt": "a"
+      }
+     ]
+    }
+   ]
   },
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveWriteError"
+   },
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/decorative",
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
   {
    "id": "CC-516",
    "clauses": [
@@ -31066,31 +31068,31 @@
    "from": []
   },
   {
-   "id": "CC-570",
-   "clauses": [
-    "C2-T-030",
-    "C2-W-011"
-   ],
-   "why": "C2-T-030: A writer loss of C2-W-134 ends the file with status 1 and the category `writer-refused`. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative`",
-   "summary": "fmt from a tree with decorative fails with writer-refused",
-   "kind": "cli",
-   "files": {
-    "t.json": {
-     "text": "{\"type\": \"document\", \"astVersion\": \"2.0\", \"children\": [{\"type\": \"paragraph\", \"role\": \"image\", \"children\": [{\"type\": \"image\", \"src\": \"i.png\", \"decorative\": true}]}]}"
-    }
-   },
-   "args": [
-    "fmt",
-    "--from-ast",
-    "t.json"
-   ],
-   "options": {},
-   "expected": {
-    "status": 1,
-    "stderrCategory": "writer-refused"
-   },
-   "from": []
+  "id": "CC-570",
+  "clauses": [
+   "C2-T-030",
+   "C2-W-011"
+  ],
+  "why": "C2-T-030: A writer loss of C2-W-134 ends the file with status 1 and the category `writer-refused`. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative`",
+  "summary": "fmt from a tree with decorative false fails with writer-refused",
+  "kind": "cli",
+  "files": {
+   "t.json": {
+    "text": "{\"type\": \"document\", \"astVersion\": \"2.0\", \"children\": [{\"type\": \"paragraph\", \"role\": \"image\", \"children\": [{\"type\": \"image\", \"src\": \"i.png\", \"decorative\": false, \"alt\": \"a\"}]}]}"
+   }
   },
+  "args": [
+   "fmt",
+   "--from-ast",
+   "t.json"
+  ],
+  "options": {},
+  "expected": {
+   "status": 1,
+   "stderrCategory": "writer-refused"
+  },
+  "from": []
+ },
   {
    "id": "CC-571",
    "clauses": [
@@ -89954,10 +89956,10 @@
   "id": "CC-2207",
   "clauses": [
    "C2-M-050",
-   "C2-A-115"
+   "C2-W-011"
   ],
-  "why": "C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115) C2-A-115: An image is in one of three states: it has alt text, held in `alt`; its alt text is unknown, with neither `alt` nor `decorative`; or it is decorative, with `decorative: true` and no `alt`.",
-  "summary": "an img with no alt attribute imports as an image whose alt is unknown, reported by the writer at the image",
+  "why": "C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115) C2-W-011: An image with neither `alt` nor `decorative`, whose alt text is unknown, is written with empty brackets too and reported with `image-alt-unknown` at the path of the image, since the absent field has no path of its own.",
+  "summary": "an img with no alt attribute imports as an image whose alt is unknown, reported by the writer with image-alt-unknown at the image",
   "kind": "import",
   "html": "<p><img src=\"x\"></p>",
   "options": {},
@@ -89977,7 +89979,7 @@
    "carve": "![](x)\n",
    "diagnostics": [
     {
-     "code": "field-unspellable",
+     "code": "image-alt-unknown",
      "path": "/children/0/children/0",
      "channel": "render-loss",
      "severity": "warning"
@@ -89991,10 +89993,10 @@
   "id": "CC-2208",
   "clauses": [
    "C2-M-050",
-   "C2-A-115"
+   "C2-W-011"
   ],
-  "why": "C2-M-050: an `alt` attribute with the empty value makes it decorative, `decorative: true` and no `alt` C2-A-115: An image is in one of three states: it has alt text, held in `alt`; its alt text is unknown, with neither `alt` nor `decorative`; or it is decorative, with `decorative: true` and no `alt`.",
-  "summary": "an img with an empty alt attribute imports as a decorative image",
+  "why": "C2-M-050: an `alt` attribute with the empty value makes it decorative, `decorative: true` and no `alt` C2-W-011: The one exception is a decorative image, `decorative: true` and no `alt` (C2-A-115), which is written with empty brackets and not reported",
+  "summary": "an img with an empty alt attribute imports as a decorative image, which the writer writes with empty brackets and does not report",
   "kind": "import",
   "html": "<p><img src=\"x\" alt=\"\"></p>",
   "options": {},
@@ -90013,14 +90015,7 @@
     }
    ],
    "carve": "![](x)\n",
-   "diagnostics": [
-    {
-     "code": "field-unspellable",
-     "path": "/children/0/children/0/decorative",
-     "channel": "render-loss",
-     "severity": "warning"
-    }
-   ],
+   "diagnostics": [],
    "diagnosticsComplete": true
   },
   "from": []
@@ -90141,8 +90136,8 @@
    "C2-W-011",
    "C2-A-115"
   ],
-  "why": "C2-W-011: An image with neither `alt` nor `decorative`, whose alt text is unknown (C2-A-115), is written with empty brackets, which read back as an empty `alt`, and reported with `field-unspellable` at the path of the image, since the absent field has no path of its own.",
-  "summary": "the writer writes an image whose alt is unknown with empty brackets and reports it at the image",
+  "why": "C2-W-011: An image with neither `alt` nor `decorative`, whose alt text is unknown, is written with empty brackets too and reported with `image-alt-unknown` at the path of the image, since the absent field has no path of its own.",
+  "summary": "the writer writes an image whose alt is unknown with empty brackets and reports image-alt-unknown at the image",
   "kind": "write",
   "tree": {
    "type": "document",
@@ -90165,10 +90160,10 @@
    "carve": "![](x)\n",
    "diagnostics": [
     {
-     "code": "field-unspellable",
+     "code": "image-alt-unknown",
      "path": "/children/0/children/0",
-     "severity": "warning",
-     "channel": "render-loss"
+     "channel": "render-loss",
+     "severity": "warning"
     }
    ],
    "diagnosticsComplete": true
@@ -90181,8 +90176,8 @@
    "C2-T-034",
    "C2-M-050"
   ],
-  "why": "C2-T-034: Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
-  "summary": "import of an img with no alt fails with writer-refused",
+  "why": "C2-T-034: Every other loss is written on standard error while the file writes its source, so `image-alt-unknown`, an image whose alt text is unknown (C2-W-011), never fails a file alone. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
+  "summary": "import of an img with no alt writes empty brackets, reports image-alt-unknown on standard error and exits 0",
   "kind": "cli",
   "args": [
    "import",
@@ -90193,8 +90188,15 @@
   "stdin": "<p><img src=\"x\"></p>",
   "options": {},
   "expected": {
-   "status": 1,
-   "stderrCategory": "writer-refused"
+   "status": 0,
+   "stdout": "![](x)\n",
+   "stderrDiagnostics": [
+    {
+     "code": "image-alt-unknown",
+     "file": "<stdin>"
+    }
+   ],
+   "stderrCategory": null
   },
   "from": []
  },
@@ -90205,15 +90207,15 @@
    "C2-T-034",
    "C2-M-050"
   ],
-  "why": "C2-T-027: An allowed code is neither written on standard error nor in the report. C2-T-034: Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
-  "summary": "import of an img with no alt and field-unspellable allowed writes empty brackets",
+  "why": "C2-T-027: An allowed code is neither written on standard error nor in the report. C2-T-034: Every other loss is written on standard error while the file writes its source, so `image-alt-unknown`, an image whose alt text is unknown (C2-W-011), never fails a file alone. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
+  "summary": "import of an img with no alt and image-alt-unknown allowed writes empty brackets and nothing on standard error",
   "kind": "cli",
   "args": [
    "import",
    "--from",
    "html",
    "--allow-loss",
-   "field-unspellable",
+   "image-alt-unknown",
    "-"
   ],
   "stdin": "<p><img src=\"x\"></p>",
@@ -90221,6 +90223,7 @@
   "expected": {
    "status": 0,
    "stdout": "![](x)\n",
+   "stderrDiagnostics": [],
    "stderrCategory": null
   },
   "from": []
@@ -91941,6 +91944,131 @@
   },
   "expected": {
    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20xmlns%3Axlink%3D%22urn%3Ax%22%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2290",
+  "clauses": [
+   "C2-T-034",
+   "C2-W-011",
+   "C2-M-050"
+  ],
+  "why": "C2-T-034: Every other loss is written on standard error while the file writes its source C2-W-011: The one exception is a decorative image, `decorative: true` and no `alt` (C2-A-115), which is written with empty brackets and not reported C2-M-050: an `alt` attribute with the empty value makes it decorative, `decorative: true` and no `alt`",
+  "summary": "import of an img with an empty alt writes empty brackets with nothing on standard error and exits 0",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "-"
+  ],
+  "stdin": "<p><img src=\"x\" alt=\"\"></p>",
+  "options": {},
+  "expected": {
+   "status": 0,
+   "stdout": "![](x)\n",
+   "stderrDiagnostics": [],
+   "stderrCategory": null
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2291",
+  "clauses": [
+   "C2-T-034",
+   "C2-M-050"
+  ],
+  "why": "C2-T-034: `import` applies C2-T-025 to C2-T-029 to the entries of the importer (C2-M-080) and of the writer C2-M-050: `<img>` is an `image` with `src`, `alt` and `tooltip` from `title`",
+  "summary": "near miss: import of an img with alt text writes it in the brackets with nothing on standard error",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "-"
+  ],
+  "stdin": "<p><img src=\"x\" alt=\"t\"></p>",
+  "options": {},
+  "expected": {
+   "status": 0,
+   "stdout": "![t](x)\n",
+   "stderrDiagnostics": [],
+   "stderrCategory": null
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2292",
+  "clauses": [
+   "C2-T-034",
+   "C2-M-050"
+  ],
+  "why": "C2-T-034: with `--strict-losses` a loss of either fails the file with the category `render-loss` and writes no source. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
+  "summary": "import of an img with no alt under strict losses fails with render-loss and writes no source",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "--strict-losses",
+   "-"
+  ],
+  "stdin": "<p><img src=\"x\"></p>",
+  "options": {},
+  "expected": {
+   "status": 1,
+   "stdout": "",
+   "stderrCategory": "render-loss"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2293",
+  "clauses": [
+   "C2-W-011",
+   "C2-A-115"
+  ],
+  "why": "C2-W-011: The one exception is a decorative image, `decorative: true` and no `alt` (C2-A-115), which is written with empty brackets and not reported",
+  "summary": "the writer writes a decorative image with empty brackets and reports nothing",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x",
+       "decorative": true
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": "![](x)\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2294",
+  "clauses": [
+   "C2-H-080"
+  ],
+  "why": "C2-H-080: An image is `<img src=\"URL\" alt=\"ALT\">`",
+  "summary": "an image with alt text, as an import of alt=\"t\" writes it, renders that alt back",
+  "kind": "render",
+  "input": "![t](x)\n",
+  "options": {},
+  "expected": {
+   "html": "<img src=\"x\" alt=\"t\">"
   },
   "from": []
  }
