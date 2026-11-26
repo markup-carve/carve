@@ -8732,6 +8732,22 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "not": {
+              "required": [
+                "alt"
+              ]
+            }
+          },
+          "then": {
+            "properties": {
+              "decorative": {
+                "const": true
+              }
+            }
+          }
         }
       ]
     },
