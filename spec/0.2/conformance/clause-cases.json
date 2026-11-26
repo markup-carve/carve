@@ -97745,6 +97745,68 @@
    "diagnosticsOrdered": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2478",
+  "clauses": [
+   "C2-H-070",
+   "C2-H-163",
+   "C2-H-129",
+   "C2-H-178"
+  ],
+  "why": "C2-H-070: Every frontmatter node, leading or later and whether keyed or unkeyed, renders nothing. C2-H-163: Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. C2-H-129: A construct outside the profile renders in its degraded form and is reported. C2-H-178: A profile does not degrade an `abbreviation_def`, also one outside the profile (C2-H-165)",
+  "summary": "under comment a frontmatter node writes nothing and is reported once at its start",
+  "kind": "render",
+  "input": "---\na: 1\n---\n\nx\n",
+  "options": {
+   "profile": "comment"
+  },
+  "expected": {
+   "html": "<p>x</p>",
+   "diagnostics": [
+    {
+     "code": "profile-construct-degraded",
+     "line": 1,
+     "column": 1,
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true,
+   "diagnosticsOrdered": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2479",
+  "clauses": [
+   "C2-H-070",
+   "C2-H-163",
+   "C2-H-129",
+   "C2-H-178"
+  ],
+  "why": "C2-H-070: Every frontmatter node, leading or later and whether keyed or unkeyed, renders nothing. C2-H-163: Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. C2-H-129: A construct outside the profile renders in its degraded form and is reported. C2-H-178: A profile does not degrade an `abbreviation_def`, also one outside the profile (C2-H-165)",
+  "summary": "under minimal a frontmatter node writes nothing and is reported once at its start",
+  "kind": "render",
+  "input": "---\na: 1\n---\n\nx\n",
+  "options": {
+   "profile": "minimal"
+  },
+  "expected": {
+   "html": "<p>x</p>",
+   "diagnostics": [
+    {
+     "code": "profile-construct-degraded",
+     "line": 1,
+     "column": 1,
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true,
+   "diagnosticsOrdered": true
+  },
+  "from": []
  }
  ]
 }
