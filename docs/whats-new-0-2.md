@@ -4,7 +4,7 @@ description: What Carve 0.2 adds for authors, hosts and tools, with a link to th
 
 # What's new in 0.2
 
-Carve 0.2 adds snippets, typed metadata blocks later in a document, a heading shift for page templates, safer rendering defaults and one command line shared by every engine. It is also a source break: some 0.1 documents render differently. If you keep 0.1 files, read [Upgrading from 0.1](./upgrade-0-2) and run `carve upgrade` on each one.
+Carve 0.2 adds snippets, `=` headings that can span lines, references that resolve in more places, ordered task lists, typed metadata blocks later in a document, a heading shift for page templates, safer rendering defaults and one command line shared by every engine. It is also a source break: some 0.1 documents render differently. If you keep 0.1 files, read [Upgrading from 0.1](./upgrade-0-2) and run `carve upgrade` on each one.
 
 ## For authors
 
@@ -28,6 +28,68 @@ Install {{ $ver }} today. Read the {{ $rel }}.
 ```
 
 Snippets work across included files, and lint reports unknown, unused and duplicate names. See [Snippets](./snippets).
+
+### Headings: `=` and more than one line
+
+`=` now starts a heading, next to `#`. Lint reports a document that mixes both. A long heading continues on the lines below it that are indented past its marker.
+
+````carve
+= A long heading
+  that continues on the next line
+
+== Section
+````
+
+```html
+<section id="A-long-heading-that-continues-on-the-next-line">
+  <h1>A long heading
+that continues on the next line</h1>
+  <section id="Section">
+    <h2>Section</h2>
+  </section>
+</section>
+```
+
+Description terms continue the same way: a line indented past `::` belongs to the term.
+
+### References that resolve in more places
+
+- A shortcut reference `[text]` links when a definition `[text]:` exists. In 0.1 it stayed text.
+- A full reference `[the text][My Heading]` reaches a heading, including a heading inside a quote.
+- A reference label may wrap onto the next line.
+- A link definition takes its title and attributes on the indented next line, and an abbreviation expansion may continue over indented lines.
+- A reference in an included file resolves against the definitions of the file that includes it.
+
+````carve
+See [the docs] and [the intro][Getting started].
+
+= Getting started
+
+[the docs]: https://example.com "The docs"
+````
+
+### Lists
+
+Ordered lists take task boxes, and a one-letter or roman marker needs only one space (`a. one`, `i. first`).
+
+````carve
+1. [x] Write the draft
+2. [ ] Review it
+````
+
+A line indented short of an item's content column after a blank line now stays in the item instead of closing the list.
+
+### Nested emphasis and editorial marks
+
+Emphasis of the same kind nests: `/a /b/ c/` gives `<em>a <em>b</em> c</em>`. Editorial comments take attributes, and inserts, deletions and comments take `author` and `datetime`:
+
+````carve
+{+new text+}{author=ann datetime=2026-11-01}
+````
+
+```html
+<p><ins data-author="ann" datetime="2026-11-01">new text</ins></p>
+```
 
 ### Metadata blocks after line 1
 
@@ -75,11 +137,16 @@ Explicit raw HTML now needs `rawHtml: true` or `carve render --raw-html`; in 0.1
 
 `softBreak` writes a line break inside a paragraph as a line break, one space or `<br>`, for chat and other output that shows source line breaks (`--soft-break`). `codeBlockRenderer(node, defaultHtml)` hands every code block to the host, so a highlighter can replace the default `<pre>` HTML. See [static rendering recipes](./static-rendering-recipes).
 
+### New library calls
+
+- `positionOf(source, offset)` turns a byte offset into a line and column.
+- `diffTree` returns a standard JSON Patch (RFC 6902), and `applyPatch` applies one. Given a `treeFingerprint`, `applyPatch` refuses a patch made against another tree. The 0.1 change format and three-way merge are gone.
+
 ## For tools
 
 ### The same command line in every engine
 
-The 0.2 specification defines the library calls and the `carve` program that every engine offers, with the same flags, exit codes and reports. Next to `render`, `ast`, `fmt` and `lint`, it adds:
+The 0.2 specification defines the library calls and the `carve` program that every engine offers, with the same flags, exit codes and reports. Every render option has a flag (`--url-policy`, `--heading-ids`, `--soft-break` and so on), and `--strict` on `render` and `lint` fails a file that reports anything. Next to `render`, `ast`, `fmt` and `lint`, it adds:
 
 | Command | Does |
 |---|---|
@@ -90,6 +157,10 @@ The 0.2 specification defines the library calls and the `carve` program that eve
 | `carve migrate-ast` | converts a stored 1.x tree to AST 2.0 |
 
 The JavaScript engine also ships `carve upgrade`, which rewrites a 0.1 document and checks each rewrite against the 0.1 HTML. See the [tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
+
+### Lint
+
+Lint has 27 new rules that are on by default, such as `block-opener-without-blank-line` and `unattached-caption`. Another 16 migration notices report text that 0.1 read differently. They run with `carve lint --upgrade`, or when the frontmatter says `carve: 0.1`. See [Validation](./validation).
 
 ### AST 2.0
 
