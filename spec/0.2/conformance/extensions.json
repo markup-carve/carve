@@ -2437,6 +2437,87 @@
       "expected": {
         "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <p>See <a href=\"#u\">U</a>.</p>\n  <section id=\"u\">\n    <h2 class=\"unnumbered\">U</h2>\n  </section>\n</section>"
       }
+    },
+    {
+      "id": "EXT-117",
+      "extension": "carve.toc",
+      "summary": "its renderer in the default mode writes the table and reports nothing",
+      "clauses": [
+        "C2-H-123",
+        "C2-X-052"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "notReported": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-118",
+      "extension": "carve.toc",
+      "summary": "its renderer in static mode writes the same table",
+      "clauses": [
+        "C2-H-123",
+        "C2-X-052"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        },
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "notReported": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-119",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "a renderer without a build-time channel writes the fallback in static mode",
+      "clauses": [
+        "C2-H-123",
+        "C2-X-052",
+        "C2-H-122"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "``` mermaid\ngraph TD\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        },
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<pre><code class=\"language-mermaid\">graph TD\n</code></pre>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
     }
   ]
 }

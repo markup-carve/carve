@@ -2324,7 +2324,7 @@ Example 69 (unverified, `--mode static`)
 
 :::
 
-**C2-H-123** `renderers` maps an extension name to a build-time renderer and is read only in static mode.
+**C2-H-123** `renderers` maps an extension name to a renderer, which has an interactive channel, a build-time channel or both (C2-X-052). It is read in both modes, and `mode` selects the channel: an entry without the channel of the mode is no renderer in that mode.
 
 **C2-H-124** `symbols` maps a symbol name to its output (C2-H-101). The values are trusted and written verbatim.
 
