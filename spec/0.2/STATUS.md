@@ -832,3 +832,9 @@ The ruling audit of 26 November amends four lint rulings. `heading-marker-mixed`
 
 - `carve-js`, `carve-php` and `carve-rs`: report `heading-marker-mixed` for an attributed heading (CC-2325 to CC-2327), `unattached-inline-attribute` on a line of a line block (CC-2329, CC-2330), and `broken-fragment-link` while only extensions that generate no ids are registered (CC-2337, CC-2338).
 - `carve-php` and `carve-rs`: give `includedBy` on every entry that has `file` (CC-2335, CC-2336). `carve-js` already does.
+
+## Engine gaps from the snippet ruling of 26 November (#6395)
+
+Named snippets enter 0.2.0 core: `{$name}:` definitions, `{{ $name }}` uses, the expansion pass with its limits, the HTML carriers and their import (C2-B-236, C2-B-237, C2-I-128, C2-A-220, C2-A-221, C2-N-090 to C2-N-096, C2-H-214 to C2-H-217, C2-W-159). The `{#id}:` line reserved by C2-B-236 before is text with no finding. The conformance harness gains `host.limits` and the `setValue` document transform (`conformance/README.md`).
+
+- `carve-js` first, then `carve-php` and `carve-rs`: parse, render, lint, write and import snippets (CC-2347 to CC-2397), and stop reporting `reserved-syntax` on a `{#id}:` line (CC-2118, CC-2124, CC-2172 to CC-2174).
