@@ -2645,7 +2645,7 @@
             "eq": [
               {
                 "len": {
-                  "run": "extensions"
+                  "run": "id_extensions"
                 }
               },
               0
@@ -2775,7 +2775,8 @@
       "clauses": [
         "C2-I-066",
         "C2-H-022",
-        "C2-W-150"
+        "C2-W-150",
+        "C2-X-079"
       ]
     },
     {
@@ -14473,8 +14474,8 @@
                 "cell_paragraph",
                 "definition_term",
                 "heading",
-                "paragraph"
                 "line",
+                "paragraph"
               ]
             ]
           },
@@ -14593,8 +14594,8 @@
                                 },
                                 [
                                   "caption",
-                                  "paragraph"
                                   "line",
+                                  "paragraph"
                                 ]
                               ]
                             },
@@ -14878,8 +14879,8 @@
                                     },
                                     [
                                       "caption",
-                                      "paragraph"
                                       "line",
+                                      "paragraph"
                                     ]
                                   ]
                                 },

@@ -92979,6 +92979,102 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2337",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "Catalog broken-fragment-link: an extension that generates no ids changes nothing",
+   "summary": "a registered extension that generates no ids keeps the missing fragment reported",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.colorSwatch"
+    ]
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2338",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "Catalog broken-fragment-link: an extension that generates no ids changes nothing",
+   "summary": "a registered extension that writes links but no ids keeps the missing fragment reported",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.wiki"
+    ]
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2339",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "C2-X-079: While an extension that generates ids is registered, `broken-fragment-link` reports nothing (C2-W-150).",
+   "summary": "a registered code group, whose row is marked ids, suppresses the missing fragment",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.codeGroup"
+    ]
+   },
+   "expected": {
+    "notReported": [
+     "broken-fragment-link"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2340",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "C2-X-079: While an extension that generates ids is registered, `broken-fragment-link` reports nothing (C2-W-150).",
+   "summary": "a registered cite extension, whose row is marked ids, suppresses the missing fragment",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.cite"
+    ]
+   },
+   "expected": {
+    "notReported": [
+     "broken-fragment-link"
+    ]
+   },
+   "from": []
   }
  ]
 }

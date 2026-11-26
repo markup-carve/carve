@@ -115,6 +115,10 @@
               }
             }
           },
+          "ids": {
+            "description": "The extension generates ids: its renderer or transform writes an id or anchor name that the tree does not carry, so broken-fragment-link reports nothing while it is registered (C2-X-079).",
+            "const": true
+          },
           "transform": {
             "description": "A document extension: no matcher claims a core node for it. Its transform rewrites the render view or it sets what the core renderer writes (C2-X-072).",
             "const": true
