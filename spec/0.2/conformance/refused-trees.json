@@ -5380,6 +5380,77 @@
      }
     ]
    }
+  },
+  {
+   "id": "snippet-definition-id",
+   "clauses": [
+    "C2-A-220"
+   ],
+   "reason": "a snippet definition with an id",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "snippet_definition",
+      "name": "v",
+      "attrs": {
+       "id": "v"
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "X"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "snippet-definition-empty",
+   "clauses": [
+    "C2-A-220"
+   ],
+   "reason": "a snippet definition with no children",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "snippet_definition",
+      "name": "v",
+      "children": []
+     }
+    ]
+   }
+  },
+  {
+   "id": "snippet-use-mode-mismatch",
+   "clauses": [
+    "C2-A-221"
+   ],
+   "reason": "a block snippet use in a list of inline nodes",
+   "refusedBy": "reader",
+   "path": "/children/0/children/0",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "snippet_use",
+        "name": "v",
+        "mode": "block"
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }
