@@ -160,7 +160,7 @@ Conventions:
 
 ## Node types
 
-Contract 2.0 as drafted on `next-ast2` has 75 node types. This document has 73: `escaped_text`, `critic_substitution`, `cell_wrap` and `figure` are gone, and `line` and `include` are new.
+Contract 2.0 as drafted on `next-ast2` has 75 node types. This document has 75: `escaped_text`, `critic_substitution`, `cell_wrap` and `figure` are gone, and `line`, `include`, `snippet_definition` and `snippet_use` are new.
 
 **C2-A-050** The node types are those of the table below. A tree that holds any other core `type` is refused (C2-A-018).
 
@@ -222,6 +222,8 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `section` | block | blocks | `level`? |
 | `small_caps` | inline | inlines | none |
 | `smart_punctuation` | inline | none | `kind`, `glyph`, `source` |
+| `snippet_definition` | top level | inlines | `name` |
+| `snippet_use` | block, inline | none | `name`, `mode` |
 | `soft_break` | inline | none | none |
 | `span` | inline | inlines | none |
 | `strike` | inline | inlines | none |
@@ -340,6 +342,10 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 **C2-A-079** An `abbreviation_def` carries `key`, `namespace: "abbr"` and `expansion`.
 
 **C2-A-080** Definitions are nodes with a position, so document order decides which of two definitions wins: the first one (C2-B-085).
+
+**C2-A-220** A `snippet_definition` carries `name`, the snippet name of its marker without the `$` (C2-B-236), and `children`, the inline content of its value, which is never empty. It may carry `attrs` with classes and key-value pairs, never an `id`: the schema refuses `attrs.id` on it (C2-A-018). It stands where the other definitions stand, among the top-level children of a document or an include.
+
+**C2-A-221** A `snippet_use` carries `name` and `mode`, `inline` or `block`, and no `children`, `attrs` or resolution field: its copy exists only in the render view (C2-N-091). Its `mode` matches its slot, `inline` in a list of inline nodes and `block` in a list of blocks, and a reader refuses a mismatch with `CarveTreeError` at the node (C2-A-018). A `table_cell` of a supplied tree that holds blocks may hold a block use; a parsed table never does (C2-B-237).
 
 ### Figures and captions
 
@@ -574,7 +580,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-157** Such a node may carry `segments`, a list of ranges in the shape of `pos`, one per source piece in order.
 
-**C2-A-158** In a tree a parser built from source, a node omits `pos` only when it has no source character or when its value is not one contiguous slice of the source (C2-A-156). Nodes with no source character are `table_column`, the `cell_paragraph` of an empty cell and a `line` with no children (C2-A-069). Nodes that are not one slice are a `table_row`, a `table_cell` and a `cell_paragraph` that a continuation row joined, an inline node of such a cell that takes characters from more than one of its pieces, the delimited table cases of C2-A-215, a `text` node merged from pieces that are not adjacent in the source, and the copy of a caption that an expanded code include gives its child, with every node inside it (C2-N-073). Every other node carries `pos`. An empty cell and a cell that holds a span mark span the text between their pipes (C2-A-149), so in `| a | |` the second cell spans offsets 5 to 6. A `caption_number` spans its `#`, and the text on each side of it spans its own characters: for `![i](a.png)`, a line feed and `^ Figure #: cap`, the text `Figure ` spans offsets 14 to 21, the number 21 to 22 and the text `: cap` 22 to 27.
+**C2-A-158** In a tree a parser built from source, a node omits `pos` only when it has no source character or when its value is not one contiguous slice of the source (C2-A-156). Nodes with no source character are `table_column`, the `cell_paragraph` of an empty cell and a `line` with no children (C2-A-069). Nodes that are not one slice are a `table_row`, a `table_cell` and a `cell_paragraph` that a continuation row joined, an inline node of such a cell that takes characters from more than one of its pieces, the delimited table cases of C2-A-215, a `text` node merged from pieces that are not adjacent in the source, and the copy of a caption that an expanded code include gives its child, with every node inside it (C2-N-073). Every other node carries `pos`. An empty cell and a cell that holds a span mark span the text between their pipes (C2-A-149), so in `| a | |` the second cell spans offsets 5 to 6. A `caption_number` spans its `#`, and the text on each side of it spans its own characters: for `![i](a.png)`, a line feed and `^ Figure #: cap`, the text `Figure ` spans offsets 14 to 21, the number 21 to 22 and the text `: cap` 22 to 27. A snippet copy exists only in the render view, and its nodes carry no `pos` (C2-N-092).
 
 **C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `ruby_pair` and `small_caps` have no source spelling and are never positioned by a parser. A block extension transformed from source takes the claimed core node's position.
 
@@ -777,11 +783,11 @@ The fixtures of `spec/0.2/trees/`, including the typed metadata block trees of `
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 166 | 2 |
+| Existing AST contract | 168 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **201** | **3** |
+| **Total** | **203** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-219; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-221; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 

@@ -801,6 +801,16 @@
       "clauses": ["C2-B-083", "C2-I-079"]
     },
     {
+      "id": "duplicate-snippet",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "messages": ["Duplicate snippet \"$${name}\": the first definition of the name wins. Rename or remove this one."],
+      "message_origin": "design",
+      "reports": "a snippet definition whose name an earlier snippet definition of the expanded tree holds, once per later definition; the range is the `$` and the name in its marker (C2-N-090)",
+      "clauses": ["C2-N-090"]
+    },
+    {
       "id": "emphasis-as-heading",
       "severity": "warning",
       "channel": "lint",
@@ -1780,16 +1790,12 @@
       "messages": [
         {
           "when": "a directive with a section and no path",
-          "text": "This \"${text}\" is reserved for an include from the same document in a later 0.2 release and renders as literal text. Write \\{{ to keep the text."
-        },
-        {
-          "when": "a line that starts with an id in braces, optional attributes and a colon",
-          "text": "A line that starts with \"${text}\" is reserved for a definition in a later 0.2 release and renders as literal text. Write \\{# to keep the text."
+          "text": "This \"${text}\" is reserved and renders as literal text. Write \\{{ to keep the text."
         }
       ],
       "message_origin": "design",
-      "reports": "each directive with a section and no path in a text leaf or a table row: `{{`, spaces, `#` and a section name, spaces and `}}`, with no option, whose braces are not escaped and stand in no code, math, raw or literal span, once per directive, the range is the directive (C2-N-089); and the first line of a top-level paragraph that starts at column 0 with a definition marker (`{#`, a section name, optional attributes without braces, `}`, glued brace groups, `:`), one or more spaces and content, once per line, the range is the marker (C2-B-236)",
-      "clauses": ["C2-N-089", "C2-B-236"]
+      "reports": "each directive with a section and no path in a text leaf or a table row: `{{`, spaces, `#` and a section name, spaces and `}}`, with no option, whose braces are not escaped and stand in no code, math, raw or literal span, once per directive, the range is the directive (C2-N-089)",
+      "clauses": ["C2-N-089"]
     },
     {
       "id": "semantic-attribute-outside-span",
@@ -1841,6 +1847,78 @@
       "message_origin": "design",
       "reports": "an at-sign or a `#` directly after a Unicode letter or number outside ASCII and followed by a mention or tag name (C2-I-092), which forms no mention or tag in 0.2 because the sigil follows a letter or number (C2-I-090) and which 0.1, testing only ASCII letters, digits and `_` before it, read as one; a sigil after an ASCII letter or digit, after a space or punctuation, behind a backslash or in an atom is not reported, nor `#1`, whose name holds no letter; once per sigil, the range is the sigil (C2-I-090, C2-I-092)",
       "clauses": ["C2-I-090", "C2-I-092"]
+    },
+    {
+      "id": "snippet-cycle",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["Snippet \"$${name}\" was not expanded: it would use itself. Wrote it as text."],
+      "message_origin": "design",
+      "reports": "a snippet use whose winning definition is already being expanded, once per use; the range is the use (C2-N-093)",
+      "clauses": ["C2-N-093"]
+    },
+    {
+      "id": "snippet-definition-id",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["A snippet definition is no anchor and takes no id, so this line is text. Remove the id."],
+      "message_origin": "design",
+      "reports": "a line at column 0 outside every container that would be a snippet definition but whose marker or glued attribute blocks hold an id, once per line; the range is the marker and the colon (C2-B-236)",
+      "hand_written": "the test reads the attribute parts of a marker that formed no definition, and the line model keeps such a line only as paragraph text",
+      "clauses": ["C2-B-236"]
+    },
+    {
+      "id": "snippet-depth",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["Snippet \"$${name}\" was not expanded: snippets nest deeper than ${limit} here. Wrote it as text."],
+      "message_origin": "design",
+      "reports": "a snippet use that would put more than `snippet_depth` definitions on the stack of expanded snippets, once per use; the range is the use (C2-N-093)",
+      "clauses": ["C2-N-093"]
+    },
+    {
+      "id": "snippet-node-budget",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["Snippet \"$${name}\" was not expanded: the snippet copies of this render reached their budget of ${limit} nodes. Wrote it as text."],
+      "message_origin": "design",
+      "reports": "a snippet use whose copy would bring the nodes that all copies of the render add past `snippet_nodes`, once per use; the range is the use (C2-N-093)",
+      "clauses": ["C2-N-093"]
+    },
+    {
+      "id": "snippet-scope-loss",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["This snippet came from an included file. The include is gone from the HTML, so the imported snippet resolves in this document only."],
+      "message_origin": "design",
+      "reports": "an element whose `data-carve-snippet-scope` the importer reads, once per element (C2-H-215)",
+      "clauses": ["C2-H-215"]
+    },
+    {
+      "id": "snippet-unexpanded-transform",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["A document transform inserted a snippet node, which is not expanded after the snippet pass. Wrote it as text."],
+      "message_origin": "design",
+      "reports": "a `snippet_use` or `snippet_definition` that a document transform inserted or put in place of a node, once per node, at its path (C2-N-095)",
+      "clauses": ["C2-N-095"]
+    },
+    {
+      "id": "snippet-unresolved",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["No snippet is named \"$${name}\". Wrote the use as text."],
+      "message_origin": "design",
+      "reports": "a snippet use whose name no snippet definition of the expanded tree holds, once per use; the range is the use (C2-N-093)",
+      "clauses": ["C2-N-093"]
     },
     {
       "id": "structure-unspellable",
@@ -2220,6 +2298,18 @@
       "message_origin": "engine_0_1",
       "reports": "a link reference definition whose key no link or image reference that resolves uses, where a reference inside a footnote definition that nothing references, and one inside an unresolved reference, does not count; once per definition, from its opening bracket (C2-B-083, C2-I-075, C2-H-193)",
       "clauses": ["C2-B-083", "C2-I-075", "C2-H-193"]
+    },
+    {
+      "id": "unused-snippet",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["Snippet \"$${name}\" is defined but never used."],
+      "message_origin": "design",
+      "reports": "a winning snippet definition that no snippet use of the authored tree names, a use inside another definition counted; once per definition, the range is the `$` and the name in its marker (C2-N-096)",
+      "hand_written": "it needs the snippet registry of the expanded tree and the names that its uses resolve to, which no record of the model holds",
+      "clauses": ["C2-N-096"]
     },
     {
       "id": "writer-refused",

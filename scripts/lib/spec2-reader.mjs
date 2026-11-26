@@ -23,7 +23,9 @@ export function readerChecks (spec) {
   const qualified = (name) => typeof name === 'string' && name.includes('.')
   // C2-B-190: the nodes that count one level of block nesting.
   const BLOCK_LEVEL = new Set(['block_quote', 'list', 'list_item', 'definition_list', 'definition_description', 'footnote', 'div', 'admonition', 'directive', 'figure_group'])
-  const DEFINITIONS = new Set(['footnote', 'link_reference_definition', 'abbreviation_def', 'citation_definition'])
+  const DEFINITIONS = new Set(['footnote', 'link_reference_definition', 'abbreviation_def', 'citation_definition', 'snippet_definition'])
+  // C2-A-221: whether a list slot holds inline nodes, read from the schema.
+  const inlineList = (type, key) => (schema.$defs[type]?.properties?.[key]?.items?.oneOf ?? []).some(ref => ref.$ref === '#/$defs/text')
   const INLINE_CONTAINERS = new Set(Object.entries(schema.$defs).filter(([, def]) => def.properties?.children).map(([type]) => type))
   const ADMONITIONS = ['note', 'tip', 'warning', 'danger', 'info', 'success', 'example', 'quote']
   const DIRECTIVES = ['bibliography', 'footnotes', 'glossary', 'index', 'references', 'toc']
@@ -115,6 +117,8 @@ export function readerChecks (spec) {
       if (isObject(node.metadata)) {
         for (const [name, value] of Object.entries(node.metadata.fields ?? {})) { metadataFields++; metadataDepth(value, 1, `${path}/metadata/fields/${name}`) }
       }
+      // C2-A-221: a snippet use's mode matches the list it stands in.
+      if (type === 'snippet_use' && parent && (node.mode === 'block') === inlineList(parent.type, key)) add(path, 'C2-A-221', `a ${node.mode} snippet use in a list of ${node.mode === 'block' ? 'inline nodes' : 'blocks'}`)
       // C2-A-049: frontmatter is a direct child of the document or an include.
       if (type === 'frontmatter' && !(key === 'children' && (parent?.type === 'document' || parent?.type === 'include'))) {
         add(path, 'C2-A-049', 'frontmatter nested below the document or an include')

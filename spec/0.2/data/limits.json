@@ -130,6 +130,22 @@
       ]
     },
     {
+      "name": "snippet_depth",
+      "value": 16,
+      "unit": "levels",
+      "clauses": [
+        "C2-N-093"
+      ]
+    },
+    {
+      "name": "snippet_nodes",
+      "value": 100000,
+      "unit": "nodes",
+      "clauses": [
+        "C2-N-093"
+      ]
+    },
+    {
       "name": "tab_stop",
       "value": 4,
       "unit": "columns",
