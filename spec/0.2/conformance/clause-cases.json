@@ -82329,7 +82329,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. ... The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
   "summary": "a col style without spaces and without the closing semicolon gives the column its width",
   "kind": "import",
   "html": "<table><colgroup><col style=\"width:40%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -82346,7 +82346,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. ... The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
   "summary": "a col style property name in upper case gives the column its width",
   "kind": "import",
   "html": "<table><colgroup><col style=\"WIDTH:40%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -82363,7 +82363,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. ... The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
   "summary": "a col style with spaces around the colon and before the semicolon gives the column its width",
   "kind": "import",
   "html": "<table><colgroup><col style=\"width : 40% ;\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -82380,7 +82380,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152). ... The `style` of a `<col>` is no key: one that gives no width, or that holds any other declaration, is dropped and reported with `import-attribute-dropped`.",
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. ... The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152) ... The `style` of a `<col>` is no key: one that gives no width, that holds any other declaration, or whose `width` is marked important, is dropped and reported with `import-attribute-dropped`.",
   "summary": "a col style with a width and another declaration gives the width and reports the other",
   "kind": "import",
   "html": "<table><colgroup><col style=\"width: 40%; color: red\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -82405,7 +82405,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152). ... The `style` of a `<col>` is no key: one that gives no width, or that holds any other declaration, is dropped and reported with `import-attribute-dropped`.",
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. ... The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152) ... The `style` of a `<col>` is no key: one that gives no width, that holds any other declaration, or whose `width` is marked important, is dropped and reported with `import-attribute-dropped`.",
   "summary": "the last percentage width declaration of a col style gives the width",
   "kind": "import",
   "html": "<table><colgroup><col style=\"width: 30%; width: 50%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -82430,7 +82430,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` is no key: one that gives no width, or that holds any other declaration, is dropped and reported with `import-attribute-dropped`.",
+  "why": "C2-M-041: The `style` of a `<col>` is no key: one that gives no width, that holds any other declaration, or whose `width` is marked important, is dropped and reported with `import-attribute-dropped`.",
   "summary": "a col width that is no percentage gives no width and is reported",
   "kind": "import",
   "html": "<table><colgroup><col style=\"width: 40px\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -82455,7 +82455,7 @@
   "clauses": [
    "C2-M-041"
   ],
-  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. The last `width` declaration whose value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives the column the width N/100 (C2-H-152).",
+  "why": "C2-M-041: The `style` of a `<col>` of the first `<colgroup>` is read as CSS declarations: it is split at each `;`, an empty piece is skipped, and each declaration is a property name, a `:` and a value, each without leading and trailing ASCII whitespace, the name compared without ASCII case. ... The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
   "summary": "the render spelling of a col width still gives the column its width",
   "kind": "import",
   "html": "<table><colgroup><col style=\"width: 40%;\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
@@ -91154,6 +91154,156 @@
   "expected": {
    "status": 1,
    "stderrCategory": "writer-refused"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2252",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152) C2-M-041: any other value gives no width, also where an earlier `width` declaration holds a percentage.",
+  "summary": "a later width that is no percentage wins over an earlier percentage and gives no width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40%; width: 50px\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= a |= b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2253",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: A value that ends in `!` and `important`, compared without ASCII case and with optional ASCII whitespace before and after the `!`, is marked important, and the mark is not part of the value. C2-M-041: The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
+  "summary": "an important percentage width wins over a later width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40% !important; width: 50%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2254",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: A value that ends in `!` and `important`, compared without ASCII case and with optional ASCII whitespace before and after the `!`, is marked important, and the mark is not part of the value. C2-M-041: The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
+  "summary": "a later important percentage width wins",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40%; width: 50% !important\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=50}\n|= a |= b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2255",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: A value that ends in `!` and `important`, compared without ASCII case and with optional ASCII whitespace before and after the `!`, is marked important, and the mark is not part of the value. C2-M-041: The `style` of a `<col>` is no key: one that gives no width, that holds any other declaration, or whose `width` is marked important, is dropped and reported with `import-attribute-dropped`.",
+  "summary": "a lone important percentage width gives the width and is reported",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40% !important\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2256",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: A value that ends in `!` and `important`, compared without ASCII case and with optional ASCII whitespace before and after the `!`, is marked important, and the mark is not part of the value. C2-M-041: The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152)",
+  "summary": "an important mark in upper case with no space before it is read",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40%!IMPORTANT; width: 50%\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{widths=40}\n|= a |= b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2257",
+  "clauses": [
+   "C2-M-041"
+  ],
+  "why": "C2-M-041: A value that ends in `!` and `important`, compared without ASCII case and with optional ASCII whitespace before and after the `!`, is marked important, and the mark is not part of the value. C2-M-041: The `width` declaration that applies is the last one marked important, or else the last one. Where its value is `N%`, with N a decimal number greater than 0 and at most 100 (C2-B-212), it gives the column the width N/100 (C2-H-152) C2-M-041: any other value gives no width, also where an earlier `width` declaration holds a percentage.",
+  "summary": "an important width that is no percentage wins over an important percentage and gives no width",
+  "kind": "import",
+  "html": "<table><colgroup><col style=\"width: 40% !important; width: 50px !important\"><col></colgroup><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "|= a |= b |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "import-attribute-dropped",
+     "severity": "warning",
+     "channel": "render-loss",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
   },
   "from": []
  }

@@ -756,3 +756,14 @@ The audit of the ruling on #6605 keeps the value the ruling dropped: an authored
 The audit of #6235 keeps the comments of a wrapper the note pass drops: they take its place (C2-M-109), and the mapping reads them, a raw block with `rawHtml` on and an `import-element-dropped` report with it off (C2-M-110). Clause cases CC-2234 to CC-2236. Measured on the same heads: all three engines drop the comments with the wrapper and report nothing.
 
 - `carve-js`, `carve-php` and `carve-rs`: keep the colliding attribute as the upper-case key, and move the comments of a dropped wrapper to its place.
+
+## Engine gaps from the ruling audit, group 1 (HTML table import), of 26 November (#6812)
+
+Mark's option A on #6812 ships the four audit findings on HTML table import in 0.2.0. Measured on `carve-js` `next2` `3887090`; `carve-php` and `carve-rs` implement the replaced readings (their lines on #6663, #6664, #6623 and carve-js#5574 are ticked) and were not measured.
+
+- #6663: a valid `header-rows` count sets the head of a pipe table as on a delimited table, whatever its cells (C2-B-186); the importer keeps the `<td>` of the head as data cells with no report (C2-M-037), and the writer writes `header-rows` on a pipe table whose head holds a data cell (C2-W-066). `deprecated-table-attribute` has a new message. Failing: CC-2100 to CC-2103, CC-2237 to CC-2242; passing controls CC-104, CC-2104, CC-2243.
+- #6664: an empty `body-rows` with a `footer-rows` count of all the rows makes every row a footer row (C2-B-187), and the writer writes `{footer-rows=N body-rows}` for a table of only a foot whose first row has header cells only (C2-W-136). Failing: CC-2068, CC-2244 to CC-2247, CC-2249; passing control CC-2248.
+- #6623: in a table with no `<thead>`, an unscoped `<th>` of the leading all-`<th>` rows that stay in the first body takes `scope` `col`, which the writer reports, so `carve import` refuses the file (C2-M-037, C2-W-011). Failing: CC-2063, CC-2250; CC-2251 is a CLI case.
+- carve-js#5574: the `width` declaration of a `<col>` style that applies is the last one marked `!important`, else the last one, and gives a width only where it is `N%`; an important width is reported (C2-M-041). Failing: CC-2252 to CC-2256; passing controls CC-2046 to CC-2052, CC-2257.
+
+- `carve-js`, `carve-php` and `carve-rs`: implement the four changes above.
