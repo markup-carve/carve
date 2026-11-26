@@ -25,7 +25,7 @@ export function readerChecks (spec) {
   const BLOCK_LEVEL = new Set(['block_quote', 'list', 'list_item', 'definition_list', 'definition_description', 'footnote', 'div', 'admonition', 'directive', 'figure_group'])
   const DEFINITIONS = new Set(['footnote', 'link_reference_definition', 'abbreviation_def', 'citation_definition', 'snippet_definition'])
   // C2-A-221: whether a list slot holds inline nodes, read from the schema.
-  const inlineList = (type, key) => (schema.$defs[type]?.properties?.[key]?.items?.oneOf ?? []).some(ref => ref.$ref === '#/$defs/text')
+  const listOf = (type, key, ref) => (schema.$defs[type]?.properties?.[key]?.items?.oneOf ?? []).some(item => item.$ref === `#/$defs/${ref}`)
   const INLINE_CONTAINERS = new Set(Object.entries(schema.$defs).filter(([, def]) => def.properties?.children).map(([type]) => type))
   const ADMONITIONS = ['note', 'tip', 'warning', 'danger', 'info', 'success', 'example', 'quote']
   const DIRECTIVES = ['bibliography', 'footnotes', 'glossary', 'index', 'references', 'toc']
@@ -118,7 +118,7 @@ export function readerChecks (spec) {
         for (const [name, value] of Object.entries(node.metadata.fields ?? {})) { metadataFields++; metadataDepth(value, 1, `${path}/metadata/fields/${name}`) }
       }
       // C2-A-221: a snippet use's mode matches the list it stands in.
-      if (type === 'snippet_use' && parent && (node.mode === 'block') === inlineList(parent.type, key)) add(path, 'C2-A-221', `a ${node.mode} snippet use in a list of ${node.mode === 'block' ? 'inline nodes' : 'blocks'}`)
+      if (type === 'snippet_use' && parent && (node.mode === 'block' ? listOf(parent.type, key, 'text') && !listOf(parent.type, key, 'paragraph') : listOf(parent.type, key, 'paragraph') && !listOf(parent.type, key, 'text'))) add(path, 'C2-A-221', `a ${node.mode} snippet use in a list of ${node.mode === 'block' ? 'inline nodes' : 'blocks'}`)
       // C2-A-049: frontmatter is a direct child of the document or an include.
       if (type === 'frontmatter' && !(key === 'children' && (parent?.type === 'document' || parent?.type === 'include'))) {
         add(path, 'C2-A-049', 'frontmatter nested below the document or an include')

@@ -407,6 +407,8 @@ outputs.js = work.map(jsRun)
 outputs.php = batch('php', [resolve(root, 'scripts/next2-readiness-php.php')], { CARVE_PHP_DIR: phpDir })
 outputs.rs = batch(resolve(process.env.CARVE_RS_READINESS_BIN ?? resolve(root, 'target/debug/carve-next2-readiness')), [], {})
 for (const [engine, output] of Object.entries(outputs)) work.forEach((c, i) => { if (c.kind === 'cli') output[i] = cliRun(c, engine) })
+// conformance/README.md `host.limits`: no engine offers the lowered-limit hook yet, so such a case is not run with its limits.
+for (const output of Object.values(outputs)) work.forEach((c, i) => { if (c.host?.limits) output[i] = { unsupported: 'host limits are not offered' } })
 const forbiddenReports = forbiddenCatalogReports(work, outputs, rules)
 const results = {}
 const extensionResults = {}
