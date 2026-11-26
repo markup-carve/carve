@@ -97381,6 +97381,128 @@
    "html": "<table>\n  <colgroup>\n    <col style=\"width: 25%;\">\n    <col style=\"width: 75%;\">\n  </colgroup>\n  <tbody>\n    <tr><td style=\"text-align: right; vertical-align: top;\">a</td><td style=\"text-align: center; vertical-align: bottom;\">b</td></tr>\n  </tbody>\n</table>"
   },
   "from": []
+ },
+ {
+  "id": "CC-2464",
+  "clauses": [
+   "C2-B-236",
+   "C2-B-095",
+   "C2-B-093"
+  ],
+  "why": "C2-B-236: A definition takes an attribute line (C2-B-095): the line's attributes come first and the marker's parts and glued blocks merge after them C2-B-095: Every block takes an attribute line, a definition and a `%%%` comment block included.",
+  "summary": "a snippet definition takes the attribute line above it, line classes first and then the marker's",
+  "kind": "render",
+  "input": "{.k}\n{$v .c}: X\n\n{{ $v }}\n",
+  "options": {},
+  "expected": {
+   "html": "<p class=\"k c\">X</p>",
+   "children": [
+    {
+     "type": "snippet_definition",
+     "name": "v",
+     "attrs": {
+      "classes": [
+       "k",
+       "c"
+      ]
+     },
+     "children": [
+      {
+       "type": "text",
+       "value": "X"
+      }
+     ]
+    },
+    {
+     "type": "snippet_use",
+     "name": "v",
+     "mode": "block"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2465",
+  "clauses": [
+   "C2-B-236",
+   "C2-B-095"
+  ],
+  "why": "C2-B-236: An id in that attribute line refuses the definition as an id in the marker does: the line below is a paragraph that the attribute line applies to",
+  "summary": "an id in the attribute line above a snippet marker makes the line a paragraph that carries the line's attributes",
+  "kind": "render",
+  "input": "{#i .k}\n{$v .c}: X\n",
+  "options": {},
+  "expected": {
+   "html": "<p id=\"i\" class=\"k\">{$v .c}: X</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "attrs": {
+      "id": "i",
+      "classes": [
+       "k"
+      ]
+     },
+     "children": [
+      {
+       "type": "text",
+       "value": "{$v .c}: X"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2466",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-236"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: An id in that attribute line refuses the definition as an id in the marker does: the line below is a paragraph that the attribute line applies to, and `snippet-definition-id` reports its marker.",
+  "summary": "an id in the attribute line above a snippet marker is reported at the marker on the line below",
+  "kind": "lint",
+  "input": "{#i .k}\n{$v .c}: X\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "snippet-definition-id",
+     "line": 2,
+     "column": 1,
+     "endLine": 2,
+     "endColumn": 9,
+     "channel": "lint"
+    }
+   ],
+   "notReported": [
+    "unused-snippet"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2467",
+  "clauses": [
+   "C2-N-031",
+   "C2-A-145"
+  ],
+  "why": "C2-N-031: Under a section the children are the selected blocks and then, in source order, every definition of the file that the selection did not take C2-A-145: In the children of an include with a line, region or section selection, the comparison between a selected block and a definition appended under C2-N-020 or C2-N-031 is exempt too",
+  "summary": "a section selection appends a link definition that stands above the section and resolves the selected link against it",
+  "kind": "render",
+  "input": "{{ sec.crv #s }}\n",
+  "options": {},
+  "files": {
+   "sec.crv": {
+    "text": "[r]: /u\n\n{#s}\n# S\n\nSee [x][r].\n"
+   }
+  },
+  "expected": {
+   "html": "<section id=\"s\">\n  <h1>S</h1>\n  <p>See <a href=\"/u\">x</a>.</p>\n</section>"
+  },
+  "from": []
  }
  ]
 }

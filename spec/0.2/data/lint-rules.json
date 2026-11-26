@@ -1866,7 +1866,7 @@
       "default": "on",
       "messages": ["A snippet definition is no anchor and takes no id, so this line is text. Remove the id."],
       "message_origin": "design",
-      "reports": "a line at column 0 outside every container that would be a snippet definition but whose marker or glued attribute blocks hold an id, once per line; the range is the marker and the colon (C2-B-236)",
+      "reports": "a line at column 0 outside every container that would be a snippet definition but whose marker, glued attribute blocks or attribute line above hold an id, once per line; the range is the marker and the colon (C2-B-236)",
       "hand_written": "the test reads the attribute parts of a marker that formed no definition, and the line model keeps such a line only as paragraph text",
       "clauses": ["C2-B-236"]
     },

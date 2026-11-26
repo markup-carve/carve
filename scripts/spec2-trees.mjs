@@ -140,7 +140,7 @@ const isNode = (value) => value !== null && typeof value === 'object' && !Array.
 /** Calls `visit(node, parentPos, path, ancestors)` for each node, and `list(nodes, path)` for each node list. */
 function walk(value, visit, list, path = '', outer = null, ancestors = []) {
   if (Array.isArray(value)) {
-    if (value.some(isNode)) list(value, path)
+    if (value.some(isNode)) list(value, path, ancestors)
     value.forEach((item, at) => walk(item, visit, list, `${path}/${at}`, outer, ancestors))
     return
   }
@@ -232,24 +232,62 @@ function positionFailures(tree, source, files = {}) {
     if (Array.isArray(node.children) && pos.startOffset === pos.endOffset && !BREAKS.has(node.type)) {
       found.push(`${where}: a node with children is zero-width (C2-A-155)`)
     }
-  }, (nodes, path) => {
-    let last = null
-    for (const node of nodes) {
-      if (!isNode(node) || !node.pos) continue
-      if (last && last.pos.endOffset > node.pos.startOffset) {
-        const breaks = BREAKS.has(last.type) && BREAKS.has(node.type)
-        const before = last.type === 'comment' && inside(last.pos, node.pos)
-        const after = node.type === 'comment' && last.type === 'code_block' && inside(node.pos, last.pos)
-        // C2-A-145: a comment block in a line block, inside the line that a lazy `%%` comment behind it ends.
-        const tail = last.type === 'line' ? last.children?.at(-1) : undefined
-        const lazy = node.type === 'comment' && node.form === 'block' && tail?.type === 'comment' && tail.form === 'line' &&
-          tail.pos && tail.pos.startOffset >= node.pos.endOffset && inside(node.pos, last.pos)
-        if (!breaks && !before && !after && !lazy) found.push(`${path}: ${last.type} overlaps ${node.type} (C2-A-145)`)
-      }
-      last = node
-    }
+  }, (nodes, path, ancestors) => {
+    const positioned = nodes.filter(node => isNode(node) && node.pos)
+    const owner = ancestors.at(-1)
+    if (path.endsWith('/children') && isSelection(owner) && appendedSplit(positioned, owner, tables.get(owner.file)?.bytes)) return
+    found.push(...orderFailures(positioned, path))
   })
   return found
+}
+
+/** The C2-A-145 failures of a list of positioned siblings, with the three comment cases exempt. */
+function orderFailures(nodes, path) {
+  const found = []
+  for (let at = 1; at < nodes.length; at++) {
+    const last = nodes[at - 1]
+    const node = nodes[at]
+    if (last.pos.endOffset <= node.pos.startOffset) continue
+    const breaks = BREAKS.has(last.type) && BREAKS.has(node.type)
+    const before = last.type === 'comment' && inside(last.pos, node.pos)
+    const after = node.type === 'comment' && last.type === 'code_block' && inside(node.pos, last.pos)
+    // C2-A-145: a comment block in a line block, inside the line that a lazy `%%` comment behind it ends.
+    const tail = last.type === 'line' ? last.children?.at(-1) : undefined
+    const lazy = node.type === 'comment' && node.form === 'block' && tail?.type === 'comment' && tail.form === 'line' &&
+      tail.pos && tail.pos.startOffset >= node.pos.endOffset && inside(node.pos, last.pos)
+    if (!breaks && !before && !after && !lazy) found.push(`${path}: ${last.type} overlaps ${node.type} (C2-A-145)`)
+  }
+  return found
+}
+
+const contiguous = (nodes, bytes) => !bytes || nodes.every((node, at) => at === 0 ||
+  /^[ \t\r\n]*$/.test(bytes.subarray(nodes[at - 1].pos.endOffset, node.pos.startOffset).toString('utf8')))
+
+// C2-N-020, C2-N-031: the definitions a line, region or section selection appends after the selected blocks.
+const DEFINITIONS = new Set(['link_reference_definition', 'footnote', 'abbreviation_def', 'citation_definition', 'snippet_definition'])
+const isSelection = (node) => node?.type === 'include' && (node.section !== undefined || node.options?.lines !== undefined || node.options?.region !== undefined)
+
+/**
+ * C2-A-145: a selected block and an appended definition are not compared. The list passes when it splits into
+ * the selected blocks and a tail of definitions, each part ordered, with every definition of the tail outside
+ * the span of the selected blocks, since an appended definition's first line is not selected. Under `lines` the
+ * selected blocks start on a selected line and the definitions do not. Under a section the selected blocks are
+ * one run of the file, so only blank space stands between two of them.
+ */
+function appendedSplit(nodes, include, bytes) {
+  const [first, last] = include.options?.lines?.split('-').map(Number) ?? []
+  const picked = (node) => node.pos.startLine >= first && node.pos.startLine <= last
+  for (let split = nodes.length - 1; split >= 0 && DEFINITIONS.has(nodes[split].type); split--) {
+    const selected = nodes.slice(0, split)
+    const appended = nodes.slice(split)
+    if (orderFailures(selected, '').length || orderFailures(appended, '').length) continue
+    const start = selected[0]?.pos.startOffset
+    const end = selected.at(-1)?.pos.endOffset
+    if (first !== undefined && (!selected.every(picked) || appended.some(picked))) continue
+    if (include.section !== undefined && !contiguous(selected, bytes)) continue
+    if (appended.every(node => !selected.length || node.pos.endOffset <= start || node.pos.startOffset >= end)) return true
+  }
+  return false
 }
 
 const ajv = new Ajv2020({ strict: true, allErrors: false })
@@ -423,7 +461,7 @@ const positions = existsSync(join(dir, 'positions.json')) ? read('positions.json
 for (const entry of positions) {
   if (!entry.clauses?.length) fail(`positions.json ${entry.id}: needs clauses`)
   if (!entry.fails) { checkPositive(entry, 'positions.json'); positive++; continue }
-  if (!positionFailures(entry.tree, entry.source).some(failure => failure.includes(`(${entry.fails})`))) fail(`positions.json ${entry.id}: no ${entry.fails} failure`)
+  if (!positionFailures(entry.tree, entry.source, entry.files).some(failure => failure.includes(`(${entry.fails})`))) fail(`positions.json ${entry.id}: no ${entry.fails} failure`)
 }
 
 const nodes = existsSync(join(dir, 'nodes.json')) ? read('nodes.json').trees : (fail('nodes.json: missing'), [])

@@ -881,3 +881,18 @@ The ruling on #6844 adds the presence carrier `data-carve-loose`: under `roundtr
 The ruling on #6858 (options A and D) amends C2-X-078. A cell's `align` and `valign` are trimmed and folded to lower case as C2-H-015 reads `align`; a valid `align` is `left`, `right` or `center` and a valid `valign` is `top`, `middle`, `bottom` or `baseline` (C2-A-092). Another value has no effect, is not written, and leaves the cell its column's `aligns` or `valigns` entry. `aligns`, `valigns` and `widths` on the div follow the pipe-table rules (C2-B-211, C2-B-212, C2-B-227): one bad entry invalidates the whole list, entries are case sensitive, and the keys are never written on `<table>` (C2-H-153). Whether a head-row cell's mark gives its column an alignment for the body (C2-B-213) is not ruled. Clause cases CC-2455 to CC-2463. Measured on `carve-js` `next2` `6f860a22`: it fails CC-2455 (an invalid cell value hides the column entry), CC-2456 (`baseline` is dropped), CC-2459 and CC-2460 (`aligns` is read entry by entry and ignoring case), and passes the other five. The triage on #6858 found `carve-php` and `carve-rs` rendering the same as `carve-js` on its inputs.
 
 - `carve-js` first, then `carve-php` and `carve-rs`: give an invalid cell value no effect so the column entry applies, accept `baseline`, and read `aligns` and `valigns` of a list table as a pipe table reads them.
+
+## Engine gaps from the snippet attribute line ruling of 26 November (#6865)
+
+The ruling on #6865 (option B) applies C2-B-095 to a snippet definition: it takes the attribute line above it, the line's attributes first and then the marker's parts and glued blocks (C2-B-093, as C2-B-106 does for a link definition), and an id in that line makes the line below a paragraph that the attribute line applies to, with `snippet-definition-id` at its marker (C2-B-236). Clause cases CC-2464 to CC-2466. Measured on `carve-js` `next2` `b770d62d`: all three fail; it keeps only the line's classes and takes the id line as a definition with `attrs.id`. `carve-php` merges both classes (carve-php#6070) and holds the three cases until its snippet port lands; `carve-rs` has no snippets yet.
+
+- `carve-js`: merge the line's attributes before the marker's, and make a line below an attribute line with an id a paragraph with `snippet-definition-id`.
+- `carve-php`: refuse the definition under an attribute line with an id, as it ports snippets.
+- `carve-rs`: both, as it implements snippets.
+
+## Engine gaps from the appended definition ruling of 26 November (#6866)
+
+The ruling on #6866 (option A, narrowed) adds a fourth exemption to C2-A-145: in the children of an include with a line, region or section selection, a selected block and a definition appended under C2-N-020 or C2-N-031 are not compared, since the definition keeps its file position; the selected blocks stay ordered among themselves, and so do the appended definitions. No tree changes. The tree gate takes the exemption (`scripts/spec2-trees.mjs`), with the positioned trees of CC-2373 and of a section selection and a refused tree whose appended definitions stand out of file order (`trees/positions.json`). Clause case CC-2467 renders the section selection; `carve-js` `next2` `b770d62d` passes it.
+
+- `carve-php`: take the exemption in its tree gate and release CC-2373.
+- `carve-rs`: give CC-2467 its tree as it implements section selections and snippets.
