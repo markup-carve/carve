@@ -85056,7 +85056,7 @@
     "C2-W-106",
     "C2-B-236"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "a line that starts with a braced id and a colon is reported as reserved",
    "kind": "lint",
    "input": "{#dj}: [The Djot Language](https://github.com/jgm/djot)\n",
@@ -85081,7 +85081,7 @@
     "C2-B-236",
     "C2-B-090"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "a braced id alone on its line is an attribute line and is not reported",
    "kind": "lint",
    "input": "{#dj}\n[x](u)\n",
@@ -85099,7 +85099,7 @@
     "C2-W-106",
     "C2-B-236"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "an escaped opening brace keeps a definition-shaped line unreported",
    "kind": "lint",
    "input": "\\{#dj}: x\n",
@@ -85118,7 +85118,7 @@
     "C2-B-236",
     "C2-B-081"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "a definition-shaped line inside a list item is not reported",
    "kind": "lint",
    "input": "- {#dj}: x\n",
@@ -85136,7 +85136,7 @@
     "C2-W-106",
     "C2-B-236"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "a definition-shaped line that continues a paragraph is not reported",
    "kind": "lint",
    "input": "text\n{#dj}: x\n",
@@ -85154,7 +85154,7 @@
     "C2-W-106",
     "C2-B-236"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "a braced id and a colon with no content is not reported",
    "kind": "lint",
    "input": "{#dj}:\n",
@@ -85173,7 +85173,7 @@
     "C2-B-236",
     "C2-B-090"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with `{#`, an id of the section name shape of C2-B-203, `}:`, one space and content, as `{#intro}: text`, is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release ... `reserved-syntax` reports it when it is the first line of a paragraph.",
    "summary": "a definition-shaped line below an attribute line is the first line of its paragraph and is reported",
    "kind": "lint",
    "input": "{.c}\n{#dj}: x\n",
@@ -88001,6 +88001,114 @@
      }
     ],
     "carve": "::: |\na\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2172",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release. The marker is `{#`, an id of the section name shape of C2-B-203, optionally a space or tab and characters other than braces and line ends, `}`, then any number of brace groups glued to it, each `{`, characters other than braces and line ends, and `}`, and then `:`. So `{#intro}: text`, `{#intro .lead}: text` and `{#intro}{.lead}: text` are reserved, and so is `{#intro}:  text` with two spaces.",
+   "summary": "a definition line with a class after the id is reported as reserved",
+   "kind": "lint",
+   "input": "{#dj .brand}: [The Djot Language](https://github.com/jgm/djot)\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2173",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release. The marker is `{#`, an id of the section name shape of C2-B-203, optionally a space or tab and characters other than braces and line ends, `}`, then any number of brace groups glued to it, each `{`, characters other than braces and line ends, and `}`, and then `:`. So `{#intro}: text`, `{#intro .lead}: text` and `{#intro}{.lead}: text` are reserved, and so is `{#intro}:  text` with two spaces.",
+   "summary": "a definition line with a brace group glued to the id block is reported as reserved",
+   "kind": "lint",
+   "input": "{#dj}{.brand}: [The Djot Language](https://github.com/jgm/djot)\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2174",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release. The marker is `{#`, an id of the section name shape of C2-B-203, optionally a space or tab and characters other than braces and line ends, `}`, then any number of brace groups glued to it, each `{`, characters other than braces and line ends, and `}`, and then `:`. So `{#intro}: text`, `{#intro .lead}: text` and `{#intro}{.lead}: text` are reserved, and so is `{#intro}:  text` with two spaces.",
+   "summary": "a definition line with two spaces after the colon is reported as reserved",
+   "kind": "lint",
+   "input": "{#dj}:  [The Djot Language](https://github.com/jgm/djot)\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "reserved-syntax",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2175",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release. The marker is `{#`, an id of the section name shape of C2-B-203, optionally a space or tab and characters other than braces and line ends, `}`, then any number of brace groups glued to it, each `{`, characters other than braces and line ends, and `}`, and then `:`. ... A line whose first attribute block holds the id after another entry, as `{.lead #intro}: text`, is not reserved.",
+   "summary": "an attribute block whose id is not its first entry is not reserved",
+   "kind": "lint",
+   "input": "{.brand #dj}: text\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2176",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-236"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-236: A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release. The marker is `{#`, an id of the section name shape of C2-B-203, optionally a space or tab and characters other than braces and line ends, `}`, then any number of brace groups glued to it, each `{`, characters other than braces and line ends, and `}`, and then `:`.",
+   "summary": "text between the id block and the colon makes no definition marker",
+   "kind": "lint",
+   "input": "{#dj} text {.x}: more\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "reserved-syntax"
+    ]
    },
    "from": []
   }
