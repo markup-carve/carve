@@ -84270,7 +84270,7 @@
     "C2-M-037",
     "C2-W-066"
    ],
-   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, only where a head row holds a data cell (C2-B-186); every other head is made by its header cells (C2-B-178).",
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. ... A head row that holds a data cell is one such case (C2-B-186)",
    "summary": "a thead row of td cells imports as a head of data cells, written with header-rows",
    "kind": "import",
    "html": "<table><thead><tr><td>a</td><td>b</td></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>",
@@ -84288,7 +84288,7 @@
     "C2-M-037",
     "C2-W-066"
    ],
-   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, only where a head row holds a data cell (C2-B-186); every other head is made by its header cells (C2-B-178).",
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. ... A head row that holds a data cell is one such case (C2-B-186)",
    "summary": "an empty td corner cell and td column labels in the thead stay data cells of the head",
    "kind": "import",
    "html": "<table><thead><tr><td></td><td>Q1</td><td>Q2</td></tr></thead><tbody><tr><th>North</th><td>1</td><td>2</td></tr></tbody></table>",
@@ -84306,7 +84306,7 @@
     "C2-M-037",
     "C2-W-066"
    ],
-   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, only where a head row holds a data cell (C2-B-186); every other head is made by its header cells (C2-B-178).",
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. ... A head row that holds a data cell is one such case (C2-B-186)",
    "summary": "an empty td corner cell beside th column labels in the thead stays a data cell of the head",
    "kind": "import",
    "html": "<table><thead><tr><td></td><th>Q1</th><th>Q2</th></tr></thead><tbody><tr><th>North</th><td>1</td><td>2</td></tr></tbody></table>",
@@ -84324,7 +84324,7 @@
     "C2-M-037",
     "C2-W-066"
    ],
-   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, only where a head row holds a data cell (C2-B-186); every other head is made by its header cells (C2-B-178).",
+   "why": "C2-M-037: `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false, in the head as well: `header-rows` spells a head that holds data cells (C2-B-186). C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. ... A head row that holds a data cell is one such case (C2-B-186)",
    "summary": "td cells in two rows of one thead give a head of two rows of data cells",
    "kind": "import",
    "html": "<table><thead><tr><td>a</td></tr><tr><td>b</td></tr></thead><tbody><tr><td>1</td></tr></tbody></table>",
@@ -90877,7 +90877,7 @@
    "C2-W-066",
    "C2-B-186"
   ],
-  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, only where a head row holds a data cell (C2-B-186); every other head is made by its header cells (C2-B-178).",
+  "why": "C2-W-066: Where the written rows and keys give the tree's head, no `header-rows` is written: `{header-rows=1}` above `|= a |` and `| 1 |` is written without it.",
   "summary": "fmt drops header-rows where the header marks make the same head",
   "kind": "format",
   "input": "{header-rows=1}\n|= a |\n| 1 |\n",
@@ -90893,7 +90893,7 @@
    "C2-W-066",
    "C2-B-186"
   ],
-  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, only where a head row holds a data cell (C2-B-186); every other head is made by its header cells (C2-B-178).",
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. ... A head row that holds a data cell is one such case (C2-B-186)",
   "summary": "fmt keeps header-rows on a head of data cells",
   "kind": "format",
   "input": "{header-rows=1}\n| a |\n| 1 |\n",
@@ -97501,6 +97501,72 @@
   },
   "expected": {
    "html": "<section id=\"s\">\n  <h1>S</h1>\n  <p>See <a href=\"/u\">x</a>.</p>\n</section>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2468",
+  "clauses": [
+   "C2-W-066",
+   "C2-W-136",
+   "C2-B-230"
+  ],
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: Where `attrs` keeps a `body-rows`, the writer makes no `body-header-rows` or `body-header-cols`, since those lists take effect only beside a `body-rows` that does (C2-B-230).",
+  "summary": "fmt keeps an empty body-rows from attrs above a body of a header row and makes header-rows=0 after it",
+  "kind": "format",
+  "input": "{header-rows=0 body-rows}\n|= a |\n",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows header-rows=0}\n|= a |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2469",
+  "clauses": [
+   "C2-W-066",
+   "C2-B-187"
+  ],
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-B-187: An empty `body-rows` (C2-B-230) is the one exception ... Without `body-rows`, or with a count larger than the number of rows, the head takes its rows as before.",
+  "summary": "fmt keeps header-rows on a head of header rows above an empty body and a foot of header rows",
+  "kind": "format",
+  "input": "{header-rows=1 footer-rows=1 body-rows=0}\n|= a |\n|= b |\n",
+  "options": {},
+  "expected": {
+   "carve": "{header-rows=1 footer-rows=1 body-rows=0}\n|= a |\n|= b |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2470",
+  "clauses": [
+   "C2-W-066",
+   "C2-W-136",
+   "C2-B-230"
+  ],
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: Where `attrs` keeps a `body-rows`, the writer makes no `body-header-rows` or `body-header-cols`, since those lists take effect only beside a `body-rows` that does (C2-B-230).",
+  "summary": "fmt keeps an invalid body-rows from attrs, keeps the marks of the body's header row and makes header-rows",
+  "kind": "format",
+  "input": "{header-rows=1 body-rows=x}\n|= h |\n|= a |\n| 1 |\n",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=x header-rows=1}\n|= h |\n|= a |\n| 1 |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2471",
+  "clauses": [
+   "C2-W-066",
+   "C2-W-136"
+  ],
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: A table of more than one body, or with an empty body, a body that starts with rows of header cells or a `rowHeadColumns`, is written with `body-rows`, the data rows of each body; with `body-header-rows`, the leading rows of header cells of each body",
+  "summary": "fmt makes body-header-rows beside a made body-rows and no header-rows where the header marks give the head",
+  "kind": "format",
+  "input": "{header-rows=1 body-rows=1 body-header-rows=1}\n|= h |\n|= a |\n| 1 |\n",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=1 body-header-rows=1}\n|= h |\n| a |\n| 1 |\n"
   },
   "from": []
  }
