@@ -15,7 +15,8 @@ test('nine rows of #6186 are data and the seven others stay hand-written', () =>
     'unclosed-braced-comment', 'unclosed-inline-emphasis']) assert.ok(stated.has(id), id)
   const hand = catalog.filter((row) => row.hand_written !== undefined).map(({ id }) => id)
   assert.deepEqual(hand, ['bidi-control-in-source', 'braced-span-opener-as-text', 'comment-in-reference-label',
-    'deprecated-substitution-arrow', 'non-descriptive-link-text', 'platform-issue-reference', 'platform-mention-token'])
+    'deprecated-substitution-arrow', 'non-descriptive-link-text', 'platform-issue-reference', 'platform-mention-token',
+    'snippet-definition-id', 'unused-snippet'])
   for (const id of hand) assert.ok(!stated.has(id), id)
 })
 

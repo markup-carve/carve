@@ -354,8 +354,8 @@
         "A definition is recognized only at column 0 outside every container, so this line is text. Put it at column 0 outside every container."
       ],
       "message_origin": "design",
-      "reports": "each definition-shaped line inside a container or indented at the top level; once per candidate line, the range is the bracketed label and colon (C2-B-081)",
-      "clauses": ["C2-B-081"]
+      "reports": "each definition-shaped line inside a container or indented at the top level; once per candidate line, the range is the bracketed label and colon, or the snippet marker and colon (C2-B-081, C2-B-236)",
+      "clauses": ["C2-B-081", "C2-B-236"]
     },
     {
       "id": "definition-term-block-folded",
