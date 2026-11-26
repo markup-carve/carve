@@ -889,3 +889,10 @@ The ruling on #6865 (option B) applies C2-B-095 to a snippet definition: it take
 - `carve-js`: merge the line's attributes before the marker's, and make a line below an attribute line with an id a paragraph with `snippet-definition-id`.
 - `carve-php`: refuse the definition under an attribute line with an id, as it ports snippets.
 - `carve-rs`: both, as it implements snippets.
+
+## Engine gaps from the appended definition ruling of 26 November (#6866)
+
+The ruling on #6866 (option A, narrowed) adds a fourth exemption to C2-A-145: in the children of an include with a line, region or section selection, a selected block and a definition appended under C2-N-020 or C2-N-031 are not compared, since the definition keeps its file position; the selected blocks stay ordered among themselves, and so do the appended definitions. No tree changes. The tree gate takes the exemption (`scripts/spec2-trees.mjs`), with the positioned trees of CC-2373 and of a section selection and a refused tree whose appended definitions stand out of file order (`trees/positions.json`). Clause case CC-2467 renders the section selection; `carve-js` `next2` `b770d62d` passes it.
+
+- `carve-php`: take the exemption in its tree gate and release CC-2373.
+- `carve-rs`: give CC-2467 its tree as it implements section selections and snippets.

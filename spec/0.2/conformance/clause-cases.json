@@ -97482,6 +97482,27 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2467",
+  "clauses": [
+   "C2-N-031",
+   "C2-A-145"
+  ],
+  "why": "C2-N-031: Under a section the children are the selected blocks and then, in source order, every definition of the file that the selection did not take C2-A-145: In the children of an include with a line, region or section selection, the comparison between a selected block and a definition appended under C2-N-020 or C2-N-031 is exempt too",
+  "summary": "a section selection appends a link definition that stands above the section and resolves the selected link against it",
+  "kind": "render",
+  "input": "{{ sec.crv #s }}\n",
+  "options": {},
+  "files": {
+   "sec.crv": {
+    "text": "[r]: /u\n\n{#s}\n# S\n\nSee [x][r].\n"
+   }
+  },
+  "expected": {
+   "html": "<section id=\"s\">\n  <h1>S</h1>\n  <p>See <a href=\"/u\">x</a>.</p>\n</section>"
+  },
+  "from": []
  }
  ]
 }
