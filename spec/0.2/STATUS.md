@@ -773,3 +773,9 @@ Mark's option A on #6812 ships the four audit findings on HTML table import in 0
 The ruling audit of 26 November replaced the ruling on #6465: C2-B-029 strips the body of a comment block by at most the indent of its opener, also inside a line block, so a straddling tab before the opener is stripped from each body line. C2-B-029 now names the comment block and the line block. Clause cases CC-2263 and CC-2264. Measured on `carve-js` `next2` `d4331d7e`, `carve-php` `next2` `8fd0c4af` and `carve-rs` `next2` `afed9a76`: all three keep the opener's indent in a comment block inside a line block (`"\tc\td"`, `"  c"`) and strip it elsewhere.
 
 - `carve-js`, `carve-php` and `carve-rs`: strip a comment block inside a line block by its opener's indent (CC-2263, CC-2264).
+
+## Engine gaps from the writer findings of the 0.2.0 ruling audit (#6812, group 3)
+
+#3598: the writer reports root `metadata.fields` with `field-unspellable` also beside a leading frontmatter node, which it still writes unchanged (C2-W-011, C2-A-193); C2-W-002 and C2-W-117 drop that exception. CC-501 now expects the loss. Measured on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`): all three write the source and report nothing.
+
+- `carve-js`, `carve-php` and `carve-rs`: report `/metadata/fields` beside frontmatter too (CC-501).

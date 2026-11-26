@@ -708,7 +708,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-192** The core HTML renderer ignores all three namespaces. It writes nothing for root metadata `headers`, `footers`, `abstract`, `keywords` or `fields` and reports no notice.
 
-**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011 as `field-unspellable` at the path of that field, as `/metadata/keywords`. It handles `fields` under the frontmatter rule of C2-W-011.
+**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011 as `field-unspellable` at the path of that field, as `/metadata/keywords`. It reports `fields` the same way, also beside a leading frontmatter node (C2-W-011).
 
 **C2-A-194** Equality compares all three data values under C2-A-161.
 

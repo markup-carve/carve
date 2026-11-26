@@ -28138,8 +28138,8 @@
     "C2-A-193",
     "C2-W-011"
    ],
-   "why": "C2-A-193: It handles `fields` under the frontmatter rule of C2-W-011. C2-W-011: When a document has a leading frontmatter node, the writer writes that node unchanged and reports no separate loss for `fields`",
-   "summary": "root metadata fields beside a frontmatter node are no loss",
+   "why": "C2-A-193: It reports `fields` the same way, also beside a leading frontmatter node (C2-W-011). C2-W-011: Frontmatter is raw source text and is never parsed into `fields`, so the writer reports `metadata.fields` also beside a leading frontmatter node, which it writes unchanged.",
+   "summary": "root metadata fields beside a frontmatter node are a loss",
    "kind": "write",
    "tree": {
     "type": "document",
@@ -28172,9 +28172,16 @@
    "options": {},
    "expected": {
     "carve": "---\na: 1\n---\n\nb\n",
-    "diagnostics": [],
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/metadata/fields",
+      "channel": "render-loss"
+     }
+    ],
     "diagnosticsComplete": true
    },
+   "corrected": "expected no loss for `fields` beside a leading frontmatter node before the ruling audit of carve#6812 (carve#3598)",
    "from": []
   },
   {
