@@ -88,7 +88,7 @@ $b = 2;
 - `data-line-start` is the number of the first line, for an excerpt from a larger file. It is a decimal number of at least 1 without a leading zero; the gutter starts at 1 without it.
 - `data-highlight` lists the lines to highlight: line numbers and `a-b` ranges, separated by commas without spaces. The lines are counted from the first line of the block, not from `data-line-start`.
 
-The renderer writes these keys as it writes any attribute, and does not check them. A host or highlighter reads them from the `<pre>`. On a block with a caption they stand on the `<figure>` around it. `fmt` and the HTML importer keep them. See [line options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content) (C2-H-211 to C2-H-213).
+The renderer writes these keys as it writes any attribute, and does not check them. A host or highlighter reads them from the `<pre>`. On a block with a caption they stay on the `<pre>`, while its other attributes go on the `<figure>` around it. `fmt` and the HTML importer keep them. See [line options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content) (C2-H-063, C2-H-211 to C2-H-213).
 
 A code include does not set the start for you. With `@lines:4-5`, write the first selected line yourself:
 
@@ -109,7 +109,7 @@ Common highlighters name these options differently. A host adapter maps them:
 | Torchlight | `lineNumbersStart` |
 | Shiki | a transformer that reads the node's `attrs` |
 
-A host that highlights through `codeBlockRenderer` gets no `attrs` for a block with a caption (C2-H-206): there the options stand only on the `<figure>`.
+A host that highlights through `codeBlockRenderer` finds them in the node's `attrs`, also for a block with a caption (C2-H-206).
 
 ## Tables
 

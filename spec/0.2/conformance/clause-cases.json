@@ -90265,7 +90265,7 @@
     "C2-H-211",
     "C2-H-048"
    ],
-   "why": "C2-H-211: Line options are attributes, not syntax: the class `line-numbers` asks a host for a line-number gutter, `data-line-start` names the number of the first line, and `data-highlight` names the lines to highlight. The renderer gives them no meaning and writes them as any other attribute of the block (C2-H-048)",
+   "why": "C2-H-211: Line options are attributes, not syntax: the class `line-numbers` asks a host for a line-number gutter, `data-line-start` names the number of the first line, and `data-highlight` names the lines to highlight. The renderer gives them no meaning and writes them on `<pre>` as any other attribute of the block (C2-H-048)",
    "summary": "the three line options of a code block are written on its <pre>",
    "kind": "render",
    "input": "{.line-numbers data-line-start=\"42\" data-highlight=\"1,3-5\"}\n```php \"src/app.php\"\n$a = 1;\n$b = 2;\n```\n",
@@ -90281,15 +90281,15 @@
    "id": "CC-2218",
    "clauses": [
     "C2-H-211",
-    "C2-H-062"
+    "C2-H-063"
    ],
-   "why": "C2-H-211: The renderer gives them no meaning and writes them as any other attribute of the block (C2-H-048), on the `<figure>` of a captioned block (C2-H-062)",
-   "summary": "the line options of a captioned code block are written on its figure",
+   "why": "C2-H-211: The renderer gives them no meaning and writes them on `<pre>` as any other attribute of the block (C2-H-048), also where the block has a caption (C2-H-063) C2-H-063: The line options of a code block (C2-H-211) are the exception: the class `line-numbers` and the keys `data-line-start` and `data-highlight` stay on its `<pre>` and are not written on the `<figure>`.",
+   "summary": "the line options of a captioned code block stay on its <pre>",
    "kind": "render",
    "input": "{.line-numbers data-line-start=42 data-highlight=1,3-5}\n```php\n$a = 1;\n```\n^ The app.\n",
    "options": {},
    "expected": {
-    "html": "<figure class=\"line-numbers\" data-line-start=\"42\" data-highlight=\"1,3-5\">\n  <pre><code class=\"language-php\">$a = 1;\n</code></pre>\n  <figcaption>The app.</figcaption>\n</figure>",
+    "html": "<figure>\n  <pre class=\"line-numbers\" data-line-start=\"42\" data-highlight=\"1,3-5\"><code class=\"language-php\">$a = 1;\n</code></pre>\n  <figcaption>The app.</figcaption>\n</figure>",
     "diagnostics": [],
     "diagnosticsComplete": true
    },
@@ -90436,6 +90436,62 @@
     "html": "<pre class=\"line-numbers\" data-line-start=\"auto\"><code class=\"language-js\">l2\nl3\n</code></pre>",
     "diagnostics": [],
     "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2227",
+   "clauses": [
+    "C2-H-063",
+    "C2-H-009"
+   ],
+   "why": "C2-H-063: The line options of a code block (C2-H-211) are the exception: the class `line-numbers` and the keys `data-line-start` and `data-highlight` stay on its `<pre>` and are not written on the `<figure>`.",
+   "summary": "a captioned code block keeps its other attributes on the figure and its line options on <pre>",
+   "kind": "render",
+   "input": "{#c .wide .line-numbers lang=de data-line-start=42 data-highlight=1 data-x=y}\n```php \"src/app.php\"\n$a = 1;\n```\n^ The app.\n",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"c\" class=\"wide\" lang=\"de\" data-x=\"y\">\n  <pre title=\"src/app.php\" class=\"line-numbers\" data-line-start=\"42\" data-highlight=\"1\"><code class=\"language-php\">$a = 1;\n</code></pre>\n  <figcaption>The app.</figcaption>\n</figure>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2228",
+   "clauses": [
+    "C2-H-206",
+    "C2-H-063"
+   ],
+   "why": "C2-H-206: For a code block with a caption it is called for the block inside the `<figure>` (C2-H-062), so the node has no `caption`, `lang` or `dir`, its `attrs` hold only the line options that stay on `<pre>` (C2-H-063), and the default HTML carries no other of their attributes",
+   "summary": "the default HTML of a captioned code block carries its line options",
+   "kind": "render",
+   "input": "{#f .line-numbers data-highlight=1}\n```ts\nx\n```\n^ cap\n",
+   "options": {
+    "codeBlockRenderer": {
+     "result": "<div>{default}</div>"
+    }
+   },
+   "expected": {
+    "html": "<figure id=\"f\">\n  <div><pre class=\"line-numbers\" data-highlight=\"1\"><code class=\"language-ts\">x\n</code></pre></div>\n  <figcaption>cap</figcaption>\n</figure>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2229",
+   "clauses": [
+    "C2-M-043",
+    "C2-H-211"
+   ],
+   "why": "C2-M-043: Any other `<figure>` that holds one block, which C2-A-082 lets carry a caption and which has none yet, and a `<figcaption>` is that block with the caption in its `caption` slot, and with the attributes of the `<figure>` and of the block element as its attributes, merged as consecutive attribute blocks are (C2-A-035), the figure's first: classes add up",
+   "summary": "the HTML importer reads the line options of a captioned <pre> back onto the code block",
+   "kind": "import",
+   "html": "<figure id=\"c\" class=\"wide\">\n  <pre class=\"line-numbers\" data-line-start=\"42\"><code class=\"language-php\">a\n</code></pre>\n  <figcaption>Cap.</figcaption>\n</figure>\n",
+   "options": {},
+   "expected": {
+    "carve": "{#c .wide .line-numbers data-line-start=42}\n```php\na\n```\n^ Cap.\n"
    },
    "from": []
   }

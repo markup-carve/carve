@@ -742,6 +742,8 @@ The ruling on #6804 gives an image three states, alt text, unknown (neither `alt
 
 - `carve-js`, `carve-php` and `carve-rs`: accept an image with neither field, import the three states, render the unknown state with no `alt`, and report it in the writer.
 
-## Line options on code blocks, ruling of 26 November (#6791)
+## Engine gaps from the line options ruling of 26 November (#6791)
 
-The ruling on #6791 documents line numbers and line highlighting as attributes, with no syntax and no engine change: C2-H-211 names `.line-numbers`, `data-line-start` and `data-highlight`, C2-H-212 the shape of their values for a host, and C2-H-213 that a code include sets no start of its own (the auto-ruled point 4). Clause cases CC-2217 to CC-2226 pass in carve-js, carve-php and carve-rs at their next2 heads of 26 November; no engine gap.
+The ruling on #6791 documents line numbers and line highlighting as attributes, with no syntax: C2-H-211 names `.line-numbers`, `data-line-start` and `data-highlight`, C2-H-212 the shape of their values for a host, and C2-H-213 that a code include sets no start of its own (the auto-ruled point 4). The amendment of the same day keeps the three line options of a captioned code block on its `<pre>` (C2-H-063), so `codeBlockRenderer` receives them (C2-H-206). Clause cases CC-2217 to CC-2229. Measured on the next2 heads of 26 November (`carve-js` `71e03e17`, `carve-php` `6d209bb9`, `carve-rs` `df4b3504`): every case passes except CC-2218, CC-2227 and CC-2228, the captioned path, in all three engines.
+
+- `carve-js`, `carve-php` and `carve-rs`: write the line options of a captioned code block on its `<pre>`, not on the `<figure>`, and pass them to `codeBlockRenderer` in the node's `attrs` (CC-2218, CC-2227, CC-2228).
