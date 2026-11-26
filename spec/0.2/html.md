@@ -915,9 +915,15 @@ Example 49 (unverified, `--roundtrip`)
 
 **C2-H-134** With `rawHtml` on, a raw HTML block whose payload has no line and one whose payload is one blank line both write one empty line. HTML does not show the difference that `value` keeps (C2-A-048).
 
-**C2-H-206** `codeBlockRenderer` is a host function that writes code blocks, for a host that highlights them. The renderer calls it once for each `code_block` it writes, in the order of the output, wherever the block stands: in a container, in a caption figure, in a code group, in the fallback of an extension node and in the children of an expanded include. It is called in both modes and under every profile, but not for a code block outside the profile, which is written in its degraded form (C2-H-165). It is not called for any other node: not for a raw block, also where `rawHtml` off writes it as a code block (C2-H-050), not for a code span, a math node or an extension node that a renderer writes. It takes two arguments: the node, which it reads and does not change, with the language in `syntax`, the text in `value` and, where the tree has them, `title`, `groupLabel` and `attrs`; and the default HTML, the `<pre>` element that C2-H-047 and C2-H-048 give for the block, with its attributes, the carriers of `roundtrip` and the line of `sourceLines`. For a code block with a caption it is called for the block inside the `<figure>` (C2-H-062), so the node has no `caption`, `attrs`, `lang` or `dir` and the default HTML none of their attributes; the figure and its caption are written as without the function.
+**C2-H-206** `codeBlockRenderer` is a host function that writes code blocks, for a host that highlights them. The renderer calls it once for each `code_block` it writes, in the order of the output, wherever the block stands: in a container, in a caption figure, in a code group, in the fallback of an extension node and in the children of an expanded include. It is called in both modes and under every profile, but not for a code block outside the profile, which is written in its degraded form (C2-H-165). It is not called for any other node: not for a raw block, also where `rawHtml` off writes it as a code block (C2-H-050), not for a code span, a math node or an extension node that a renderer writes. It takes two arguments: the node, which it reads and does not change, with the language in `syntax`, the text in `value` and, where the tree has them, `title`, `groupLabel` and `attrs`; and the default HTML, the `<pre>` element that C2-H-047 and C2-H-048 give for the block, with its attributes, the carriers of `roundtrip` and the line of `sourceLines`. For a code block with a caption it is called for the block inside the `<figure>` (C2-H-062), so the node has no `caption`, `lang` or `dir`, its `attrs` hold only the line options that stay on `<pre>` (C2-H-063), and the default HTML carries no other of their attributes; the figure and its caption are written as without the function.
 
 **C2-H-207** The function returns HTML as text, or nothing. Text is written in place of the default HTML, after the same indentation and otherwise as it is: it is trusted host HTML, which the URL filter (C2-H-161), the character replacement (C2-H-176) and the profile do not touch, and the host answers for its safety and, in static mode, for its being self-contained (C2-H-122). Nothing writes the default HTML. A value that is neither text nor nothing is refused with an option error that names `codeBlockRenderer`, and the render returns no output. An error the function throws is the host's own and leaves the call unchanged; it is no refusal of C2-T-006. The tree does not change, and no entry of the record reports a replaced block. Without the option every code block is written as C2-H-047 says.
+
+**C2-H-211** Line options are attributes, not syntax: the class `line-numbers` asks a host for a line-number gutter, `data-line-start` names the number of the first line, and `data-highlight` names the lines to highlight. The renderer gives them no meaning and writes them on `<pre>` as any other attribute of the block (C2-H-048), also where the block has a caption (C2-H-063); the writer and the HTML importer keep them as any other key. The info string takes none of them (C2-B-122).
+
+**C2-H-212** For a host that reads them, `data-line-start` is a decimal number without a leading zero, at least 1; without it, or with any other value, the gutter starts at 1. `data-highlight` is a list of items separated by commas, without spaces, each a line number or a range `N-M` of such numbers with N not greater than M, the shape of a `lines` range (C2-B-205). The numbers count the lines of the block from 1, whatever `data-line-start` says. Items may overlap and stand in any order, a line past the last line of the block is not highlighted, and a value outside this shape highlights no line. The renderer and lint check neither value.
+
+**C2-H-213** A code include gives its child no line option of its own: the child carries the attribute line of the include (C2-N-042), so the gutter starts at the number the author writes, also where the selection starts later in the file, and `data-line-start=auto` is the text `auto`, no value of C2-H-212.
 
 ## Tables
 
@@ -1008,7 +1014,7 @@ Example 12 (generated)
 
 **C2-H-062** An image paragraph, a code block, a quote or a math block that carries a caption (C2-A-082) is written as `<figure>` around the block and then `<figcaption>` with the caption. The tree has no node for this `<figure>`. With `sourceLines` on it carries the line the block starts on, and the element of the block inside it the line of the block's own opening markup, after its attribute lines.
 
-**C2-H-063** The `attrs`, `lang` and `dir` of such a block are written on its `<figure>`, its id included (C2-A-183). The block inside carries only what it generates itself, so a captioned block image is the bare `<img>` (C2-H-020).
+**C2-H-063** The `attrs`, `lang` and `dir` of such a block are written on its `<figure>`, its id included (C2-A-183). The block inside carries only what it generates itself, so a captioned block image is the bare `<img>` (C2-H-020). The line options of a code block (C2-H-211) are the exception: the class `line-numbers` and the keys `data-line-start` and `data-highlight` stay on its `<pre>` and are not written on the `<figure>`.
 
 **C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it (C2-A-084) is `<figure class="carve-figure-panel">` in place of the `<figure>` of C2-H-062, and the caption of the group is the last child of the group. A table panel is wrapped too: the panel figure holds the `<table>`, which keeps its caption as `<caption>` (C2-H-061) and has no `<figcaption>`.
 
@@ -2812,7 +2818,7 @@ A paged renderer or a print stylesheet starts a new page at that break, for exam
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 1 |
-| Code and raw content | 11 | 0 | 1 | 1 |
+| Code and raw content | 14 | 0 | 1 | 1 |
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 3 |
@@ -2827,6 +2833,6 @@ A paged renderer or a print stylesheet starts a new page at that break, for exam
 | Options | 29 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 3 |
-| **Total** | **202** | **6** | **33** | **53** |
+| **Total** | **205** | **6** | **33** | **53** |
 
-The document has 202 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 205 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
