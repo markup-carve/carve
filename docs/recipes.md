@@ -67,6 +67,27 @@ Put a class on a table with an attribute line above it. CSS can add stripes, bor
 
 Set `overflow-x: auto` on `pre` in the host stylesheet. A code fence keeps the code text and its language. Do not insert manual line breaks to fit a narrow page: they change the code content.
 
+## Page breaks
+
+Put `{.page-break}` above a thematic break to mark a page break:
+
+```crv
+Text of page one.
+
+{.page-break}
+***
+
+Text of page two.
+```
+
+It renders as `<hr class="page-break">`. A print stylesheet can start a new page there and hide the rule:
+
+```css
+@media print { hr.page-break { break-after: page; border: 0; } }
+```
+
+On screen it stays a normal rule, so the break is still visible. See [page breaks](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#page-breaks).
+
 ## Why this stays in CSS
 
 Carve source states the document structure. A class or named div gives a styling hook. If the host needs a new semantic node, use the [extension contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md), which requires a valid core fallback.

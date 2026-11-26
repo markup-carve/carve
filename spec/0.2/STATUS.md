@@ -729,3 +729,9 @@ The ruling on #6788 makes the editorial comment a host (C2-I-036, C2-I-063) and 
 The amendment of the same day (#6788) reads a ranged comment, the `comment-start` and `comment-end` spans Pandoc writes for a word processor comment, as a point comment at its start and reports the lost range with `import-structure-repaired` (C2-M-113, C2-M-082). Clause cases CC-2201 to CC-2204; CC-2204, a `comment-end` that ends no comment, is the control. Anchor-range comments of Word and Google Docs exports are not read as comments by any adapter yet, so they give no point comment to report; they wait for real clipboard captures (#6273).
 
 - `carve-js`, `carve-php` and `carve-rs`: read the ranged comment and report its range.
+
+## Engine gaps from the page break ruling of 26 November (#6793)
+
+The ruling on #6793, as amended the same day, makes a page break a thematic break with the class `page-break` (`html.md`, "Page breaks", non-normative) and adds one sentence to C2-A-199: an importer that reads a page break from its source writes that thematic break, not `carve.style.pageBreakBefore`. The writer does not convert `pageBreakBefore`; C2-A-193 and CC-499 are unchanged. The convention already works in `carve-js` `next2` `71e03e1`, `carve-php` `next2` `6d209bb` and `carve-rs` `next2` `df4b350` (attach, `fmt`, render, HTML import of `<hr class="page-break">`).
+
+- No engine port remains from the spec side. HTML import of `break-before: page` and `page-break-before: always` has no clause yet.
