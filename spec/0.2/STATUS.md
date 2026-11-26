@@ -722,10 +722,10 @@ The ruling on #6795 (option D, replacing option C) spells a list-table cell whos
 
 ## Engine gaps from the revision metadata ruling of 26 November (#6788)
 
-The ruling on #6788 makes the editorial comment a host (C2-I-036, C2-I-063) and maps the revision keys `author` and `datetime` (C2-H-210): `author` is `data-author` on `<ins>` and `<del>`, both keys are `data-author` and `data-datetime` on the comment span, and the importer reads them back (C2-M-044). Clause cases CC-2183 to CC-2195. Measured on `carve-js` `a5a7bbd2`: the controls CC-2185, CC-2188, CC-2190 and CC-2193 pass; the other nine fail, since the comment takes no block and `author` goes out unchanged.
+The ruling on #6788 makes the editorial comment a host (C2-I-036, C2-I-063) and maps the revision keys `author` and `datetime` (C2-H-210): `author` is `data-author` on `<ins>` and `<del>`, both keys are `data-author` and `data-datetime` on the comment span, and the importer reads them back (C2-M-044). Clause cases CC-2188 to CC-2200. Measured on `carve-js` `a5a7bbd2`: the controls CC-2190, CC-2193, CC-2195 and CC-2198 pass; the other nine fail, since the comment takes no block and `author` goes out unchanged.
 
 - `carve-js`, `carve-php` and `carve-rs`: attach the block to the editorial comment, and map the keys in the HTML writer and importer.
 
-The amendment of the same day (#6788) reads a ranged comment, the `comment-start` and `comment-end` spans Pandoc writes for a word processor comment, as a point comment at its start and reports the lost range with `import-structure-repaired` (C2-M-113, C2-M-082). Clause cases CC-2196 to CC-2199; CC-2199, a `comment-end` that ends no comment, is the control. Anchor-range comments of Word and Google Docs exports are not read as comments by any adapter yet, so they give no point comment to report; they wait for real clipboard captures (#6273).
+The amendment of the same day (#6788) reads a ranged comment, the `comment-start` and `comment-end` spans Pandoc writes for a word processor comment, as a point comment at its start and reports the lost range with `import-structure-repaired` (C2-M-113, C2-M-082). Clause cases CC-2201 to CC-2204; CC-2204, a `comment-end` that ends no comment, is the control. Anchor-range comments of Word and Google Docs exports are not read as comments by any adapter yet, so they give no point comment to report; they wait for real clipboard captures (#6273).
 
 - `carve-js`, `carve-php` and `carve-rs`: read the ranged comment and report its range.
