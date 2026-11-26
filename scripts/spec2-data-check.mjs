@@ -24,9 +24,9 @@ const DOCUMENTS = {
   'source-layout': 'origin/spec/0.2-ast',
   html: 'origin/spec/0.2-html-writer',
   writer: 'origin/spec/0.2-html-writer',
-  includes: 'origin/next2',
-  'import-html': 'origin/next2',
-  tooling: 'origin/next2',
+  includes: 'origin/main',
+  'import-html': 'origin/main',
+  tooling: 'origin/main',
 }
 
 // file -> the lists it holds, with the key that identifies a row and how the list is ordered.

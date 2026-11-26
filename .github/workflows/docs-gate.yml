@@ -2,7 +2,7 @@ name: Docs quality gate
 
 on:
   pull_request:
-    branches: [main, next2]
+    branches: [main]
     paths:
       - 'docs/**'
       - 'scripts/docs-samples-check.mjs'
