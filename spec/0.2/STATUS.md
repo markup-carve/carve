@@ -69,14 +69,14 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `syntax-blocks.md` | C2-B | 209 | 217 | 31 | 8 | 289 |
 | `syntax-inline.md` | C2-I | 109 | 136 | 30 | 14 | 131 |
 | `ast.md` | C2-A | 199 | 422 | 65 | 3 | 0 |
-| `html.md` | C2-H | 201 | 470 | 98 | 6 | 86 |
+| `html.md` | C2-H | 205 | 470 | 98 | 6 | 86 |
 | `writer.md` | C2-W | 131 | 295 | 87 | 6 | 46 |
 | `source-layout.md` | C2-L | 54 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 41 |
 | `extensions.md` | C2-X | 70 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 85 | 239 | 46 | 1 | 64 |
 | `tooling.md` | C2-T | 46 | 105 | 7 | 0 | 0 |
-| **Total** | | **1,192** | **2,287** | **450** | **40** | **657** |
+| **Total** | | **1,196** | **2,287** | **450** | **40** | **657** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule other clauses state or give; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay. Candidate 8 recounts the row of `tooling.md`: one rule per sentence of its clauses and one exception per carve-out (C2-T-002, C2-T-009, C2-T-010, C2-T-016, C2-T-031, C2-T-032, C2-T-038), which corrects the author's count of candidate 7. Candidate 9 adds C2-W-138 and C2-L-059 and amends other clauses; it moves the column Clauses, and Rules and Exceptions wait for a recount.
 
@@ -741,3 +741,7 @@ The ruling on #6793, as amended the same day, makes a page break a thematic brea
 The ruling on #6804 gives an image three states, alt text, unknown (neither `alt` nor `decorative`) and decorative (C2-A-115). The HTML importer maps an `<img>` with no `alt` attribute to the unknown state and `alt=""` to `decorative: true` (C2-M-050); the renderer writes no `alt` for the unknown state (C2-H-080); the writer writes it as `![](URL)` and reports `field-unspellable` at the image (C2-W-011). A parse of Carve source is unchanged: `![](x)` gives `alt: ""` in all three engines. Clause cases CC-2205 to CC-2216. Measured on `carve-js` `d71975e0`: the controls CC-2205, CC-2209, CC-2211, CC-2212, CC-2215 and CC-2216 pass; the reader refuses the unknown tree (CC-2206, CC-2210, CC-2213), and the importer still gives `alt: ""` for both HTML inputs (CC-2207, CC-2208, CC-2214).
 
 - `carve-js`, `carve-php` and `carve-rs`: accept an image with neither field, import the three states, render the unknown state with no `alt`, and report it in the writer.
+
+## Line options on code blocks, ruling of 26 November (#6791)
+
+The ruling on #6791 documents line numbers and line highlighting as attributes, with no syntax and no engine change: C2-H-211 names `.line-numbers`, `data-line-start` and `data-highlight`, C2-H-212 the shape of their values for a host, and C2-H-213 that a code include sets no start of its own (the auto-ruled point 4). Clause cases CC-2217 to CC-2226 pass in carve-js, carve-php and carve-rs at their next2 heads of 26 November; no engine gap.

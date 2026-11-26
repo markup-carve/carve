@@ -90258,6 +90258,186 @@
    ]
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2217",
+   "clauses": [
+    "C2-H-211",
+    "C2-H-048"
+   ],
+   "why": "C2-H-211: Line options are attributes, not syntax: the class `line-numbers` asks a host for a line-number gutter, `data-line-start` names the number of the first line, and `data-highlight` names the lines to highlight. The renderer gives them no meaning and writes them as any other attribute of the block (C2-H-048)",
+   "summary": "the three line options of a code block are written on its <pre>",
+   "kind": "render",
+   "input": "{.line-numbers data-line-start=\"42\" data-highlight=\"1,3-5\"}\n```php \"src/app.php\"\n$a = 1;\n$b = 2;\n```\n",
+   "options": {},
+   "expected": {
+    "html": "<pre title=\"src/app.php\" class=\"line-numbers\" data-line-start=\"42\" data-highlight=\"1,3-5\"><code class=\"language-php\">$a = 1;\n$b = 2;\n</code></pre>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2218",
+   "clauses": [
+    "C2-H-211",
+    "C2-H-062"
+   ],
+   "why": "C2-H-211: The renderer gives them no meaning and writes them as any other attribute of the block (C2-H-048), on the `<figure>` of a captioned block (C2-H-062)",
+   "summary": "the line options of a captioned code block are written on its figure",
+   "kind": "render",
+   "input": "{.line-numbers data-line-start=42 data-highlight=1,3-5}\n```php\n$a = 1;\n```\n^ The app.\n",
+   "options": {},
+   "expected": {
+    "html": "<figure class=\"line-numbers\" data-line-start=\"42\" data-highlight=\"1,3-5\">\n  <pre><code class=\"language-php\">$a = 1;\n</code></pre>\n  <figcaption>The app.</figcaption>\n</figure>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2219",
+   "clauses": [
+    "C2-H-211"
+   ],
+   "why": "C2-H-211: the writer and the HTML importer keep them as any other key.",
+   "summary": "the writer keeps the line options of a code block",
+   "kind": "format",
+   "input": "{.line-numbers data-line-start=\"42\" data-highlight=\"1,3-5\"}\n```php \"src/app.php\"\n$a = 1;\n$b = 2;\n```\n",
+   "options": {},
+   "expected": {
+    "carve": "{.line-numbers data-line-start=42 data-highlight=1,3-5}\n```php \"src/app.php\"\n$a = 1;\n$b = 2;\n```\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2220",
+   "clauses": [
+    "C2-H-211"
+   ],
+   "why": "C2-H-211: the writer and the HTML importer keep them as any other key.",
+   "summary": "the HTML importer keeps the line options of a <pre>",
+   "kind": "import",
+   "html": "<pre class=\"line-numbers\" data-line-start=\"42\" data-highlight=\"1,3-5\"><code class=\"language-php\">a\n</code></pre>\n",
+   "options": {},
+   "expected": {
+    "carve": "{.line-numbers data-line-start=42 data-highlight=1,3-5}\n```php\na\n```\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2221",
+   "clauses": [
+    "C2-H-211",
+    "C2-B-122"
+   ],
+   "why": "C2-H-211: The info string takes none of them (C2-B-122). C2-B-122: An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them.",
+   "summary": "a line range in the info string is no line option",
+   "kind": "render",
+   "input": "```js {1,3}\na\n```\n",
+   "options": {},
+   "expected": {
+    "html": "<pre><code class=\"language-js\">a\n</code></pre>",
+    "diagnostics": [
+     "fence-title-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2222",
+   "clauses": [
+    "C2-H-212"
+   ],
+   "why": "C2-H-212: a value outside this shape highlights no line. The renderer and lint check neither value.",
+   "summary": "values outside the shape of the line options are written as they are",
+   "kind": "render",
+   "input": "{.line-numbers data-line-start=042 data-highlight=\"3-1,0,x,1, 2\"}\n```js\na\n```\n",
+   "options": {},
+   "expected": {
+    "html": "<pre class=\"line-numbers\" data-line-start=\"042\" data-highlight=\"3-1,0,x,1, 2\"><code class=\"language-js\">a\n</code></pre>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2223",
+   "clauses": [
+    "C2-H-212"
+   ],
+   "why": "C2-H-212: The renderer and lint check neither value.",
+   "summary": "lint reports no value of the line options",
+   "kind": "lint",
+   "input": "{.line-numbers data-line-start=0 data-highlight=\"5-2,1, 2\"}\n```js\na\n```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2224",
+   "clauses": [
+    "C2-H-212"
+   ],
+   "why": "C2-H-212: Items may overlap and stand in any order, a line past the last line of the block is not highlighted",
+   "summary": "overlapping, unordered and past-the-end ranges are written as they are",
+   "kind": "render",
+   "input": "{data-highlight=2,1-2,1-99}\n```\na\nb\n```\n",
+   "options": {},
+   "expected": {
+    "html": "<pre data-highlight=\"2,1-2,1-99\"><code>a\nb\n</code></pre>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2225",
+   "clauses": [
+    "C2-H-213",
+    "C2-N-042"
+   ],
+   "why": "C2-H-213: A code include gives its child no line option of its own: the child carries the attribute line of the include (C2-N-042)",
+   "summary": "a code include with a lines selection adds no data-line-start",
+   "kind": "render",
+   "input": "{.line-numbers}\n{{ src.js @code:js @lines:2-3 }}\n",
+   "files": {
+    "src.js": {
+     "text": "l1\nl2\nl3\nl4\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "html": "<pre class=\"line-numbers\"><code class=\"language-js\">l2\nl3\n</code></pre>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2226",
+   "clauses": [
+    "C2-H-213"
+   ],
+   "why": "C2-H-213: `data-line-start=auto` is the text `auto`, no value of C2-H-212.",
+   "summary": "data-line-start=auto on a code include is written as the text auto",
+   "kind": "render",
+   "input": "{.line-numbers data-line-start=auto}\n{{ src.js @code:js @lines:2-3 }}\n",
+   "files": {
+    "src.js": {
+     "text": "l1\nl2\nl3\nl4\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "html": "<pre class=\"line-numbers\" data-line-start=\"auto\"><code class=\"language-js\">l2\nl3\n</code></pre>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  }
  ]
 }

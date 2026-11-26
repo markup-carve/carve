@@ -66,6 +66,51 @@ A blank line breaks the group apart. An attribute line with a blank line below i
 
 A backtick fence makes a code block. A colon fence makes a container. A raw fence, such as `` ```=html ``, is explicit and requires the host to allow raw HTML for HTML output. Unclosed fences remain fences and produce a diagnostic. See [fences](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks) and [raw HTML options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
+## Code block line options
+
+Line numbers and highlighted lines are attributes on the line above the fence. Carve has no syntax for them: a range in the info string, as in `` ```js {1,3} ``, is reported as `fence-title-syntax` and dropped.
+
+````crv
+{.line-numbers data-line-start=42 data-highlight=1,3-5}
+```php "src/app.php"
+$a = 1;
+$b = 2;
+```
+````
+
+```html
+<pre title="src/app.php" class="line-numbers" data-line-start="42" data-highlight="1,3-5"><code class="language-php">$a = 1;
+$b = 2;
+</code></pre>
+```
+
+- `.line-numbers` asks for a line-number gutter.
+- `data-line-start` is the number of the first line, for an excerpt from a larger file. It is a decimal number of at least 1 without a leading zero; the gutter starts at 1 without it.
+- `data-highlight` lists the lines to highlight: line numbers and `a-b` ranges, separated by commas without spaces. The lines are counted from the first line of the block, not from `data-line-start`.
+
+The renderer writes these keys as it writes any attribute, and does not check them. A host or highlighter reads them from the `<pre>`. On a block with a caption they stand on the `<figure>` around it. `fmt` and the HTML importer keep them. See [line options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content) (C2-H-211 to C2-H-213).
+
+A code include does not set the start for you. With `@lines:4-5`, write the first selected line yourself:
+
+```crv
+{.line-numbers data-line-start=4}
+{{ src/server.js @code:js @lines:4-5 }}
+```
+
+`data-line-start=auto` is not a value: it is written to the `<pre>` as the text `auto`, and a host starts the gutter at 1.
+
+Common highlighters name these options differently. A host adapter maps them:
+
+| Highlighter | Reads |
+| --- | --- |
+| Prism | `data-start` and `data-line` on `<pre>` |
+| reveal.js | `data-line-numbers` on `<code>` |
+| Pygments, pymdownx | `linenums` and `hl_lines` |
+| Torchlight | `lineNumbersStart` |
+| Shiki | a transformer that reads the node's `attrs` |
+
+A host that highlights through `codeBlockRenderer` gets no `attrs` for a block with a caption (C2-H-206): there the options stand only on the `<figure>`.
+
 ## Tables
 
 ```crv
