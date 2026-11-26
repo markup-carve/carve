@@ -850,3 +850,9 @@ The ruling on #6832 keeps the `<p>` of a paragraph that C2-H-034 or C2-H-040 wou
 The ruling on carve-js#5309 for carve-php: a factory may ship a renderer, but the host still registers it through `renderers`. Without a `renderers` entry, `carve.toc` and `carve.tocPlacement` write their fallback and report `extension-fallback-rendered` in both modes (C2-X-052, C2-X-035, C2-H-123; EXT-120 to EXT-123). Measured on `carve-js` `next2` `1bfbf6ed` and `carve-rs` `next2` `bc9c2e1b`: all four cases pass. `carve-php` `next2` `a2f92893` writes the `<nav>` from the renderer its definitions carry.
 
 - `carve-php`: `tableOfContents()` and `tocPlacement()` carry no renderer; `renderers` with `standard` registers the bundled one.
+
+## Engine gaps from the list-table clause cases of 26 November (#6835)
+
+Two sentences of C2-X-078 had no clause case. A bare key has the empty value (C2-I-029), so a `header-rows`, `footer-rows` or `header-cols` without a value, like one with a quoted empty value, has no effect and is not written on `<table>`. A row item that holds anything beside its one list, a block after it, a block before it or a second list, leaves the div a core div. Clause cases CC-2416 to CC-2425. Measured on `carve-js` `next2` `1bfbf6ed`, `carve-php` `next2` `a2f92893` and `carve-rs` `next2` `bc9c2e1b`: all three pass the paragraph before the list (CC-2422), the paragraph indented into the cell (CC-2424) and the blank line between rows (CC-2425); all three read a key without a value as 1 (CC-2416 to CC-2419) and claim a row item with a block after its list or a second list (CC-2420, CC-2421, CC-2423).
+
+- `carve-js`, `carve-php` and `carve-rs`: give an empty value of the three keys no effect, and leave a div whose row item holds more than one list a core div.

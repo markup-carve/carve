@@ -95451,6 +95451,231 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2416",
+  "clauses": [
+   "C2-I-029",
+   "C2-X-078"
+  ],
+  "why": "C2-I-029: A part is `#name` for the id, `.name` for a class, `:tag` for the language, `key=value`, or a bare `key`, which is a key with an empty value. C2-X-078: Those three keys take a decimal integer above 0, and another value has no effect.",
+  "summary": "a header-rows without a value has no effect and is not written (carve#6835)",
+  "kind": "render",
+  "input": "{header-rows}\n::: list-table\n- - a\n  - b\n- - c\n  - d\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>c</td><td>d</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2417",
+  "clauses": [
+   "C2-I-029",
+   "C2-X-078"
+  ],
+  "why": "C2-I-029: A part is `#name` for the id, `.name` for a class, `:tag` for the language, `key=value`, or a bare `key`, which is a key with an empty value. C2-X-078: Those three keys take a decimal integer above 0, and another value has no effect.",
+  "summary": "footer-rows and header-cols without a value have no effect (carve#6835)",
+  "kind": "render",
+  "input": "{footer-rows header-cols}\n::: list-table\n- - a\n  - b\n- - c\n  - d\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>c</td><td>d</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2418",
+  "clauses": [
+   "C2-I-029",
+   "C2-X-078",
+   "C2-I-033"
+  ],
+  "why": "C2-I-029: A part is `#name` for the id, `.name` for a class, `:tag` for the language, `key=value`, or a bare `key`, which is a key with an empty value. C2-X-078: Those three keys take a decimal integer above 0, and another value has no effect. C2-I-033: A quoted value stands in `\"` or `'`. ... A closing brace is allowed, and the value may be empty.",
+  "summary": "a quoted empty header-rows has no effect (carve#6835)",
+  "kind": "render",
+  "input": "{header-rows=\"\"}\n::: list-table\n- - a\n  - b\n- - c\n  - d\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>c</td><td>d</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2419",
+  "clauses": [
+   "C2-I-029",
+   "C2-X-078"
+  ],
+  "why": "C2-I-029: A part is `#name` for the id, `.name` for a class, `:tag` for the language, `key=value`, or a bare `key`, which is a key with an empty value. C2-X-078: Those three keys take a decimal integer above 0, and another value has no effect.",
+  "summary": "a header-rows of 1 beside a header-cols without a value: the head row stays, no column is a header (carve#6835)",
+  "kind": "render",
+  "input": "{header-rows=1 header-cols}\n::: list-table\n- - a\n  - b\n- - c\n  - d\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>c</td><td>d</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2420",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+  "summary": "a row item with a paragraph after its list leaves the div a core div (carve#6835)",
+  "kind": "render",
+  "input": "::: list-table\n- - a\n\n  extra\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<div class=\"list-table\">\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n      </ul>\n      <p>extra</p>\n    </li>\n  </ul>\n</div>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2421",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+  "summary": "a later row item with a paragraph after its list leaves the whole div a core div (carve#6835)",
+  "kind": "render",
+  "input": "::: list-table\n- - a\n- - b\n\n  extra\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<div class=\"list-table\">\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n      </ul>\n    </li>\n    <li>\n      <ul>\n        <li>b</li>\n      </ul>\n      <p>extra</p>\n    </li>\n  </ul>\n</div>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2422",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+  "summary": "a row item with a paragraph before its list leaves the div a core div (carve#6835)",
+  "kind": "render",
+  "input": "::: list-table\n- para\n\n  - a\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<div class=\"list-table\">\n  <ul>\n    <li>para\n      <ul>\n        <li>a</li>\n      </ul>\n    </li>\n  </ul>\n</div>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2423",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+  "summary": "a row item that holds two lists leaves the div a core div (carve#6835)",
+  "kind": "render",
+  "input": "::: list-table\n- - a\n\n  1. b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<div class=\"list-table\">\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n      </ul>\n      <ol>\n        <li>b</li>\n      </ol>\n    </li>\n  </ul>\n</div>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2424",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div. C2-X-078: A cell whose item holds one paragraph holds that paragraph's inlines; any other cell holds its blocks as they are written at the top level, one line feed apart.",
+  "summary": "a paragraph indented into the cell belongs to the cell, so the div is still a table (carve#6835)",
+  "kind": "render",
+  "input": "::: list-table\n- - a\n\n    extra\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td><p>a</p>\n<p>extra</p></td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2425",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+  "summary": "a blank line between rows leaves each row item one list, so the div is a table (carve#6835)",
+  "kind": "render",
+  "input": "::: list-table\n- - a\n\n- - b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
  }
  ]
 }
