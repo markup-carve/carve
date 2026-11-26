@@ -704,9 +704,9 @@ The ruling on #6772 makes the escape rounds of C2-W-088 read every reference fro
 
 ## Engine gaps from the line-block hard break ruling of 26 November (#6786)
 
-The ruling on #6786 narrows row 18 of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
+The ruling on #6786 narrows row 18 of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node before the break is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
 
-- `carve-js`, `carve-php` and `carve-rs`: keep the hard break on those lines.
+- `carve-js`, `carve-php` and `carve-rs`: done. The ruling audit of #6812 rewords row 18 to test the last inline node before the break; on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`) CC-2167 to CC-2171 pass in all three.
 
 ## Engine gaps from the empty list-table cell ruling of 26 November (#6794)
 
@@ -773,3 +773,14 @@ Mark's option A on #6812 ships the four audit findings on HTML table import in 0
 The ruling audit of 26 November replaced the ruling on #6465: C2-B-029 strips the body of a comment block by at most the indent of its opener, also inside a line block, so a straddling tab before the opener is stripped from each body line. C2-B-029 now names the comment block and the line block. Clause cases CC-2263 and CC-2264. Measured on `carve-js` `next2` `d4331d7e`, `carve-php` `next2` `8fd0c4af` and `carve-rs` `next2` `afed9a76`: all three keep the opener's indent in a comment block inside a line block (`"\tc\td"`, `"  c"`) and strip it elsewhere.
 
 - `carve-js`, `carve-php` and `carve-rs`: strip a comment block inside a line block by its opener's indent (CC-2263, CC-2264).
+
+## Engine gaps from the writer findings of the 0.2.0 ruling audit (#6812, group 3)
+
+#3598: the writer reports root `metadata.fields` with `field-unspellable` also beside a leading frontmatter node, which it still writes unchanged (C2-W-011, C2-A-193); C2-W-002 and C2-W-117 drop that exception. CC-501 now expects the loss. Measured on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`): all three write the source and report nothing.
+
+- `carve-js`, `carve-php` and `carve-rs`: report `/metadata/fields` beside frontmatter too (CC-501).
+
+#6727: the open fence of C2-W-123 is written only before a line comment other than a region marker. A region marker closes the container itself (C2-B-137), so the fence keeps its closer and one blank line stands before the marker (C2-W-034). Where the open fence is written and the value ends in an empty line, the writer reports `field-unspellable` at `value`. Clause cases CC-2265 to CC-2269. Measured on the same heads: all three write the open fence before a marker (CC-2265 to CC-2267 fail); for CC-2268 `carve-js` and `carve-rs` report the loss and `carve-php` reports `writer-refused`; CC-2269 passes everywhere.
+
+- `carve-js`, `carve-php` and `carve-rs`: close the fence before a region marker (CC-2265 to CC-2267).
+- `carve-php`: report `field-unspellable` for the lost empty line instead of `writer-refused` (CC-2268).
