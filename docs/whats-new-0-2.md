@@ -4,7 +4,7 @@ description: What Carve 0.2 adds for authors, hosts and tools, with a link to th
 
 # What's new in 0.2
 
-Carve 0.2 adds snippets, `=` headings that can span lines, references that resolve in more places, ordered task lists, typed metadata blocks later in a document, a heading shift for page templates, safer rendering defaults and one command line shared by every engine. It is also a source break: some 0.1 documents render differently. If you keep 0.1 files, read [Upgrading from 0.1](./upgrade-0-2) and run `carve upgrade` on each one.
+Carve 0.2 adds snippets, `=` headings, multi-line headings, terms and definitions, references that resolve in more places, ordered task lists, typed metadata blocks later in a document, a heading shift for page templates, safer rendering defaults and one command line shared by every engine. It is also a source break: some 0.1 documents render differently. If you keep 0.1 files, read [Upgrading from 0.1](./upgrade-0-2) and run `carve upgrade` on each one.
 
 ## For authors
 
@@ -29,35 +29,65 @@ Install {{ $ver }} today. Read the {{ $rel }}.
 
 Snippets work across included files, and lint reports unknown, unused and duplicate names. See [Snippets](./snippets).
 
-### Headings: `=` and more than one line
+### `=` headings
 
-`=` now starts a heading, next to `#`. Lint reports a document that mixes both. A long heading continues on the lines below it that are indented past its marker.
+`=` now starts a heading, next to `#`: `=` is level 1, `==` level 2 and so on. Lint reports a document that mixes both.
+
+### Text that spans lines
+
+Headings, description terms and captions are labels. A label continues on every line directly below it that is indented past its marker, so a long title no longer has to fit on one line. A backslash at the end of a line makes the break a hard line break.
 
 ````carve
-= A long heading
-  that continues on the next line
+= Release notes for the
+  spring update
 
-== Section
+:: A term that is too long
+   for one line
+: Its description.
+
+| a | b |
+^ A table caption that
+  runs onto a second line
 ````
 
 ```html
-<section id="A-long-heading-that-continues-on-the-next-line">
-  <h1>A long heading
-that continues on the next line</h1>
-  <section id="Section">
-    <h2>Section</h2>
-  </section>
+<section id="Release-notes-for-the-spring-update">
+  <h1>Release notes for the
+spring update</h1>
+  <dl>
+    <dt>A term that is too long
+for one line</dt>
+    <dd>Its description.</dd>
+  </dl>
+  <table>
+    <caption>A table caption that
+runs onto a second line</caption>
+    <tbody>
+      <tr><td>a</td><td>b</td></tr>
+    </tbody>
+  </table>
 </section>
 ```
 
-Description terms continue the same way: a line indented past `::` belongs to the term.
+In 0.1 a heading and a term ended at the line break, and the next line became a paragraph. Captions already continued in 0.1, also on unindented lines; in 0.2 a caption line needs the indent like the other labels.
+
+Definitions and references can span lines too. A link definition takes its title and attributes on the indented next line, an abbreviation expansion continues over indented lines, and a reference label may wrap. `carve fmt` joins the two definitions back onto one line.
+
+```text
+[docs]: https://example.com
+  "The docs" {.ext}
+
+*[HTML]: Hyper Text
+  Markup Language
+
+See [the text][a long
+label].
+```
 
 ### References that resolve in more places
 
 - A shortcut reference `[text]` links when a definition `[text]:` exists. In 0.1 it stayed text.
 - A full reference `[the text][My Heading]` reaches a heading, including a heading inside a quote.
-- A reference label may wrap onto the next line.
-- A link definition takes its title and attributes on the indented next line, and an abbreviation expansion may continue over indented lines.
 - A reference in an included file resolves against the definitions of the file that includes it.
 
 ````carve
