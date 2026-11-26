@@ -92645,6 +92645,98 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-2325",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: the range is the first heading of the document, from its start to its end, so an attribute line above it is included; a heading counts by the marker that opens it, behind any attribute lines above it C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an attributed equals heading and a hash heading: the finding covers the first heading with its attribute line",
+   "kind": "lint",
+   "input": "{#a}\n= A\n\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 1,
+      "endLine": 2,
+      "endColumn": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2326",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: a heading counts by the marker that opens it, behind any attribute lines above it C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an equals heading and an attributed hash heading are mixed markers",
+   "kind": "lint",
+   "input": "= A\n\n{#b}\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 1,
+      "endLine": 1,
+      "endColumn": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2327",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: a heading counts by the marker that opens it, behind any attribute lines above it C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an attributed equals heading in a quote and a hash heading are mixed markers",
+   "kind": "lint",
+   "input": "> {#a}\n> = A\n\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 3,
+      "endLine": 2,
+      "endColumn": 6,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2328",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "near miss: two attributed equals headings",
+   "kind": "lint",
+   "input": "{#a}\n= A\n\n{#b}\n= B\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "heading-marker-mixed"
+    ]
+   },
+   "from": []
   }
  ]
 }

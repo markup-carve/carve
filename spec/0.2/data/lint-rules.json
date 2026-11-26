@@ -1105,7 +1105,7 @@
       "default": "on",
       "messages": ["This document mixes the two heading markers. carve fmt rewrites the hash to the equals sign."],
       "message_origin": "design",
-      "reports": "a document with `=` headings and `#` headings, once; the range is the first heading of the document",
+      "reports": "a document with `=` headings and `#` headings, once; the range is the first heading of the document, from its start to its end, so an attribute line above it is included; a heading counts by the marker that opens it, behind any attribute lines above it",
       "clauses": ["C2-B-155"]
     },
     {

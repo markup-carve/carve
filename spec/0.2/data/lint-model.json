@@ -9278,7 +9278,7 @@
                   "key": {
                     "matches": [
                       {
-                        "f": "item.text"
+                        "f": "item.opener_text"
                       },
                       "^\\s*[#=]"
                     ]
@@ -9303,7 +9303,7 @@
                   "key": {
                     "matches": [
                       {
-                        "f": "item.text"
+                        "f": "item.opener_text"
                       },
                       "^\\s*#"
                     ]
@@ -9326,7 +9326,7 @@
                   "key": {
                     "matches": [
                       {
-                        "f": "item.text"
+                        "f": "item.opener_text"
                       },
                       "^\\s*="
                     ]

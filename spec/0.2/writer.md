@@ -1358,7 +1358,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `ordered-marker-right-aligned` | warning | an ordered marker left of its list that ends at the column where the list's markers end | unchanged |
 | `tight-list-item-with-blank-line` | hint, migration notice (C2-W-156) | a tight list in which an item holds a blank line and a paragraph | unchanged |
 | `deprecated-loose-attribute` | warning, migration notice (C2-W-156) | a list that carries the key `loose` | unchanged |
-| `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once, at its first heading | unchanged |
+| `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, counted by the marker behind any attribute lines, once, at its first heading | unchanged |
 | `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
 | `fence-closer-indented` | hint | a closer whose indent differs from its opener's | an opener on the marker line of an item, a description or a footnote body counts from that container's content, so a closer at or left of its content column is not reported (C2-B-027) |
 | `ordered-list-kind-split` | warning | a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them | the first marker fixes its style (C2-B-042) |
