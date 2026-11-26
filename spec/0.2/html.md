@@ -2781,6 +2781,27 @@ ab
 :::
 
 
+## Page breaks
+
+This section is non-normative. A page break is a thematic break with the class `page-break`; there is no other syntax and no other node for it. The renderer writes it as any thematic break with a class (C2-H-046), and an HTML import reads `<hr class="page-break">` back to the same tree.
+
+```carve
+Text of page one.
+
+{.page-break}
+***
+
+Text of page two.
+```
+
+```html
+<p>Text of page one.</p>
+<hr class="page-break">
+<p>Text of page two.</p>
+```
+
+A paged renderer or a print stylesheet starts a new page at that break, for example with `hr.page-break { break-after: page; }`, and may hide the rule. A screen renderer can draw it as a normal rule. An importer that reads a page break from its source writes it in this form, not as `carve.style.pageBreakBefore` (C2-A-199). The Carve writer does not convert `pageBreakBefore`: it ignores `carve.style` like the other data namespaces (C2-A-193).
+
 ## Counts
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |

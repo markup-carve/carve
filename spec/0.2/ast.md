@@ -723,7 +723,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-198** Style lengths are non-negative points, alignment is `start`, `center`, `end` or `justify`, and direction is `ltr` or `rtl` where no common `dir` field already holds it.
 
-**C2-A-199** An importer stores only style facts it can read and a target writer may ignore facts it cannot express.
+**C2-A-199** An importer stores only style facts it can read and a target writer may ignore facts it cannot express. An importer that reads a page break the source shows as a break writes the thematic break with class page-break (the convention), not carve.style.pageBreakBefore.
 
 ```json
 {"type":"document","astVersion":"2.0","children":[],"extensions":[{"name":"carve.style","version":"1","required":false,"slots":[]}],"data":{"carve.style":{"namedStyles":{"Body":{"alignment":"start","spacingAfterPt":6}},"page":{"widthPt":595.28,"heightPt":841.89,"marginsPt":{"top":72,"right":72,"bottom":72,"left":72}}}},"metadata":{"headers":[{"placement":"default","children":[{"type":"paragraph","children":[{"type":"text","value":"Report"}]}]}],"footers":[]}}
