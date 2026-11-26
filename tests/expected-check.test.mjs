@@ -85,6 +85,23 @@ test('the command exits 1 on the conflicts and 0 on cases the model gives', { sk
   }
 })
 
+// The readiness baseline pins an older carve-js than the one with the CLI table of standard extensions.
+const catalogSkip = skip || (existsSync(resolve(jsDir, 'cli/standard-extensions.ts')) ? false : `needs a carve-js with cli/standard-extensions.ts`)
+
+test('a case names a standard extension as the CLI does (carve#6858)', { skip: catalogSkip }, async () => {
+  const model = await loadModel(jsDir)
+  const options = { extensions: ['carve.listTable'], renderers: { 'carve.listTable': 'standard' } }
+  const r = model.run('html', '::: list-table\n- - a\n:::\n', options)
+  assert.equal(r.error, undefined)
+  assert.match(r.output, /^<table>\n  <tbody>\n    <tr><td>a<\/td><\/tr>/)
+  assert.deepEqual(options.extensions, ['carve.listTable'])
+  for (const operation of ['fmt', 'ast', 'lint']) assert.equal(model.run(operation, '::: list-table\n- - a\n:::\n', options).error, undefined, operation)
+  // A standard renderer that brings document transforms renders through renderWithDocumentTransforms.
+  for (const name of ['carve.cite', 'carve.glossary', 'carve.index']) {
+    assert.equal(model.run('html', 'a\n', { extensions: [name], renderers: { [name]: 'standard' } }).output, '<p>a</p>', name)
+  }
+})
+
 test('a Carve 0.2 level-2 heading starts a case as well', () => {
   const [c] = parseCaseFile('== x\n\n- operation: html\n\n```crv\na\n```\n\n```html\n<p>a</p>\n```\n')
   assert.equal(c.id, 'x')
