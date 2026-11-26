@@ -1,6 +1,6 @@
 ---
 title: Playground
-description: Live Carve to HTML preview, in your browser.
+description: Live Carve 0.2 to HTML preview in your browser.
 aside: false
 sidebar: false
 pageClass: playground-page
@@ -12,18 +12,22 @@ pageClass: playground-page
 
 Type Carve on the left. The rendered result and generated HTML appear on the right.\
 Processing happens in your browser; the document is not sent to a server.\
-The playground uses the [JavaScript parser](https://github.com/markup-carve/carve-js) tested by this project's shared input/output tests.
+The playground uses the pinned [Carve 0.2 JavaScript engine](https://github.com/markup-carve/carve-js/tree/next2).
 
 <div class="playground-notes">
 
 ::: details Formatting the source
-**Format** rewrites the source in the canonical Carve layout, the same output as `carve fmt`. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The selected engine does the formatting: in Rust mode the bundled WASM build runs its own writer.
+**Format** rewrites the source with the 0.2 canonical writer. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The **Formatted source** tab shows the lines the writer would add and remove, with an **Apply** button.
 :::
 
 ::: details Sharing a document as a link
-The **share button** in the toolbar puts the whole document in the URL fragment, so a playground state is bookmarkable and sendable. The fragment never reaches a server: it is compressed and base64-encoded in the browser, and decoded there again. Very large documents are refused rather than turned into a link that arrives truncated.
+The **share button** puts the document and render options in the URL fragment, so you can bookmark or send the current view. The fragment is compressed in the browser and is not sent to the site server. Very large documents are refused rather than truncated.
 
-**Opening someone else's link.** A document that arrives in a link renders with **raw HTML disabled**: raw blocks show as escaped text instead of running. A link is written by whoever sent it, and enabling raw HTML would make one a way to run script on this site. A link made in Rust mode opens on the JavaScript engine if the bundled Rust engine cannot disable raw HTML or fails to load. The output may then differ from what the sender saw. Reload the playground without the fragment for a normal session.
+A link also keeps the active output tab. A received link always opens with **raw HTML off**, even when its sender enabled it. Other render options are restored.
+:::
+
+::: details Drafts
+The playground saves the document in your browser and restores it on the next visit. A share link in the URL always wins over the saved draft. A draft that came from a link keeps raw HTML off after a reload. **Reset to demo** discards the draft and reloads the demo document.
 :::
 
 </div>
@@ -32,20 +36,40 @@ The **share button** in the toolbar puts the whole document in the URL fragment,
 
 <Playground />
 
+## Render options
+
+The **Options** button opens the 0.2 profile, heading ID, heading shift, section, smart typography, and raw HTML controls. Heading shift also applies to the Markdown export. Raw HTML starts off. Turn it on only for source you trust. The **Tree JSON** tab shows the 0.2 parser result.
+
+## Output tabs
+
+- **Lint** lists each finding with its severity, rule, message, and line and column. Click a finding to select it in the editor. **Fix** applies one quick fix; **Fix all** applies every available fix as one undo step.
+- **Markdown**, **Plain text**, and **ANSI** export the document. The pane header shows how many constructs an export cannot spell. ANSI escape codes are shown as styles.
+
+The copy and download buttons in each pane header copy or save the source (`.crv`) or the active output.
+
+## Tools
+
+- **Examples** loads a short 0.2 document. One undo restores the previous text.
+- **Import** converts Markdown, GitHub Flavored Markdown, Djot, BBCode, or HTML to Carve. The dialog shows the result and the import diagnostics before you replace the document.
+- **Upgrade 0.1** rewrites Carve 0.1 source as 0.2 and reports the number of changes. When the only changes would escape text that 0.2 reads as syntax, such as an `=` heading, the source is taken as 0.2 already and left alone; click again to upgrade it anyway.
+- **Clear** empties the editor. One undo restores it.
+
+On narrow screens these tools sit in the **More** menu.
+
+## Engines
+
+The in-page engine is Carve 0.2 JavaScript. The PHP sandbox link remains available for external experiments; it is not the engine behind this preview.
+
 ## Visual editor
 
-Prefer direct visual editing to this source-to-preview flow? The [Carve visual editor](https://markup-carve.github.io/carve-wysiwyg/) offers rich WYSIWYG authoring while keeping the underlying Carve source available for inspection.
+Prefer direct visual editing to this source-to-preview flow? The [Carve visual editor](https://markup-carve.github.io/carve-wysiwyg/) offers rich editing while keeping the source available for inspection.
 
 ## Build-time example
 
-This example is read from a `.crv` file and converted to HTML during the
-VitePress build by `@markup-carve/vite-plugin-carve`.
+This example is read from a `.crv` file and rendered by the pinned 0.2 JavaScript engine during the docs build.
 
 <DogfoodCarve />
 
-## Version used by this playground
+## Engine revision
 
-The playground and documentation examples use
-[`@markup-carve/carve`](https://github.com/markup-carve/carve-js). The exact
-source revision is recorded in `package.json`, so the examples do not change
-when a new package version is published.
+The browser bundles used here are built from the carve-js revision named in `docs/.vitepress/build-engine.mjs`. The import, export, and upgrade tools load on first use.

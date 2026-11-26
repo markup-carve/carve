@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "carve.annotation value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ids"
+  ],
+  "properties": {
+    "ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

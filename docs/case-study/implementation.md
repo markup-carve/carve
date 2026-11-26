@@ -64,7 +64,7 @@ The goals were:
 
 The [formal grammar](../grammar), implementations, and documentation are
 available. The implementations use a shared
-[conformance corpus](https://github.com/markup-carve/carve/tree/main/tests/corpus).
+[conformance corpus](https://github.com/markup-carve/carve/tree/0.1/tests/corpus).
 See the [Ecosystem](../ecosystem) for current editor support and bindings. These
 notes present no results from the proposed user testing.
 

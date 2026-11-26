@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 options",
+  "description": "The 28 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "options"],
+  "properties": {
+    "$schema": { "const": "schemas/options.schema.json" },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "kind", "read_by", "type", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][A-Za-z]*$",
+            "description": "The name of the option as the documents write it."
+          },
+          "kind": {
+            "enum": ["parse", "resolution", "render", "format", "lint", "import"],
+            "description": "The kind the option list gives the option."
+          },
+          "read_by": {
+            "oneOf": [
+              { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree", "export-markdown"] },
+              { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree", "export-markdown"] } }
+            ],
+            "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-H-131). `import` is the HTML importer, which reads `rawHtml` (C2-M-066), `adapter` (C2-M-102) and `listTable` (C2-M-112). `export-markdown` is the Markdown export, which reads `headingShift` (C2-H-209)."
+          },
+          "type": {
+            "enum": ["boolean", "count", "enum", "list", "map", "structure"],
+            "description": "`count`: a decimal integer of at least 0; `structure`: a value whose shape another document defines; `holds` names it in the words of the option list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILMNTWX]-[0-9]{3}$" },
+            "description": "The clause ids of the 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "values": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The values of an `enum`, or the entries a `list` accepts. An unknown value of an `enum` is refused."
+          },
+          "items": { "type": "string", "description": "What an entry of a `list` or a value of a `map` is." },
+          "keys": { "type": "string", "description": "What a key of a `map` is." },
+          "holds": { "type": "string", "description": "What a `structure` holds." },
+          "maximum": { "type": "integer", "minimum": 0, "description": "The largest value a `count` takes; a larger one is refused. Absent: no maximum." },
+          "default": {
+            "description": "The default. `null`: none. Absent only where `default_from` names the file that holds it."
+          },
+          "default_from": { "type": "string", "description": "The data file of this directory that holds the default of each entry." }
+        }
+      },
+      "minItems": 24,
+      "maxItems": 28
+    }
+  }
+}

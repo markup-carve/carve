@@ -5,125 +5,31 @@ description: Try Carve in the playground, then render it in your own project.
 
 # Get Started
 
-## Try Carve
+Carve 0.2 is under development on the `next2` branches. Start with a `.crv` file and the reference JavaScript engine. Its command is `carve` (`node dist/cli.js` in a checkout), and the package root exports the 0.2 API.
 
-Open the [Playground](/playground) to edit and preview Carve without installing
-anything. To keep your changes, save the source as a `.crv` file. If you have
-Node.js 20 or newer, you can render that file to HTML with:
+## Write and render
 
-```bash
-npx @markup-carve/carve input.crv > output.html
+Save this as `hello.crv`:
+
+```crv
+= Hello
+
+A paragraph with /emphasis/ and a [link](https://example.com).
+
+|= Name |= Qty |
+| Apples | 3 |
 ```
 
-See the [Cheat Sheet](/cheatsheet) for syntax and [Coming from
-Markdown](/migrate-from-markdown) for the main differences.
+From a built `carve-js` checkout on `next2`:
 
-## Choose a workflow
-
-| What you want to do | Start here | Boundary to check |
-|---|---|---|
-| Write a documentation site | [MkDocs plugin](https://github.com/markup-carve/mkdocs-carve): `pip install mkdocs-carve` | Add `carve` under `plugins` in `mkdocs.yml` and list `.crv` source paths in `nav`. |
-| Edit content in WordPress | [Carve Markup on WordPress.org](https://wordpress.org/plugins/carve-markup/) | Test the editor and theme on your site before migrating existing posts. |
-| Extract a PDF to editable Carve | [PDF to Carve](https://github.com/markup-carve/pdf-to-carve): `pip install pdf-to-carve` | Review extracted text, tables, and reading order against the PDF. |
-| Export a report to DOCX, EPUB, or Typst | [Pandoc bridge](https://github.com/markup-carve/pandoc-carve): `npm install @markup-carve/pandoc-carve`, then `npx pandoc-carve` | Install Pandoc 3.x separately. Use `--diagnostics report.json` to inspect conversion losses. |
-| Add Carve tools to an MCP client | [Carve MCP](https://github.com/markup-carve/carve-mcp): `npx -y @markup-carve/carve-mcp` | Node.js 20 or newer is required. Filesystem access needs an explicit workspace root. |
-
-See the [Ecosystem](/ecosystem) for other editors, site generators, and output
-paths. The packages above solve different tasks; they do not need to be installed
-together.
-
-## Install a renderer
-
-The JavaScript, PHP, and Rust implementations are tested with the same Carve
-documents and expected output.
-
-### JavaScript / TypeScript — [`carve-js`](https://github.com/markup-carve/carve-js)
-
-```bash
-npm install @markup-carve/carve
+```sh
+node dist/cli.js render hello.crv
+node dist/cli.js fmt --check hello.crv
+node dist/cli.js diagnostics hello.crv
 ```
 
-```ts
-import { carveToHtml } from '@markup-carve/carve'
+The command also reads standard input when no file is given. `render` writes HTML to standard output. `fmt --check` reports the first noncanonical line without changing the file. See the [0.2 CLI contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands) for the commands, flags, and exit codes. The reference engine may lag a specified command; check `--help` for what this checkout ships.
 
-const html = carveToHtml('/italic/, *bold*, and a heading')
-```
+## Read next
 
-The package also exposes `parse` and Markdown, plain-text, and ANSI renderers.
-
-### Rust — [`carve-rs`](https://github.com/markup-carve/carve-rs)
-
-```bash
-cargo install carve-lang
-```
-
-```bash
-# CLI: convert a .crv file to HTML
-carve input.crv
-```
-
-### Browser / Node via WebAssembly — [`carve-wasm`](https://github.com/markup-carve/carve-wasm)
-
-`carve-wasm` wraps `carve-rs`. See its repository for the current browser and
-server-side JavaScript APIs.
-
-### PHP — [`carve-php`](https://github.com/markup-carve/carve-php)
-
-```bash
-composer require markup-carve/carve-php
-```
-
-```php
-use MarkupCarve\Carve\CarveConverter;
-
-$html = (new CarveConverter())->convert('/italic/, *bold*, and a heading');
-```
-
-`CarveConverter::convert()` returns HTML. The package also provides `parse`,
-other output formats, and format converters.
-
-### Language bindings
-
-These bindings use `carve-rs`:
-
-| Language | Project | Install |
-|---|---|---|
-| Python | [carve-py](https://github.com/markup-carve/carve-py) | `pip install carve-lang` ([PyPI](https://pypi.org/project/carve-lang/)) |
-| Ruby | [carve-rb](https://github.com/markup-carve/carve-rb) | `gem install carve-lang` |
-| Go | [carve-go](https://github.com/markup-carve/carve-go) | `go get github.com/markup-carve/carve-go` |
-
-Editor and framework integrations are listed in the [Ecosystem](/ecosystem).
-
-## Read the reference
-
-- [Cheat Sheet](/cheatsheet): syntax reference.
-- [Examples](/examples): Carve source and HTML output.
-- [Formal Grammar](/grammar): the rules that define valid block and inline syntax.
-- [Migration from Markdown](/migrate-from-markdown): incompatible syntax and conversion.
-
-## Core and optional features
-
-Headings, lists, tables, links, code, math, footnotes, callouts, and attributes
-are available without configuration.
-
-A few features must be enabled separately:
-
-- **Available everywhere, but opt-in** — citations `[@key]`,
-  bare-URL autolinking, mention/tag → URL templates, a collapsible `details`
-  widget, `list-table`. Enable them in your parser configuration.
-- **Dependent on the implementation** — for example Mermaid diagrams, a table
-  of contents, and heading permalinks. Register the ones you want.
-
-The `:name[…]` inline form and `::: name` block form are always recognized. An
-application can register code that changes the output for a name. Without that
-code, the content renders as an ordinary span or div. See the [optional features
-table](/extensions#feature-tiers-quick-reference).
-
-## Build your own parser
-
-Start with [Build Your Own Implementation](/implementing-carve) and the [Formal
-Grammar](/grammar).
-
-**File extension:** `.crv`
-
-**Media type:** `text/x-carve; charset=utf-8`, on every transport ([`CARVE-P9-071`](/rules/imports-security-extensions))
+Use the [cheat sheet](./cheatsheet) for source forms, [blocks and attributes](./blocks-and-attributes) for structure, [include files](./include-files) for reuse, and [Upgrading from 0.1](./upgrade-0-2) for existing documents. The [0.2 specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/README.md) is the authority for exact behavior.

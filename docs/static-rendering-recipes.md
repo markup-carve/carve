@@ -1,133 +1,43 @@
 ---
-description: Concrete recipes for shipping Carve output that stays readable with no JavaScript at all.
+description: Render pages that work without client scripts or external rendering services.
 ---
 
-# Static Rendering Recipes
+# Static rendering recipes
 
-[Static render mode](/graceful-degradation) flattens interaction for free, but the
-**client-rendered visuals** (mermaid, charts, math) need a build-time renderer -
-a function you pass in the `renderers` map so the engine can embed a real image
-instead of leaving raw source. The spec defines the contract; this page gives
-tested recipes for the renderers themselves, which constructs to use, and the
-one footgun that silently eats your images.
+Use static mode when a page must work without client scripts or external rendering services. The 0.2 renderer writes HTML; it does not ship a general Graphviz, Mermaid, MathJax, or KaTeX conversion step. See [the static mode contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
-## The footgun: sanitizers strip `data:` image URIs
+## Render a document
 
-Build-time renderers usually return a self-contained `<img src="data:image/png;base64,...">`.
-If you run the static HTML through an HTML sanitizer (HTML Purifier, DOMPurify,
-etc.) **after** rendering, the default allowed-URI-scheme list is
-`http`/`https`/`mailto` - so the `data:` image is **removed** and your diagram
-silently vanishes (the caption survives, the picture does not).
-
-When you sanitize static output, **allow the `data:` scheme for images**. It is
-safe: a sanitizer's data-URI handler only permits image MIME types, not scripts.
-
-- HTML Purifier (PHP): `$config->set('URI.AllowedSchemes', ['http'=>true,'https'=>true,'mailto'=>true,'data'=>true]);`
-- DOMPurify (JS): `DOMPurify.sanitize(html, { ADD_DATA_URI_TAGS: ['img'] })` (or allow `data:` in `ALLOWED_URI_REGEXP`).
-
-The alternative is to write the image to a file and reference it by path - but a
-data URI keeps the output self-contained, which is the point of static mode.
-
-## Choosing a renderer
-
-| Construct | Recommended (local, no external service) | Quick (external service) |
-| --- | --- | --- |
-| Graphviz / DOT | the `dot` binary (`-Tsvg` / `-Tpng`) - **always prefer this** | - |
-| Mermaid | `@mermaid-js/mermaid-cli` (`mmdc`); needs a headless browser | a self-hosted [kroki](https://kroki.io) |
-| Charts | a chart library in a headless renderer, or pre-export | quickchart, kroki (vega/plantuml) |
-| Math (HTML target) | **KaTeX / MathJax server-side -> MathML or SVG** | - |
-| Math (PDF via dompdf) | MathJax -> SVG -> rasterize, or a PNG service | a LaTeX-to-PNG service |
-
-Two rules of thumb:
-
-- **Prefer local renderers.** `dot` and KaTeX/MathJax run in-process with no
-  network. External services (kroki.io, codecogs) ship your document content to
-  a third party - a privacy and abuse concern for any hosted/public tool. If you
-  use kroki, **self-host it**; for math, prefer KaTeX over a public PNG service.
-- **Match the target.** For static *HTML* (browser, email), KaTeX/MathJax SSR to
-  **MathML or SVG** is crisp and accessible. For *PDF via dompdf*, MathML/CSS
-  support is weak, so a rasterized image (MathJax SVG rendered to PNG, or a PNG
-  service) is more reliable. There is a quality-vs-toolchain trade here;
-  the SVG path is the principled one, the raster path is the pragmatic one.
-
-## Closure signatures per engine
-
-The `renderers` map is **open**, keyed by the fence's css class (`mermaid`,
-`chart`, `graphviz`, `plantuml`, `math`, or any custom fence word). The closure takes the source string and returns an HTML fragment (an
-`<img>`, inline `<svg>`, or your fallback). Math additionally receives a display
-flag where the engine exposes one.
-
-- **carve-php:** `new CarveConverter(mode: RenderMode::STATIC, renderers: ['mermaid' => fn (string $src): string => ..., 'math' => fn (string $tex): string => ...])`
-- **carve-js:** `renderHtml(doc, { mode: 'static', renderers: { mermaid: (src) => '...', math: (tex, display) => '...' } })`
-- **carve-rs:** `Options::new().with_mode(Mode::Static).with_renderers(StaticRenderers { mermaid: Some(Box::new(|src| ...)), math: Some(Box::new(|tex, display| ...)), ..Default::default() })`
-- **carve-py:** `carve.to_html(src, mode='static', renderers={'mermaid': lambda s: '...', 'math': lambda tex, display: '...'})`
-
-In every engine, **if a needed renderer is absent the static path falls back to
-source** - so a renderer is an enhancement, never a requirement.
-
-## Recipes
-
-### Graphviz (local `dot`) - the model recipe
-
-`dot` is local, fast, and emits SVG (vector). This is the shape every renderer
-should follow: render, embed, and **fall back to source on failure**.
-
-```php
-'graphviz' => function (string $src): string {
-    $p = proc_open('dot -Tsvg', [0 => ['pipe','r'], 1 => ['pipe','w'], 2 => ['pipe','w']], $pipes);
-    if (is_resource($p)) {
-        fwrite($pipes[0], $src); fclose($pipes[0]);
-        $svg = stream_get_contents($pipes[1]); fclose($pipes[1]); fclose($pipes[2]); proc_close($p);
-        if ($svg) {
-            // inline SVG (vector) for HTML; for dompdf, rasterize or use -Tpng instead
-            return '<figure>' . $svg . '</figure>';
-        }
-    }
-    return '<pre><code>' . htmlspecialchars($src) . '</code></pre>'; // source fallback
-}
+```sh
+carve render --mode static --strict-losses document.crv > document.html
 ```
 
-### Mermaid (local `mmdc`, preferred) or self-hosted kroki
+`--strict-losses` fails on unallowed render losses and writes no HTML for the affected file. Save a report with `--report-losses FILE` when a build needs machine-readable diagnostics. See [render flags and loss handling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-render).
 
-`mmdc` (`@mermaid-js/mermaid-cli`) renders locally but pulls in a headless
-browser. For a server without one, a **self-hosted** kroki instance is the
-practical alternative (do not point a public tool at the hosted kroki.io with
-user content).
+## Render an extension at build time
 
-```js
-// carve-js, mermaid via a self-hosted kroki at $KROKI:
-renderers: {
-  mermaid: async () => { /* see note: the engine's renderers are sync; pre-render
-    diagrams in a build step and inject the resulting <img>/<svg> string */ }
-}
+Register a trusted renderer for the extension's qualified name and version. It receives the resolved node, its fallback, the profile, URL policy, and host helpers for escaped text, attributes, child lists, and ids. Its returned string is inserted as HTML. When a renderer is absent, the engine writes the fallback and reports `extension-fallback-rendered`. A renderer failure also uses the fallback and reports a failure. See [extension rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#resolution-rendering-and-equality).
+
+For a diagram, the host can run a local renderer during the build, sanitize its result for the site's trust model, and return HTML. Keep the diagram's source as a readable fallback. Do not let untrusted document text choose a command line or remote endpoint. [Writing an extension](./extension-tutorial.md) shows the registration surface.
+
+## Highlight code blocks
+
+A host passes `codeBlockRenderer(node, defaultHtml)` to the render call. It runs once for every code block the renderer writes, in both modes, and gets the block's `syntax` and `value` with the default `<pre>` HTML. It returns HTML to write in its place, or nothing to keep the default. The returned HTML is trusted and inserted unchanged, so a highlighter must escape the code itself. See [the code block renderer](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content).
+
+## Soft breaks for chat output
+
+`softBreak` writes a line break inside a paragraph as a line break (`newline`, the default), one space (`space`), or `<br>` (`br`) for output that shows source line breaks. The command line flag is `--soft-break`. See [render options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
+
+## Headings under a page title
+
+When the page template writes the document title as the `<h1>`, `headingShift` moves every heading down by 0 to 5 levels (default 0). With `headingShift: 1`, `=` renders as `<h2>` and `==` as `<h3>`, inside quotes, divs, list items and expanded includes too. The command line flag is `--heading-shift`:
+
+```sh
+carve render --heading-shift=1 document.crv > document.html
 ```
 
-Renderers are synchronous in the engine. For an async tool (mmdc, an HTTP
-service), **pre-render in your build step** - collect the diagram sources, render
-them to images, and pass a map/closure that returns the already-rendered result.
-Do not block the render call on network.
+The shift runs after includes and before any extension transform, so `tableOfContents`, `headingPermalinks` and `headingNumbers` see the shifted levels, and their level options name them: with a shift of 1, `headingPermalinks({ levels: [1] })` matches no heading. Ids and cross-references do not change. A level above 6 renders as `<div role="heading" aria-level="7">` and reports `heading-shift-above-6` once. Under `roundtrip` each heading carries `data-carve-source-level`, so an HTML import gives back the authored level. The Markdown export (`carve render --to markdown`) reads the option too and clamps a level above 6 to 6; the plain text and ANSI exports refuse it. The option replaces the 0.1 `headingLevelShift()` extension. See [C2-H-208](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
-### Math: KaTeX server-side (HTML target)
+## Core math
 
-For static HTML, KaTeX renders LaTeX to MathML/HTML in-process - crisp,
-accessible, no external call:
-
-```js
-import katex from 'katex';
-renderers: {
-  math: (tex, display) => katex.renderToString(tex, { displayMode: display, output: 'mathml', throwOnError: false })
-}
-```
-
-For **PDF via dompdf**, MathML/KaTeX-CSS does not lay out reliably; render with
-MathJax to **SVG** and rasterize, or accept a PNG. Document this trade-off for
-your users rather than assuming the HTML recipe works in print.
-
-## A note on caching and load
-
-Build-time renders are deterministic on their source, so **cache them keyed on a
-hash of the source** (and cache the final artifact - PDF, page - too). For any
-external service, cache **successful** renders only, so a transient failure
-retries instead of caching a fallback, and the service is never hit twice for
-the same input. This also bounds the load a public tool can put on an external
-renderer.
+Core math stays TeX-delimited HTML in static mode. A site that needs server-rendered math applies a separate postprocess or host integration. See [C2-H-168](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).

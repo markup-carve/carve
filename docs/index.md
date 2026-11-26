@@ -2,125 +2,49 @@
 layout: home
 
 hero:
-  name: Carve
-  text: A markup language for documents
-  tagline: Syntax for headings, tables, captions, references, math, and optional extensions.
+  name: Carve 0.2
+  text: Structured documents in plain text
+  tagline: Write headings, lists, tables, captions, references, and includes.
   image:
     src: /logo.svg
     alt: Carve logo
   actions:
     - theme: brand
-      text: Open Playground
-      link: /playground
-    - theme: alt
-      text: Install
+      text: Get Started
       link: /get-started
     - theme: alt
-      text: Full Cheat Sheet
-      link: /cheatsheet
+      text: Upgrade from 0.1
+      link: /upgrade-0-2
 
 features:
-  - title: Defined behavior
-    details: A specification and shared input/output tests define how the language works.
-  - title: Three implementations
-    details: Carve parsers are available for JavaScript, PHP, and Rust.
-  - title: Four output formats
-    details: Convert a document to HTML, Markdown, plain text, or ANSI terminal text.
-description: Carve syntax, installation, specification, and reference implementations.
+  - title: Defined syntax
+    details: The 0.2 specification defines source, trees, HTML, and canonical writing.
+  - title: HTML output
+    details: Render documents to HTML with explicit handling of links and raw content.
+  - title: Reusable documents
+    details: Includes can select sections, lines, regions, or code from other files.
+description: Carve 0.2 authoring guide and reference.
 ---
 
-## Syntax
+## Write a document
 
-```carve
-# Release notes
+```crv
+= Release notes
 
-This has /italic/, *bold*, _underline_, ~strikethrough~, and =highlight=.
+This has /emphasis/ and *strong text*.
 
 - [x] Publish the release
 - [ ] Update the package
 
 |= Package |= Version |
-| carve-js | 0.1 |
+| carve-js | 0.2 |
 ^ Published packages
-
-::: note
-Containers can represent admonitions and application-defined blocks.
-:::
 ```
 
-| Construct | Syntax |
-|---|---|
-| Heading | `# Heading` |
-| Link | `[text](https://example.com)` |
-| Image | `![alt](image.jpg)` |
-| Cross-reference | `</#heading-id>` |
-| Footnote | `[^note]` |
-| Inline math | `` $`x + y` `` |
-| Attributes | `{#id .class key=value}` |
-| Extension | `:name[content]` |
-
-The [cheat sheet](./cheatsheet) lists every construct. [Examples](./examples)
-show Carve source beside its HTML output.
-
-## Why Carve
-
-- Cross-references and numbered captions keep labels and link text in sync.
-- Tables support captions, alignment, rowspan, colspan, and multiline cells
-  without HTML.
-- JavaScript, PHP, and Rust are tested with the same Carve inputs and expected
-  HTML outputs.
-- A document can be rendered as HTML, Markdown, plain text, or ANSI terminal
-  text. Rendering methods can warn when an output format omits content.
-- If an application does not recognize an extension, its content remains in an
-  ordinary span or div.
-- Bare HTML is literal text. Explicit `=html` passthrough can be disabled for
-  untrusted input.
-
-## Install
-
-```bash
-npm install @markup-carve/carve
-composer require markup-carve/carve-php
-cargo install carve-lang
-```
-
-```ts
-import { carveToHtml } from '@markup-carve/carve'
-
-const html = carveToHtml('/italic/ and *bold*')
-```
-
-See [Get Started](./get-started) for PHP, the Rust CLI, WebAssembly, and language
-bindings.
+Start with [Get Started](./get-started), then use the [cheat sheet](./cheatsheet) or [examples](./examples). Authors moving from 0.1 should read [Upgrading from 0.1](./upgrade-0-2): some old source still parses but changes meaning.
 
 ## Scope
 
-Carve is a separate language, not a Markdown extension. Use a Carve parser for
-`.crv` files. The [Markdown migration guide](./migrate-from-markdown) lists
-syntax differences and [Format conversion](./format-bridges) describes which
-content can be preserved.
+Carve 0.2 is a development version. Its [freeze status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) identifies the current candidate. The [block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md) and [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md) chapters define source syntax. The [HTML chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md) defines output.
 
-Core syntax is always available. Some features, including citations, automatic
-URL linking, and diagrams, must be enabled separately. The [optional features
-table](./extensions#feature-tiers-quick-reference) lists their availability.
-
-## Influences
-
-- **Markdown** - ubiquitous baseline; paragraph interruption without a blank line
-- **[Djot](https://djot.net/)** (John MacFarlane) - rigorous parsing, attributes, foundation
-- **Org-mode** - `/italic/` syntax, TODO states
-- **Creole** - `|=` table headers
-- **AsciiDoc** - admonitions, document structure
-- **CriticMarkup** - editorial annotations
-
-## Reference
-
-- [Formal grammar](./grammar)
-- [Extensions](./extensions)
-- [Security](./security)
-- [Implementation comparison](./implementation-comparison)
-- [Ecosystem](./ecosystem)
-- [Terms used in this documentation](./terms)
-
-Carve 0.1 is specified. Minor releases may change the grammar before 1.0; see
-[Versioning](./versioning).
+A `.crv` file is Carve source. The 0.2 output contract is HTML. Every engine also exports Markdown, plain text, and ANSI, but that output is engine behavior outside the specification. Bare HTML is text. Raw HTML needs an explicit raw form and a host that enables it. See [security](./security) and [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).

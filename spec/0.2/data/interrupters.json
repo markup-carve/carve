@@ -1,0 +1,71 @@
+{
+  "$schema": "schemas/interrupters.schema.json",
+  "interrupters": [
+    {
+      "name": "a",
+      "label": "fence_line",
+      "shapes": [
+        "code_fence_closer",
+        "code_fence_opener",
+        "comment_block_closer",
+        "comment_block_opener",
+        "div_bare_run",
+        "div_opener"
+      ],
+      "when": ["always"],
+      "not_when": ["opens_a_counted_block_while_200_are_open"],
+      "clauses": ["C2-B-013", "C2-B-014", "C2-B-070", "C2-B-078", "C2-B-190", "C2-B-228"]
+    },
+    {
+      "name": "b",
+      "label": "list_marker",
+      "shapes": ["bullet", "ordered"],
+      "when": ["at_open_list_column", "between_columns_of_two_open_lists", "indented_past_enclosing_marker_as_bullet_bare_dot_or_one", "left_of_every_open_list"],
+      "carries_quote_marks": true,
+      "not_when": ["at_description_list_column_after_term_or_description_text", "indented_past_only_markers_outside_enclosing_div"],
+      "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-235", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-054", "C2-B-055", "C2-B-228"]
+    },
+    {
+      "name": "c",
+      "label": "description_or_definition",
+      "shapes": ["abbreviation_definition", "description", "footnote_definition", "link_definition", "term"],
+      "when": ["mark_at_open_description_list_column", "definition_at_column_0_while_definition_open"],
+      "carries_quote_marks": true,
+      "clauses": ["C2-B-013", "C2-B-016", "C2-B-020", "C2-B-024"]
+    },
+    {
+      "name": "d",
+      "label": "caption",
+      "shapes": ["caption"],
+      "when": ["paragraph_is_one_block_image_line", "paragraph_is_one_display_math_line", "below_open_quote_line_without_its_mark"],
+      "not_when": ["not_owned_by_container_of_captioned_block"],
+      "clauses": ["C2-B-013", "C2-B-017", "C2-B-018", "C2-B-146", "C2-B-198"]
+    },
+    {
+      "name": "e",
+      "label": "table_row",
+      "shapes": ["table_row"],
+      "when": ["always"],
+      "clauses": ["C2-B-013", "C2-B-019", "C2-B-070", "C2-B-078"]
+    },
+    {
+      "name": "f",
+      "label": "thematic_break",
+      "shapes": ["thematic_break"],
+      "when": ["always"],
+      "clauses": ["C2-B-013", "C2-B-159", "C2-B-200"]
+    }
+  ],
+  "lazy_shapes": [
+    { "name": "abbreviation_definition", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "attribute_line", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "bullet", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-123"] },
+    { "name": "comment_only", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-137"] },
+    { "name": "footnote_definition", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "heading", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "include", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-123"] },
+    { "name": "link_definition", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "ordered", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-123"] },
+    { "name": "quote", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] }
+  ]
+}

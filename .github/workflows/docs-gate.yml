@@ -1,0 +1,50 @@
+name: Docs quality gate
+
+on:
+  pull_request:
+    branches: [main, next2]
+    paths:
+      - 'docs/**'
+      - 'scripts/docs-samples-check.mjs'
+      - 'scripts/docs-layout-check.mjs'
+      - '.github/workflows/docs-gate.yml'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs-quality:
+    name: samples and layout
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prefer HTTPS for Git dependencies
+        run: |
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://github.com/".insteadOf git@github.com:
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - name: Install headless Chrome
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+      - name: Build docs
+        run: npm run docs:build
+      - name: Check samples
+        run: npm run docs:samples:check
+      - name: Check layout and save screenshots
+        if: success() || failure()
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          DOCS_SCREENSHOT_DIR: docs-screenshots
+        run: npm run docs:layout:check
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-screenshots
+          path: docs-screenshots/
+          if-no-files-found: warn

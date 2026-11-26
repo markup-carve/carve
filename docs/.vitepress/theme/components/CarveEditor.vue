@@ -14,7 +14,7 @@ import {
 } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap, indentMore, indentLess, isolateHistory } from '@codemirror/commands'
 import type { Command } from '@codemirror/view'
-import { parse } from '@markup-carve/carve'
+import { parse } from '../../engine.js'
 import {
   BARE_CONTINUATION_MARKER,
   bareMarkerItem,
@@ -95,16 +95,19 @@ function diffMarkerRanges(text: string, doc: EditorState['doc'], ast: unknown): 
     }
     const node = value as {
       type?: string
-      lang?: string
+      syntax?: string
       attrs?: { classes?: string[] }
-      content?: string
+      value?: string
       pos?: { startLine?: number; endLine?: number }
     }
-    if (isDiffCodeBlock(node, parent) && node.pos?.startLine && node.content) {
-      node.content.split('\n').forEach((contentLine, index) => {
+    if (isDiffCodeBlock(node) && node.pos?.startLine && node.value) {
+      // The node starts at its attribute line, when it has one, not at the fence.
+      let opener = node.pos.startLine
+      while (opener < doc.lines && !/^[ \t>]*(?:`{3,}|~{3,})/.test(doc.line(opener).text)) opener++
+      node.value.split('\n').forEach((contentLine, index) => {
         const marker = contentLine[0]
         if (marker !== '+' && marker !== '-') return
-        const lineNumber = node.pos!.startLine! + index + 1
+        const lineNumber = opener + index + 1
         if (lineNumber > doc.lines) return
         if (node.pos?.endLine && lineNumber >= node.pos.endLine && node.pos.endLine <= doc.lines
           && /^[ \t>]*(?:`{3,}|~{3,})[ \t]*$/.test(doc.line(node.pos.endLine).text)) return
@@ -148,6 +151,8 @@ async function highlight(): Promise<void> {
     lines = hl.codeToTokens(sourceForShiki(text), {
       lang: 'carve',
       themes: { light: 'github-light', dark: 'github-dark' },
+      // Some inline forms tokenize in quadratic time on one very long line; VS Code stops at the same length.
+      tokenizeMaxLineLength: 20000,
     }).tokens
   } catch {
     return
@@ -512,6 +517,16 @@ defineExpose({
       annotations: isolateHistory.of('full'),
       userEvent: 'input.format',
     })
+  },
+  // Select a UTF-16 range, scroll it into view and focus the editor.
+  select(from: number, to: number): void {
+    const v = view.value
+    if (!v) return
+    const length = v.state.doc.length
+    const anchor = Math.max(0, Math.min(from, length))
+    const head = Math.max(anchor, Math.min(to, length))
+    v.dispatch({ selection: { anchor, head }, effects: EditorView.scrollIntoView(anchor, { y: 'center' }) })
+    v.focus()
   },
   scroller: () => view.value?.scrollDOM ?? null,
   // Fractional 1-based source line at the top of the visible area.

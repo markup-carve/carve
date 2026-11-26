@@ -1,0 +1,9 @@
+[package]
+name = "carve-lint-parity"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+carve = { package = "carve-lang", path = "@CARVE_RS_DIR@" }
+serde_json = "1"

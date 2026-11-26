@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/spec/0.2/conformance/schema.json",
+  "title": "Carve 0.2 conformance corpus",
+  "description": "One schema for the three files of spec/0.2/conformance: examples.json, clause-cases.json and refused-trees.json. See README.md.",
+  "type": "object",
+  "required": ["$schema", "kind", "description"],
+  "properties": {
+    "$schema": { "const": "./schema.json" },
+    "kind": { "enum": ["examples", "clause-cases", "refused-trees"] },
+    "description": { "type": "string" },
+    "examples": { "type": "array", "items": { "$ref": "#/$defs/example" } },
+    "cases": { "type": "array", "items": { "$ref": "#/$defs/clauseCase" } },
+    "trees": { "type": "array", "items": { "$ref": "#/$defs/refusedTree" } }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "kind": { "const": "examples" } } }, "then": { "required": ["examples"], "properties": { "examples": true } } },
+    { "if": { "properties": { "kind": { "const": "clause-cases" } } }, "then": { "required": ["cases"], "properties": { "cases": true } } },
+    { "if": { "properties": { "kind": { "const": "refused-trees" } } }, "then": { "required": ["trees"], "properties": { "trees": true } } }
+  ],
+  "$defs": {
+    "clauseId": { "type": "string", "pattern": "^C2-[ABHILMNTWX]-[0-9]{3}$" },
+    "clauses": { "type": "array", "items": { "$ref": "#/$defs/clauseId" } },
+    "options": {
+      "type": "object",
+      "description": "The options of data/options.json by their names. extensions, renderers and codeBlockRenderer take host code, so a case names a standard extension and its standard renderer, and describes the code block function (README.md). scripts/spec2-conformance.mjs checks each value against data/options.json, except a value the case expects to be refused.",
+      "properties": {
+        "alignTables": { "type": "boolean" },
+        "allowLosses": { "type": "array", "items": { "type": "string" } },
+        "codeBlockRenderer": {
+          "type": "object",
+          "description": "The host function of C2-H-206: for a code block whose syntax is syntax, or for every block where syntax is absent, it returns result; a string result is a template in which {default} is the default HTML and {syntax} the language or the empty string, null returns nothing, and a number returns a value that is not text. Every other block gets nothing.",
+          "required": ["result"],
+          "properties": { "syntax": { "type": "string" }, "result": { "oneOf": [{ "type": "string" }, { "type": "null" }, { "type": "number" }] } },
+          "additionalProperties": false
+        },
+        "extensions": { "type": "array", "items": { "type": "string" } },
+        "headingIds": { "type": "string" },
+        "headingShift": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
+        "includes": {
+          "type": "object",
+          "description": "The include settings: file, the id of the top-level document, and the lowered limits depth and bytes. A case with files is parsed with a resolver over them, and a case without files with no resolver.",
+          "properties": { "file": { "type": "string" }, "depth": { "type": "integer" }, "bytes": { "type": "integer" } },
+          "additionalProperties": false
+        },
+        "adapter": { "type": "string" },
+        "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+        "listTable": { "type": "boolean" },
+        "maxLosses": { "type": "number" },
+        "mode": { "type": "string" },
+        "normalize": { "type": "boolean" },
+        "platforms": { "type": "array", "items": { "type": "string" } },
+        "upgrade": { "type": "boolean" },
+        "profile": { "type": "string" },
+        "rawHtml": { "type": "boolean" },
+        "renderers": { "type": "object", "additionalProperties": { "oneOf": [{ "const": "standard" }, { "type": "object", "required": ["standard"], "additionalProperties": false, "properties": { "standard": { "type": "object", "additionalProperties": { "type": "string" } } } }] } },
+        "roundtrip": { "type": "boolean" },
+        "rules": { "type": "object", "additionalProperties": { "enum": ["on", "off"] } },
+        "sections": { "type": "boolean" },
+        "smartTypography": { "type": "boolean" },
+        "social": { "type": "object" },
+        "softBreak": { "type": "string" },
+        "sourceLines": { "type": "boolean" },
+        "strictLosses": { "type": "boolean" },
+        "symbols": { "type": "object", "additionalProperties": { "type": "string" } },
+        "urlPolicy": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "file": {
+      "type": "object",
+      "description": "A file the resolver serves as text or bytes, or a resolver failure for that path.",
+      "oneOf": [
+        { "required": ["text"], "properties": { "text": { "type": "string" } }, "additionalProperties": false },
+        { "required": ["bytes"], "properties": { "bytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$" } }, "additionalProperties": false },
+        { "required": ["error"], "properties": { "error": { "enum": ["outside_root", "unreadable"] } }, "additionalProperties": false }
+      ]
+    },
+    "code": { "type": "string", "pattern": "^[a-z0-9/-]+$" },
+    "diagnostic": {
+      "type": "object",
+      "description": "An expected entry of the diagnostics record: its code, and each other field the case states. line and column are those of the start of the entry's range, counted as pos counts them (C2-A-141), in the file the entry names or the input.",
+      "required": ["code"],
+      "properties": {
+        "code": { "$ref": "#/$defs/code" },
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "endColumn": { "type": "integer", "minimum": 1 },
+        "severity": { "enum": ["hint", "warning", "error"] },
+        "channel": { "enum": ["parse", "render-loss", "lint"] },
+        "path": { "type": "string" },
+        "file": { "type": "string" },
+        "messageWhen": { "type": "string", "description": "Exact when condition of the selected catalog message variant." },
+        "includedBy": {
+          "type": "array",
+          "description": "The include chain of the entry (C2-T-020), from the top-level document inward: per include node, the file it stands in, absent for the input, and the line and column of the start of its range.",
+          "items": {
+            "type": "object",
+            "required": ["line", "column"],
+            "properties": { "file": { "type": "string" }, "line": { "type": "integer", "minimum": 1 }, "column": { "type": "integer", "minimum": 1 } },
+            "additionalProperties": false
+          }
+        }
+      },
+      "dependentRequired": { "column": ["line"], "line": ["column"], "endColumn": ["endLine"], "endLine": ["endColumn"], "includedBy": ["file"] },
+      "additionalProperties": false
+    },
+    "diagnostics": { "type": "array", "items": { "anyOf": [{ "$ref": "#/$defs/code" }, { "$ref": "#/$defs/diagnostic" }] } },
+    "example": {
+      "type": "object",
+      "required": ["id", "document", "number", "section", "clauses", "clauseScope", "kind", "options", "expected", "status", "reason"],
+      "properties": {
+        "id": { "type": "string" },
+        "document": { "enum": ["syntax-blocks.md", "syntax-inline.md", "ast.md", "html.md", "writer.md", "source-layout.md", "includes.md", "extensions.md", "import-html.md"] },
+        "number": { "type": "integer", "minimum": 1 },
+        "section": { "type": "string" },
+        "clauses": { "$ref": "#/$defs/clauses" },
+        "clauseScope": { "enum": ["example", "section"], "description": "example: the heading of the example names these clauses; section: they are the clauses of its section, which is no claim that the example exercises each." },
+        "kind": { "enum": ["render", "write", "lint", "include", "import"] },
+        "input": { "type": "string" },
+        "html": { "type": "string" },
+        "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" } },
+        "options": { "$ref": "#/$defs/options" },
+        "expected": {
+          "type": "object",
+          "properties": {
+            "html": { "type": "string" },
+            "htmlIncludes": { "type": "string" },
+            "tree": { "type": "object" },
+            "children": { "type": "array" },
+            "carve": { "type": "string", "pattern": "\\n$" },
+            "diagnostics": { "$ref": "#/$defs/diagnostics" }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "status": { "enum": ["verified", "unverified"] },
+        "reason": { "type": "string" },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "clauseCase": {
+      "type": "object",
+      "required": ["id", "clauses", "why", "options", "expected", "from"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^CC-[0-9]{3,4}$" },
+        "clauses": { "$ref": "#/$defs/clauses" },
+        "why": { "type": "string", "description": "The deciding sentence, quoted from the first clause it names: CLAUSE-ID, a colon, a space, the sentence; ' ... ' joins two pieces." },
+        "summary": { "type": "string" },
+        "kind": { "enum": ["render", "parse", "lint", "format", "tree", "migrate", "layout", "write", "import", "cli", "position", "diff", "patch", "fingerprint", "export"], "description": "The call the case runs; absent is a render whose expected html and children are both stated. See README.md." },
+        "input": { "type": "string" },
+        "inputBytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$", "description": "The input as bytes in hex, for a source that is not a string." },
+        "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" }, "description": "The files a resolver serves, each under its name, which is also its id." },
+        "tree": { "type": "object", "description": "A tree or an envelope as a JSON value: the input of a tree, migrate, render or write case." },
+        "json": { "type": "string", "description": "The JSON text a tree case decodes, where the input is not a JSON value, or whose decoded tree a fingerprint case hashes (C2-A-219)." },
+        "layout": { "type": "object", "description": "The source-layout sidecar a write case gives the writer beside its tree." },
+        "annotations": { "type": "object", "description": "The annotation-range sidecar passed to a tree reader call." },
+        "html": { "type": "string", "description": "The HTML an import case reads." },
+        "args": { "type": "array", "items": { "type": "string" }, "description": "The arguments of a command line case, after the program name (C2-T-007)." },
+        "stdin": { "type": "string", "description": "What a command line case reads on standard input; absent is empty." },
+        "to": { "enum": ["markdown", "plain", "ansi"], "description": "The export an export case runs on the tree of its input (C2-T-003, C2-H-209)." },
+        "offset": { "type": "integer", "description": "The UTF-8 byte offset a position case gives positionOf (C2-T-041)." },
+        "inputAfter": { "type": "string", "description": "The second source of a diff case; both are parsed with positions off (C2-T-043)." },
+        "patch": { "type": "array", "description": "The JSON Patch a patch case gives applyPatch (C2-T-044)." },
+        "fingerprintOf": { "type": "string", "description": "A source whose tree, parsed with positions off, gives the fingerprint a patch case passes to applyPatch (C2-T-045)." },
+        "of": { "enum": ["source", "tree"], "description": "What a fingerprint case hashes: the source with sourceFingerprint, the default, or its tree parsed with positions off with treeFingerprint (C2-T-046)." },
+        "options": { "$ref": "#/$defs/options" },
+        "host": { "type": "object", "description": "Conformance harness registrations, not a Carve option.", "properties": { "documentTransforms": { "type": "array", "items": { "type": "object", "required": ["name", "after"], "oneOf": [{ "properties": { "insert": { "type": "object" } }, "required": ["insert"] }, { "properties": { "setLevel": { "type": "integer", "minimum": 1 } }, "required": ["setLevel"] }, { "properties": { "setValue": { "type": "string" } }, "required": ["setValue"] }], "properties": { "name": { "type": "string" }, "after": { "type": "string" }, "insert": { "type": "object" }, "setLevel": { "type": "integer", "minimum": 1 }, "setValue": { "type": "string" } }, "additionalProperties": false } }, "limits": { "type": "object", "description": "Lowered limits a harness sets for one case in place of the rows of data/limits.json; not a Carve option.", "properties": { "snippetDepth": { "type": "integer", "minimum": 1 }, "snippetNodes": { "type": "integer", "minimum": 0 }, "derivedTextBytes": { "type": "integer", "minimum": 0 } }, "additionalProperties": false } }, "additionalProperties": false },
+        "expected": {
+          "type": "object",
+          "properties": {
+            "html": { "type": "string" },
+            "children": { "type": "array" },
+            "carve": { "type": "string" },
+            "output": { "type": "string", "description": "The text an export case returns, byte for byte." },
+            "diagnostics": { "$ref": "#/$defs/diagnostics" },
+            "diagnosticsComplete": { "type": "boolean", "description": "true: the record holds these entries and no other; false or absent: it holds at least these." },
+            "diagnosticsOrdered": { "type": "boolean", "description": "true, beside diagnosticsComplete: the entries of the record stand in the order of the list, each one matching the listed entry at its position (C2-W-158)." },
+            "notReported": { "type": "array", "items": { "$ref": "#/$defs/code" }, "description": "Codes the record holds no entry of." },
+            "line": { "type": "integer", "minimum": 1, "description": "The line positionOf returns (C2-T-041)." },
+            "column": { "type": "integer", "minimum": 1, "description": "The column positionOf returns (C2-T-041)." },
+            "suppressed": { "type": "integer", "minimum": 0, "description": "suppressedDiagnostics of the result (C2-T-024)." },
+            "applies": { "const": true, "description": "A diff case: applying the patch to the first tree gives the tree of inputAfter (C2-T-043)." },
+            "patch": { "type": "array", "description": "A diff case: the exact patch, stated only where C2-T-043 fixes it, the empty list for two equal trees." },
+            "fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "description": "The fingerprint a fingerprint case expects (C2-T-046)." },
+            "status": { "enum": [0, 1, 2], "description": "The exit status of a command line case (C2-T-037 to C2-T-040)." },
+            "stdout": { "type": "string", "description": "Standard output, byte for byte." },
+            "stdoutJson": { "description": "Standard output read as one JSON document and compared as a JSON value (C2-T-023)." },
+            "stdoutDiagnostics": { "$ref": "#/$defs/diagnostics", "description": "The diagnostic lines on standard output (C2-T-019), in order; each object names the file of its line." },
+            "stderrCategory": { "type": ["string", "null"], "description": "The category of the failure line carve[CATEGORY]: that opens standard error (C2-T-039); null: standard error holds no failure line." },
+            "stderrDiagnostics": { "$ref": "#/$defs/diagnostics", "description": "The diagnostic lines on standard error, in order." },
+            "filesAfter": { "type": "object", "additionalProperties": { "oneOf": [{ "type": "object", "required": ["text"], "properties": { "text": { "type": "string" } }, "additionalProperties": false }, { "type": "object", "required": ["json"], "properties": { "json": true }, "additionalProperties": false }, { "const": null }] }, "description": "The files of the working directory after the run: their text, a JSON value compared as one, or null for a file that does not exist." },
+            "tree": { "type": "object", "description": "The tree the call returns, compared under C2-A-161, with positions where the case states them." },
+            "accepted": { "const": true, "description": "The reader accepts the input." },
+            "layout": { "type": "object", "description": "The sidecar of parseWithLayout: each root field it states is equal, and each node entry it states is an entry of the result with equal fields; the result may hold more entries and facts." },
+            "layoutAbsent": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } }, "description": "For a path, the facts its entry does not hold." },
+            "refusal": {
+              "type": "object",
+              "description": "The call refuses: the typed error of C2-T-040 and the RFC 6901 pointer of what it names, into the tree, the sidecar or the options the call was given.",
+              "required": ["error"],
+              "properties": {
+                "error": { "enum": ["CarveTreeError", "CarveLayoutError", "CarveOptionError", "CarveInputError", "CarveWriteError", "CarveRenderError", "ImportInputError", "CarvePatchError"] },
+                "path": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "from": { "type": "array", "items": { "type": "string", "pattern": "^(js|php|rs):.+$" } },
+        "corrected": { "type": "string" },
+        "engineLocal": { "type": "string", "description": "The implementation choice a clause leaves open that the expectation depends on (README.md, Clause cases)." }
+      },
+      "allOf": [
+        { "if": { "not": { "required": ["kind"], "properties": { "kind": true } } }, "then": { "required": ["input"], "properties": { "input": true, "expected": { "type": "object", "required": ["html", "children"], "properties": { "html": true, "children": true } } } } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["render"] } } }, "then": { "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }, { "required": ["tree"], "properties": { "tree": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["parse", "lint", "format", "layout"] } } }, "then": { "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["tree"] } } }, "then": { "oneOf": [{ "required": ["tree"], "properties": { "tree": true } }, { "required": ["json"], "properties": { "json": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["migrate", "write"] } } }, "then": { "oneOf": [{ "required": ["tree"], "properties": { "tree": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["import"] } } }, "then": { "oneOf": [{ "required": ["html"], "properties": { "html": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["cli"] } } }, "then": { "oneOf": [{ "required": ["args"], "properties": { "args": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["position"] } } }, "then": { "required": ["offset"], "properties": { "offset": true }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["diff"] } } }, "then": { "required": ["input", "inputAfter"], "properties": { "input": true, "inputAfter": true, "expected": { "type": "object", "required": ["applies"], "properties": { "applies": true } } } } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["patch"] } } }, "then": { "required": ["input", "patch"], "properties": { "input": true, "patch": true } } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["export"] } } }, "then": { "required": ["input", "to"], "properties": { "input": true, "to": true } } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["fingerprint"] } } }, "then": { "properties": { "expected": { "type": "object", "required": ["fingerprint"], "properties": { "fingerprint": true } } }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }, { "required": ["json"], "properties": { "json": true } }] } }
+      ],
+      "additionalProperties": false
+    },
+    "refusedTree": {
+      "type": "object",
+      "required": ["id", "clauses", "reason", "refusedBy", "tree"],
+      "properties": {
+        "id": { "type": "string" },
+        "clauses": { "$ref": "#/$defs/clauses" },
+        "reason": { "type": "string" },
+        "refusedBy": { "enum": ["schema", "reader"] },
+        "path": { "type": "string", "description": "The RFC 6901 pointer of the node or field the refusal names (C2-A-167)." },
+        "tree": { "type": "object" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

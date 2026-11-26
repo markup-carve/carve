@@ -1,0 +1,158 @@
+{
+  "$schema": "schemas/limits.schema.json",
+  "limits": [
+    {
+      "name": "block_depth",
+      "value": 200,
+      "unit": "open_blocks",
+      "clauses": [
+        "C2-B-190"
+      ]
+    },
+    {
+      "name": "derived_text_bytes",
+      "value": 1000000,
+      "unit": "bytes",
+      "clauses": [
+        "C2-H-201",
+        "C2-I-098"
+      ]
+    },
+    {
+      "name": "derived_text_factor",
+      "value": 8,
+      "unit": "bytes_per_source_byte",
+      "clauses": [
+        "C2-H-201",
+        "C2-I-098"
+      ]
+    },
+    {
+      "name": "extension_depth",
+      "value": 32,
+      "unit": "levels",
+      "clauses": [
+        "C2-X-031"
+      ]
+    },
+    {
+      "name": "extension_fallback_depth",
+      "value": 32,
+      "unit": "levels",
+      "clauses": [
+        "C2-A-132",
+        "C2-X-030"
+      ]
+    },
+    {
+      "name": "extension_payload_bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "clauses": [
+        "C2-A-132",
+        "C2-X-030"
+      ]
+    },
+    {
+      "name": "extension_resource_references",
+      "value": 4096,
+      "unit": "entries",
+      "clauses": [
+        "C2-A-132"
+      ]
+    },
+    {
+      "name": "extension_source_body_bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "clauses": [
+        "C2-X-031"
+      ]
+    },
+    {
+      "name": "include_bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "clauses": [
+        "C2-N-065"
+      ]
+    },
+    {
+      "name": "include_depth",
+      "value": 16,
+      "unit": "levels",
+      "clauses": [
+        "C2-N-064"
+      ]
+    },
+    {
+      "name": "include_diagnostics",
+      "value": 100,
+      "unit": "entries",
+      "clauses": [
+        "C2-N-061",
+        "C2-T-024"
+      ]
+    },
+    {
+      "name": "inline_depth",
+      "value": 200,
+      "unit": "open_entries",
+      "clauses": [
+        "C2-I-118"
+      ]
+    },
+    {
+      "name": "list_end_blank_lines",
+      "value": 3,
+      "unit": "lines",
+      "clauses": [
+        "C2-B-051",
+        "C2-B-052",
+        "C2-B-053"
+      ]
+    },
+    {
+      "name": "metadata_depth",
+      "value": 64,
+      "unit": "levels",
+      "clauses": [
+        "C2-A-132",
+        "C2-A-212"
+      ]
+    },
+    {
+      "name": "metadata_fields",
+      "value": 256,
+      "unit": "entries",
+      "clauses": [
+        "C2-A-212"
+      ]
+    },
+    {
+      "name": "snippet_depth",
+      "value": 16,
+      "unit": "levels",
+      "clauses": [
+        "C2-N-093"
+      ]
+    },
+    {
+      "name": "snippet_nodes",
+      "value": 100000,
+      "unit": "nodes",
+      "clauses": [
+        "C2-N-093"
+      ]
+    },
+    {
+      "name": "tab_stop",
+      "value": 4,
+      "unit": "columns",
+      "clauses": [
+        "C2-B-004",
+        "C2-B-005"
+      ]
+    }
+  ]
+}

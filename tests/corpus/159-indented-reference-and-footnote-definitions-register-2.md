@@ -1,3 +1,0 @@
-Note[^fn].
-
-[^fn]: body.

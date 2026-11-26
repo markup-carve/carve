@@ -1,13 +1,13 @@
 ---
-description: "Early syntax notes. Historical: the normative grammar is resources/grammar.ebnf."
+description: "Early syntax notes. Historical and not normative for Carve 0.2."
 ---
 
 # Original Syntax Write-up
 
-> **Non-normative.** This page is explanatory prose. The normative
-> specification is [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
-> (PART 9 for semantic constraints); `resources/examples/*.md` + `tests/corpus`
-> are the conformance contract. On any disagreement, the grammar wins.
+> **Non-normative.** This page is explanatory prose from the 0.1 design. The
+> normative specification of Carve 0.2 is [`spec/0.2/`](https://github.com/markup-carve/carve/tree/next2/spec/0.2).
+> References below to `resources/grammar.ebnf` and `tests/corpus` name 0.1
+> files, kept on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1).
 
 ## Part 4: Carve Syntax Specification
 

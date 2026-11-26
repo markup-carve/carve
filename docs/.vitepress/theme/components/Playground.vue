@@ -1,272 +1,293 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
+import { ref, shallowRef, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { withBase } from 'vitepress'
-import { carveToCarve, carveToHtml, markdownToCarve } from '@markup-carve/carve'
-import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
-// @ts-expect-error - local ESM helper without TS resolution context
-import { carveExtensions } from '../../carve-extensions.js'
+import { diffCodeTransformer } from '../../diff-transformer.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../../playground-code-languages.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
-// @ts-expect-error - local ESM helper without TS resolution context
-import { formatCarve, wasmWriter } from '../../playground-format.js'
+import { render, parse, lint, format, fix, fixEdits } from '../../engine.js'
+import { applyByteEdits, byteToUtf16, type ByteEdit } from '../editor/offsets'
 import { isDiffPre } from '../../diff-fences.js'
-
-// Render the JS engine with every documented extension enabled, so the demo
-// showcases the full feature set (real Mermaid extension, wikilinks, tabs,
-// TOC, permalinks, citations, …). The Rust/WASM engine renders the extensions
-// carve-rs ships (via its `toHtmlFull` binding) - most of the same set, minus
-// a few JS-only extensions (tabs, code-group, heading-level-shift, …).
-const JS_EXTENSIONS = carveExtensions()
-// The canonical feature-demo document (also used by the VS Code extension),
-// loaded as raw Carve source via vite-plugin-carve.
+// @ts-expect-error - local ESM helper without TS resolution context
+import { ansiToHtml } from '../../ansi-html.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { diffLines, foldDiff } from '../../line-diff.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { upgradeVerdict } from '../../upgrade-check.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { SNIPPETS } from '../../examples/snippets.js'
 
-// Hosted sandbox for the PHP implementation (carve-php). PHP cannot
-// run in the browser, so this engine opens out to the sandbox instead of
-// rendering in-page like the JS and Rust engines.
+type Profile = 'full' | 'article' | 'comment' | 'minimal'
+type HeadingIds = 'off' | 'keep-case' | 'lower' | 'ascii' | 'ascii-lower' | 'ascii-strict' | 'ascii-strict-lower'
+type Output = 'html' | 'tree' | 'lint' | 'fmt' | 'markdown' | 'plain' | 'ansi'
+type ExportTarget = 'markdown' | 'plain' | 'ansi'
+const exportTargets: ExportTarget[] = ['markdown', 'plain', 'ansi']
+type SharedOptions = { profile: Profile; headingIds: HeadingIds; headingShift: number; sections: boolean; smartTypography: boolean; rawHtml: boolean }
+const profileValues: Profile[] = ['full', 'article', 'comment', 'minimal']
+const headingValues: HeadingIds[] = ['off', 'keep-case', 'lower', 'ascii', 'ascii-lower', 'ascii-strict', 'ascii-strict-lower']
+const headingShiftValues = [0, 1, 2, 3, 4, 5]
 const PHP_SANDBOX_URL = 'https://sandbox.dereuromark.de/sandbox/carve'
-
 const source = ref(DEFAULT_SOURCE)
 const fullscreen = ref(false)
-// Off by default: aligned tables and other column-sensitive source read best unwrapped.
 const wrapLines = ref(false)
 const WRAP_KEY = 'carve-playground-wrap'
-
-// --- Share links ---
-//
-// The document lives in the URL fragment, so a playground state is
-// bookmarkable and sendable with no server involved. The fragment is written
-// with history.replaceState (never pushState): editing is not navigation, and
-// a per-keystroke history entry would make Back unusable.
-//
-// SECURITY. A shared document is written by whoever sent the link, so it
-// renders with raw HTML DISABLED - otherwise a link would be a way to run
-// script on this origin. That stays off for the rest of the session: once the
-// textarea has held someone else's document, "did the visitor rewrite all of
-// it?" is not a question this component can answer. Reloading the playground
-// without a fragment gives a normal, raw-HTML-enabled session back.
+const alignTables = ref(true)
+const formatNote = ref('')
 const fromSharedLink = ref(false)
-// The engine the sender was on. A link made in Rust mode still opens on JS
-// (see applyShareLink), so the preview has to say that rather than let the
-// recipient assume they are looking at what the sender saw.
-const sharedEngine = ref<Engine | null>(null)
-// Feedback for the share button. It reports through the icon (plus an
-// aria-live line for screen readers) rather than a text label beside it: a
-// label that appears and disappears would reflow the toolbar row each time.
+const profile = ref<Profile>('full')
+const headingIds = ref<HeadingIds>('keep-case')
+const headingShift = ref(0)
+const sections = ref(true)
+const smartTypography = ref(true)
+const rawHtmlEnabled = ref(false)
+const optionsOpen = ref(false)
+const output = ref<Output>('html')
+const outputTabs: { id: Output; label: string }[] = [
+  { id: 'html', label: 'HTML source' },
+  { id: 'tree', label: 'Tree JSON' },
+  { id: 'lint', label: 'Lint' },
+  { id: 'fmt', label: 'Formatted source' },
+  { id: 'markdown', label: 'Markdown' },
+  { id: 'plain', label: 'Plain text' },
+  { id: 'ansi', label: 'ANSI' },
+]
+const options = computed<SharedOptions>(() => ({
+  profile: profile.value, headingIds: headingIds.value, headingShift: headingShift.value, sections: sections.value,
+  smartTypography: smartTypography.value, rawHtml: rawHtmlEnabled.value && !fromSharedLink.value,
+}))
+function safeValue<T extends string>(value: unknown, allowed: T[], fallback: T): T {
+  return allowed.includes(value as T) ? value as T : fallback
+}
 const shareState = ref<'idle' | 'copied' | 'error'>('idle')
 const shareMessage = ref('')
 let shareStatusTimer: ReturnType<typeof setTimeout> | undefined
-
-async function applyShareLink(): Promise<void> {
-  if (typeof window === 'undefined') return
-  const state = await decodeShare(window.location.hash)
-  if (!state) return
-  fromSharedLink.value = true
-  source.value = state.source
-  // The sender's engine is honored where it can be. The WASM build gained a
-  // `rawHtml` option (markup-carve/carve-wasm#70), so a shared document no
-  // longer has to leave the Rust engine to have its passthrough escaped. A
-  // vendored build predating that option still cannot, and `rustMayRender`
-  // decides which case this is by measuring the build rather than trusting a
-  // version number.
-  sharedEngine.value = state.engine === 'rust' ? 'rust' : 'js'
-  engine.value = sharedEngine.value
-}
-
-// The note reports a fallback only when one happened. Once the vendored build
-// honors `rawHtml`, a Rust-mode link renders on Rust and there is nothing extra
-// to say.
-const sharedFellBackToJs = computed<boolean>(
-  () =>
-    sharedEngine.value === 'rust' &&
-    (wasmError.value !== null || (wasmReady.value && !wasmCanDisableRawHtml.value)),
-)
-
-const sharedNoteText = computed<string>(() =>
-  sharedFellBackToJs.value
-    ? 'shared link: raw HTML off, JS engine'
-    : 'shared link: raw HTML off',
-)
-
-const sharedNoteTitle = computed<string>(() =>
-  sharedFellBackToJs.value
-    ? 'This document arrived in a link made in Rust (WASM) mode. This vendored WASM build cannot turn raw HTML off, so it renders here on the JS engine instead - which carries a few extensions carve-rs does not, so the output can differ from what the sender saw.'
-    : 'This document arrived in a link, so raw HTML is not rendered',
-)
-
-function shareUrl(encoded: string): string {
-  const { origin, pathname, search } = window.location
-  return `${origin}${pathname}${search}#${encoded}`
-}
-
+const shareTitle = computed(() => shareState.value === 'idle' ? 'Copy a link to this document' : shareMessage.value)
 function flashShareStatus(state: 'copied' | 'error', message: string): void {
   shareState.value = state
   shareMessage.value = message
   clearTimeout(shareStatusTimer)
-  shareStatusTimer = setTimeout(() => {
-    shareState.value = 'idle'
-    shareMessage.value = ''
-  }, 2500)
+  shareStatusTimer = setTimeout(() => { shareState.value = 'idle'; shareMessage.value = '' }, 2500)
 }
-
-const shareTitle = computed<string>(() =>
-  shareState.value === 'idle' ? 'Copy a link to this document' : shareMessage.value,
-)
-
-async function copyShareLink(): Promise<void> {
-  const encoded = await encodeShare({ source: source.value, engine: engine.value })
-  if (encoded === null) {
-    flashShareStatus('error', 'Too long to share as a link')
-    return
-  }
-  const url = shareUrl(encoded)
-  window.history.replaceState(null, '', url)
+// The draft keeps the shared flag, so a document that came from a link keeps raw HTML off after a reload.
+const DRAFT_KEY = 'carve-playground-draft'
+let draftReady = false
+let draftTimer: ReturnType<typeof setTimeout> | undefined
+function readDraft(): { source: string; shared: boolean } | null {
   try {
-    await navigator.clipboard.writeText(url)
-    flashShareStatus('copied', 'Link copied')
+    const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? 'null')
+    if (!draft || typeof draft !== 'object' || typeof draft.source !== 'string') return null
+    return { source: draft.source, shared: draft.shared !== false }
   } catch {
-    // Clipboard access can be refused (permissions, insecure origin). The
-    // address bar now holds the link either way, so say so instead of failing.
-    flashShareStatus('copied', 'Link is in the address bar')
+    return null
   }
 }
-
-// Import from Markdown: open a paste dialog, then markdownToCarve() rewrites
-// the pasted Markdown into Carve and replaces the source (so it flows through
-// the normal render pipeline). A modal keeps multi-line paste usable and never
-// disrupts the toolbar/grid.
-const showImport = ref(false)
-const importText = ref('')
-const importEl = ref<HTMLTextAreaElement | null>(null)
-
-function openImport(): void {
-  importText.value = ''
-  showImport.value = true
-  void nextTick(() => importEl.value?.focus())
+function writeDraft(): void {
+  clearTimeout(draftTimer)
+  draftTimer = undefined
+  if (!draftReady) return
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, source: source.value, shared: fromSharedLink.value })) }
+  catch { /* Storage blocked or full: the draft is not kept. */ }
 }
-function cancelImport(): void {
-  showImport.value = false
+function saveDraft(): void {
+  if (!draftReady) return
+  clearTimeout(draftTimer)
+  draftTimer = setTimeout(writeDraft, 400)
 }
-function confirmImport(): void {
-  source.value = markdownToCarve(importText.value)
-  showImport.value = false
-  void nextTick(() => editorRef.value?.focus())
+// Leaving the page or the playground inside the save delay still keeps the last edit.
+function flushDraft(): void {
+  if (draftTimer !== undefined) writeDraft()
 }
-
-function clearSource(): void {
-  const editor = editorRef.value
-  if (editor) {
-    editor.replaceAll('')
-    editor.focus()
-  } else {
-    source.value = ''
-    void nextTick(() => editorRef.value?.focus())
-  }
+watch([source, fromSharedLink], saveDraft)
+// A share link in the URL wins over the saved draft.
+async function restoreState(): Promise<void> {
+  if (await applyShareLink()) return
+  const draft = readDraft()
+  if (!draft || draft.source === source.value) return
+  fromSharedLink.value = draft.shared
+  rawHtmlEnabled.value = false
+  formattedText = draft.source
+  source.value = draft.source
+  formatNote.value = 'draft restored'
 }
-
-// --- Format: rewrite the source through the selected engine's canonical writer. ---
-const alignTables = ref(true)
-const formatNote = ref('')
-// The text the last format produced; any other edit clears the note.
+function resetToDemo(): void {
+  clearTimeout(draftTimer)
+  draftReady = false
+  try { localStorage.removeItem(DRAFT_KEY) } catch { /* nothing stored */ }
+  // A reload, not an edit: undo could otherwise bring a shared document back into an untainted session.
+  window.location.replace(`${window.location.pathname}${window.location.search}`)
+}
+async function applyShareLink(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
+  const state = await decodeShare(window.location.hash)
+  if (!state) return false
+  fromSharedLink.value = true
+  source.value = state.source
+  const saved = state.options ?? {}
+  profile.value = safeValue(saved.profile, profileValues, 'full')
+  headingIds.value = safeValue(saved.headingIds, headingValues, 'keep-case')
+  headingShift.value = typeof saved.headingShift === 'number' && headingShiftValues.includes(saved.headingShift) ? saved.headingShift : 0
+  sections.value = saved.sections === undefined ? true : saved.sections === true
+  smartTypography.value = saved.smartTypography === undefined ? true : saved.smartTypography === true
+  rawHtmlEnabled.value = false
+  output.value = safeValue(state.output, outputTabs.map(tab => tab.id), 'html')
+  return true
+}
+async function copyShareLink(): Promise<void> {
+  const encoded = await encodeShare({ source: source.value, options: options.value, output: output.value })
+  if (!encoded) { flashShareStatus('error', 'Too long to share as a link'); return }
+  const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${encoded}`
+  window.history.replaceState(null, '', url)
+  try { await navigator.clipboard.writeText(url); flashShareStatus('copied', 'Link copied') }
+  catch { flashShareStatus('copied', 'Link is in the address bar') }
+}
 let formattedText: string | null = null
-const FORMAT_FALLBACK_NOTE = 'formatted with the JS engine: the bundled Rust build has no writer'
-
-async function formatSource(): Promise<void> {
-  if (engine.value === 'rust') await ensureWasm()
+function formatSource(): void {
   const before = source.value
   try {
-    const result = formatCarve(before, {
-      engine: engine.value,
-      alignTables: alignTables.value,
-      jsFormat: carveToCarve,
-      wasmFormat,
-    })
-    formattedText = result.text
-    editorRef.value?.replaceAll(result.text)
-    // The view may still be mounting; it then starts from `source`.
-    source.value = result.text
-    formatNote.value = result.fellBack
-      ? FORMAT_FALLBACK_NOTE
-      : result.text === before
-        ? 'already formatted'
-        : 'formatted'
-  } catch (err) {
-    formattedText = before
-    formatNote.value = `format failed: ${err instanceof Error ? err.message : String(err)}`
+    const next = format(before, { alignTables: alignTables.value })
+    formattedText = next
+    editorRef.value?.replaceAll(next)
+    source.value = next
+    formatNote.value = next === before ? 'already formatted' : 'formatted'
+  } catch (error) {
+    formatNote.value = `format failed: ${error instanceof Error ? error.message : String(error)}`
   }
 }
-
-watch(source, (value) => {
-  if (value !== formattedText) formatNote.value = ''
-})
-
-// --- Engine selection: JS (default, in-page) or Rust/WASM (in-page, lazy). ---
-type Engine = 'js' | 'rust'
-const engine = ref<Engine>('js')
-
-// The Rust engine is the carve-rs parser compiled to WASM (vendored under
-// ../../carve-wasm). It is loaded lazily on first selection so the JS-only
-// experience never pays for the ~250 KB module download.
-let wasmRender: ((source: string, options: object) => string) | null = null
-// The build's canonical writer, or null when the build omits it.
-let wasmFormat: ((source: string, options: object) => string) | null = null
-const wasmCanFormat = ref(false)
-const wasmReady = ref(false)
-const wasmError = ref<string | null>(null)
-// Whether the vendored build honors `rawHtml: false`. See the probe below.
-const wasmCanDisableRawHtml = ref(false)
-
-// A document whose passthrough must not be emitted, used to MEASURE the option
-// rather than assume it. `toHtmlWithOptions` ignores an unrecognized key by
-// design, so a bundle predating the option would accept `rawHtml: false`,
-// render the passthrough anyway, and report nothing.
-const RAW_HTML_PROBE = '```=html\n<b>probe</b>\n```\n'
-
-async function ensureWasm(): Promise<void> {
-  if (wasmRender || typeof window === 'undefined') return
+watch(source, value => { if (value !== formattedText) formatNote.value = '' })
+// The upgrade, import and export entries hold the 0.1 reader and the Markdown and Djot libraries, so they load on first use.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Tools = any
+const tools = shallowRef<Tools | null>(null)
+let toolsLoading: Promise<Tools> | null = null
+const toolsError = ref('')
+function loadTools(): Promise<Tools> {
+  toolsLoading ??= import('../../engine-tools.js').then((module) => {
+    toolsError.value = ''
+    return (tools.value = module)
+  }, (error) => {
+    // Forget the failure so a later action can retry.
+    toolsLoading = null
+    toolsError.value = error instanceof Error ? error.message : String(error)
+    throw error
+  })
+  return toolsLoading
+}
+// A second click on the same source upgrades it even when it reads as 0.2 already.
+let upgradeAnyway: string | null = null
+async function upgradeSource(): Promise<void> {
+  const before = source.value
+  const force = upgradeAnyway === before
+  upgradeAnyway = null
+  formatNote.value = 'upgrading...'
   try {
-    // @ts-expect-error - vendored WASM glue without TS resolution context
-    const mod = await import('../../carve-wasm/carve_wasm.js')
-    await mod.default() // instantiate the WASM module (resolves its own .wasm)
-    // `toHtmlWithOptions` with `full: true` renders the extension set carve-rs
-    // ships, which is what `toHtmlFull` did, and additionally takes the options
-    // a shared document needs.
-    const render = mod.toHtmlWithOptions as (source: string, options: object) => string
-    wasmCanDisableRawHtml.value = !render(RAW_HTML_PROBE, { rawHtml: false }).includes(
-      '<b>probe</b>',
-    )
-    wasmFormat = wasmWriter(mod)
-    wasmCanFormat.value = wasmFormat !== null
-    wasmRender = render
-    wasmReady.value = true
-    // A shared document selected Rust before this probe could run. If the build
-    // cannot serve it, move the selection back rather than leaving a disabled
-    // button lit: the toolbar has to name the engine that is rendering.
-    if (fromSharedLink.value && !wasmCanDisableRawHtml.value) engine.value = 'js'
-  } catch (err) {
-    wasmError.value = err instanceof Error ? err.message : String(err)
-    // A shared document has to render SOMEWHERE, and the JS engine is loaded
-    // and can turn raw HTML off. Only a document this visitor typed is left
-    // looking at the load failure, which is information they asked for by
-    // selecting the engine.
-    if (fromSharedLink.value) engine.value = 'js'
+    const { upgrade } = await loadTools()
+    // The first click waits for the tools entry; edits typed meanwhile win over the upgrade.
+    if (source.value !== before) { formatNote.value = 'source changed, upgrade again'; return }
+    const result = upgrade(before, { edits: true })
+    const verdict = upgradeVerdict(before, result)
+    if (verdict === 'unchanged') { formatNote.value = 'nothing to upgrade'; return }
+    if (verdict === 'already-0.2' && !force) {
+      upgradeAnyway = before
+      formatNote.value = 'looks like 0.2 already, nothing to upgrade (click again to force)'
+      return
+    }
+    formattedText = result.output
+    editorRef.value?.replaceAll(result.output)
+    source.value = result.output
+    const count = result.edits?.length ?? 1
+    const changes = `${count} ${count === 1 ? 'change' : 'changes'}`
+    formatNote.value = result.check === 'mismatch' ? `upgraded: ${changes}, renders differently, review it` : `upgraded: ${changes}`
+  } catch (error) {
+    formatNote.value = `upgrade failed: ${error instanceof Error ? error.message : String(error)}`
   }
 }
-
-// Whether the Rust engine may render THIS document. A shared document is written
-// by whoever sent the link, so it may only render where raw HTML can be turned
-// off - a property of the vendored build, not of the engine.
-const rustMayRender = computed<boolean>(
-  () => !fromSharedLink.value || wasmCanDisableRawHtml.value,
-)
-
-watch(engine, (e) => {
-  if (e === 'rust') void ensureWasm()
-})
+type ImportFormat = 'markdown' | 'gfm' | 'djot' | 'bbcode' | 'html'
+const importFormats: { id: ImportFormat; label: string }[] = [
+  { id: 'markdown', label: 'Markdown (CommonMark)' },
+  { id: 'gfm', label: 'GitHub Flavored Markdown' },
+  { id: 'djot', label: 'Djot' },
+  { id: 'bbcode', label: 'BBCode' },
+  { id: 'html', label: 'HTML' },
+]
+type ImportDiagnostic = { code: string; severity: string; message: string }
+const importOpen = ref(false)
+const importText = ref('')
+const importFormat = ref<ImportFormat>('gfm')
+const importResult = ref<{ source: string; diagnostics: ImportDiagnostic[] } | null>(null)
+const importError = ref('')
+const importConfirm = ref(false)
+const importInput = ref<HTMLTextAreaElement | null>(null)
+const importButton = ref<HTMLButtonElement | null>(null)
+function openImport(): void {
+  importOpen.value = true
+  importConfirm.value = false
+  void loadTools()
+  void nextTick(() => importInput.value?.focus())
+}
+function closeImport(): void {
+  importOpen.value = false
+  importConfirm.value = false
+  void nextTick(() => (importButton.value?.offsetParent ? importButton.value : moreButton.value)?.focus())
+}
+watch([importText, importFormat], () => { importResult.value = null; importError.value = ''; importConfirm.value = false })
+async function convertImport(): Promise<void> {
+  importError.value = ''
+  importConfirm.value = false
+  const input = importText.value
+  const from = importFormat.value
+  try {
+    const { importDocument } = await loadTools()
+    if (input !== importText.value || from !== importFormat.value) return
+    const result = importDocument(input, { from })
+    importResult.value = { source: result.source, diagnostics: [...(result.diagnostics ?? [])] }
+  } catch (error) {
+    importResult.value = null
+    importError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+function applyImport(): void {
+  if (!importResult.value) return
+  replaceSource(importResult.value.source)
+  const label = importFormats.find(f => f.id === importFormat.value)?.label ?? importFormat.value
+  formatNote.value = `imported from ${label} (Ctrl+Z restores)`
+  closeImport()
+}
+const exampleChoice = ref('')
+function loadExample(id: string): void {
+  exampleChoice.value = ''
+  const snippet = (SNIPPETS as { id: string; label: string; source: string }[]).find(s => s.id === id)
+  if (!snippet) return
+  replaceSource(snippet.source)
+  formatNote.value = `example: ${snippet.label} (Ctrl+Z restores)`
+}
+// Narrow screens move the secondary actions into this menu.
+const moreOpen = ref(false)
+const moreEl = ref<HTMLElement | null>(null)
+const moreButton = ref<HTMLButtonElement | null>(null)
+function closeMore(refocus = false): void {
+  moreOpen.value = false
+  if (refocus) moreButton.value?.focus()
+}
+function onDocumentPointer(event: PointerEvent): void {
+  if (moreOpen.value && moreEl.value && !moreEl.value.contains(event.target as Node)) moreOpen.value = false
+}
+// One undo step; the fragment goes too, so the address bar no longer offers the old document.
+function clearSource(): void {
+  editorRef.value?.replaceAll('')
+  source.value = ''
+  formattedText = ''
+  if (typeof window !== 'undefined' && window.location.hash) {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+  }
+  shareState.value = 'idle'
+  shareMessage.value = ''
+  formatNote.value = 'cleared (Ctrl+Z restores)'
+  editorRef.value?.focus()
+}
 
 const outputEl = ref<HTMLElement | null>(null)
 // Async so CodeMirror (~100 KB gzip) loads only on the playground page, not with
@@ -277,6 +298,7 @@ const previewSource = ref<string | null>(null)
 const editorRef = ref<{
   focus: () => void
   replaceAll: (text: string) => void
+  select: (from: number, to: number) => void
   scroller: () => HTMLElement | null
   topLine: () => number
   lineOffset: (line: number) => number
@@ -430,82 +452,165 @@ function restoreOutputScroll(): void {
 // surface how fast each engine is. `ms` is null while the result is a status
 // placeholder (WASM still loading or failed) rather than a real render.
 const rendered = computed<{ html: string; ms: number | null }>(() => {
-  // Rust engine: render in-page once the WASM module has instantiated.
-  if (engine.value === 'rust') {
-    if (wasmError.value) {
-      return {
-        html: `<pre class="carve-playground-error">Failed to load the Rust (WASM) engine: ${escapeHtml(wasmError.value)}</pre>`,
-        ms: null,
-      }
-    }
-    if (!wasmReady.value) {
-      return {
-        html: `<pre class="carve-playground-note">Loading the Rust (WASM) engine…</pre>`,
-        ms: null,
-      }
-    }
-  }
   try {
-    const useWasm = engine.value === 'rust' && wasmRender && rustMayRender.value
-    const t0 = performance.now()
-    let out = (
-      useWasm
-        ? wasmRender!(previewSource.value ?? source.value, {
-            full: true,
-            // A document that arrived in a URL is not this visitor's document.
-            rawHtml: !fromSharedLink.value,
-          })
-        : carveToHtml(previewSource.value ?? source.value, {
-            extensions: JS_EXTENSIONS,
-            // Block anchors for scroll sync and cursor follow; the HTML pane strips them.
-            sourceLine: true,
-            allowRawHtml: !fromSharedLink.value,
-          })
-    ) as string
-    const ms = performance.now() - t0
-    // The demo references images with a doc-relative path; resolve it against
-    // the site base so it loads from /public regardless of the page URL shape.
-    out = out.replace(/src="images\//g, `src="${withBase('/images/')}`)
-    return { html: out, ms }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
+    const started = performance.now()
+    const html = render(previewSource.value ?? source.value, options.value)
+    const ms = performance.now() - started
+    return { html, ms }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
     return { html: `<pre class="carve-playground-error">${escapeHtml(message)}</pre>`, ms: null }
   }
 })
-
-const html = computed<string>(() => rendered.value.html)
-// The HTML pane shows canonical output: the anchors are stripped, unless the
-// document spells the attribute itself, which then needs a render without them.
-const rawHtml = computed<string>(() => {
-  const text = previewSource.value ?? source.value
-  if (engine.value === 'rust' || !text.includes('data-source-line')) return html.value.replace(/ data-source-line="\d+"/g, '')
+const html = computed(() => rendered.value.html)
+const rawHtml = computed(() => html.value)
+const tree = computed(() => {
+  try { return JSON.stringify(parse(source.value, { headingIds: headingIds.value }), null, 2) }
+  catch (error) { return error instanceof Error ? error.message : String(error) }
+})
+type LintDiagnostic = { code: string; severity: string; message: string; range: { startOffset: number; endOffset: number } }
+type Finding = { diagnostic: LintDiagnostic; from: number; to: number; line: number; column: number; edits: ByteEdit[] | null }
+const lintResult = computed<{ findings: Finding[]; error: string | null }>(() => {
+  const text = source.value
   try {
-    return carveToHtml(text, { extensions: JS_EXTENSIONS, allowRawHtml: !fromSharedLink.value })
+    const toUtf16 = byteToUtf16(text)
+    const findings = (lint(text) as LintDiagnostic[]).map((diagnostic): Finding => {
+      const from = toUtf16(diagnostic.range.startOffset)
+      const to = Math.max(from, toUtf16(diagnostic.range.endOffset))
+      const lineStart = text.lastIndexOf('\n', from - 1) + 1
+      const line = text.slice(0, lineStart).split('\n').length
+      // Columns count characters, so an emoji is one column as a reader sees it.
+      const column = Array.from(text.slice(lineStart, from)).length + 1
+      let edits: ByteEdit[] | null = null
+      try { edits = fixEdits(text, diagnostic) } catch { edits = null }
+      return { diagnostic, from, to, line, column, edits }
+    })
+    return { findings, error: null }
+  } catch (error) {
+    return { findings: [], error: error instanceof Error ? error.message : String(error) }
+  }
+})
+const fixableCount = computed(() => lintResult.value.findings.filter(f => f.edits?.length).length)
+const findingsJson = computed(() => lintResult.value.error ?? JSON.stringify(lintResult.value.findings.map(f => f.diagnostic), null, 2))
+const lintNote = ref('')
+function selectFinding(finding: Finding): void {
+  editorRef.value?.select(finding.from, finding.to)
+}
+function replaceSource(next: string): void {
+  formattedText = next
+  editorRef.value?.replaceAll(next)
+  source.value = next
+}
+function fixFinding(finding: Finding): void {
+  if (!finding.edits?.length) return
+  replaceSource(applyByteEdits(source.value, finding.edits).text)
+  lintNote.value = `fixed ${finding.diagnostic.code}`
+}
+// fix() applies what it can prove; findings it leaves get their own quick-fix edits, one undo step in all.
+function fixAll(): void {
+  const before = source.value
+  try {
+    let next = fix(before).output as string
+    const leftover = (lint(next) as LintDiagnostic[]).flatMap((diagnostic) => {
+      try { return fixEdits(next, diagnostic) ?? [] } catch { return [] }
+    })
+    if (leftover.length) next = applyByteEdits(next, leftover).text
+    if (next === before) { lintNote.value = 'nothing to fix'; return }
+    const remaining = lint(next).length
+    replaceSource(next)
+    lintNote.value = remaining ? `fixed, ${remaining} left` : 'fixed all'
+  } catch (error) {
+    lintNote.value = `fix failed: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
+watch(source, value => { if (value !== formattedText) lintNote.value = '' })
+const formatResult = computed<{ text: string; error: boolean }>(() => {
+  try { return { text: format(source.value, { alignTables: alignTables.value }), error: false } }
+  catch (error) { return { text: error instanceof Error ? error.message : String(error), error: true } }
+})
+const formatted = computed(() => formatResult.value.text)
+type DiffEntry = { kind: 'same' | 'add' | 'del'; text: string } | { kind: 'skip'; count: number }
+const formatDiff = computed<{ entries: DiffEntry[]; added: number; removed: number } | null>(() => {
+  if (output.value !== 'fmt' || formatResult.value.error) return null
+  const entries = diffLines(source.value, formatResult.value.text) as DiffEntry[]
+  const added = entries.filter(e => e.kind === 'add').length
+  const removed = entries.filter(e => e.kind === 'del').length
+  return { entries: foldDiff(entries, 3), added, removed }
+})
+const exported = computed<{ text: string; losses: number } | null>(() => {
+  const target = output.value as ExportTarget
+  if (!exportTargets.includes(target)) return null
+  const entry = tools.value
+  if (!entry) {
+    if (toolsError.value) return { text: `Could not load the export entry: ${toolsError.value}`, losses: 0 }
+    loadTools().catch(() => {})
+    return { text: 'Loading the export entry...', losses: 0 }
+  }
+  try {
+    // Plain text and ANSI refuse headingShift (C2-T-005).
+    const exportOptions = target === 'markdown' ? { headingShift: headingShift.value } : undefined
+    const result = entry.exportDocument(target, parse(source.value, { headingIds: headingIds.value }), exportOptions)
+    return { text: result.output, losses: result.diagnostics?.length ?? 0 }
+  } catch (error) {
+    return { text: error instanceof Error ? error.message : String(error), losses: 0 }
+  }
+})
+const OUTPUT_FILES: Record<Output, { name: string; type: string }> = {
+  html: { name: 'document.html', type: 'text/html' },
+  tree: { name: 'document.json', type: 'application/json' },
+  lint: { name: 'lint.json', type: 'application/json' },
+  fmt: { name: 'formatted.crv', type: 'text/plain' },
+  markdown: { name: 'document.md', type: 'text/markdown' },
+  plain: { name: 'document.txt', type: 'text/plain' },
+  ansi: { name: 'document.ansi.txt', type: 'text/plain' },
+}
+const copied = ref<'source' | 'output' | null>(null)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
+// An export tab reads the tools entry, which may still be loading.
+// Null when the tab changed while the entry loaded, so a file never gets another tab's content.
+async function settledOutput(tab: Output): Promise<string | null> {
+  if (exportTargets.includes(tab as ExportTarget)) {
+    await loadTools()
+    await nextTick()
+  }
+  return output.value === tab ? activeOutput.value : null
+}
+async function copyText(which: 'source' | 'output'): Promise<void> {
+  try {
+    const text = which === 'source' ? source.value : await settledOutput(output.value)
+    if (text === null) return
+    await navigator.clipboard.writeText(text)
+    copied.value = which
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => { copied.value = null }, 1500)
   } catch {
-    return html.value
+    copied.value = null
   }
-})
-
-// One-line status for the toolbar: the active engine and its last render time.
-// Gate the render-time text behind mount: `performance.now()` differs between
-// the server-rendered build and the client, so showing it during SSR causes a
-// Vue hydration mismatch. Pre-mount renders just the engine label (stable on
-// both sides); the timing appears once the client takes over.
+}
+async function download(which: 'source' | 'output'): Promise<void> {
+  const tab = output.value
+  const file = which === 'source' ? { name: 'document.crv', type: 'text/plain' } : OUTPUT_FILES[tab]
+  const text = which === 'source' ? source.value : await settledOutput(tab).catch(() => null)
+  if (text === null) return
+  const blob = new Blob([text], { type: `${file.type};charset=utf-8` })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = file.name
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 0)
+}
+// Choosing a tab again retries a failed load.
+watch(output, () => { if (!tools.value) toolsError.value = '' })
+const ansiHtml = computed(() => output.value === 'ansi' && exported.value ? ansiToHtml(exported.value.text) : '')
+const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : exported.value ? exported.value.text : formatted.value)
 const mounted = ref(false)
-const renderStatus = computed<string>(() => {
-  if (engine.value === 'rust') {
-    if (wasmError.value) return 'Rust (WASM): load failed'
-    if (!wasmReady.value) return 'Rust (WASM): loading…'
-  }
-  // The engine that RENDERED, which is not always the one selected: a shared
-  // document falls back when the vendored build cannot turn raw HTML off.
-  const label = engine.value === 'rust' && rustMayRender.value ? 'Rust (WASM)' : 'JS'
+const renderStatus = computed(() => {
   const ms = mounted.value ? rendered.value.ms : null
-  return ms === null ? label : `${label}: ${ms < 1 ? ms.toFixed(3) : ms.toFixed(2)} ms`
+  return ms === null ? 'JS' : `JS: ${ms < 1 ? ms.toFixed(3) : ms.toFixed(2)} ms`
 })
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
 // --- Mermaid (Tier-3 extension): render fenced `mermaid` code blocks client-side. ---
@@ -625,8 +730,8 @@ function getHighlighter(): Promise<unknown> {
   if (!highlighterPromise) {
     highlighterPromise = (async () => {
       const { createHighlighter } = await import('shiki')
-      // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
-      const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default
+      // The playground and the docs use the same 0.2 TextMate grammar.
+      const carveGrammar = { ...(await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default, name: 'carve', aliases: ['crv', 'Carve'] }
       const csvGrammar = (await import('@markup-carve/carve-grammars/textmate/csv.tmLanguage.json')).default
       const tsvGrammar = (await import('@markup-carve/carve-grammars/textmate/tsv.tmLanguage.json')).default
       // The same Carve theme rules the docs code blocks get from carveMarkdown().
@@ -649,6 +754,7 @@ async function highlightCode(): Promise<void> {
   if (!codes.length) return
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hl = (await getHighlighter()) as any
+  const { carveBlankLineTransformer } = await import('@markup-carve/carve-grammars/shiki/themes')
   const loaded: string[] = hl.getLoadedLanguages()
   for (const code of codes) {
     const pre = code.parentElement
@@ -661,7 +767,10 @@ async function highlightCode(): Promise<void> {
       const out = hl.codeToHtml(code.textContent ?? '', {
         lang,
         themes: { light: 'github-light', dark: 'github-dark' },
-        transformers: isLanguageDiff ? [diffCodeTransformer()] : [],
+        transformers: [
+          ...(isLanguageDiff ? [diffCodeTransformer()] : []),
+          ...(['carve', 'crv'].includes(lang.toLowerCase()) ? [carveBlankLineTransformer] : []),
+        ],
       }) as string
       const tmp = document.createElement('div')
       tmp.innerHTML = out
@@ -742,8 +851,16 @@ function decorateCodeBlocks(): void {
 }
 
 // Mermaid first (it replaces blocks), then highlight code, then render math.
+function resolveImagePaths(): void {
+  for (const image of outputEl.value?.querySelectorAll<HTMLImageElement>('img[src^="images/"]') ?? []) {
+    const source = image.getAttribute('src')!
+    image.setAttribute('src', withBase(`/images/${source.slice('images/'.length)}`))
+  }
+}
+
 async function postProcessOutput(): Promise<void> {
   const generation = renderGeneration
+  resolveImagePaths()
   await renderMermaid()
   await renderCharts()
   wireSpoilers()
@@ -782,8 +899,14 @@ onMounted(() => {
   mounted.value = true
   // Before the first post-process, so a shared document is what gets
   // highlighted, mermaid-rendered and math-rendered.
-  void applyShareLink().then(() => nextTick(postProcessOutput))
+  void restoreState().then(() => {
+    draftReady = true
+    saveDraft()
+    return nextTick(postProcessOutput)
+  })
   window.addEventListener('keydown', onKeydown)
+  document.addEventListener('pointerdown', onDocumentPointer)
+  window.addEventListener('pagehide', flushDraft)
   try {
     wrapLines.value = localStorage.getItem(WRAP_KEY) === '1'
   } catch {
@@ -792,7 +915,10 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   clearTimeout(shareStatusTimer)
+  flushDraft()
+  window.removeEventListener('pagehide', flushDraft)
   window.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('pointerdown', onDocumentPointer)
   clearTimeout(debounce)
 })
 
@@ -812,7 +938,7 @@ function toggleFullscreen(): void {
 function onKeydown(e: KeyboardEvent): void {
   // The editor handled it already (closing a completion list or a lint tooltip).
   if (e.key !== 'Escape' || e.defaultPrevented) return
-  if (showImport.value) { showImport.value = false; return }
+  if (importOpen.value) { closeImport(); return }
   if (fullscreen.value) fullscreen.value = false
 }
 // Avoid an "unused" warning while keeping the flag meaningful to tooling.
@@ -824,30 +950,7 @@ void mermaidInit
     <div class="pg-toolbar">
       <div class="pg-engines" role="group" aria-label="Rendering engine">
         <span class="pg-engines-label">Engine</span>
-        <button
-          class="pg-engine"
-          type="button"
-          :class="{ active: engine === 'js' }"
-          :aria-pressed="engine === 'js'"
-          @click="engine = 'js'"
-        >
-          JS
-        </button>
-        <button
-          class="pg-engine"
-          type="button"
-          :class="{ active: engine === 'rust' }"
-          :aria-pressed="engine === 'rust'"
-          :disabled="fromSharedLink && sharedFellBackToJs"
-          :title="
-            fromSharedLink && sharedFellBackToJs
-              ? 'The WASM engine cannot render this shared document - either this vendored build cannot turn raw HTML off, or it failed to load'
-              : undefined
-          "
-          @click="engine = 'rust'"
-        >
-          Rust (WASM)
-        </button>
+        <button class="pg-engine active" type="button" aria-pressed="true" title="Carve 0.2 JavaScript engine">JS</button>
         <a
           class="pg-engine pg-engine-link"
           :href="PHP_SANDBOX_URL"
@@ -859,30 +962,6 @@ void mermaidInit
         </a>
       </div>
       <div class="pg-toolbar-right">
-        <button
-          class="pg-btn pg-icon-btn"
-          type="button"
-          title="Clear"
-          aria-label="Clear"
-          @click="clearSource"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M3 6h18" />
-            <path d="M8 6V4h8v2" />
-            <path d="M6 6l1 14h10l1-14" />
-            <path d="M10 10v6m4-6v6" />
-          </svg>
-        </button>
         <button
           class="pg-btn pg-icon-btn"
           type="button"
@@ -933,11 +1012,7 @@ void mermaidInit
           <button
             class="pg-btn"
             type="button"
-            :title="
-              engine === 'rust' && !wasmCanFormat
-                ? 'Format the source. This Rust build has no writer, so this uses the JS formatter.'
-                : 'Format the source with the canonical Carve writer (Ctrl+Z undoes it)'
-            "
+            title="Format the source with the 0.2 writer (Ctrl+Z undoes it)"
             @click="formatSource"
           >
             Format
@@ -969,9 +1044,88 @@ void mermaidInit
             </svg>
           </button>
         </div>
-        <button class="pg-btn pg-import" type="button" @click="openImport">
-          Import Markdown
-        </button>
+        <div class="pg-secondary">
+          <select
+            class="pg-btn pg-select"
+            :value="exampleChoice"
+            aria-label="Load an example"
+            title="Replace the source with a short example (Ctrl+Z restores)"
+            @change="loadExample(($event.target as HTMLSelectElement).value)"
+          >
+            <option value="" disabled>Examples</option>
+            <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+          </select>
+          <button
+            ref="importButton"
+            class="pg-btn"
+            type="button"
+            title="Import Markdown, GFM, Djot, BBCode or HTML as Carve"
+            aria-label="Import a document from another format"
+            aria-haspopup="dialog"
+            @click="openImport"
+          >
+            Import
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Rewrite Carve 0.1 source as Carve 0.2 (Ctrl+Z undoes it)"
+            aria-label="Upgrade 0.1 source to 0.2"
+            @click="upgradeSource"
+          >
+            Upgrade 0.1
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Empty the editor (Ctrl+Z restores)"
+            aria-label="Clear the source"
+            @click="clearSource"
+          >
+            Clear
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Discard the saved draft and reload the demo document"
+            aria-label="Reset to the demo document"
+            @click="resetToDemo"
+          >
+            Reset to demo
+          </button>
+        </div>
+        <div ref="moreEl" class="pg-more" @keydown.esc.stop="closeMore(true)">
+          <button
+            ref="moreButton"
+            class="pg-btn"
+            type="button"
+            :aria-expanded="moreOpen"
+            aria-controls="pg-more-menu"
+            aria-label="More actions"
+            title="Examples, import, upgrade, clear and reset"
+            @click="moreOpen = !moreOpen"
+          >
+            More
+          </button>
+          <div v-if="moreOpen" id="pg-more-menu" class="pg-more-menu" role="group" aria-label="More actions">
+            <select
+              class="pg-btn pg-select"
+              :value="exampleChoice"
+              aria-label="Load an example"
+              title="Replace the source with a short example (Ctrl+Z restores)"
+              @change="closeMore(); loadExample(($event.target as HTMLSelectElement).value)"
+            >
+              <option value="" disabled>Examples</option>
+              <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+            </select>
+            <button class="pg-btn" type="button" aria-label="Import a document from another format" aria-haspopup="dialog" @click="closeMore(); openImport()">Import</button>
+            <button class="pg-btn" type="button" aria-label="Upgrade 0.1 source to 0.2" @click="closeMore(); upgradeSource()">Upgrade 0.1</button>
+            <button class="pg-btn" type="button" aria-label="Clear the source" @click="closeMore(); clearSource()">Clear</button>
+            <button class="pg-btn" type="button" aria-label="Reset to the demo document" @click="resetToDemo">Reset to demo</button>
+            <button class="pg-btn pg-more-narrow" type="button" :aria-expanded="optionsOpen" aria-controls="pg-options" @click="closeMore(); optionsOpen = !optionsOpen">Options</button>
+          </div>
+        </div>
+        <button class="pg-btn pg-options-btn" type="button" :aria-expanded="optionsOpen" aria-controls="pg-options" title="Render options" @click="optionsOpen = !optionsOpen">Options</button>
         <button
           class="pg-btn pg-icon-btn"
           type="button"
@@ -1024,11 +1178,72 @@ void mermaidInit
         </button>
       </div>
     </div>
+    <fieldset v-if="optionsOpen" id="pg-options" class="pg-options">
+      <legend>Render options</legend>
+      <label>Profile <select v-model="profile"><option v-for="value in profileValues" :key="value" :value="value">{{ value }}</option></select></label>
+      <label>Heading IDs <select v-model="headingIds"><option v-for="value in headingValues" :key="value" :value="value">{{ value }}</option></select></label>
+      <label title="Moves every heading down, for a page that writes its own title">Heading shift <select v-model.number="headingShift"><option v-for="value in headingShiftValues" :key="value" :value="value">{{ value }}</option></select></label>
+      <label><input v-model="sections" type="checkbox"> Sections</label>
+      <label><input v-model="smartTypography" type="checkbox"> Smart typography</label>
+      <label title="Shared documents always keep raw HTML off"><input v-model="rawHtmlEnabled" type="checkbox" :disabled="fromSharedLink"> Raw HTML</label>
+    </fieldset>
+    <div v-if="importOpen" class="pg-modal-backdrop" @click.self="closeImport">
+      <div class="pg-modal" role="dialog" aria-modal="true" aria-labelledby="pg-import-title">
+        <h2 id="pg-import-title" class="pg-modal-title">Import a document</h2>
+        <label class="pg-modal-row">Format
+          <select v-model="importFormat" aria-label="Input format">
+            <option v-for="f in importFormats" :key="f.id" :value="f.id">{{ f.label }}</option>
+          </select>
+        </label>
+        <label for="pg-import-text">Input</label>
+        <textarea id="pg-import-text" ref="importInput" v-model="importText" spellcheck="false" placeholder="Paste the document here" />
+        <p v-if="importError" class="pg-import-error" role="alert">{{ importError }}</p>
+        <template v-if="importResult">
+          <label for="pg-import-out">Carve result</label>
+          <pre id="pg-import-out" class="pg-import-out" tabindex="0">{{ importResult.source || '(empty)' }}</pre>
+          <ul v-if="importResult.diagnostics.length" class="pg-import-diags" aria-label="Import diagnostics">
+            <li v-for="(d, i) in importResult.diagnostics" :key="i"><span class="pg-lint-sev">{{ d.severity }}</span> <code>{{ d.code }}</code> {{ d.message }}</li>
+          </ul>
+          <p v-else class="pg-import-clean">No import diagnostics.</p>
+        </template>
+        <div class="pg-modal-actions">
+          <template v-if="importConfirm">
+            <span class="pg-confirm-text" role="alert">Replace the current document? Ctrl+Z restores it.</span>
+            <button class="pg-btn" type="button" @click="importConfirm = false">Back</button>
+            <button class="pg-btn pg-btn-primary" type="button" @click="applyImport">Yes, replace</button>
+          </template>
+          <template v-else>
+            <button class="pg-btn" type="button" @click="closeImport">Cancel</button>
+            <button class="pg-btn" type="button" :disabled="!importText" @click="convertImport">Convert</button>
+            <button class="pg-btn pg-btn-primary" type="button" :disabled="!importResult" @click="importConfirm = true">Replace document</button>
+          </template>
+        </div>
+      </div>
+    </div>
     <div class="pg-grid">
       <div class="pane">
         <div class="pane-label-row">
           <label>Carve source</label>
           <span v-if="formatNote" class="pg-shared-note" role="status">{{ formatNote }}</span>
+          <span class="pg-pane-actions">
+          <button
+            class="pg-pane-btn"
+            type="button"
+            :aria-label="copied === 'source' ? 'Copied' : 'Copy the source'"
+            :title="copied === 'source' ? 'Copied' : 'Copy the source'"
+            @click="copyText('source')"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline v-if="copied === 'source'" points="20 6 9 17 4 12" />
+              <template v-else><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></template>
+            </svg>
+          </button>
+          <button class="pg-pane-btn" type="button" :aria-label="'Download the source as document.crv'" :title="'Download the source as document.crv'" @click="download('source')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11" /><polyline points="7 10 12 15 17 10" /><path d="M5 20h14" />
+            </svg>
+          </button>
+          </span>
         </div>
         <div
           class="carve-editor-wrap"
@@ -1058,9 +1273,9 @@ void mermaidInit
             v-if="fromSharedLink"
             class="pg-shared-note"
             role="note"
-            :title="sharedNoteTitle"
+            title="Received links render with raw HTML off"
           >
-            {{ sharedNoteText }}
+            shared link: raw HTML off
           </span>
         </div>
         <div
@@ -1075,31 +1290,111 @@ void mermaidInit
       </div>
       <div class="pane pane-full">
         <div class="pane-label-row">
-          <label>HTML source</label>
+          <div class="pg-output-tabs" role="group" aria-label="Output type">
+            <button v-for="tab in outputTabs" :key="tab.id" class="pg-output-tab" type="button" :aria-pressed="output === tab.id" @click="output = tab.id">{{ tab.label }}</button>
+          </div>
+          <span v-if="output === 'ansi'" class="pg-shared-note">escape codes shown as styles</span>
+          <span v-if="exported?.losses" class="pg-shared-note" :title="`The ${output} export cannot spell ${exported.losses} construct(s)`">{{ exported.losses }} {{ exported.losses === 1 ? 'loss' : 'losses' }}</span>
           <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
+          <span class="pg-pane-actions">
+          <button
+            class="pg-pane-btn"
+            type="button"
+            :aria-label="copied === 'output' ? 'Copied' : 'Copy this output'"
+            :title="copied === 'output' ? 'Copied' : 'Copy this output'"
+            @click="copyText('output')"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline v-if="copied === 'output'" points="20 6 9 17 4 12" />
+              <template v-else><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></template>
+            </svg>
+          </button>
+          <button class="pg-pane-btn" type="button" :aria-label="`Download as ${OUTPUT_FILES[output].name}`" :title="`Download as ${OUTPUT_FILES[output].name}`" @click="download('output')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11" /><polyline points="7 10 12 15 17 10" /><path d="M5 20h14" />
+            </svg>
+          </button>
+          </span>
         </div>
-        <pre class="raw">{{ rawHtml }}</pre>
+        <div v-if="output === 'lint'" class="raw pg-lint">
+          <p v-if="lintResult.error" class="pg-lint-empty">{{ lintResult.error }}</p>
+          <p v-else-if="!lintResult.findings.length" class="pg-lint-empty">No lint findings.</p>
+          <template v-else>
+            <div class="pg-lint-head">
+              <span>{{ lintResult.findings.length }} {{ lintResult.findings.length === 1 ? 'finding' : 'findings' }}</span>
+              <span v-if="lintNote" role="status">{{ lintNote }}</span>
+              <button
+                v-if="fixableCount"
+                class="pg-btn pg-btn-small"
+                type="button"
+                :title="`Apply every available fix (${fixableCount}); Ctrl+Z undoes it`"
+                aria-label="Fix all lint findings"
+                @click="fixAll"
+              >
+                Fix all ({{ fixableCount }})
+              </button>
+            </div>
+            <ul class="pg-lint-list">
+              <li v-for="(finding, index) in lintResult.findings" :key="index" :class="`pg-sev-${finding.diagnostic.severity}`">
+                <button
+                  class="pg-lint-item"
+                  type="button"
+                  :title="`Select line ${finding.line}, column ${finding.column} in the editor`"
+                  @click="selectFinding(finding)"
+                >
+                  <span class="pg-lint-sev">{{ finding.diagnostic.severity }}</span>
+                  <code class="pg-lint-code">{{ finding.diagnostic.code }}</code>
+                  <span class="pg-lint-msg">{{ finding.diagnostic.message }}</span>
+                  <span class="pg-lint-pos">{{ finding.line }}:{{ finding.column }}</span>
+                </button>
+                <button
+                  v-if="finding.edits?.length"
+                  class="pg-btn pg-btn-small"
+                  type="button"
+                  :aria-label="`Fix ${finding.diagnostic.code} at ${finding.line}:${finding.column}`"
+                  title="Apply this fix (Ctrl+Z undoes it)"
+                  @click="fixFinding(finding)"
+                >
+                  Fix
+                </button>
+              </li>
+            </ul>
+          </template>
+        </div>
+        <div v-else-if="output === 'fmt' && formatDiff" class="raw pg-diff">
+          <div class="pg-lint-head">
+            <span v-if="formatDiff.added || formatDiff.removed">
+              <span class="pg-diff-count-add">+{{ formatDiff.added }}</span> <span class="pg-diff-count-del">-{{ formatDiff.removed }}</span> lines against the current source
+            </span>
+            <span v-else-if="source === formatted">Already formatted.</span>
+            <span v-else>Only the final newline differs.</span>
+            <button
+              v-if="source !== formatted"
+              class="pg-btn pg-btn-small"
+              type="button"
+              title="Replace the source with the formatted source (Ctrl+Z undoes it)"
+              aria-label="Apply the formatted source"
+              @click="formatSource"
+            >
+              Apply
+            </button>
+          </div>
+          <div v-if="formatDiff.added || formatDiff.removed" class="pg-diff-lines" role="table" aria-label="Changes the formatter makes">
+            <template v-for="(entry, index) in formatDiff.entries" :key="index">
+              <div v-if="entry.kind === 'skip'" class="pg-diff-skip" role="row"><span role="cell">... {{ entry.count }} unchanged {{ entry.count === 1 ? 'line' : 'lines' }}</span></div>
+              <div v-else :class="`pg-diff-${entry.kind}`" role="row">
+                <span class="pg-diff-sign" role="cell" :aria-label="entry.kind === 'add' ? 'added' : entry.kind === 'del' ? 'removed' : 'unchanged'">{{ entry.kind === 'add' ? '+' : entry.kind === 'del' ? '-' : ' ' }}</span>
+                <span role="cell">{{ entry.text || ' ' }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+        <pre v-else-if="output === 'ansi'" class="raw pg-ansi" aria-label="ANSI output, escape codes shown as styles" v-html="ansiHtml" />
+        <pre v-else class="raw" aria-live="polite">{{ activeOutput }}</pre>
       </div>
     </div>
 
-    <div v-if="showImport" class="pg-modal-backdrop" @click.self="cancelImport">
-      <div class="pg-modal" role="dialog" aria-modal="true" aria-label="Import Markdown">
-        <label for="pg-import-text">Paste Markdown to convert to Carve</label>
-        <textarea
-          id="pg-import-text"
-          ref="importEl"
-          v-model="importText"
-          spellcheck="false"
-          placeholder="# Hello&#10;&#10;Paste your **Markdown** here…"
-        />
-        <div class="pg-modal-actions">
-          <button class="pg-btn" type="button" @click="cancelImport">Cancel</button>
-          <button class="pg-btn pg-btn-primary" type="button" @click="confirmImport">
-            Convert &amp; replace
-          </button>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 
@@ -1452,5 +1747,93 @@ textarea:focus {
   .pane-full {
     grid-column: 1;
   }
+}
+
+.pg-options { display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; border: 1px solid var(--vp-c-divider); border-radius: 8px; margin: 0 0 .6rem; padding: .4rem .7rem .6rem; }
+.pg-options legend { color: var(--vp-c-text-2); font-size: .75rem; font-weight: 600; }
+.pg-options label { display: inline-flex; align-items: center; gap: .25rem; font-size: .8rem; }
+.pg-options select { max-width: 10rem; border: 1px solid var(--vp-c-divider); border-radius: 4px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); }
+.pg-options input { margin: 0; }
+.pg-modal-title { margin: 0; padding: 0; border: 0; font-size: 1.05rem; }
+.pg-modal-row { display: flex; align-items: center; gap: .5rem; }
+.pg-modal select { border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); padding: .2rem .4rem; }
+.pg-modal textarea { min-height: 180px; }
+.pg-import-out { max-height: 200px; overflow: auto; margin: 0; padding: .6rem; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-soft); font-size: .78rem; white-space: pre-wrap; }
+.pg-import-diags { max-height: 120px; overflow: auto; margin: 0; padding-left: 1rem; font-size: .78rem; }
+.pg-import-clean, .pg-import-error { margin: 0; font-size: .8rem; color: var(--vp-c-text-2); }
+.pg-import-error { color: var(--vp-c-danger-1, #d64550); }
+.pg-confirm-text { margin-right: auto; align-self: center; font-size: .8rem; font-weight: 600; }
+.pg-btn:disabled { opacity: .5; cursor: not-allowed; }
+.pg-modal { max-height: calc(100vh - 2rem); overflow: auto; }
+.pg-ansi { color: var(--vp-c-text-1); }
+.pg-ansi :deep(.ansi-bold) { font-weight: 700; }
+.pg-ansi :deep(.ansi-dim) { opacity: .7; }
+.pg-ansi :deep(.ansi-italic) { font-style: italic; }
+.pg-ansi :deep(.ansi-underline) { text-decoration: underline; }
+.pg-ansi :deep(.ansi-strike) { text-decoration: line-through; }
+.pg-ansi :deep(.ansi-inverse) { background: var(--vp-c-text-1); color: var(--vp-c-bg); }
+.pg-ansi :deep(.ansi-fg-black) { color: #555; }
+.pg-ansi :deep(.ansi-fg-red), .pg-ansi :deep(.ansi-fg-bright-red) { color: #d64550; }
+.pg-ansi :deep(.ansi-fg-green), .pg-ansi :deep(.ansi-fg-bright-green) { color: #2f9e44; }
+.pg-ansi :deep(.ansi-fg-yellow), .pg-ansi :deep(.ansi-fg-bright-yellow) { color: #b8860b; }
+.pg-ansi :deep(.ansi-fg-blue), .pg-ansi :deep(.ansi-fg-bright-blue) { color: #3b6fd8; }
+.pg-ansi :deep(.ansi-fg-magenta), .pg-ansi :deep(.ansi-fg-bright-magenta) { color: #b04ec9; }
+.pg-ansi :deep(.ansi-fg-cyan), .pg-ansi :deep(.ansi-fg-bright-cyan) { color: #138a9e; }
+.pg-ansi :deep(.ansi-fg-white), .pg-ansi :deep(.ansi-fg-bright-white), .pg-ansi :deep(.ansi-fg-bright-black) { color: var(--vp-c-text-2); }
+.pg-ansi :deep([class*="ansi-bg-"]) { background: var(--vp-c-default-soft); }
+.pg-select { appearance: auto; width: 8.5rem; padding-right: .4rem; }
+.pg-secondary { display: contents; }
+.pg-more { position: relative; display: none; }
+.pg-more-menu { position: absolute; right: 0; top: calc(100% + .3rem); z-index: 20; display: flex; flex-direction: column; gap: .3rem; min-width: 11rem; padding: .4rem; border: 1px solid var(--vp-c-divider); border-radius: 10px; background: var(--vp-c-bg); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.pg-more-menu > * { width: 100%; justify-content: flex-start; }
+@media (max-width: 900px) {
+  .pg-secondary { display: none; }
+  .pg-more { display: inline-block; }
+}
+.pg-more-narrow { display: none; }
+@media (max-width: 480px) {
+  .pg-options-btn { display: none; }
+  .pg-more-menu > .pg-more-narrow { display: inline-flex; }
+}
+.pg-pane-actions { display: inline-flex; gap: .2rem; margin-left: auto; }
+.pg-status + .pg-pane-actions { margin-left: 0; }
+.pg-pane-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); cursor: pointer; }
+.pg-pane-btn:focus-visible { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+.pg-diff { display: flex; flex-direction: column; gap: .4rem; }
+.pg-diff-lines { display: flex; flex-direction: column; }
+.pg-diff-lines > div { display: flex; gap: .5rem; white-space: pre-wrap; padding: 0 .3rem; }
+.pg-diff-sign { flex: none; width: 1ch; user-select: none; }
+.pg-diff-add { background: rgba(46, 160, 67, .16); color: var(--vp-c-text-1); }
+.pg-diff-del { background: rgba(248, 81, 73, .16); color: var(--vp-c-text-1); }
+.pg-diff-skip { color: var(--vp-c-text-3); font-style: italic; }
+.pg-diff-count-add { color: #2f9e44; }
+.pg-diff-count-del { color: #d64550; }
+.pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
+.pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
+.pg-lint-empty { margin: 0; }
+.pg-lint-head { display: flex; align-items: center; gap: .75rem; font-family: var(--vp-font-family-base); font-weight: 600; }
+.pg-lint-head > button { margin-left: auto; }
+.pg-lint-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .2rem; }
+.pg-lint-list li { display: flex; align-items: center; gap: .4rem; }
+.pg-lint-item { flex: 1; display: grid; grid-template-columns: 4.5rem minmax(8rem, max-content) 1fr auto; gap: .6rem; align-items: baseline; min-width: 0; padding: .3rem .45rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--vp-c-text-1); font: inherit; text-align: left; cursor: pointer; }
+.pg-lint-item:focus-visible { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+.pg-lint-sev { font-weight: 700; text-transform: uppercase; font-size: .68rem; }
+.pg-sev-error .pg-lint-sev { color: var(--vp-c-danger-1, #d64550); }
+.pg-sev-warning .pg-lint-sev { color: var(--vp-c-warning-1, #b8860b); }
+.pg-sev-hint .pg-lint-sev, .pg-sev-info .pg-lint-sev { color: var(--vp-c-text-2); }
+.pg-lint-code { font-size: .72rem; overflow-wrap: anywhere; }
+.pg-lint-msg { min-width: 0; overflow-wrap: anywhere; }
+.pg-lint-pos { font-variant-numeric: tabular-nums; color: var(--vp-c-text-2); }
+@media (max-width: 640px) {
+  .pg-lint-item { grid-template-columns: auto 1fr auto; }
+  .pg-lint-msg { grid-column: 1 / -1; }
+}
+.pg-output-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
+.pg-output-tab { padding: .18rem .4rem; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--vp-c-text-2); font: 600 .72rem/1.2 var(--vp-font-family-base); cursor: pointer; }
+.pg-output-tab[aria-pressed="true"] { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }
+@media (hover: hover) {
+  .pg-pane-btn:hover { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+  .pg-lint-item:hover { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+  .pg-output-tab:hover { color: var(--vp-c-brand-1); }
 }
 </style>

@@ -1,3 +1,0 @@
-``` vega-lite
-{"mark":"bar","data":{"values":[{"x":"A","y":1}]},"encoding":{"x":{"field":"x","type":"nominal"},"y":{"field":"y","type":"quantitative"}}}
-```

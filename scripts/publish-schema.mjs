@@ -1,44 +1,33 @@
 #!/usr/bin/env node
-/*
- * Copy resources/ast-schema.json into docs/public so the docs site serves it at
- * the `$id` the schema declares.
- *
- * The schema's `$id` is an absolute URL, and a `$ref` to it - from an editor,
- * from a validator's remote-schema cache, from another schema that composes it -
- * only resolves if something answers at that URL. VitePress serves docs/public
- * verbatim, so one copy at build time is the whole mechanism.
- *
- * The copy is GENERATED and gitignored on purpose. A second committed copy of a
- * 2700-line file is a second thing to edit, and the failure mode is silent: the
- * repo says one shape and the published URL says another, with no diff anywhere
- * to notice. This script also fails loudly when the `$id` stops matching the
- * path it is copied to, so renaming the file cannot quietly break the URL.
- */
-
+// Copies each spec/0.2 schema into docs/public at the path its `$id` names, so
+// the site answers a `$ref` to it. The copies are generated and gitignored; the
+// 0.1 schemas in docs/public are committed copies from branch 0.1 and frozen.
 import { copyFileSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-for (const name of ['ast-schema.json', 'ast-envelope-schema.json', 'node-roles.json', 'ast-source-layout-schema.json', 'ast-node-identity-schema.json', 'ast-annotation-range-schema.json', 'ast-provenance-schema.json', 'html-import-schema.json', 'importer-fidelity-schema.json', 'migration-report-schema.json', 'render-loss-report.schema.json', 'conversion-diagnostics.schema.json', 'source-patch.schema.json', 'decision-trace-schema.json']) {
-  const source = resolve(root, 'resources', name)
-  const target = resolve(root, 'docs/public', name)
-  const schema = JSON.parse(readFileSync(source, 'utf8'))
-  const expected = `https://markup-carve.github.io/carve/${name}`
-  if (schema.$id !== expected) process.exitCode = 1
-  else {
+const BASE = 'https://markup-carve.github.io/carve/'
+export const SCHEMAS = ['spec/0.2/data/ast-schema.json', 'spec/0.2/data/layout-schema.json', 'spec/0.2/conformance/schema.json']
+
+export function publish(repo = root) {
+  const problems = []
+  for (const path of SCHEMAS) {
+    const { $id } = JSON.parse(readFileSync(resolve(repo, path), 'utf8'))
+    if ($id !== `${BASE}${path}`) {
+      problems.push(`${path}: $id is ${$id}, expected ${BASE}${path}`)
+      continue
+    }
+    const target = resolve(repo, 'docs/public', path)
     mkdirSync(dirname(target), { recursive: true })
-    copyFileSync(source, target)
-    console.log(`published ${schema.$id}`)
+    copyFileSync(resolve(repo, path), target)
   }
+  return problems
 }
 
-copyFileSync(
-  resolve(root, 'tests', 'importer-fidelity', 'manifest.json'),
-  resolve(root, 'docs', 'public', 'importer-fidelity-manifest.json')
-)
-
-copyFileSync(
-  resolve(root, 'resources', 'markdown-import-inventory.json'),
-  resolve(root, 'docs', 'public', 'markdown-import-inventory.json')
-)
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const problems = publish()
+  for (const problem of problems) console.error(problem)
+  if (problems.length) process.exitCode = 1
+  else console.log(`published ${SCHEMAS.length} 0.2 schemas`)
+}

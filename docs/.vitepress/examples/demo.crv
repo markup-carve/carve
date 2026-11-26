@@ -1,69 +1,46 @@
----yaml
+---
 title: Carve Feature Demo
-date: 2026-06-02
-author: Carve
+date: 2026-11-18
 tags: [demo, reference]
 ---
 
-%% This file exercises the Carve markup constructs supported by the grammar.
-%% Lines beginning with %% are comments and do not render.
+= Carve Feature Demo
 
-{#top}
-# Carve Feature Demo
+%% This file demonstrates Carve 0.2. Comments do not render.
 
-A single document touching every core construct, plus a few renderer-dependent
-extensions at the end.
+A document with the core constructs in one place. Edit a line to see the preview and the four output views change.
 
-{#headings .featured}
-## Headings and attributes
+== Headings and attributes
 
-# Level 1
-## Level 2
-### Level 3
-#### Level 4
-##### Level 5
-###### Level 6
+{#section .featured}
+=== A heading with an id and a class
 
-A heading carries an explicit id and classes from a block-attribute line on
-the line directly above it:
+A heading may also use `#` markers in place of `=`; the Format button rewrites them to `=`:
 
 ```carve
-{#install .lead}
+{#setup .lead}
 ## Setup
 ```
 
-## Inline formatting
+== Inline formatting
 
-/italic/, *bold*, /*bold italic*/, _underline_, ~strikethrough~, =highlight=,
-super{^script^} and sub{,script,}. Inline `code span`, and raw inline passthrough
-`<q>quoted</q>`{=html} emitted verbatim.
+Use /emphasis/, *strong text*, {_underline_}, {~strike~}, and {=highlight=}.
+Use `inline code`, H{,2,}O and x{^2^}. An escaped * is literal.
 
-Semantic spans reach elements that have no delimiter of their own: press
-[Ctrl+C]{kbd} to copy, and expand [HTML]{abbr="HyperText Markup Language"}.
-
-Editorial markup: {+added text+}, {-deleted text-},
-{~old phrase~>new phrase~}, and an {#editorial note#}.
-
-Escapes keep specials literal: \*not bold\*, \/not italic\/, \#not-a-tag.
-
-## Links and images
-
-Inline [link](https://example.com), titled
-[link](https://example.com "Hover title"), autolink <https://example.com>,
-email autolink <hello@example.com>, and a reference [link][site].
-
-A collapsed reference [site][] reuses the label as the reference.
-
-Cross-reference to a heading by id: jump to </#top>.
+An [inline link](https://example.com), an <https://example.com> autolink, and a reference [link][site] all work.
+A cross-reference points to </#section>.
 
 [site]: https://example.com "Reference definition"
 
-![A descriptive alt text](images/diagram.png)
-^ Figure #: images may carry a caption line.
+An image can carry alt text and a caption:
 
-## Lists
+![A simple diagram](images/diagram.png)
+^ Figure #: A diagram in the documentation.
 
-Unordered:
+A raw inline span can contain `<kbd>Enter</kbd>`{=html}; it remains escaped while raw HTML is off.
+Editorial marks can show {+inserted words+} and {-deleted words-}.
+
+== Lists and tasks
 
 - apples
 - oranges
@@ -71,233 +48,92 @@ Unordered:
   - blood oranges
 - pears
 
-Ordered:
-
 . clone the repo
-. install dependencies
-  - run the build
-  - run the tests
-. ship it
-
-%% Task states: [ ] and [_] open, [/] progress, [!] blocked, [x]/[X] done,
-%% [-] dropped, [>] deferred, [?] uncertain. Only done is checked.
-Tasks:
+. preview the result
+. share a link
 
 - [x] write the grammar
-- [x] write the corpus
-- [ ] write more demos
+- [ ] try an edit
 
-Definition list:
+== Descriptions and quotes
 
 :: Carve
-: A post-Markdown lightweight markup language.
-:: Djot
-: The markup language Carve evolves from.
+: A markup language for documents and the web.
+:: 0.2
+: The version this playground renders.
 
-## Blockquotes
+> A quote keeps its own paragraph.
+> Another line follows it.
 
-> The best way to predict the future is to invent it.
-^ Alan Kay
+== Tables
 
-## Tables
+|= Fruit |={>} Price |={~} Stock |
+| Apple | 1.20 | In |
+| Banana | 0.50 | In |
+| Pear | 2.00 | Out |
+^ A compact table with aligned columns.
 
-|= Fruit       |={>} Price |={~} Stock |
-| Apple        | 1.20      | In        |
-| Banana       | 0.50      | In        |
-| Dragon fruit | 4.00      | Out       |
-^ Table #: column alignment - left, right, center.
-
-A `{table}` flag turns a `csv` or `tsv` fence into a table:
+A CSV fence can also provide tabular data:
 
 {table}
 ```csv
-Fruit,Qty,Note
-Apple,12,fresh
-"Pear, green",3,quoted because it holds a comma
+Fruit,Quantity
+Apple,3
+Pear,5
 ```
 
-## Code and raw blocks
+== Code, math, and callouts
 
-A fenced code block with a language:
-
-```python
-def greet(name: str) -> str:
-    return f"Hello, {name}!"
+```js
+const greeting = 'Hello, Carve!'
+console.log(greeting)
 ```
 
-A quoted "header" after the language sets the block's title (rendered as the
-`title` attribute on the `<pre>` - a filename bar or hover tooltip):
+A title on a code fence names the example:
 
 ```python "greet.py"
-def greet(name: str) -> str:
+def greet(name):
     return f"Hello, {name}!"
 ```
 
-A tilde fence works too:
+A Mermaid fence becomes a diagram in the browser:
 
-~~~yaml
-key: value
-list:
-  - one
-  - two
-~~~
-
-A raw block passes content through to a named format unchanged:
-
-```=html
-<details><summary>Native HTML</summary>Rendered as-is.</details>
+```mermaid
+flowchart LR
+  A[Write] --> B[Preview]
+  B --> C[Share]
 ```
 
-## Math
-
-Inline math uses a dollar before a code span: $`e = mc^2`.
-
-Display math uses a double dollar:
+Inline math can be written as $`e = mc^2`, and display math as:
 
 $$`e^{i\pi} + 1 = 0`
 
-A fenced `math` block is the GFM-style block form (mathBlock extension):
+::: note "A note"
+This callout is a container with a title.
+:::
 
-```math
-\sum_{k=1}^{n} k = \frac{n(n+1)}{2}
+::: tip
+Try the Format button to rewrite this document with the 0.2 writer.
+:::
+
+== Footnotes and raw HTML
+
+A footnote can explain a detail.[^note]
+
+[^note]: Footnotes render after the document.
+
+A block comment is visible in the editor and absent from HTML:
+
+%%%
+This note does not render.
+%%%
+
+Raw HTML is off by default. The option can be enabled for trusted local source.
+
+```=html
+<details><summary>Raw HTML example</summary>Only trusted source should enable this.</details>
 ```
-
-## Admonitions and divs
-
-::: note
-A plain note callout.
-:::
-
-::: tip "With a title"
-Admonitions accept an optional quoted title.
-:::
-
-::: warning
-Heed this warning.
-:::
-
-::: danger
-Critical information.
-:::
-
-A bare `:::` fence with no admonition type is a generic styled container, not a
-colored callout. Its id and classes go on a block-attribute line directly above
-the fence:
-
-{#callout .highlight}
-:::
-This block has only an id and classes, so it renders as a plain
-`<div id="callout" class="highlight">` wrapper you can target with your own CSS.
-:::
-
-## Mentions, tags, and inline extensions
-
-Mention a person with @alice and reference a tag like #release-1.0.
-An inline extension names a role for a handler to render: :youtube[dQw4w9WgXcQ]
-becomes an embed where the handler is registered, and degrades to its content
-where it is not.
-
-## Footnotes
-
-Carve supports footnotes[^note] with definitions collected anywhere.[^second]
-
-[^note]: The reference and its definition are linked by label.
-[^second]: Definitions can appear in any order.
-
-## Smart typography
-
-Dashes and ellipsis: an em dash --- an en range 10--20 ... and so on.
-Arrows and comparisons: --> <-- <--> ==> <== <=> , != <= >= , (tm) +-.
 
 ***
 
-## List tables (Tier-2 extension)
-
-%% A `::: list-table` block authors a table as a nested list, so cells can hold
-%% full block content a native pipe table cannot. It only renders as a real
-%% <table> when the renderer enables the listTable extension; otherwise it
-%% degrades to a `<div class="list-table">` holding the literal list.
-
-%% Attributes sit on the PRECEDING line: header-rows=N promotes the first N rows
-%% to <thead>. A cell whose sole content is a lone `^` spans the row above; a
-%% lone `<` spans the cell to the left - the same markers native pipe tables use.
-
-{header-rows=1}
-::: list-table "Quarterly results"
-- - Region
-  - Notes
-- - EMEA
-  - Strong quarter.
-
-    Drivers:
-
-    - new logos
-    - renewals
-- - APAC
-  - <
-:::
-
-## Code groups (Tier-3 extension)
-
-%% `::: code-group` turns several fenced blocks - each with a `[label]` tab - into
-%% a tabbed widget (codeGroup extension). Without it, it degrades to a plain div
-%% of sequential code blocks.
-
-::: code-group
-```bash [npm]
-npm install @markup-carve/carve
-```
-
-```bash [pnpm]
-pnpm add @markup-carve/carve
-```
-
-```bash [yarn]
-yarn add @markup-carve/carve
-```
-:::
-
-## Mermaid (Tier-3 extension)
-
-%% Mermaid is a third-party extension, not core Carve. It is written as a
-%% fenced code block tagged `mermaid`. It only renders as a diagram when the
-%% renderer enables the Mermaid extension; otherwise it shows as a code block.
-
-```mermaid
-flowchart TD
-    A[Write Carve] --> B{LSP diagnostics}
-    B -->|clean| C[Preview]
-    B -->|warnings| D[Quick fix]
-    D --> A
-    C --> E[Publish]
-```
-
-```mermaid
-sequenceDiagram
-    Author->>Editor: type Carve
-    Editor->>LSP: textDocument/didChange
-    LSP-->>Editor: diagnostics + semantic tokens
-    Editor-->>Author: live preview
-```
-
-## Charts (Tier-3 extension)
-
-%% A fenced `chart` block carries a Chart.js config as JSON. It renders as a live
-%% chart when the renderer enables the chart preset (and Chart.js is loaded);
-%% otherwise it degrades to an inert `<div class="chart">` hydration marker.
-
-```chart
-{"type":"bar","data":{"labels":["Q1","Q2","Q3","Q4"],"datasets":[{"label":"Revenue","data":[12,19,14,23]}]}}
-```
-
-## Spoilers (Tier-2 extension)
-
-%% Inline :spoiler[…] blurs until you click it; a ::: spoiler block collapses to
-%% just its summary and expands on click. Without the extension they degrade to a
-%% readable span / div so the document still reads.
-
-The killer is :spoiler[the lighthouse keeper] - click the blur to reveal.
-
-::: spoiler "Plot ending"
-Everyone makes it home. The dog lives too.
-:::
+The end of the demo.

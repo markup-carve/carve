@@ -1,1 +1,0 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","severity":"warning","path":"/table[1]/caption[2]","fidelity":"dropped","confidence":"exact"}]}

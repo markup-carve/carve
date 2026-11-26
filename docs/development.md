@@ -1,163 +1,69 @@
 ---
-description: Set up, test, and maintain the Carve specification and documentation.
+description: Work with the Carve 0.2 specification and documentation.
 ---
 
 # Development
 
-## Setup and maintenance
+The `next2` branch contains the 0.2 specification in [`spec/0.2/`](https://github.com/markup-carve/carve/tree/next2/spec/0.2) and this documentation source. The [status page](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) identifies the freeze candidate and its open points.
 
-This repository contains the specification, corpus, and documentation site.
+## Set up the repository
 
-```bash
-npm install
-npm test
-npm run docs:build
+Use the Node version in `.nvmrc`, install dependencies with `npm ci`, and run `npm run docs:build` for the site. Read the [specification map](./grammar) before changing normative text. The 0.1 oracle (`resources/spec/`, `scripts/spec/`, `resources/conformance-pack/` and the 0.1 corpus) lives on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1); it is not the 0.2 oracle.
+
+## Check the 0.2 spec
+
+Run `npm run spec2:data` after changing a 0.2 document, data row, example or conformance case. It checks schemas, clause references, generated examples and tree fixtures. See [Conformance](./conformance) for what an engine must run. When changing a clause, add or adjust the case that demonstrates it and update the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) when 0.1 source changes meaning.
+
+The reference implementation lives in [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2). Its `carve` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the [tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands); its `upgrade` command is specific to the JavaScript reference engine.
+
+## Investigate a mismatch
+
+Record the spec pin, engine pin, case ID, input, options, expected and actual results. Compare the cited clause before changing either side. The [comparison methodology](./implementation-comparison-methodology) describes what a corpus pass measures. The 0.1 decision trace uses the 0.1 model, so its output does not decide a 0.2 case.
+
+## Check an Expected section before filing
+
+A bug ticket states its expected result. Before filing it, write each expected result as a case and run `npm run expected:check -- <cases.crv>` with a carve-js `next2` checkout in `engines/carve-js` (or `CARVE_JS_DIR`, or `--js <dir>`). The case file is Carve 0.1: a `##` heading per case (a 0.2 `==` heading works too), an `operation` of `fmt`, `html`, `ast` or `lint`, optional `clauses` and `options`, then the input block and the expected block (the language after a fence is free).
+
+````text
+## 6569 editorial comment across a comment line
+
+- operation: ast
+- clauses: C2-B-138
+
+```text
+{#a
+%% b#}
 ```
 
-See [MAINTAINING.md](https://github.com/markup-carve/carve/blob/main/MAINTAINING.md)
-for release and cross-implementation work.
+```json
+[{"type":"paragraph","children":[{"type":"text","value":"{"},{"type":"tag","name":"a"},{"type":"soft_break"},{"type":"comment","form":"line","value":"b#}"}]}]
+```
+````
+
+`ast` expects the JSON children of the document without positions, `lint` one rule code per line with an optional `line:column`. For each case the check runs carve-js and reports where its output differs. Where it differs, it also lists the clause cases on the same constructs: a clause case with the same input, and those whose model trees share the node kinds the expected result disputes (for `fmt`, the kinds the text forms with its escapes dropped). Each listed case says whether carve-js passes it now and which clauses it cites. The command exits 0 when every case agrees with carve-js, 1 on a conflict and 2 on a tool error. `--help` prints the format.
+
+A conflict with a clause or a pinned clause case is filed as `needs-decision` with both readings, not as a bug with that Expected section.
 
 ## Versioned documentation deployment
 
-The Pages workflow on `main` runs `scripts/build-versioned-docs.sh`. It builds
-`main` at `/carve/`, checks out `origin/next2` in a separate worktree, installs
-that ref's own dependencies, builds it at `/carve/0.2/`, and combines only the
-finished site files. A push to `next2` dispatches the `main` workflow. A plain
-`npm run docs:build` still builds one site at `/carve/` without a version menu.
+The Pages workflow on `main` runs `scripts/build-versioned-docs.sh`. It checks out `origin/0.1` in a separate worktree, installs that ref's own dependencies and builds it at `/carve/` as "0.1 (latest)". It then builds the `main` checkout itself at `/carve/0.2/` as "0.2 (dev)" and combines only the finished site files. A plain `npm run docs:build` still builds one site at `/carve/` without a version menu.
 
-After 0.2 becomes the latest release, cut a `0.1.x` branch from the last 0.1
-documentation commit. Change the defaults in `scripts/build-versioned-docs.sh`:
-set `DOCS_LATEST_LABEL` to `0.2 (latest)`, `DOCS_SECONDARY_REF` to
-`origin/0.1.x`, `DOCS_SECONDARY_BASE` to `/carve/0.1/`,
-`DOCS_SECONDARY_LABEL` to `0.1 (legacy)`,
-`DOCS_SECONDARY_EDIT_BRANCH` to `0.1.x`, and `DOCS_SECONDARY_SERIES` to an
-empty value. Keep `DOCS_LATEST_BASE=/carve/`. Update the secondary branch's
-push trigger to dispatch this workflow. Each branch continues to use its own
-config, theme, playground, WASM files, package files and engine pin.
-
-For a local combined build before `next2` is merged, use
-`DOCS_SECONDARY_REF=docs/versioned-next2 bash scripts/build-versioned-docs.sh`.
-The [container ownership map](./ownership-procedure) connects current rules
-to collector phases, helpers and proof evidence.
+When 0.2 becomes the latest release, change the defaults in the script: build `main` at `/carve/` as "0.2 (latest)" (`DOCS_LATEST_REF` empty, `DOCS_LATEST_EDIT_BRANCH=main`) and `origin/0.1` at `/carve/0.1/` as "0.1 (legacy)" (`DOCS_SECONDARY_REF=origin/0.1`, `DOCS_SECONDARY_EDIT_BRANCH=0.1`, `DOCS_SECONDARY_SERIES` empty). Each ref keeps its own config, theme, playground, WASM files, package files and engine pin.
 
 ## Nightly fuzz differential
 
-`.github/workflows/nightly-fuzz.yml` runs at 05:30 UTC and on dispatch. It
-mutates corpus documents that the spec model, carve-js, carve-php and carve-rs
-already agree on, renders each mutant to HTML in all four and reduces every
-disagreement while the same participants still disagree. Reduced cases are
-grouped by a signature: which participants agree, plus the document with every
-word replaced by `x`.
+`.github/workflows/nightly-fuzz.yml` runs every day at 05:45 UTC and on dispatch. It checks out carve-js, carve-php and carve-rs at their `next2` heads and runs `scripts/fuzz-nightly.mjs`: mutants of the 0.2 conformance inputs, random documents, deep nesting around the depth limits (C2-B-190, C2-I-118) and line-ending, tab and control-character noise go through parse, render, format and lint in each engine. The run compares the tree, the HTML, the fmt output and the lint findings across the engines, checks the writer gates C2-W-002 and C2-W-003 in each engine, imports the rendered HTML in every engine, and times long inputs of each construct. A crash, a hang, an error that is not a Carve refusal and superlinear time are reported per engine. There is no spec model on `next2`, so a split where two engines agree is a lead for triage, not a verdict.
 
-Each new signature becomes one issue labeled `bug` and `area:corpus`, holding
-the reduced document, each output and the seed. A signature with an open issue
-gets a comment instead; one with a closed issue is not refiled. At most ten new
-issues go out a night, three per agreement pattern.
+Every finding is reduced while it holds and grouped by a signature: the target, the agreement pattern and the input with each word replaced by `x`. `scripts/fuzz-file-issues.mjs` files one issue per new signature, crashes, hangs and superlinear time first, at most five a night; it comments on an open issue with the same signature and skips a closed one. Lint splits are not filed: [`scripts/lint-parity.mjs`](https://github.com/markup-carve/carve/blob/next2/scripts/lint-parity.md) covers lint. A dispatch files only with `file-issues` set.
 
-While 0.1.x is frozen and 0.2 is built on `next2`, the scheduled run only
-prints its plan and files nothing. A manual dispatch with `file-issues` set
-still files.
-
-Findings leave the run green. It fails only when the harness breaks: an engine
-missing, no mutant compared, fewer than half of the unmutated seed documents
-agreeing, or `gh` failing.
-
-Run it locally with the three engines checked out and built beside this
-repository:
+Run it locally with the engines built in `engines/` (as for the readiness run):
 
 ```bash
-node scripts/fuzz-nightly.mjs --budget-minutes=2 --report=/tmp/fuzz.json
+cargo build --release --manifest-path scripts/next2-readiness-rs/Cargo.toml
+export CARVE_RS_READINESS_BIN=$CARGO_TARGET_DIR/release/carve-next2-readiness
+node scripts/fuzz-nightly.mjs --seed=7 --budget-minutes=5 --report=/tmp/fuzz.json
+node scripts/fuzz-nightly.mjs --timing --timing-only --timing-sizes=4000,16000,64000 --report=/tmp/timing.json
 node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz.json --repo=markup-carve/carve --dry-run
 ```
 
-The seed defaults to the UTC date (`20261029`). `--seed=N --max-mutants=M`
-replays a night exactly, which is the line each issue prints.
-
-## Conformance pack
-
-`resources/conformance-pack/` holds about 12,000 generated cases, each a
-mutated corpus row with the HTML the spec model gives for it. The cases come in
-cause families (block ownership, lazy lines, footnotes, fences, `+`, inline
-pairing, word-boundary guards, combined tokens, attribute blocks, writer round
-trip); `index.json` lists them with their shards. carve-js, carve-php and
-carve-rs run the pack in CI at their spec pin, so a variant of a fixed bug fails
-the engine's own pull request instead of turning up in a later sweep.
-
-`scripts/conformance-pack.mjs` builds it from a fixed seed and a frozen seed
-list (`seeds.json`), so a new corpus row does not move the pack and the same
-model always writes the same bytes. Case ids hash the source, so an id stays
-the same when only the expected HTML changes.
-
-When a spec model change moves a case, the `conformance-pack` CI job fails.
-Regenerate and commit the result:
-
-```bash
-npm run pack:write   # rewrite resources/conformance-pack/
-npm run pack:check   # what CI runs
-```
-
-`node scripts/conformance-pack.mjs --select-seeds` picks the seed rows again.
-That moves every case, so do it only on purpose.
-
-### In an engine
-
-Each engine compares its HTML, trimmed, with `html` exactly. For a case in a
-`roundtrip` family it renders its own `fmt` output of `source` instead.
-
-| Engine | Test | Ledger |
-| --- | --- | --- |
-| carve-js | `test/conformance-pack.test.ts` | `test/conformance-pack-drift.json` |
-| carve-php | `tests/ConformancePackTest.php` | `tests/fixtures/conformance-pack-drift.json` |
-| carve-rs | `tests/conformance_pack.rs` | `tests/fixtures/conformance-pack-drift.json` |
-
-A case that differs today is declared in the ledger. Each entry is one cause,
-with its open ticket and the case ids it covers:
-
-```json
-{ "ticket": "markup-carve/carve-rs#1234", "cause": "lazy line after a nested note", "cases": ["notes-0123456789ab"] }
-```
-
-The test fails on a difference the ledger does not declare, on a declared case
-that passes now, and on a declared id the pack no longer has. So when you fix a
-cause, delete its entry. When a pin bump brings new differences, file a ticket
-per cause and add an entry. If all three engines agree against the model on a
-case, the ticket belongs in markup-carve/carve as a spec model bug, and every
-engine's entry names that ticket.
-
-Run the pack locally against a carve checkout instead of the pin with
-`CARVE_CONFORMANCE_PACK=../carve/resources/conformance-pack`. The test's
-failure message lists the ids to add to the ledger or remove from it.
-
-## Diagnosing HTML drift
-
-Run `npm run engine:report -- --structure` to add an HTML tree diagnostic to
-each byte mismatch in the pinned engine's core-corpus report. Combine it with
-`--diff` to see the bytes, or `--check` to check the declared drift ledger.
-The report requires at least 100 corpus documents.
-
-`same structure` means the HTML fragment trees agree after decoding entities
-and sorting attributes. Parsed text whitespace, comments, attribute values,
-namespaces, element order and template contents remain significant. Errors
-reported by parse5, implied elements, omitted non-void end tags and initial
-newlines that HTML discards in `pre`, `textarea` or `listing` produce
-`unclassified`. Foreign elements without separate end tags are also
-unclassified, including valid self-closing SVG or MathML elements.
-Void-element slash spelling can still share a tree. Other tree differences produce
-`different structure`.
-
-This is supporting evidence, not a semantic-equivalence test. Browser parsing
-can hide source distinctions, including raw HTML spelling and ignored tokens
-that parse5 does not report as errors. It does not prove
-AST identity, CSS behavior, accessibility or script behavior. Canonical bytes
-remain the oracle: every byte mismatch still counts as drift, including one
-marked `same structure`, and the exit status and ledger checks are unchanged.
-
-## Finding the first divergent decision
-
-An HTML mismatch often surfaces lines after the ownership decision that caused
-it. `node scripts/trace-diff.mjs <input> --engine js|php|rs` compares the spec
-model's [decision trace](./decision-trace) with the engine's and prints the
-first line they decide differently, with the PART 0 step id and clause. Engines
-without a trace mode get the model's trace alone. The
-[decision trace](./decision-trace) page lists the step ids, the record format
-and the `carve trace <file>` command an engine implements.
+The seed defaults to the UTC date, and the same seed gives the same inputs.

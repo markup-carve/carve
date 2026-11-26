@@ -1,9 +1,0 @@
-Hard line breaks
-
-```
-line one\
-line two
-.
-<p>line one<br>
-line two</p>
-```

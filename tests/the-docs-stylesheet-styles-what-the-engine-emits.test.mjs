@@ -15,8 +15,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { JSDOM } from 'jsdom'
-import { carveToHtml } from '@markup-carve/carve'
-import { carveExtensions } from '../docs/.vitepress/carve-extensions.js'
+import { render as carveToHtml } from '@markup-carve/carve'
+import { carveExtensions, carveRenderers } from '../docs/.vitepress/carve-extensions.js'
 
 const CUSTOM_CSS = readFileSync(
   new URL('../docs/.vitepress/theme/custom.css', import.meta.url),
@@ -39,7 +39,7 @@ h1, h2, h3, h4, h5, h6 { font-size: 16px; font-weight: 400; }
 ul, ol { list-style: none; padding: 0; }`
 
 /** Render Carve through the docs site's own extension set. */
-const render = (src) => carveToHtml(src, { extensions: carveExtensions() })
+const render = (src) => carveToHtml(src, { extensions: carveExtensions(), renderers: carveRenderers() })
 
 /** A jsdom document carrying the same CSS layers and scope as rendered output. */
 function mount(html) {
@@ -52,13 +52,13 @@ function mount(html) {
 }
 
 const TAB_SOURCE = `:::: tabs
-::: tab [First]
+::: tab "First"
 First body.
 :::
-::: tab [Second]
+::: tab "Second"
 Second body.
 :::
-::: tab [Third]
+::: tab "Third"
 Third body.
 :::
 ::::
@@ -69,11 +69,11 @@ test('with radio N checked, panel N is the only visible panel', () => {
   // Guard the premise: the ladder is written against this DOM order, so a
   // render that stopped emitting radios must fail here rather than silently
   // make every assertion below vacuous.
-  assert.match(html, /class="tabs-radio"/, 'engine emitted no CSS-mode radios')
+  assert.match(html, /<input type="radio"/, 'engine emitted no CSS-mode radios')
 
   const win = mount(html)
-  const radios = [...win.document.querySelectorAll('.tabs-radio')]
-  const panels = [...win.document.querySelectorAll('.tabs-panel')]
+  const radios = [...win.document.querySelectorAll('.tabs > input[type="radio"]')]
+  const panels = [...win.document.querySelectorAll('.tabs > .tab-panel')]
   assert.equal(radios.length, 3)
   assert.equal(panels.length, 3)
 
@@ -95,7 +95,7 @@ test('with radio N checked, panel N is the only visible panel', () => {
 })
 
 test("a highlight's ink does not come from the surrounding theme", () => {
-  const html = render('Plain text with =a [link](x) inside= it.\n')
+  const html = render('Plain text with {=a [link](x) inside=} it.\n')
   assert.match(html, /<mark>/, 'engine emitted no <mark> for =highlight=')
 
   const win = mount(html)

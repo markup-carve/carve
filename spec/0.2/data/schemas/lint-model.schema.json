@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 lint rules as data",
+  "description": "The shared line model of lint and the catalog rows that state their trigger, range and message over it (C2-W-139 to C2-W-142). An engine runs these rows from this file, by an interpreter or by code generated from it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "text_leaves", "verbatim_leaves", "row_leaves", "line_fields", "block_fields", "inline_fields", "table_fields", "paths", "rules"],
+  "properties": {
+    "$schema": { "const": "schemas/lint-model.schema.json" },
+    "text_leaves": { "$ref": "#/$defs/types", "description": "The leaf blocks whose lines are text that lint reads (C2-W-107). The set name text_leaves stands for this list in an `in` test." },
+    "verbatim_leaves": { "$ref": "#/$defs/types", "description": "The leaf blocks whose lines lint does not search (C2-W-107). A line rule skips their lines unless its `verbatim` names the leaf." },
+    "row_leaves": { "$ref": "#/$defs/types", "description": "The leaves a line of a pipe table row has. The set name row_leaves stands for this list in an `in` test." },
+    "line_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of a line record, one record per source line." },
+    "block_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of a block record, one record per block of the tree." },
+    "inline_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an inline record, one record per inline node of a type that an inline rule names." },
+    "attribute_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an attribute record, one record per part of each attribute block that a node took (C2-W-148)." },
+    "attribute_owner_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of the owner of an attribute record, the node that its attribute block attaches to (C2-W-148)." },
+    "table_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The table fields of C2-W-149: layout facts of a table that the tree does not hold, which the line and block records they name carry beside their own fields." },
+    "id_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an id record, one record per distinct id that the tree carries, read by a lookup whose over is id (C2-W-150)." },
+    "paths": {
+      "type": "object",
+      "description": "The node that the path of a finding names, per kind of record the rule reported on (C2-W-157).",
+      "required": ["block", "inline", "text_run", "attribute", "line"],
+      "additionalProperties": false,
+      "properties": {
+        "block": { "$ref": "#/$defs/path" },
+        "inline": { "$ref": "#/$defs/path" },
+        "text_run": { "$ref": "#/$defs/path" },
+        "attribute": { "$ref": "#/$defs/path" },
+        "line": { "$ref": "#/$defs/path" }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "over", "report", "clauses"],
+        "properties": {
+          "id": { "type": "string", "description": "The id of the row of lint-rules.json that this rule states." },
+          "over": { "enum": ["line", "block", "inline", "attribute"], "description": "The records the rule runs over." },
+          "types": { "$ref": "#/$defs/types", "description": "For a block rule: the node types it runs over; absent, every block. For an inline rule: the inline node types it runs over. For an attribute rule: the node types of the owners whose attribute records it runs over; absent, every owner." },
+          "verbatim": { "$ref": "#/$defs/types", "description": "For a line rule: the verbatim leaves whose lines it still reads, because its row names that place (C2-W-107)." },
+          "let": { "type": "object", "additionalProperties": { "$ref": "#/$defs/expr" }, "description": "Named values computed first, read with `v`." },
+          "each": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "maxProperties": 1,
+            "properties": {
+              "matches": { "type": "array", "minItems": 2, "maxItems": 2, "description": "A text value and a pattern of C2-W-142." },
+              "pairs": { "type": "array", "minItems": 2, "maxItems": 3, "description": "A text value, a mark and optionally `strict`: the pair scan of C2-W-147." }
+            },
+            "description": "After `when` holds, the entries of `report` run once per match of the pattern in the text, left to right and without overlap, each with the named groups of its match, or once per pair of the pair scan (C2-W-141, C2-W-147)."
+          },
+          "when": { "$ref": "#/$defs/expr", "description": "The trigger. The rule reports nothing on a record where it does not hold." },
+          "report": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "when": { "$ref": "#/$defs/expr", "description": "The condition of this entry; absent, it always holds." },
+                "message": { "type": "integer", "minimum": 0, "description": "The index of the message of the catalog row; absent, 0." },
+                "start": { "$ref": "#/$defs/expr", "description": "The start of the range, a character offset in the source; absent, the rule's range start." },
+                "end": { "$ref": "#/$defs/expr", "description": "The end of the range; absent, the rule's range end." },
+                "values": { "type": "object", "additionalProperties": { "$ref": "#/$defs/expr" }, "description": "The values the message fills in, by name." }
+              }
+            },
+            "description": "The entries, tried in order. The first whose `when` holds is the one finding the rule reports on the record."
+          },
+          "range": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["start", "end"],
+            "properties": { "start": { "$ref": "#/$defs/expr" }, "end": { "$ref": "#/$defs/expr" } },
+            "description": "The range every entry of `report` has unless it states its own."
+          },
+          "values": { "type": "object", "additionalProperties": { "$ref": "#/$defs/expr" }, "description": "The message values every entry has, unless it states its own of that name." },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      },
+      "description": "The rules stated as data, ordered by id. A row may be stated by several rules, at most one per value of over (C2-W-150)."
+    }
+  },
+  "$defs": {
+    "types": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }, "uniqueItems": true },
+    "path": {
+      "type": "object",
+      "required": ["names", "clauses"],
+      "additionalProperties": false,
+      "properties": {
+        "names": { "type": "string", "minLength": 1 },
+        "clauses": { "$ref": "#/$defs/clauses" }
+      }
+    },
+    "clauses": { "type": "array", "items": { "type": "string", "pattern": "^C2-[A-Z]-[0-9]{3}$" }, "minItems": 1, "uniqueItems": true },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "means", "clauses"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The field name, read with `f`." },
+        "type": { "enum": ["boolean", "number", "offset", "text", "name", "list", "line", "block", "node", "owner"], "description": "An offset is a character offset in the source. A line or block field is a record whose own fields are read with a dotted path, and a node field is a node of the tree, read the same way, and so is an owner field, whose fields are those of attribute_owner_fields." },
+        "base": { "enum": ["start", "body_start", "opener_start"], "description": "For a text field: the field that gives the source offset of its first character." },
+        "means": { "type": "string", "description": "What the field holds, as the clauses define it." },
+        "clauses": { "$ref": "#/$defs/clauses" }
+      }
+    },
+    "expr": {
+      "description": "A literal, or an object with one operator key. `f` reads a field by a dotted path (`prev.body`, `owner.content_column`, `open_colon.0.width`, `item.width` inside `some`; a negative index counts from the end of a list, `node.children.-1`), `v` a value of `let`. Values: `len`, `add`, `sub`, `slice`, `concat`, `trim_end`, `words` (underscores to spaces), `if`, `match` (the start, or with `at: end` the end, of a named group of the last `matches`), `text_from` (the line from an offset, trailing spaces and tabs removed), `extend_left` and `skip_right` (an offset moved over the given characters of the line). Tests: `all`, `any`, `not`, `has` (the field path exists), `eq`, `ne`, `lt`, `le`, `gt`, `ge`, `in` (a list or a set name), `contains`, `starts`, `matches` (a pattern of the subset of C2-W-142, an optional flag `i`), `some` (`in` a list field, `from` an index, `where` a test on `item`). C2-W-150 adds the block fields `identity` and `layout`, `lookup` over `id`, with `all`, with `from` and with no `types`, a value as the `in` of `some` and `count`, and the values `lower`, `nfc`, `fold`, `fold_space`, `join`, `quoted_list`, `find` (`in` a list value, `where` a test on `item`, `field` an optional dotted path read from the item found), `percent_decode` and `run`, and the test `attribute_line`; lookups over `line`, `index_of` of a list, `nth` and `column`.",
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "array" },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "enum": ["f", "v", "len", "add", "sub", "slice", "concat", "trim_end", "words", "if", "match", "at", "text_from", "extend_left", "skip_right",
+              "all", "any", "not", "has", "eq", "ne", "lt", "le", "gt", "ge", "in", "contains", "starts", "matches", "some", "count", "lookup", "index_of", "json_escape",
+              "lower", "nfc", "fold", "fold_space", "join", "quoted_list", "plain_list", "find", "percent_decode", "run", "attribute_line", "nth", "column"]
+          }
+        }
+      ]
+    }
+  }
+}

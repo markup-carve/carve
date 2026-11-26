@@ -1,10 +1,12 @@
-// Carve language features for the playground editor: diagnostics, completion
-// and hover, computed in the page by carve-lsp's browser entry.
+// The 0.2 engine supplies diagnostics. The existing language server supplies
+// completion and hover until the 0.2 editor API provides those features.
 import type { Text } from '@codemirror/state'
 import { EditorView, hoverTooltip, tooltips, type Tooltip } from '@codemirror/view'
 import { linter, type Diagnostic as LintDiagnostic } from '@codemirror/lint'
 import { autocompletion, type CompletionContext, type CompletionResult } from '@codemirror/autocomplete'
-import { analyzeCarve, completionAt, hoverAt } from '@markup-carve/carve-lsp/browser'
+import { completionAt, hoverAt } from '@markup-carve/carve-lsp/browser'
+import { lint } from '../../engine.js'
+import { byteToUtf16 } from './offsets'
 
 type Position = { line: number; character: number }
 
@@ -18,27 +20,22 @@ function toPosition(doc: Text, offset: number): Position {
   return { line: line.number - 1, character: offset - line.from }
 }
 
-const SEVERITY: Record<number, LintDiagnostic['severity']> = { 1: 'error', 2: 'warning', 3: 'info', 4: 'hint' }
-
 export const carveDiagnostics = linter(
   (view) => {
     const doc = view.state.doc
-    let diagnostics
     try {
-      diagnostics = analyzeCarve(doc.toString()).diagnostics
+      const source = doc.toString()
+      const fromByte = byteToUtf16(source)
+      return lint(source).map((d): LintDiagnostic => ({
+        from: fromByte(d.range.startOffset),
+        to: Math.max(fromByte(d.range.startOffset), fromByte(d.range.endOffset)),
+        severity: d.severity === 'error' ? 'error' : d.severity === 'hint' ? 'hint' : 'warning',
+        message: d.message,
+        source: `carve 0.2 ${d.code}`,
+      }))
     } catch {
       return []
     }
-    return diagnostics.map((d): LintDiagnostic => {
-      const from = toOffset(doc, d.range.start)
-      return {
-        from,
-        to: Math.max(from, toOffset(doc, d.range.end)),
-        severity: SEVERITY[d.severity ?? 2] ?? 'warning',
-        message: d.message,
-        source: d.code === undefined ? 'carve' : `carve ${d.code}`,
-      }
-    })
   },
   { delay: 400 },
 )

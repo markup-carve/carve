@@ -1,0 +1,805 @@
+{
+  "$schema": "schemas/extensions.schema.json",
+  "extensions": [
+    {
+      "name": "carve.autolink",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-013",
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.cite",
+      "version": "1",
+      "ids": true,
+      "matcher": {
+        "form": "inline",
+        "name": "cite"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-058",
+        "C2-X-068"
+      ],
+      "slotOrder": [],
+      "rendererOptions": {
+        "mode": {
+          "values": [
+            "numbered",
+            "author-date"
+          ],
+          "default": "numbered",
+          "clauses": [
+            "C2-X-058",
+            "C2-X-068"
+          ]
+        }
+      }
+    },
+    {
+      "name": "carve.codeCallouts",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-053",
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.codeGroup",
+      "version": "1",
+      "ids": true,
+      "matcher": {
+        "form": "div",
+        "name": "code-group"
+      },
+      "props": {},
+      "slots": {
+        "panels": {
+          "kind": "block",
+          "minItems": 1
+        }
+      },
+      "clauses": [
+        "C2-X-063"
+      ],
+      "slotOrder": [
+        "panels"
+      ]
+    },
+    {
+      "name": "carve.colorSwatch",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "color"
+      },
+      "props": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "value": {
+          "kind": "inline"
+        }
+      },
+      "clauses": [
+        "C2-X-074"
+      ],
+      "slotOrder": [
+        "value"
+      ]
+    },
+    {
+      "name": "carve.details",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "details"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-065"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.externalLinks",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.abc",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "abc"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.chart",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "chart"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.d2",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "d2"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.dot",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "dot"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.graphviz",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "graphviz"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.mermaid",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "mermaid"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.plantuml",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "plantuml"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.puml",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "puml"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.vega-lite",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "vega-lite"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.fencedRender.wavedrom",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "wavedrom"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-071"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.glossary",
+      "version": "1",
+      "ids": true,
+      "transform": true,
+      "props": {},
+      "slots": {
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-067",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "body"
+      ]
+    },
+    {
+      "name": "carve.headingNumbers",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-070",
+        "C2-X-072"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.headingPermalinks",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.headingReference",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.imgFence.image",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "image"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-059",
+        "C2-X-060"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.imgFence.img",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "img"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-059",
+        "C2-X-060"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.index",
+      "version": "1",
+      "ids": true,
+      "transform": true,
+      "props": {},
+      "slots": {
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-069",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "body"
+      ]
+    },
+    {
+      "name": "carve.indexTerm",
+      "version": "1",
+      "ids": true,
+      "matcher": {
+        "form": "inline",
+        "name": "index"
+      },
+      "props": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "term": {
+          "kind": "inline",
+          "optional": true
+        }
+      },
+      "clauses": [
+        "C2-X-069",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "term"
+      ]
+    },
+    {
+      "name": "carve.listTable",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "list-table"
+      },
+      "props": {
+        "label": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "rows": {
+          "kind": "block",
+          "minItems": 1
+        },
+        "caption": {
+          "kind": "inline",
+          "optional": true
+        }
+      },
+      "clauses": [
+        "C2-B-188",
+        "C2-X-072",
+        "C2-X-076",
+        "C2-X-078"
+      ],
+      "slotOrder": [
+        "rows",
+        "caption"
+      ]
+    },
+    {
+      "name": "carve.mathBlock",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "math"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-062"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.semanticSpan",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-066",
+        "C2-X-072"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.smartQuotes",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-075"
+      ],
+      "slotOrder": [],
+      "rendererOptions": {
+        "locale": {
+          "values": [
+            "en",
+            "de",
+            "de-CH",
+            "fr",
+            "pl",
+            "ru",
+            "ja",
+            "zh",
+            "sv",
+            "da",
+            "fi",
+            "cs",
+            "hu",
+            "it",
+            "es",
+            "pt",
+            "nl",
+            "nb",
+            "nn",
+            "uk"
+          ],
+          "open": true,
+          "default": "en",
+          "clauses": [
+            "C2-X-075"
+          ]
+        }
+      }
+    },
+    {
+      "name": "carve.spoiler",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "spoiler"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-064"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.spoilerBlock",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "spoiler"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-064",
+        "C2-X-065"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.tab",
+      "version": "1",
+      "parent": {
+        "name": "carve.tabs",
+        "slot": "tabs"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-039",
+        "C2-X-041",
+        "C2-X-042",
+        "C2-X-046"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.tabNormalize",
+      "version": "1",
+      "transform": true,
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-072",
+        "C2-X-073"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.tabs",
+      "version": "1",
+      "ids": true,
+      "matcher": {
+        "form": "div",
+        "name": "tabs"
+      },
+      "props": {},
+      "slots": {
+        "tabs": {
+          "kind": "block_extension",
+          "name": "carve.tab",
+          "minItems": 1
+        }
+      },
+      "clauses": [
+        "C2-X-039",
+        "C2-X-040",
+        "C2-X-041",
+        "C2-X-042",
+        "C2-X-043",
+        "C2-X-044",
+        "C2-X-045",
+        "C2-X-046",
+        "C2-X-047",
+        "C2-X-048",
+        "C2-X-056"
+      ],
+      "slotOrder": [
+        "tabs"
+      ],
+      "rendererOptions": {
+        "mode": {
+          "values": [
+            "css",
+            "aria"
+          ],
+          "default": "css",
+          "clauses": [
+            "C2-X-043",
+            "C2-X-047",
+            "C2-X-048",
+            "C2-X-056"
+          ]
+        }
+      }
+    },
+    {
+      "name": "carve.term",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "term"
+      },
+      "props": {
+        "href": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "text": {
+          "kind": "inline",
+          "optional": true
+        }
+      },
+      "clauses": [
+        "C2-X-067",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "text"
+      ]
+    },
+    {
+      "name": "carve.toc",
+      "version": "1",
+      "transform": true,
+      "props": {
+        "collapsible": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "open": {
+          "type": "boolean"
+        }
+      },
+      "slots": {
+        "list": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-053",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "list"
+      ]
+    },
+    {
+      "name": "carve.tocPlacement",
+      "version": "1",
+      "transform": true,
+      "props": {
+        "label": {
+          "type": "string"
+        }
+      },
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        },
+        "list": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-053",
+        "C2-X-072"
+      ],
+      "slotOrder": [
+        "title",
+        "body",
+        "list"
+      ]
+    },
+    {
+      "name": "carve.wiki",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "wiki"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-057"
+      ],
+      "slotOrder": []
+    }
+  ]
+}

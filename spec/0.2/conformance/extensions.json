@@ -1,0 +1,2621 @@
+{
+  "kind": "extensions",
+  "description": "The standard extension corpus of Carve 0.2: each standard extension in default use, with its host options, in a list item and a block quote, with literal code text and with escaped user text. Reported by the readiness runner in its own section; it does not gate Engine ready. See README.md, \"Extensions\".",
+  "cases": [
+    {
+      "id": "EXT-001",
+      "extension": "carve.details",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "::: details \"More info\"\nHidden until expanded.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details>\n  <summary>More info</summary>\n  <p>Hidden until expanded.</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-002",
+      "extension": "carve.details",
+      "summary": "no title writes the default summary",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "::: details\nBody.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details>\n  <summary>Details</summary>\n  <p>Body.</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-003",
+      "extension": "carve.details",
+      "summary": "authored attributes and open go on the details element",
+      "clauses": [
+        "C2-H-009"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "{#d .x open}\n::: details \"More\"\nBody.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details id=\"d\" class=\"x\" open=\"\">\n  <summary>More</summary>\n  <p>Body.</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-004",
+      "extension": "carve.details",
+      "summary": "the summary renders the inline title",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "::: details \"a *b* `c`\"\nHidden.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details>\n  <summary>a <strong>b</strong> <code>c</code></summary>\n  <p>Hidden.</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-005",
+      "extension": "carve.details",
+      "summary": "inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "- item\n\n  ::: details \"More\"\n  Body.\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <details>\n      <summary>More</summary>\n      <p>Body.</p>\n    </details>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-006",
+      "extension": "carve.details",
+      "summary": "inside a block quote",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "> ::: details \"More\"\n> Body.\n> :::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <details>\n    <summary>More</summary>\n    <p>Body.</p>\n  </details>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-007",
+      "extension": "carve.details",
+      "summary": "literal code text is written as it is",
+      "clauses": [
+        "C2-H-047"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "::: details \"Req\"\n```php\nx\n  y\n\n    z\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details>\n  <summary>Req</summary>\n  <pre><code class=\"language-php\">x\n  y\n\n    z\n</code></pre>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-008",
+      "extension": "carve.details",
+      "summary": "literal code text in a list item",
+      "clauses": [
+        "C2-H-047"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "- item\n\n  ::: details \"Req\"\n  ```php\n  x\n    y\n  ```\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <details>\n      <summary>Req</summary>\n      <pre><code class=\"language-php\">x\n  y\n</code></pre>\n    </details>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-009",
+      "extension": "carve.details",
+      "summary": "user text is escaped",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Details) and tests/corpus-optional/25-details-summary-inline",
+      "kind": "render",
+      "input": "::: details \"a < b & \\\"c\\\"\"\nx < y & z\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ],
+        "renderers": {
+          "carve.details": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details>\n  <summary>a &lt; b &amp; \"c\"</summary>\n  <p>x &lt; y &amp; z</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-010",
+      "extension": "carve.details",
+      "summary": "fallback inside a list item",
+      "clauses": [
+        "C2-X-065",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- item\n\n  ::: details \"More\"\n  Body.\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ]
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <p><strong>More</strong></p>\n    <p>Body.</p>\n  </li>\n</ul>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-011",
+      "extension": "carve.details",
+      "summary": "fallback escapes the title",
+      "clauses": [
+        "C2-X-065",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: details \"a < b\"\nx & y\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ]
+      },
+      "expected": {
+        "html": "<p><strong>a &lt; b</strong></p>\n<p>x &amp; y</p>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-012",
+      "extension": "carve.details",
+      "summary": "fallback with attributes takes a div wrapper",
+      "clauses": [
+        "C2-X-065",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#d .x}\n::: details \"T\"\nx\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ]
+      },
+      "expected": {
+        "html": "<div id=\"d\" class=\"x\">\n  <p><strong>T</strong></p>\n  <p>x</p>\n</div>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-013",
+      "extension": "carve.spoiler",
+      "summary": "inline default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "Plot: :spoiler[the butler did it].\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>Plot: <span class=\"spoiler\">the butler did it</span>.</p>"
+      }
+    },
+    {
+      "id": "EXT-014",
+      "extension": "carve.spoiler",
+      "summary": "inline authored class follows the base class",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": ":spoiler[1234]{.masked}\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p><span class=\"spoiler masked\">1234</span></p>"
+      }
+    },
+    {
+      "id": "EXT-015",
+      "extension": "carve.spoiler",
+      "summary": "inline inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "- :spoiler[x]\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li><span class=\"spoiler\">x</span></li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-016",
+      "extension": "carve.spoiler",
+      "summary": "inline user text is escaped",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": ":spoiler[a < b & c]\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p><span class=\"spoiler\">a &lt; b &amp; c</span></p>"
+      }
+    },
+    {
+      "id": "EXT-017",
+      "extension": "carve.spoilerBlock",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "::: spoiler \"Ending\"\nEveryone lives.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details class=\"spoiler\">\n  <summary>Ending</summary>\n  <p>Everyone lives.</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-018",
+      "extension": "carve.spoilerBlock",
+      "summary": "no title writes the default summary",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "::: spoiler\nHidden.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details class=\"spoiler\">\n  <summary>Spoiler</summary>\n  <p>Hidden.</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-019",
+      "extension": "carve.spoilerBlock",
+      "summary": "authored attributes merge after the base class",
+      "clauses": [
+        "C2-H-009"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "{#d .x}\n::: spoiler \"T\"\nx\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details id=\"d\" class=\"spoiler x\">\n  <summary>T</summary>\n  <p>x</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-020",
+      "extension": "carve.spoilerBlock",
+      "summary": "inside a block quote",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "> ::: spoiler \"Hint\"\n> Answer.\n> :::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <details class=\"spoiler\">\n    <summary>Hint</summary>\n    <p>Answer.</p>\n  </details>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-021",
+      "extension": "carve.spoilerBlock",
+      "summary": "inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "- item\n\n  ::: spoiler \"Hint\"\n  Answer.\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <details class=\"spoiler\">\n      <summary>Hint</summary>\n      <p>Answer.</p>\n    </details>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-022",
+      "extension": "carve.spoilerBlock",
+      "summary": "literal code text is written as it is",
+      "clauses": [
+        "C2-H-047"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "::: spoiler \"Code\"\n```\na\n  b\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details class=\"spoiler\">\n  <summary>Code</summary>\n  <pre><code>a\n  b\n</code></pre>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-023",
+      "extension": "carve.spoilerBlock",
+      "summary": "user text is escaped",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "::: spoiler \"<b>\"\n& done\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details class=\"spoiler\">\n  <summary>&lt;b&gt;</summary>\n  <p>&amp; done</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-024",
+      "extension": "carve.spoilerBlock",
+      "summary": "fallback writes the title as a strong paragraph",
+      "clauses": [
+        "C2-X-065",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- item\n\n  ::: spoiler \"Hint\"\n  Answer.\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ]
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <p><strong>Hint</strong></p>\n    <p>Answer.</p>\n  </li>\n</ul>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-025",
+      "extension": "carve.codeGroup",
+      "summary": "default use",
+      "clauses": [
+        "C2-X-048"
+      ],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (codeGroup), with the ids of C2-X-048 and the labels of C2-X-063",
+      "kind": "render",
+      "input": "::: code-group\n```php [Installation]\ncomposer require x\n```\n\n```bash [NPM]\nnpm install x\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">Installation</label><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-2\" class=\"code-group-radio\"><label for=\"codegroup-1-tab-2\" class=\"code-group-label\">NPM</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"Installation\"><pre><code class=\"language-php\">composer require x\n</code></pre></div><div class=\"code-group-panel\" role=\"group\" aria-label=\"NPM\"><pre><code class=\"language-bash\">npm install x\n</code></pre></div></div>"
+      }
+    },
+    {
+      "id": "EXT-026",
+      "extension": "carve.codeGroup",
+      "summary": "label from the bracket label, then the title, then the language",
+      "clauses": [
+        "C2-X-063",
+        "C2-H-048"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: code-group\n```js \"Title\" [Label]\na\n```\n\n```js \"Only title\"\nb\n```\n\n```py\nc\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">Label</label><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-2\" class=\"code-group-radio\"><label for=\"codegroup-1-tab-2\" class=\"code-group-label\">Only title</label><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-3\" class=\"code-group-radio\"><label for=\"codegroup-1-tab-3\" class=\"code-group-label\">py</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"Label\"><pre title=\"Title\"><code class=\"language-js\">a\n</code></pre></div><div class=\"code-group-panel\" role=\"group\" aria-label=\"Only title\"><pre title=\"Only title\"><code class=\"language-js\">b\n</code></pre></div><div class=\"code-group-panel\" role=\"group\" aria-label=\"py\"><pre><code class=\"language-py\">c\n</code></pre></div></div>"
+      }
+    },
+    {
+      "id": "EXT-027",
+      "extension": "carve.codeGroup",
+      "summary": "host option mode aria writes tab buttons",
+      "clauses": [
+        "C2-X-056",
+        "C2-X-043",
+        "C2-X-048"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: code-group\n```js [A]\na\n```\n\n```py [B]\nb\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": {
+            "standard": {
+              "mode": "aria"
+            }
+          }
+        }
+      },
+      "expected": {
+        "htmlIncludes": "<button type=\"button\" role=\"tab\" id=\"codegroup-1-tab-1\" aria-selected=\"true\""
+      }
+    },
+    {
+      "id": "EXT-028",
+      "extension": "carve.codeGroup",
+      "summary": "inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (codeGroup), with the ids of C2-X-048 and the labels of C2-X-063",
+      "kind": "render",
+      "input": "- item\n\n  ::: code-group\n  ```js [A]\n  a\n  ```\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">A</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"A\"><pre><code class=\"language-js\">a\n</code></pre></div></div>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-029",
+      "extension": "carve.codeGroup",
+      "summary": "inside a block quote",
+      "clauses": [],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (codeGroup), with the ids of C2-X-048 and the labels of C2-X-063",
+      "kind": "render",
+      "input": "> ::: code-group\n> ```js [A]\n> a\n> ```\n> :::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">A</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"A\"><pre><code class=\"language-js\">a\n</code></pre></div></div>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-030",
+      "extension": "carve.codeGroup",
+      "summary": "literal code text is written as it is",
+      "clauses": [
+        "C2-H-047"
+      ],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (codeGroup), with the ids of C2-X-048 and the labels of C2-X-063",
+      "kind": "render",
+      "input": "::: code-group\n```py [P]\ndef f():\n    return 1\n\n  # x\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">P</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"P\"><pre><code class=\"language-py\">def f():\n    return 1\n\n  # x\n</code></pre></div></div>"
+      }
+    },
+    {
+      "id": "EXT-031",
+      "extension": "carve.codeGroup",
+      "summary": "labels and code text are escaped",
+      "clauses": [],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (codeGroup), with the ids of C2-X-048 and the labels of C2-X-063",
+      "kind": "render",
+      "input": "::: code-group\n```html [a<b&c]\n<p class=\"x\">&amp;</p>\n```\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.codeGroup"
+        ],
+        "renderers": {
+          "carve.codeGroup": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">a&lt;b&amp;c</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"a&lt;b&amp;c\"><pre><code class=\"language-html\">&lt;p class=\"x\"&gt;&amp;amp;&lt;/p&gt;\n</code></pre></div></div>"
+      }
+    },
+    {
+      "id": "EXT-032",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (FencedRender) and tests/corpus-optional/54-mermaid-hydration-wrapper",
+      "kind": "render",
+      "input": "```mermaid\ngraph TD; A-->B\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"mermaid\" role=\"img\" aria-label=\"mermaid\">graph TD; A-->B</pre>"
+      }
+    },
+    {
+      "id": "EXT-033",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "authored attributes go on the pre",
+      "clauses": [
+        "C2-H-009"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (FencedRender) and tests/corpus-optional/54-mermaid-hydration-wrapper",
+      "kind": "render",
+      "input": "{#d .wide}\n```mermaid\ngraph TD\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre id=\"d\" class=\"mermaid wide\" role=\"img\" aria-label=\"mermaid\">graph TD</pre>"
+      }
+    },
+    {
+      "id": "EXT-034",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (FencedRender) and tests/corpus-optional/54-mermaid-hydration-wrapper",
+      "kind": "render",
+      "input": "- item\n\n  ```mermaid\n  graph TD\n  ```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <pre class=\"mermaid\" role=\"img\" aria-label=\"mermaid\">graph TD</pre>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-035",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "inside a block quote",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (FencedRender) and tests/corpus-optional/54-mermaid-hydration-wrapper",
+      "kind": "render",
+      "input": "> ```mermaid\n> graph TD\n> ```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <pre class=\"mermaid\" role=\"img\" aria-label=\"mermaid\">graph TD</pre>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-036",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "literal diagram text keeps its lines",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (FencedRender) and tests/corpus-optional/54-mermaid-hydration-wrapper",
+      "kind": "render",
+      "input": "```mermaid\ngraph TD\n    A --> B\n\n  B --> C\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"mermaid\" role=\"img\" aria-label=\"mermaid\">graph TD\n    A --> B\n\n  B --> C</pre>"
+      }
+    },
+    {
+      "id": "EXT-037",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "ampersand and less-than are escaped, greater-than is kept",
+      "clauses": [],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (FencedRender) and tests/corpus-optional/54-mermaid-hydration-wrapper",
+      "kind": "render",
+      "input": "```mermaid\ngraph LR; A -->|a<b & c| B\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"mermaid\" role=\"img\" aria-label=\"mermaid\">graph LR; A -->|a&lt;b &amp; c| B</pre>"
+      }
+    },
+    {
+      "id": "EXT-038",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "fallback is the plain code block",
+      "clauses": [
+        "C2-X-061",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```mermaid\ngraph TD\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ]
+      },
+      "expected": {
+        "html": "<pre><code class=\"language-mermaid\">graph TD\n</code></pre>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-039",
+      "extension": "carve.mathBlock",
+      "summary": "default use",
+      "clauses": [
+        "C2-X-062"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (MathBlock), with role=\"math\" from C2-X-062",
+      "kind": "render",
+      "input": "```math\nx^2\n```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ],
+        "renderers": {
+          "carve.mathBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"math display\" role=\"math\">\\[x^2\\]</div>"
+      }
+    },
+    {
+      "id": "EXT-040",
+      "extension": "carve.mathBlock",
+      "summary": "authored attributes merge onto the div",
+      "clauses": [
+        "C2-X-062",
+        "C2-H-009"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (MathBlock), with role=\"math\" from C2-X-062",
+      "kind": "render",
+      "input": "{#eq .big}\n```math\nx^2\n```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ],
+        "renderers": {
+          "carve.mathBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div id=\"eq\" class=\"math display big\" role=\"math\">\\[x^2\\]</div>"
+      }
+    },
+    {
+      "id": "EXT-041",
+      "extension": "carve.mathBlock",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-X-062"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (MathBlock), with role=\"math\" from C2-X-062",
+      "kind": "render",
+      "input": "- item\n\n  ```math\n  x^2\n  ```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ],
+        "renderers": {
+          "carve.mathBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <div class=\"math display\" role=\"math\">\\[x^2\\]</div>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-042",
+      "extension": "carve.mathBlock",
+      "summary": "inside a block quote",
+      "clauses": [
+        "C2-X-062"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (MathBlock), with role=\"math\" from C2-X-062",
+      "kind": "render",
+      "input": "> ```math\n> x^2\n> ```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ],
+        "renderers": {
+          "carve.mathBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <div class=\"math display\" role=\"math\">\\[x^2\\]</div>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-043",
+      "extension": "carve.mathBlock",
+      "summary": "literal math text keeps its lines",
+      "clauses": [
+        "C2-X-062"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (MathBlock), with role=\"math\" from C2-X-062",
+      "kind": "render",
+      "input": "```math\na\n  b\n```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ],
+        "renderers": {
+          "carve.mathBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"math display\" role=\"math\">\\[a\n  b\\]</div>"
+      }
+    },
+    {
+      "id": "EXT-044",
+      "extension": "carve.mathBlock",
+      "summary": "math text is escaped",
+      "clauses": [
+        "C2-X-062"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (MathBlock), with role=\"math\" from C2-X-062",
+      "kind": "render",
+      "input": "```math\na < b & c > d\n```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ],
+        "renderers": {
+          "carve.mathBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"math display\" role=\"math\">\\[a &lt; b &amp; c &gt; d\\]</div>"
+      }
+    },
+    {
+      "id": "EXT-045",
+      "extension": "carve.mathBlock",
+      "summary": "fallback is the plain code block",
+      "clauses": [
+        "C2-X-061",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```math\nx^2\n```\n",
+      "options": {
+        "extensions": [
+          "carve.mathBlock"
+        ]
+      },
+      "expected": {
+        "html": "<pre><code class=\"language-math\">x^2\n</code></pre>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-046",
+      "extension": "carve.imgFence.img",
+      "summary": "default use",
+      "clauses": [
+        "C2-X-059"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```img\n<svg/>\n```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.img"
+        ],
+        "renderers": {
+          "carve.imgFence.img": "standard"
+        }
+      },
+      "expected": {
+        "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
+      }
+    },
+    {
+      "id": "EXT-047",
+      "extension": "carve.imgFence.image",
+      "summary": "default use",
+      "clauses": [
+        "C2-X-059"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```image\n<svg/>\n```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.image"
+        ],
+        "renderers": {
+          "carve.imgFence.image": "standard"
+        }
+      },
+      "expected": {
+        "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
+      }
+    },
+    {
+      "id": "EXT-048",
+      "extension": "carve.imgFence.img",
+      "summary": "an unsafe element is removed with its content",
+      "clauses": [
+        "C2-X-059"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```img\n<svg><script>x</script><rect/></svg>\n```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.img"
+        ],
+        "renderers": {
+          "carve.imgFence.img": "standard"
+        }
+      },
+      "expected": {
+        "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+      }
+    },
+    {
+      "id": "EXT-049",
+      "extension": "carve.imgFence.img",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-X-059"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- item\n\n  ```img\n  <svg/>\n  ```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.img"
+        ],
+        "renderers": {
+          "carve.imgFence.img": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-050",
+      "extension": "carve.imgFence.img",
+      "summary": "inside a block quote",
+      "clauses": [
+        "C2-X-059"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "> ```img\n> <svg/>\n> ```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.img"
+        ],
+        "renderers": {
+          "carve.imgFence.img": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-051",
+      "extension": "carve.imgFence.img",
+      "summary": "a body that is not SVG writes the escaped fallback",
+      "clauses": [
+        "C2-X-059"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```img\n<p>x</p>\n```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.img"
+        ],
+        "renderers": {
+          "carve.imgFence.img": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre><code class=\"language-img\">&lt;p&gt;x&lt;/p&gt;\n</code></pre>"
+      }
+    },
+    {
+      "id": "EXT-052",
+      "extension": "carve.imgFence.img",
+      "summary": "fallback is the plain code block",
+      "clauses": [
+        "C2-X-059",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "```img\n<svg/>\n```\n",
+      "options": {
+        "extensions": [
+          "carve.imgFence.img"
+        ]
+      },
+      "expected": {
+        "html": "<pre><code class=\"language-img\">&lt;svg/&gt;\n</code></pre>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-053",
+      "extension": "carve.tabs",
+      "summary": "default use",
+      "clauses": [
+        "C2-X-043",
+        "C2-X-047",
+        "C2-X-048"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">Install</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\"><label for=\"tabs-1-1\">Use</label><div class=\"tab-panel\" role=\"group\" aria-label=\"Install\"><p>Run setup.</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"Use\"><p>Open the app.</p></div></div>"
+      }
+    },
+    {
+      "id": "EXT-054",
+      "extension": "carve.tabs",
+      "summary": "host option mode aria",
+      "clauses": [
+        "C2-X-043",
+        "C2-X-056"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": {
+            "standard": {
+              "mode": "aria"
+            }
+          }
+        }
+      },
+      "expected": {
+        "html": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\"><p>a</p></div></div>"
+      }
+    },
+    {
+      "id": "EXT-055",
+      "extension": "carve.tabs",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-X-043"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- item\n\n  :::: tabs\n  ::: tab \"A\"\n  a\n  :::\n  ::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-056",
+      "extension": "carve.tabs",
+      "summary": "inside a block quote",
+      "clauses": [
+        "C2-X-043"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "> :::: tabs\n> ::: tab \"A\"\n> a\n> :::\n> ::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-057",
+      "extension": "carve.tabs",
+      "summary": "literal code text in a panel",
+      "clauses": [
+        "C2-X-044",
+        "C2-H-047"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":::: tabs\n::: tab \"Code\"\n```py\nif x:\n    y\n```\n:::\n::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">Code</label><div class=\"tab-panel\" role=\"group\" aria-label=\"Code\"><pre><code class=\"language-py\">if x:\n    y\n</code></pre></div></div>"
+      }
+    },
+    {
+      "id": "EXT-058",
+      "extension": "carve.tabs",
+      "summary": "titles and panel text are escaped",
+      "clauses": [
+        "C2-X-044",
+        "C2-X-047"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":::: tabs\n::: tab \"a < b & c\"\nx < y\n:::\n::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">a &lt; b &amp; c</label><div class=\"tab-panel\" role=\"group\" aria-label=\"a &lt; b &amp; c\"><p>x &lt; y</p></div></div>"
+      }
+    },
+    {
+      "id": "EXT-059",
+      "extension": "carve.tabs",
+      "summary": "fallback inside a list item",
+      "clauses": [
+        "C2-X-042",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- item\n\n  :::: tabs\n  ::: tab \"A\"\n  a\n  :::\n  ::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ]
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <p><strong>A</strong></p>\n    <p>a</p>\n  </li>\n</ul>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-060",
+      "extension": "carve.wiki",
+      "summary": "fallback is the target",
+      "clauses": [
+        "C2-X-057"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":wiki[Page]\n",
+      "options": {
+        "extensions": [
+          "carve.wiki"
+        ]
+      },
+      "expected": {
+        "html": "<p>Page</p>"
+      }
+    },
+    {
+      "id": "EXT-061",
+      "extension": "carve.wiki",
+      "summary": "fallback is the display text",
+      "clauses": [
+        "C2-X-057"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":wiki[Main Page|home]\n",
+      "options": {
+        "extensions": [
+          "carve.wiki"
+        ]
+      },
+      "expected": {
+        "html": "<p>home</p>"
+      }
+    },
+    {
+      "id": "EXT-062",
+      "extension": "carve.wiki",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-X-057"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- :wiki[Page|p]\n",
+      "options": {
+        "extensions": [
+          "carve.wiki"
+        ]
+      },
+      "expected": {
+        "html": "<ul>\n  <li>p</li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-063",
+      "extension": "carve.wiki",
+      "summary": "display text is escaped",
+      "clauses": [
+        "C2-X-057"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":wiki[a < b|x & y]\n",
+      "options": {
+        "extensions": [
+          "carve.wiki"
+        ]
+      },
+      "expected": {
+        "html": "<p>x &amp; y</p>"
+      }
+    },
+    {
+      "id": "EXT-064",
+      "extension": "carve.cite",
+      "summary": "fallback is the key",
+      "clauses": [
+        "C2-X-058"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":cite[doe]\n",
+      "options": {
+        "extensions": [
+          "carve.cite"
+        ]
+      },
+      "expected": {
+        "html": "<p>doe</p>"
+      }
+    },
+    {
+      "id": "EXT-065",
+      "extension": "carve.cite",
+      "summary": "several keys keep their separator in the fallback",
+      "clauses": [
+        "C2-X-058"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":cite[a; b]\n",
+      "options": {
+        "extensions": [
+          "carve.cite"
+        ]
+      },
+      "expected": {
+        "html": "<p>a; b</p>"
+      }
+    },
+    {
+      "id": "EXT-066",
+      "extension": "carve.cite",
+      "summary": "a locator stays an attribute",
+      "clauses": [
+        "C2-X-058",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":cite[doe]{locator=\"p. 4\"}\n",
+      "options": {
+        "extensions": [
+          "carve.cite"
+        ]
+      },
+      "expected": {
+        "html": "<p><span locator=\"p. 4\">doe</span></p>"
+      }
+    },
+    {
+      "id": "EXT-067",
+      "extension": "carve.cite",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-X-058"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "- :cite[doe]\n",
+      "options": {
+        "extensions": [
+          "carve.cite"
+        ]
+      },
+      "expected": {
+        "html": "<ul>\n  <li>doe</li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-068",
+      "extension": "carve.cite",
+      "summary": "the key is escaped",
+      "clauses": [
+        "C2-X-058"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":cite[a<b]\n",
+      "options": {
+        "extensions": [
+          "carve.cite"
+        ]
+      },
+      "expected": {
+        "html": "<p>a&lt;b</p>"
+      }
+    },
+    {
+      "id": "EXT-069",
+      "extension": "carve.fencedRender.d2",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/55-d2-hydration-wrapper",
+      "kind": "render",
+      "input": "```d2\na -> b\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.d2"
+        ],
+        "renderers": {
+          "carve.fencedRender.d2": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"d2\" role=\"img\" aria-label=\"d2\">a -> b</pre>"
+      }
+    },
+    {
+      "id": "EXT-070",
+      "extension": "carve.fencedRender.graphviz",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/56-graphviz-hydration-wrapper",
+      "kind": "render",
+      "input": "```graphviz\ndigraph { A -> B }\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.graphviz"
+        ],
+        "renderers": {
+          "carve.fencedRender.graphviz": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"graphviz\" role=\"img\" aria-label=\"graphviz\">digraph { A -> B }</pre>"
+      }
+    },
+    {
+      "id": "EXT-071",
+      "extension": "carve.fencedRender.dot",
+      "summary": "the dot word uses the graphviz class",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/57-dot-hydration-wrapper",
+      "kind": "render",
+      "input": "```dot\ndigraph { A -> B }\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.dot"
+        ],
+        "renderers": {
+          "carve.fencedRender.dot": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"graphviz\" role=\"img\" aria-label=\"graphviz\">digraph { A -> B }</pre>"
+      }
+    },
+    {
+      "id": "EXT-072",
+      "extension": "carve.fencedRender.dot",
+      "summary": "inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/57-dot-hydration-wrapper",
+      "kind": "render",
+      "input": "- item\n\n  ```dot\n  digraph { A -> B }\n  ```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.dot"
+        ],
+        "renderers": {
+          "carve.fencedRender.dot": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <pre class=\"graphviz\" role=\"img\" aria-label=\"graphviz\">digraph { A -> B }</pre>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-073",
+      "extension": "carve.fencedRender.wavedrom",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/58-wavedrom-hydration-wrapper",
+      "kind": "render",
+      "input": "```wavedrom\n{\"signal\":[{\"name\":\"clk\",\"wave\":\"p...\"}]}\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.wavedrom"
+        ],
+        "renderers": {
+          "carve.fencedRender.wavedrom": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"wavedrom\" role=\"img\" aria-label=\"wavedrom\">{\"signal\":[{\"name\":\"clk\",\"wave\":\"p...\"}]}</pre>"
+      }
+    },
+    {
+      "id": "EXT-074",
+      "extension": "carve.fencedRender.abc",
+      "summary": "literal text keeps its lines",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/59-abc-hydration-wrapper",
+      "kind": "render",
+      "input": "```abc\nX:1\nT:Scale\nM:4/4\nL:1/4\nK:C\nC D E F |\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.abc"
+        ],
+        "renderers": {
+          "carve.fencedRender.abc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"abc\" role=\"img\" aria-label=\"abc\">X:1\nT:Scale\nM:4/4\nL:1/4\nK:C\nC D E F |</pre>"
+      }
+    },
+    {
+      "id": "EXT-075",
+      "extension": "carve.fencedRender.plantuml",
+      "summary": "default use",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/60-plantuml-hydration-wrapper",
+      "kind": "render",
+      "input": "```plantuml\n@startuml\nAlice -> Bob: hello\n@enduml\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.plantuml"
+        ],
+        "renderers": {
+          "carve.fencedRender.plantuml": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"plantuml\" role=\"img\" aria-label=\"plantuml\">@startuml\nAlice -> Bob: hello\n@enduml</pre>"
+      }
+    },
+    {
+      "id": "EXT-076",
+      "extension": "carve.fencedRender.puml",
+      "summary": "the puml word uses the plantuml class",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/61-puml-hydration-wrapper",
+      "kind": "render",
+      "input": "```puml\n@startuml\nAlice -> Bob: hello\n@enduml\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.puml"
+        ],
+        "renderers": {
+          "carve.fencedRender.puml": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre class=\"plantuml\" role=\"img\" aria-label=\"plantuml\">@startuml\nAlice -> Bob: hello\n@enduml</pre>"
+      }
+    },
+    {
+      "id": "EXT-077",
+      "extension": "carve.fencedRender.vega-lite",
+      "summary": "json mode writes a script element",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/62-vega-lite-hydration-wrapper",
+      "kind": "render",
+      "input": "```vega-lite\n{\"mark\":\"bar\",\"data\":{\"values\":[{\"x\":\"A\",\"y\":1}]},\"encoding\":{\"x\":{\"field\":\"x\",\"type\":\"nominal\"},\"y\":{\"field\":\"y\",\"type\":\"quantitative\"}}}\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.vega-lite"
+        ],
+        "renderers": {
+          "carve.fencedRender.vega-lite": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"vega-lite\" role=\"img\" aria-label=\"vega-lite\"><script type=\"application/json\">{\"mark\":\"bar\",\"data\":{\"values\":[{\"x\":\"A\",\"y\":1}]},\"encoding\":{\"x\":{\"field\":\"x\",\"type\":\"nominal\"},\"y\":{\"field\":\"y\",\"type\":\"quantitative\"}}}</script></div>"
+      }
+    },
+    {
+      "id": "EXT-078",
+      "extension": "carve.fencedRender.chart",
+      "summary": "json mode neutralizes a closing tag",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/63-chart-hydration-wrapper",
+      "kind": "render",
+      "input": "```chart\n{\"type\":\"bar\",\"data\":{\"labels\":[\"</x>\"],\"datasets\":[{\"data\":[1]}]}}\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.chart"
+        ],
+        "renderers": {
+          "carve.fencedRender.chart": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"chart\" role=\"img\" aria-label=\"chart\"><script type=\"application/json\">{\"type\":\"bar\",\"data\":{\"labels\":[\"<\\/x>\"],\"datasets\":[{\"data\":[1]}]}}</script></div>"
+      }
+    },
+    {
+      "id": "EXT-079",
+      "extension": "carve.fencedRender.chart",
+      "summary": "inside a block quote",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/63-chart-hydration-wrapper",
+      "kind": "render",
+      "input": "> ```chart\n> {\"type\":\"bar\"}\n> ```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.chart"
+        ],
+        "renderers": {
+          "carve.fencedRender.chart": "standard"
+        }
+      },
+      "expected": {
+        "html": "<blockquote>\n  <div class=\"chart\" role=\"img\" aria-label=\"chart\"><script type=\"application/json\">{\"type\":\"bar\"}</script></div>\n</blockquote>"
+      }
+    },
+    {
+      "id": "EXT-080",
+      "extension": "carve.listTable",
+      "summary": "the title is an inline caption",
+      "clauses": [
+        "C2-H-055"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/26-list-table-caption-inline",
+      "kind": "render",
+      "input": "::: list-table \"Q *totals*\"\n- - A\n  - B\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.listTable"
+        ],
+        "renderers": {
+          "carve.listTable": "standard"
+        }
+      },
+      "expected": {
+        "html": "<table>\n  <caption>Q <strong>totals</strong></caption>\n  <tbody>\n    <tr><td>A</td><td>B</td></tr>\n  </tbody>\n</table>"
+      }
+    },
+    {
+      "id": "EXT-081",
+      "extension": "carve.listTable",
+      "summary": "header rows and header columns",
+      "clauses": [
+        "C2-H-055",
+        "C2-H-056"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/42-list-table-header-rows-cols",
+      "kind": "render",
+      "input": "{header-rows=1}\n{header-cols=1}\n::: list-table\n- - Region\n  - Q1\n- - EMEA\n  - 10\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.listTable"
+        ],
+        "renderers": {
+          "carve.listTable": "standard"
+        }
+      },
+      "expected": {
+        "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">Region</th><th scope=\"col\">Q1</th></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">EMEA</th><td>10</td></tr>\n  </tbody>\n</table>"
+      }
+    },
+    {
+      "id": "EXT-082",
+      "extension": "carve.listTable",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-H-055"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/26-list-table-caption-inline",
+      "kind": "render",
+      "input": "- item\n\n  ::: list-table \"Q *totals*\"\n  - - A\n    - B\n  :::\n",
+      "options": {
+        "extensions": [
+          "carve.listTable"
+        ],
+        "renderers": {
+          "carve.listTable": "standard"
+        }
+      },
+      "expected": {
+        "html": "<ul>\n  <li>item\n    <table>\n      <caption>Q <strong>totals</strong></caption>\n      <tbody>\n        <tr><td>A</td><td>B</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-083",
+      "extension": "carve.listTable",
+      "summary": "cell text is escaped",
+      "clauses": [
+        "C2-H-055"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/26-list-table-caption-inline",
+      "kind": "render",
+      "input": "::: list-table\n- - a < b\n  - c & d\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.listTable"
+        ],
+        "renderers": {
+          "carve.listTable": "standard"
+        }
+      },
+      "expected": {
+        "html": "<table>\n  <tbody>\n    <tr><td>a &lt; b</td><td>c &amp; d</td></tr>\n  </tbody>\n</table>"
+      }
+    },
+    {
+      "id": "EXT-084",
+      "extension": "carve.codeCallouts",
+      "summary": "markers and their explanation list",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/10-code-callouts",
+      "kind": "render",
+      "input": "```js\nconst x = compute();   <1>\nreturn x * 2;          <2>\n```\n\n<1> Runs the expensive step once.\n<2> Doubles the result.\n",
+      "options": {
+        "extensions": [
+          "carve.codeCallouts"
+        ],
+        "renderers": {
+          "carve.codeCallouts": "standard"
+        }
+      },
+      "expected": {
+        "htmlIncludes": "<pre><code class=\"language-js\">const x = compute();   <b class=\"callout\" data-callout=\"1\">1</b>\nreturn x * 2;          <b class=\"callout\" data-callout=\"2\">2</b>\n</code></pre>\n<ol class=\"callouts\">"
+      }
+    },
+    {
+      "id": "EXT-085",
+      "extension": "carve.codeCallouts",
+      "summary": "a marker without a list",
+      "clauses": [],
+      "expectedFrom": "0.1: carve tests/corpus-optional/12-code-callouts-marker-no-list",
+      "kind": "render",
+      "input": "```\nfoo()  <1>\n```\n\nnot a callout line.\n",
+      "options": {
+        "extensions": [
+          "carve.codeCallouts"
+        ],
+        "renderers": {
+          "carve.codeCallouts": "standard"
+        }
+      },
+      "expected": {
+        "html": "<pre><code>foo()  <b class=\"callout\" data-callout=\"1\">1</b>\n</code></pre>\n<p>not a callout line.</p>"
+      }
+    },
+    {
+      "id": "EXT-086",
+      "extension": "carve.semanticSpan",
+      "summary": "samp, var, cite and dfn elements",
+      "clauses": [
+        "C2-X-066"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/40-semantic-span-extension",
+      "kind": "render",
+      "input": "[x]{samp} [y]{var} [Dune]{cite} [CSS]{dfn=\"Cascading Style Sheets\"}\n",
+      "options": {
+        "extensions": [
+          "carve.semanticSpan"
+        ]
+      },
+      "expected": {
+        "html": "<p><samp>x</samp> <var>y</var> <cite>Dune</cite> <dfn title=\"Cascading Style Sheets\">CSS</dfn></p>"
+      }
+    },
+    {
+      "id": "EXT-087",
+      "extension": "carve.semanticSpan",
+      "summary": "span text is escaped",
+      "clauses": [
+        "C2-X-066"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/40-semantic-span-extension",
+      "kind": "render",
+      "input": "[a < b]{samp}\n",
+      "options": {
+        "extensions": [
+          "carve.semanticSpan"
+        ]
+      },
+      "expected": {
+        "html": "<p><samp>a &lt; b</samp></p>"
+      }
+    },
+    {
+      "id": "EXT-088",
+      "extension": "carve.semanticSpan",
+      "summary": "inside a list item",
+      "clauses": [
+        "C2-X-066"
+      ],
+      "expectedFrom": "0.1: carve tests/corpus-optional/40-semantic-span-extension",
+      "kind": "render",
+      "input": "- [x]{var}\n",
+      "options": {
+        "extensions": [
+          "carve.semanticSpan"
+        ]
+      },
+      "expected": {
+        "html": "<ul>\n  <li><var>x</var></li>\n</ul>"
+      }
+    },
+    {
+      "id": "EXT-089",
+      "extension": "carve.spoilerBlock",
+      "summary": "an escaped quote in the title",
+      "clauses": [
+        "C2-X-008"
+      ],
+      "expectedFrom": "0.1: carve docs/extension-contract.md (Spoiler) and tests/corpus-optional/27-spoiler-summary-inline",
+      "kind": "render",
+      "input": "::: spoiler \"a \\\"c\\\"\"\nx\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.spoiler",
+          "carve.spoilerBlock"
+        ],
+        "renderers": {
+          "carve.spoiler": "standard",
+          "carve.spoilerBlock": "standard"
+        }
+      },
+      "expected": {
+        "html": "<details class=\"spoiler\">\n  <summary>a \"c\"</summary>\n  <p>x</p>\n</details>"
+      }
+    },
+    {
+      "id": "EXT-090",
+      "extension": "carve.tabs",
+      "summary": "an escaped quote in a tab title",
+      "clauses": [
+        "C2-X-040",
+        "C2-X-044",
+        "C2-X-047"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": ":::: tabs\n::: tab \"a \\\"c\\\"\"\nx\n:::\n::::\n",
+      "options": {
+        "extensions": [
+          "carve.tabs"
+        ],
+        "renderers": {
+          "carve.tabs": "standard"
+        }
+      },
+      "expected": {
+        "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">a \"c\"</label><div class=\"tab-panel\" role=\"group\" aria-label=\"a &quot;c&quot;\"><p>x</p></div></div>"
+      }
+    },
+    {
+      "id": "EXT-091",
+      "extension": "carve.details",
+      "summary": "fallback with an escaped quote in the title",
+      "clauses": [
+        "C2-X-008",
+        "C2-X-065",
+        "C2-X-035"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: details \"a \\\"c\\\"\"\nx\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.details"
+        ]
+      },
+      "expected": {
+        "html": "<p><strong>a \"c\"</strong></p>\n<p>x</p>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-092",
+      "extension": "carve.externalLinks",
+      "summary": "an external link takes target and rel",
+      "clauses": [],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (externalLinks)",
+      "kind": "render",
+      "input": "[docs](https://example.com)\n",
+      "options": {
+        "extensions": [
+          "carve.externalLinks"
+        ]
+      },
+      "expected": {
+        "htmlIncludes": "target=\"_blank\""
+      }
+    },
+    {
+      "id": "EXT-093",
+      "extension": "carve.externalLinks",
+      "summary": "a relative link is left alone",
+      "clauses": [],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (externalLinks)",
+      "kind": "render",
+      "input": "[x](/a)\n",
+      "options": {
+        "extensions": [
+          "carve.externalLinks"
+        ]
+      },
+      "expected": {
+        "html": "<p><a href=\"/a\">x</a></p>"
+      }
+    },
+    {
+      "id": "EXT-094",
+      "extension": "carve.externalLinks",
+      "summary": "inside a list item",
+      "clauses": [],
+      "expectedFrom": "0.1: carve-js docs/extensions.md (externalLinks)",
+      "kind": "render",
+      "input": "- [docs](https://example.com)\n",
+      "options": {
+        "extensions": [
+          "carve.externalLinks"
+        ]
+      },
+      "expected": {
+        "htmlIncludes": "<li><a href=\"https://example.com\" "
+      }
+    },
+    {
+      "id": "EXT-095",
+      "extension": "carve.headingNumbers",
+      "summary": "a skipped level continues the counter at its depth (carve#6531 example 1)",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n=== C\n\n== B\n\n==== D\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <section id=\"C\">\n    <h3><span class=\"section-number\">1.1</span> C</h3>\n  </section>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.2</span> B</h2>\n    <section id=\"D\">\n      <h4><span class=\"section-number\">1.2.1</span> D</h4>\n    </section>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-096",
+      "extension": "carve.headingNumbers",
+      "summary": "a lower heading before the first top heading counts at depth one (carve#6531 example 2)",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "== B\n\n= A\n\n== C\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"B\">\n  <h2><span class=\"section-number\">1</span> B</h2>\n</section>\n<section id=\"A\">\n  <h1><span class=\"section-number\">2</span> A</h1>\n  <section id=\"C\">\n    <h2><span class=\"section-number\">2.1</span> C</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-097",
+      "extension": "carve.headingNumbers",
+      "summary": "a heading inside a note takes no number",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n::: note\n== In note\n:::\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <h2 id=\"In-note\">In note</h2>\n  </aside>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.1</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-098",
+      "extension": "carve.headingNumbers",
+      "summary": "inside a list item: the heading takes no number",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n- == In item\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <ul>\n    <li>\n      <h2 id=\"In-item\">In item</h2>\n    </li>\n  </ul>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.1</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-099",
+      "extension": "carve.headingNumbers",
+      "summary": "inside a block quote: the heading takes no number",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n> == Quoted\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.1</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-100",
+      "extension": "carve.headingNumbers",
+      "summary": "a number-title cross-reference keeps the inline markup of the title",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= Intro\n\n{#sub}\n== Sub *bold*\n\nSee </#sub>.\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"Intro\">\n  <h1><span class=\"section-number\">1</span> Intro</h1>\n  <section id=\"sub\">\n    <h2><span class=\"section-number\">1.1</span> Sub <strong>bold</strong></h2>\n    <p>See <a href=\"#sub\">Section 1.1 - Sub <strong>bold</strong></a>.</p>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-101",
+      "extension": "carve.headingNumbers",
+      "summary": "with tableOfContents: both count the same headings by depth",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n=== C\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers",
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#C\">C</a></li>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <section id=\"C\">\n    <h3><span class=\"section-number\">1.1</span> C</h3>\n  </section>\n  <section id=\"B\">\n    <h2><span class=\"section-number\">1.2</span> B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-102",
+      "extension": "carve.toc",
+      "summary": "skips headings in a block quote and a list item",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "= A\n\n> == Quoted\n\n- == In item\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <ul>\n    <li>\n      <h2 id=\"In-item\">In item</h2>\n    </li>\n  </ul>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-103",
+      "extension": "carve.tocPlacement",
+      "summary": "a placed table skips headings in a note and a block quote",
+      "clauses": [],
+      "expectedFrom": "ruling: markup-carve/carve#6531 (count by depth, section headings only)",
+      "kind": "render",
+      "input": "::: toc\n:::\n\n= A\n\n::: note\n== In note\n:::\n\n> == Quoted\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.tocPlacement"
+        ],
+        "renderers": {
+          "carve.tocPlacement": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <h2 id=\"In-note\">In note</h2>\n  </aside>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-104",
+      "extension": "carve.headingNumbers",
+      "summary": "a cross-reference inside a copied title stays a reference and is not expanded again (carve#6540)",
+      "clauses": [
+        "C2-X-070",
+        "C2-H-081"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#a}\n= A </#b>\n\n{#b}\n== B </#c>\n\n{#c}\n== C\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"a\">\n  <h1><span class=\"section-number\">1</span> A <a href=\"#b\">Section 1.1 - B C</a></h1>\n  <section id=\"b\">\n    <h2><span class=\"section-number\">1.1</span> B <a href=\"#c\">Section 1.2 - C</a></h2>\n  </section>\n  <section id=\"c\">\n    <h2><span class=\"section-number\">1.2</span> C</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-105",
+      "extension": "carve.headingNumbers",
+      "summary": "titles that reference the next two headings copy each title once (carve#6540 reproduction)",
+      "clauses": [
+        "C2-X-070",
+        "C2-H-081"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#h0}\n= T0 </#h1> </#h2>\n\n{#h1}\n= T1 </#h2> </#h3>\n\n{#h2}\n= T2 </#h3> </#h4>\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"h0\">\n  <h1><span class=\"section-number\">1</span> T0 <a href=\"#h1\">Section 2 - T1 T2   &lt;/#h3&gt;</a> <a href=\"#h2\">Section 3 - T2 &lt;/#h3&gt; &lt;/#h4&gt;</a></h1>\n</section>\n<section id=\"h1\">\n  <h1><span class=\"section-number\">2</span> T1 <a href=\"#h2\">Section 3 - T2 &lt;/#h3&gt; &lt;/#h4&gt;</a> &lt;/#h3&gt;</h1>\n</section>\n<section id=\"h2\">\n  <h1><span class=\"section-number\">3</span> T2 &lt;/#h3&gt; &lt;/#h4&gt;</h1>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-106",
+      "extension": "carve.headingNumbers",
+      "summary": "a title that references its own heading ends after one copy (carve#6540)",
+      "clauses": [
+        "C2-X-070",
+        "C2-H-081"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#a}\n= Ref </#a>\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"a\">\n  <h1><span class=\"section-number\">1</span> Ref <a href=\"#a\">Section 1 - Ref Ref </a></h1>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-107",
+      "extension": "carve.colorSwatch",
+      "summary": "a hex color gets a swatch chip",
+      "clauses": [
+        "C2-X-074"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "A :color[#ff0000] dot.\n",
+      "options": {
+        "extensions": [
+          "carve.colorSwatch"
+        ],
+        "renderers": {
+          "carve.colorSwatch": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>A <span class=\"swatch\"><span class=\"swatch-chip\" style=\"background-color:#ff0000\"></span> #ff0000</span> dot.</p>"
+      }
+    },
+    {
+      "id": "EXT-108",
+      "extension": "carve.term",
+      "summary": "a term links to its glossary entry",
+      "clauses": [
+        "C2-X-067",
+        "C2-X-072"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "See :term[API].\n\n::: glossary\n:: API\n: An interface.\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.glossary",
+          "carve.term"
+        ],
+        "renderers": {
+          "carve.glossary": "standard",
+          "carve.term": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>See <a href=\"#gloss-API\" class=\"term\">API</a>.</p>\n<div class=\"glossary\">\n  <dl class=\"glossary\">\n    <dt id=\"gloss-API\">API</dt>\n    <dd>An interface.</dd>\n  </dl>\n</div>"
+      }
+    },
+    {
+      "id": "EXT-109",
+      "extension": "carve.indexTerm",
+      "summary": "an index marker is listed with a back-link",
+      "clauses": [
+        "C2-X-069",
+        "C2-X-072"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "A :index[cat] here.\n\n::: index\n:::\n",
+      "options": {
+        "extensions": [
+          "carve.index",
+          "carve.indexTerm"
+        ],
+        "renderers": {
+          "carve.index": "standard",
+          "carve.indexTerm": "standard"
+        }
+      },
+      "expected": {
+        "html": "<p>A <span id=\"idx-cat-1\" class=\"index-term\"></span> here.</p>\n<div class=\"index\">\n  <ul class=\"index\">\n    <li>cat <a href=\"#idx-cat-1\" class=\"index-backref\" aria-label=\"Back to cat\">↩</a></li>\n  </ul>\n</div>"
+      }
+    },
+    {
+      "id": "EXT-110",
+      "extension": "carve.headingPermalinks",
+      "summary": "a heading with an id gets a permalink",
+      "clauses": [
+        "C2-X-073"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "{#a}\n= A\n",
+      "options": {
+        "extensions": [
+          "carve.headingPermalinks"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"a\">\n  <h1>A <a href=\"#a\" class=\"permalink\" aria-label=\"Permalink\">¶</a></h1>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-111",
+      "extension": "carve.autolink",
+      "summary": "a bare URL and an email become autolinks",
+      "clauses": [
+        "C2-X-073"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "mail a@b.org or http://x.org/p.\n",
+      "options": {
+        "extensions": [
+          "carve.autolink"
+        ]
+      },
+      "expected": {
+        "html": "<p>mail <a href=\"mailto:a@b.org\">a@b.org</a> or <a href=\"http://x.org/p\">http://x.org/p</a>.</p>"
+      }
+    },
+    {
+      "id": "EXT-112",
+      "extension": "carve.tabNormalize",
+      "summary": "a tab in a code span becomes two spaces",
+      "clauses": [
+        "C2-X-073"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "a `\tb`\n",
+      "options": {
+        "extensions": [
+          "carve.tabNormalize"
+        ]
+      },
+      "expected": {
+        "html": "<p>a <code>  b</code></p>"
+      }
+    },
+    {
+      "id": "EXT-113",
+      "extension": "carve.headingNumbers",
+      "summary": "sections off: the top-level headings are numbered, a quoted one is not",
+      "clauses": [
+        "C2-X-077"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n> == Q\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ],
+        "sections": false
+      },
+      "expected": {
+        "html": "<h1 id=\"A\"><span class=\"section-number\">1</span> A</h1>\n<blockquote>\n  <h2 id=\"Q\">Q</h2>\n</blockquote>\n<h2 id=\"B\"><span class=\"section-number\">1.1</span> B</h2>"
+      }
+    },
+    {
+      "id": "EXT-114",
+      "extension": "carve.toc",
+      "summary": "sections off: the table lists the top-level headings, not a quoted one or one in a list item",
+      "clauses": [
+        "C2-X-077"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n> == Q\n\n- == L\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        },
+        "sections": false
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<h1 id=\"A\">A</h1>\n<blockquote>\n  <h2 id=\"Q\">Q</h2>\n</blockquote>\n<ul>\n  <li>\n    <h2 id=\"L\">L</h2>\n  </li>\n</ul>\n<h2 id=\"B\">B</h2>"
+      }
+    },
+    {
+      "id": "EXT-115",
+      "extension": "carve.headingNumbers",
+      "summary": "a cross-reference to a quoted heading keeps the core text",
+      "clauses": [
+        "C2-X-077",
+        "C2-H-096"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\nSee </#q>.\n\n> {#q}\n> == Q\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <p>See <a href=\"#q\">Q</a>.</p>\n  <blockquote>\n    <h2 id=\"q\">Q</h2>\n  </blockquote>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-116",
+      "extension": "carve.headingNumbers",
+      "summary": "a cross-reference to an unnumbered heading keeps the core text",
+      "clauses": [
+        "C2-X-077",
+        "C2-H-096"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\nSee </#u>.\n\n{#u .unnumbered}\n== U\n",
+      "options": {
+        "extensions": [
+          "carve.headingNumbers"
+        ]
+      },
+      "expected": {
+        "html": "<section id=\"A\">\n  <h1><span class=\"section-number\">1</span> A</h1>\n  <p>See <a href=\"#u\">U</a>.</p>\n  <section id=\"u\">\n    <h2 class=\"unnumbered\">U</h2>\n  </section>\n</section>"
+      }
+    },
+    {
+      "id": "EXT-117",
+      "extension": "carve.toc",
+      "summary": "its renderer in the default mode writes the table and reports nothing",
+      "clauses": [
+        "C2-H-123",
+        "C2-X-052"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        }
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "notReported": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-118",
+      "extension": "carve.toc",
+      "summary": "its renderer in static mode writes the same table",
+      "clauses": [
+        "C2-H-123",
+        "C2-X-052"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "renderers": {
+          "carve.toc": "standard"
+        },
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<nav class=\"toc\" aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "notReported": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-119",
+      "extension": "carve.fencedRender.mermaid",
+      "summary": "a renderer without a build-time channel writes the fallback in static mode",
+      "clauses": [
+        "C2-H-123",
+        "C2-X-052",
+        "C2-H-122"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "``` mermaid\ngraph TD\n```\n",
+      "options": {
+        "extensions": [
+          "carve.fencedRender.mermaid"
+        ],
+        "renderers": {
+          "carve.fencedRender.mermaid": "standard"
+        },
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<pre><code class=\"language-mermaid\">graph TD\n</code></pre>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-120",
+      "extension": "carve.toc",
+      "summary": "without a renderers entry writes its fallback and reports it",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ]
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-121",
+      "extension": "carve.toc",
+      "summary": "without a renderers entry in static mode writes the same fallback",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-122",
+      "extension": "carve.tocPlacement",
+      "summary": "without a renderers entry writes its fallback and reports it",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: toc\n:::\n\n= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.tocPlacement"
+        ]
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-123",
+      "extension": "carve.tocPlacement",
+      "summary": "without a renderers entry in static mode writes the same fallback",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: toc\n:::\n\n= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.tocPlacement"
+        ],
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    }
+  ]
+}

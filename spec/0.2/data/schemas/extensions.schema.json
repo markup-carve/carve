@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 extensions",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "extensions"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "schemas/extensions.schema.json"
+    },
+    "extensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "version",
+          "props",
+          "slots",
+          "clauses",
+          "slotOrder"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "matcher": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "form",
+              "name"
+            ],
+            "properties": {
+              "form": {
+                "enum": [
+                  "inline",
+                  "div",
+                  "fence"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "props": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "slots": {
+            "type": "object",
+            "propertyNames": {
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "block",
+                    "inline",
+                    "block_extension"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "optional": {
+                  "type": "boolean"
+                },
+                "minItems": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILWXW]-[0-9]{3}$"
+            }
+          },
+          "parent": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "slot"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "slot": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$"
+              }
+            }
+          },
+          "ids": {
+            "description": "The extension generates ids: its renderer or transform writes an id or anchor name that the tree does not carry, so broken-fragment-link reports nothing while it is registered (C2-X-079).",
+            "const": true
+          },
+          "transform": {
+            "description": "A document extension: no matcher claims a core node for it. Its transform rewrites the render view or it sets what the core renderer writes (C2-X-072).",
+            "const": true
+          },
+          "slotOrder": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            }
+          },
+          "rendererOptions": {
+            "description": "Host options of the standard renderer, set when the host creates it; they are not render options of data/options.json.",
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "values",
+                "default",
+                "clauses"
+              ],
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "open": {
+                  "description": "The option also takes a string outside values; its clauses say how such a value reads (C2-X-075).",
+                  "type": "boolean"
+                },
+                "default": {
+                  "type": "string"
+                },
+                "clauses": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^C2-X-[0-9]{3}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "matcher": {}
+            },
+            "required": [
+              "matcher"
+            ]
+          },
+          {
+            "properties": {
+              "parent": {}
+            },
+            "required": [
+              "parent"
+            ]
+          },
+          {
+            "properties": {
+              "transform": {}
+            },
+            "required": [
+              "transform"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

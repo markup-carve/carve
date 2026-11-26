@@ -1,111 +1,66 @@
 #!/usr/bin/env node
 /*
- * File what a fuzz-nightly report found: one issue per new cause, a comment on
- * an open issue with the same signature or shape family, nothing for a closed
- * one or for an engine's lag behind its spec pin, and at most `--cap` new issues
- * per run. Everything not filed is listed in the run summary.
+ * File what a 0.2 fuzz-nightly report found: one issue per new signature (crashes and hangs first), a comment on
+ * an open issue with the same signature, nothing for a closed one, and at most `--cap` new issues per run. Lint and
+ * parse-diagnostic splits are not filed: scripts/lint-parity.mjs owns them. Everything not filed is listed in the
+ * run summary.
  *
- *   node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz.json --repo=markup-carve/carve
  *   node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz.json --repo=markup-carve/carve --dry-run
  *
- * Existing signatures come from ONE search for the marker across open and
- * closed issues, not a search per cause, so the run costs a fixed handful of
- * API calls however many causes the night found.
- *
+ * Existing signatures come from one search for the marker across open and closed issues.
  * Exit 2 when gh fails: a filer that cannot file is a broken harness.
  */
 import { execFileSync } from 'node:child_process'
 import { appendFileSync, readFileSync } from 'node:fs'
-import {
-  familiesIn, issueBody, issueComment, issueTitle, plan, signaturesIn, SIGNATURE_MARKER,
-} from './lib/mutation-fuzz.mjs'
+import { findingsOf, issueBody, issueComment, issueTitle, plan, SIGNATURE_MARKER, signaturesIn } from './lib/fuzz-nightly-issues.mjs'
 
 const option = (key, fallback) => {
-  const arg = process.argv.find((a) => a.startsWith(`--${key}=`))
+  const arg = process.argv.find(a => a.startsWith(`--${key}=`))
   return arg ? arg.slice(key.length + 3) : fallback
 }
 const reportPath = option('report')
 const repo = option('repo')
 const cap = Number(option('cap', 5))
-const perPattern = Number(option('per-pattern', 3))
 const dryRun = process.argv.includes('--dry-run')
 if (!reportPath || !repo) {
-  console.error('Usage: node scripts/fuzz-file-issues.mjs --report=<fuzz.json> --repo=<owner/name> [--cap=5] [--per-pattern=3] [--dry-run]')
+  console.error('Usage: node scripts/fuzz-file-issues.mjs --report=<fuzz.json> --repo=<owner/name> [--cap=5] [--dry-run]')
   process.exit(2)
 }
-
 const report = JSON.parse(readFileSync(reportPath, 'utf8'))
-const run = { seed: report.seed, mutants: report.mutants, engines: report.enginesLine }
+const run = { seed: report.seed, engines: report.enginesLine, timingSizes: report.timingSizes }
 const gh = (args, input) => execFileSync('gh', args, { encoding: 'utf8', input, stdio: ['pipe', 'pipe', 'inherit'] })
 
-// GitHub search returns at most 1000 results.
-const SEARCH_CAP = 1000
-const search = (query) => JSON.parse(gh([
-  'issue', 'list', '--repo', repo, '--state', 'all', '--limit', String(SEARCH_CAP),
-  '--search', `${query} in:body`, '--json', 'number,state,body',
-]))
-const existing = new Map()
-let families = new Map()
+let existing
 try {
-  const issues = search(`"${SIGNATURE_MARKER}"`)
-  for (const [sig, hits] of signaturesIn(issues)) existing.set(sig, hits)
-  families = familiesIn(issues)
-  // A capped listing may have dropped older signatures: ask for each unseen one.
-  // Spaced to stay under the search API's 30 requests a minute.
-  if (issues.length >= SEARCH_CAP) {
-    for (const { signature } of report.groups.filter((g) => !existing.has(g.signature))) {
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2100)
-      const hits = signaturesIn(search(signature)).get(signature)
-      if (hits) existing.set(signature, hits)
-    }
-    // The capped page may also have dropped an older open issue of a family.
-    if (report.groups.some((g) => !existing.has(g.signature))) {
-      families = familiesIn(JSON.parse(gh([
-        'issue', 'list', '--repo', repo, '--state', 'open', '--limit', String(SEARCH_CAP),
-        '--search', `"${SIGNATURE_MARKER}" in:body`, '--json', 'number,state,body',
-      ])))
-    }
-  }
+  existing = signaturesIn(JSON.parse(gh(['issue', 'list', '--repo', repo, '--state', 'all', '--limit', '1000',
+    '--search', `"${SIGNATURE_MARKER}" in:body`, '--json', 'number,state,body'])))
 } catch (error) {
   console.error(`fuzz-file-issues: could not list existing issues: ${error.message}`)
   process.exit(2)
 }
 
+const findings = findingsOf(report)
 const lines = []
-const reproduction = (group) => group.reduced.replace(/\n$/, '').split('\n').map((l) => `    ${l}`)
-const comment = (issue, group) => {
-  if (!dryRun) gh(['issue', 'comment', String(issue), '--repo', repo, '--body-file', '-'], issueComment(group, run))
-}
 try {
-  for (const action of plan(report.groups, existing, cap, perPattern, families)) {
-    const { group } = action
+  for (const action of plan(findings, existing, cap)) {
+    const f = action.finding
     if (action.kind === 'create') {
-      const title = issueTitle(group)
-      const url = dryRun ? '(dry run)' : gh([
-        'issue', 'create', '--repo', repo, '--title', title,
-        '--label', 'bug', '--label', 'area:corpus', '--body-file', '-',
-      ], issueBody(group, run)).trim()
-      lines.push(`created ${group.signature} ${group.pattern}: ${url}`)
+      const url = dryRun ? '(dry run)' : gh(['issue', 'create', '--repo', repo, '--title', issueTitle(f),
+        '--label', 'bug', '--label', 'area:corpus', '--body-file', '-'], issueBody(f, run)).trim()
+      lines.push(`created ${f.signature} ${f.target} ${f.pattern}: ${url}`)
     } else if (action.kind === 'comment') {
-      comment(action.issue, group)
-      lines.push(`commented ${group.signature} on #${action.issue}${action.family ? ' (same shape family)' : ''}`)
-    } else if (action.kind === 'known-closed') {
-      lines.push(`known ${group.signature}, closed as #${action.issue}; not refiled`)
-    } else if (action.kind === 'known-lag') {
-      const behind = Object.entries(group.lag).map(([engine, pin]) => `${engine} (spec pin ${pin})`).join(', ')
-      lines.push(`not filed, lag behind a spec move: ${group.signature} ${group.pattern}; ${behind} render what the model at their spec pin renders`, ...reproduction(group))
-    } else {
-      lines.push(`held back (cap ${cap}, ${perPattern} per pattern): ${group.signature} ${group.pattern}`, ...reproduction(group))
-    }
+      if (!dryRun) gh(['issue', 'comment', String(action.issue), '--repo', repo, '--body-file', '-'], issueComment(f, run))
+      lines.push(`commented ${f.signature} on #${action.issue}`)
+    } else if (action.kind === 'known-closed') lines.push(`known ${f.signature}, closed as #${action.issue}; not refiled`)
+    else lines.push(`held back (cap ${cap}): ${f.signature} ${f.target} ${f.pattern}: ${JSON.stringify((f.reduced ?? f.html ?? '').slice(0, 120))}`)
   }
 } catch (error) {
   console.error(`fuzz-file-issues: gh failed: ${error.message}`)
   process.exit(2)
 }
-
 const summary = [
-  `fuzz-nightly seed ${report.seed}: ${report.mutants} mutants, ${report.disagreements} disagreements, ${report.groups.length} cause(s)${dryRun ? ' (dry run)' : ''}`,
+  `fuzz-nightly (0.2) seed ${report.seed}: ${report.stats?.inputs ?? 0} inputs, ${findings.length} filable finding(s)${dryRun ? ' (dry run)' : ''}`,
   ...lines,
 ].join('\n')
 console.log(summary)
-if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\`\`\`\n${summary}\n\`\`\`\n`)
+if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, ['```', summary, '```', ''].join('\n'))

@@ -178,9 +178,9 @@ jobs:
           fi
 
   pre-tag:
-    name: Pre-tag drift, declarations, and fleet pins
+    name: The 0.2 spec checks pass on the dispatched commit
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
@@ -189,39 +189,14 @@ jobs:
       - uses: ./.github/actions/npm-ci
         with:
           node-version: 24
-      - id: pins
-        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v7
-        with:
-          repository: markup-carve/carve-js
-          ref: ${{ steps.pins.outputs.js }}
-          path: engines/carve-js
-          fetch-depth: 0
-      - uses: actions/checkout@v7
-        with:
-          repository: markup-carve/carve-php
-          ref: ${{ steps.pins.outputs.php }}
-          path: engines/carve-php
-          fetch-depth: 0
-      - uses: actions/checkout@v7
-        with:
-          repository: markup-carve/carve-rs
-          ref: ${{ steps.pins.outputs.rs }}
-          path: engines/carve-rs
-          fetch-depth: 0
-      - name: Check the dispatched commit before tagging
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
-          CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
-          CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+      - name: main has not moved since the dispatch
         run: |
           [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || {
             echo "::error::main moved after dispatch; rerun the release workflow."
             exit 1
           }
-          echo '/engines/' >> .git/info/exclude
-          bash scripts/pre-tag-check.sh "${{ inputs.version }}"
+      - run: npm run spec2:data
+      - run: npm test
 
   tag:
     name: Create the tag
@@ -229,7 +204,7 @@ jobs:
     timeout-minutes: 10
     needs: [guard, release-notes, pre-tag]
     # THE APPROVAL GATE, and the ONLY job that declares an environment. `needs:`
-    # makes this unreachable until both gate jobs pass, and the environment holds
+    # makes this unreachable until the gate jobs pass, and the environment holds
     # it until a required reviewer approves, so whoever approves is looking at a
     # green gate rather than at nothing.
     #

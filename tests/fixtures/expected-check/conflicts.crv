@@ -1,0 +1,59 @@
+# Expected sections that conflicted on 2026-11-24
+
+The first three cases are the Expected sections of carve#6569, #6557 and #6561 as they were first filed. The last case is the corrected Expected section of carve#6569, which the model gives.
+
+## 6569 editorial comment across a comment line
+
+- operation: ast
+- clauses: C2-I-063 C2-I-005 C2-I-023
+
+```crv
+{#a
+%% b#}
+```
+
+```json
+[{"type":"paragraph","children":[{"type":"critic_comment","value":"a\n%% b"}]}]
+```
+
+## 6557 caret of a full reference after a would-be note
+
+- operation: fmt
+- clauses: C2-W-125 C2-W-088 C2-W-091 C2-W-003
+
+```crv
+^[\]
+[\^][n]
+```
+
+```crv
+^[\]
+[^][n]
+```
+
+## 6561 reported superscript kind escapes every text opener
+
+- operation: fmt
+- clauses: C2-W-088
+
+```crv
+- ^a{\{^}^},,\{{^,,
+```
+
+```crv
+- ^a{\{^}^},,{\{^,,
+```
+
+## 6569 corrected
+
+- operation: ast
+- clauses: C2-B-138
+
+```crv
+{#a
+%% b#}
+```
+
+```json
+[{"type":"paragraph","children":[{"type":"text","value":"{"},{"type":"tag","name":"a"},{"type":"soft_break"},{"type":"comment","form":"line","value":"b#}"}]}]
+```

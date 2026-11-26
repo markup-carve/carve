@@ -6,7 +6,7 @@ import container from 'markdown-it-container'
 import { carveMarkdown } from '@markup-carve/carve-grammars/shiki'
 import carve from '@markup-carve/vite-plugin-carve'
 // @ts-expect-error - local ESM helper without TS resolution context
-import { carveExtensions } from './carve-extensions.js'
+import { carveExtensions, carveRenderers } from './carve-extensions.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const generatedExamplesFile = resolve(__dirname, 'generated-examples.json')
@@ -63,7 +63,7 @@ export default defineConfig({
   vite: {
     // Render build-time .crv imports with the full extension set too, so
     // dogfooded demos match the Playground's all-extensions-on rendering.
-    plugins: [carve({ render: { extensions: carveExtensions() } })],
+    plugins: [carve({ render: { extensions: carveExtensions(), renderers: carveRenderers() } })],
   },
 
   markdown: {
@@ -147,6 +147,8 @@ export default defineConfig({
   })
 })()`,
     ],
+    // The unreleased series must not compete with the released docs in search results.
+    ...(process.env.VITE_DOCS_SERIES === 'dev' ? [['meta', { name: 'robots', content: 'noindex' }] as [string, Record<string, string>]] : []),
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${docsBase}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
     ['meta', { property: 'og:type', content: 'website' }],
@@ -247,6 +249,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { text: 'Get Started', link: '/get-started' },
+            { text: 'Upgrading from 0.1', link: '/upgrade-0-2' },
             { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Playground', link: '/playground' },
             { text: 'Cheat Sheet', link: '/cheatsheet' },
@@ -280,6 +283,8 @@ export default defineConfig({
           items: [
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
             { text: 'File Inclusion Rules', link: '/includes' },
+            { text: 'Metadata Blocks', link: '/metadata-blocks' },
+            { text: 'Snippets', link: '/snippets' },
             { text: 'Validation', link: '/validation' },
             { text: 'Optional Features & Extensions', link: '/extensions' },
             { text: 'Write an Extension', link: '/extension-tutorial' },
@@ -306,19 +311,7 @@ export default defineConfig({
                 { text: 'Development', link: '/development' },
                 { text: 'Rule Coverage', link: '/rule-coverage' },
                 { text: 'Formal Grammar', link: '/grammar' },
-              {
-                text: 'Specification Rules',
-                collapsed: true,
-                items: [
-                  { text: 'Overview', link: '/rules/' },
-                  { text: 'Parsing', link: '/rules/parsing' },
-                  { text: 'References & Output', link: '/rules/resolution-rendering' },
-                  { text: 'Parsed Document JSON', link: '/rules/ast-interchange' },
-                  { text: 'Standard Formatting', link: '/rules/canonical-writing' },
-                  { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
-                  { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
-                ],
-              },
+              { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
               ],
             },
             { text: 'Feature Design Notes', link: '/native-features-analysis' },

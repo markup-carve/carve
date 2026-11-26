@@ -1,0 +1,4802 @@
+[
+  {
+    "id": "plus-00353cacd319",
+    "source": ":: t\n: > a\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-004eb64f6032",
+    "source": " - a\n\n  | h |\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-00a91cb0842a",
+    "source": "| a | b |\n\t| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-01e20a4e5649",
+    "source": "| a |\n+ |\n- a\n\t|x|\n"
+  },
+  {
+    "id": "plus-01e72307be20",
+    "source": "* \n> > > | a |\n> > > + b |\ntaiil\n"
+  },
+  {
+    "id": "plus-01ee3c1cdc2f",
+    "source": "+ x| y |\n+ | |\n"
+  },
+  {
+    "id": "plus-0250e11204d5",
+    "source": " | a | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-026971eb3124",
+    "source": "- |= a |\n  + b |\ntail---\n"
+  },
+  {
+    "id": "plus-028ebc1c59f7",
+    "source": "+ c` |\n@user\n| a `b |\n"
+  },
+  {
+    "id": "plus-02ac1378bec0",
+    "source": "|text |\n| \n"
+  },
+  {
+    "id": "plus-02df308b8ebf",
+    "source": "> | a | b |\n> + | |\n"
+  },
+  {
+    "id": "plus-02f375f99914",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n\n"
+  },
+  {
+    "id": "plus-032d7ab37d4e",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^              | Banana  |\n"
+  },
+  {
+    "id": "plus-03b50d0a0dde",
+    "source": "| a `b |\n\n\n"
+  },
+  {
+    "id": "plus-03c5820f8a26",
+    "source": "[^f]\n:: t\ntaiil\n:  > a\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-044b20b9c39f",
+    "source": "> > | a |\n> # H\n> > + b |\nt```al\n"
+  },
+  {
+    "id": "plus-046b94771922",
+    "source": "|= a |\n| a | b |\n| - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-0476309ef5b2",
+    "source": "1. ordered\n  > > quote\n+  \n- ite. m\n"
+  },
+  {
+    "id": "plus-04d3799d724c",
+    "source": "| a `b |\n| a | b |\n+ | |\n"
+  },
+  {
+    "id": "plus-04f3ec392b8e",
+    "source": "+ one\n"
+  },
+  {
+    "id": "plus-051a95d989f9",
+    "source": "+ | a | b |\n+ | < | c |\n+ | < | c |\n+ + x | y |\n"
+  },
+  {
+    "id": "plus-05567254a73c",
+    "source": "|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-056bbce9e772",
+    "source": "- | a$`x` |\n  + b |\n"
+  },
+  {
+    "id": "plus-05b5a30005f6",
+    "source": "| a | b |\n+ | |\n\n"
+  },
+  {
+    "id": "plus-064144916038",
+    "source": "[d]: u\ntail\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-070f544f0944",
+    "source": "| a | b |\n+ c | d |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-0730d3654662",
+    "source": "  + b |\ntail\n- a\n| a | b |  + b |\ntail\n"
+  },
+  {
+    "id": "plus-079ba7056ee5",
+    "source": "- a\n  - b\n\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-07c6b0502cef",
+    "source": "> > > | a |\n> > > + b |\n tail\n"
+  },
+  {
+    "id": "plus-07f103ed05de",
+    "source": ":: t\n:  a@user\n\n   + b |\n tail\n"
+  },
+  {
+    "id": "plus-07f922eab4c4",
+    "source": "1. - a\n1.   | h |\n1.  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-08654721628c",
+    "source": "| a `b |\n+ c |-  d`|\n"
+  },
+  {
+    "id": "plus-08cce23d1e04",
+    "source": "| Complex  | A long description |\n|= Feature |= Description        |\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-08d2a67b5528",
+    "source": "|= b |\n| a |\n++ c |\n"
+  },
+  {
+    "id": "plus-09bb60516684",
+    "source": "tail\n| a | b |\n| - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-09c864b42916",
+    "source": " - |= a |\n  + b |\n\ntail\n"
+  },
+  {
+    "id": "plus-0a15493eb88d",
+    "source": "> + c` |\n> + x\t| y\t|\n"
+  },
+  {
+    "id": "plus-0a3a44d5a2af",
+    "source": ": | a |\n+ |\n"
+  },
+  {
+    "id": "plus-0a457ece2a09",
+    "source": "+ c` |\n+ | |\n"
+  },
+  {
+    "id": "plus-0a5046ed3e16",
+    "source": ": | a | b |\n  | - | - |\n  + |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-0a6b45d3225a",
+    "source": "| a b |\n+ c` |\n"
+  },
+  {
+    "id": "plus-0abc11111267",
+    "source": "+ c`` |\n| a `b |\n"
+  },
+  {
+    "id": "plus-0adf309b4da4",
+    "source": "+ | a | b |\n+ + more | d |\n+ + x | y |\n"
+  },
+  {
+    "id": "plus-0aeb43733633",
+    "source": "- | a |\n`\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-0b08046d6e9c",
+    "source": "| a |\n+  c |\n"
+  },
+  {
+    "id": "plus-0b1c9bd16ad0",
+    "source": "| a `b |\n%%%+ c` |[^f]\n"
+  },
+  {
+    "id": "plus-0b2073f84e81",
+    "source": "\n|= a |=b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-0b91c41b8513",
+    "source": "> |:  d= a |\n> + b |\nttail\n"
+  },
+  {
+    "id": "plus-0bde26a751a6",
+    "source": "| ^ | b |\n+ x | y |\n  \n"
+  },
+  {
+    "id": "plus-0bfccc4ede76",
+    "source": "| a | b |\n\n| - | - |\n+ |\n"
+  },
+  {
+    "id": "plus-0c1715d6c719",
+    "source": "  + b |\n\ttail\n"
+  },
+  {
+    "id": "plus-0c3dab950c84",
+    "source": "- a\n\t|x|\n1. ordered\n  > > quote\n+ c\n"
+  },
+  {
+    "id": "plus-0c409b3d779c",
+    "source": " - > | a |\nta+ ```il\n  + b |\n"
+  },
+  {
+    "id": "plus-0c410d5cffff",
+    "source": "+one\n"
+  },
+  {
+    "id": "plus-0c48f4730b55",
+    "source": "| a | b |\n| ^ | c |\n\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-0c8ba0f0c16b",
+    "source": "`\n"
+  },
+  {
+    "id": "plus-0ca8b6298b08",
+    "source": "- a\n  - b\n\n1. + c\n  | x | y | Ω\n"
+  },
+  {
+    "id": "plus-0cab63cae5b9",
+    "source": "| ^ | b |\n| a | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-0cdeead1a359",
+    "source": "| a | b |\n+ more | d |\n+ more | d |\n| ~s~^ | c |\n"
+  },
+  {
+    "id": "plus-0d2ee571a030",
+    "source": "| a | b |\n| - |`` - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-0d6177fdae48",
+    "source": "> + b |\n> | a |\ntail\n"
+  },
+  {
+    "id": "plus-0d924b308395",
+    "source": "- a\n- |= a |\n  + b |\n+!`z` \nb\nb\n\nx\n"
+  },
+  {
+    "id": "plus-0dc113bcc976",
+    "source": "1. ordered\n > > quote\n+ \n- item\n"
+  },
+  {
+    "id": "plus-0dee116c46b6",
+    "source": ":: term\n:: term\n: - a\n   | x | y | Ω\n+ _u_c\n"
+  },
+  {
+    "id": "plus-0e13199fc9cc",
+    "source": "[d]: u\n|= Feature |= Description        |\n| Complex  | AA long description |\n+          | that continues     |\n+          | across lines.      |\n| a |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-0ec63a2bfaa5",
+    "source": "+ y | c` |\n| x | a `b |\n| x | a `b |\n"
+  },
+  {
+    "id": "plus-0ee67b81ff81",
+    "source": "|= a |\n| - |\n+cont |\n"
+  },
+  {
+    "id": "plus-0ef804975263",
+    "source": "\n| a | b |\n+ x | y |\n+ c | d | \n"
+  },
+  {
+    "id": "plus-0f3f26146ae1",
+    "source": "- a\n+ \n+ \n\nx\n"
+  },
+  {
+    "id": "plus-0f55213ea747",
+    "source": "  | a | b |\n  + x\t| y\t|\n"
+  },
+  {
+    "id": "plus-0f61cdeb7847",
+    "source": "| ^ | b  |\n"
+  },
+  {
+    "id": "plus-0fa81450c02f",
+    "source": "|%%= a |\n| - |\n+cont |\n"
+  },
+  {
+    "id": "plus-0fb8bd017ca8",
+    "source": "+ |\n| a |\n"
+  },
+  {
+    "id": "plus-0fbfe6bf30dc",
+    "source": "| a | b |\n+ x\t| y\t|\n+ x\n- a\n\t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-0fcbaf152e85",
+    "source": "| |\n+ |\n| |\n| |\n"
+  },
+  {
+    "id": "plus-0fe43084f542",
+    "source": " a\n  ::: box\n+ c\n+ c\n  | x | y | Ω\n"
+  },
+  {
+    "id": "plus-0ff7f319247d",
+    "source": "1. ordered\n > > quote\n+ y | c` |\n+  \n- item\n+ cont |\n"
+  },
+  {
+    "id": "plus-102a02efc211",
+    "source": "- a\n+ \n\n\nb\n\nx\n"
+  },
+  {
+    "id": "plus-107163771b36",
+    "source": "| |\n+ |\n1. | |\n"
+  },
+  {
+    "id": "plus-10cbfad221a0",
+    "source": ">    + x- a\n> \t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-10d1fba9d807",
+    "source": "  + b |\n"
+  },
+  {
+    "id": "plus-1169dc9062e7",
+    "source": "- foo\n-   - +\n    + x\n"
+  },
+  {
+    "id": "plus-11903b4bdb0e",
+    "source": "|= a |= bb |\n|= a |= b |\n|= a |= b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-122b1fe5399f",
+    "source": "+ | |\n+ | |\n"
+  },
+  {
+    "id": "plus-1274f629cac1",
+    "source": "| a | b |\n+ + | |\n"
+  },
+  {
+    "id": "plus-1288a06c8376",
+    "source": "| a | b |\n| ^ | c |\n| < | d |\n+ x | y ||\n"
+  },
+  {
+    "id": "plus-128948b25443",
+    "source": "| a `b |\n"
+  },
+  {
+    "id": "plus-12bf68cce600",
+    "source": "   + b |\ntail\n- |= a |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-1302f4e6dd70",
+    "source": ":: term\n: - a\n   | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-131f957fd983",
+    "source": "| ^ | b |\n>> \n+ x | y |\n"
+  },
+  {
+    "id": "plus-133b946b2632",
+    "source": "|= Category       |= Item   |\n: | Fresh Fruits    | Apple   |\n: + fro local      |         |\n: + farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-1366ff31a77f",
+    "source": "| a `b |\n + c` |\n"
+  },
+  {
+    "id": "plus-13ab1daa26af",
+    "source": "%%\n| | |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-13db308fe09e",
+    "source": "tail\n  + b |\n"
+  },
+  {
+    "id": "plus-13ea6946faca",
+    "source": ">= a |\n> + b |\n"
+  },
+  {
+    "id": "plus-13eb53bcd2a9",
+    "source": "| a | b |\n| ^               | Banana  |\n| ^ | c |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-13fb8cbee675",
+    "source": "\n - > | a |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-141583b3b1f1",
+    "source": "tail\n- a\n\t|x|\n\t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-14329123d7d9",
+    "source": "| x | a `b |\n + y | c` |\n"
+  },
+  {
+    "id": "plus-144417867a15",
+    "source": "| x | a `b |\n:  d\n:  d\n"
+  },
+  {
+    "id": "plus-1458e3827f96",
+    "source": "| a | b |\n+ more | d |\n| - |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-14619e2146d5",
+    "source": "tail\n> > + b |\n~~~\n"
+  },
+  {
+    "id": "plus-14c862350c06",
+    "source": "- > | a |\n + b |\ntail\ntail\n"
+  },
+  {
+    "id": "plus-14ef7faaecbc",
+    "source": "| |\n| |\n+ |\n | |\n"
+  },
+  {
+    "id": "plus-1574af21d13e",
+    "source": " | a |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-15cc03525481",
+    "source": "- a\n+ \n- a\n\t|x|\nb\n\nx\n"
+  },
+  {
+    "id": "plus-15e69b4ea7e1",
+    "source": ":: t\n:  > a\n   > + b ||\n\n tail\n"
+  },
+  {
+    "id": "plus-15ec0103aa01",
+    "source": "| a | b |\n+x | y |\n[^f]\n"
+  },
+  {
+    "id": "plus-16323ec6fd81",
+    "source": ": + c | d | junk\n+ | |\n"
+  },
+  {
+    "id": "plus-16365a4c17d7",
+    "source": "+ c | d | junk\n"
+  },
+  {
+    "id": "plus-168802b1c23a",
+    "source": "> |= a |\n>> + b |\n\n  tail\n"
+  },
+  {
+    "id": "plus-1690a08f8d37",
+    "source": "- | a |\n"
+  },
+  {
+    "id": "plus-16a5a7b61a5e",
+    "source": " | a |\n> + b %%%|\ntail\n"
+  },
+  {
+    "id": "plus-17097c2de056",
+    "source": ":: t\n:  > a\n   > + b |\n tail\n"
+  },
+  {
+    "id": "plus-1758508fbf7c",
+    "source": ":: t\n:   a\n  > + b |\ntail\n"
+  },
+  {
+    "id": "plus-17808f011e4b",
+    "source": "| a | b |\n|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-1786ff1731f1",
+    "source": "  + b |\ntail\n\n"
+  },
+  {
+    "id": "plus-17ace023ba1f",
+    "source": "- a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-17bc97f1bfa2",
+    "source": "1. :: t\n:  > a\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-17d06b2d48c9",
+    "source": "| a |\n|= b ||= a |= b |\n\n+ c |\n"
+  },
+  {
+    "id": "plus-17def399ac2e",
+    "source": "- |= a |\n  + b |\ntail\ntail\n"
+  },
+  {
+    "id": "plus-17fb55ec7363",
+    "source": "| a `bb |\n c`  |\n"
+  },
+  {
+    "id": "plus-186343315e26",
+    "source": "| a | b |\n| - | - |\n+ |\n| - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-186789fddf2a",
+    "source": "- a\n  + b |\n  + b |\n: [r][d]\ntail\n"
+  },
+  {
+    "id": "plus-187aac7f38c0",
+    "source": ":: tt\n:  a\n    + b |\nail\n"
+  },
+  {
+    "id": "plus-189ea5f4992f",
+    "source": "- |=aa |\n  + b ||\ntail\n"
+  },
+  {
+    "id": "plus-18f99b056b76",
+    "source": " - a\n+ \t|x|\n+ + c\n"
+  },
+  {
+    "id": "plus-1944a63f8df1",
+    "source": "- foo\n  - +\n# H\n+ x\t| y\t|\n  + x\n"
+  },
+  {
+    "id": "plus-196de1215e06",
+    "source": " + x\n | x | a `b |\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-19b34ee8819f",
+    "source": "> | a |\n\t\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-1a0e618f1c20",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n+          | across lines.      |\n| Simple   ::: note| Single line.       |\n"
+  },
+  {
+    "id": "plus-1a3a193dd170",
+    "source": "| a | b |\n+ + x\t| y\t|\n\n"
+  },
+  {
+    "id": "plus-1a8677287c2e",
+    "source": "| a | bb |\n+ c | d |\n+ c` |\n"
+  },
+  {
+    "id": "plus-1aa92037dc0d",
+    "source": "|= b |\n | a |\n+ c |\n"
+  },
+  {
+    "id": "plus-1aae871869b5",
+    "source": "\n| a | b |\n | - | - |\n + cont |\n"
+  },
+  {
+    "id": "plus-1ad551eab51c",
+    "source": "  + |\n- | a |\ntail\n| a `b |\n"
+  },
+  {
+    "id": "plus-1b68d135f316",
+    "source": "| ^ | [^f:::]b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-1b7066e166f2",
+    "source": "| x | a `b |\n| x | a `b |\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-1b86e8399661",
+    "source": "| a |[^f] b |\n| ^ | c |\n\n+ mre | d |\n"
+  },
+  {
+    "id": "plus-1be78b85626b",
+    "source": ":  a\n| a | b |\n   + b |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-1bed805a40da",
+    "source": "> > | a |\n> # H\n > > + b |1. \ntail\n"
+  },
+  {
+    "id": "plus-1bf97e0257b2",
+    "source": "|| x | a `b |\n"
+  },
+  {
+    "id": "plus-1c220e5adaa9",
+    "source": "|= Category       |= Item   |\n+ from local      |         |\n| Fresh Fruits    | Apple   |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-1c4422baafb3",
+    "source": "- |= a |\n  ++ b |\ntail\n"
+  },
+  {
+    "id": "plus-1c6c8cc0e629",
+    "source": "- a\n  - b\n  - b\n  | x | y | Ω\n$`x`\n+ c\n"
+  },
+  {
+    "id": "plus-1c92807b41e6",
+    "source": ":: t\n   +  b |\ntail\n"
+  },
+  {
+    "id": "plus-1ccb2906b3c2",
+    "source": " - a\n \t|x|\n \t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-1ccc032185e4",
+    "source": ":: t\n:  | a |\n   + b @user|\ntail\n"
+  },
+  {
+    "id": "plus-1d219e932c30",
+    "source": "+ oone\n+ tw/i//o\n"
+  },
+  {
+    "id": "plus-1d4d3dedeb2b",
+    "source": "+ !`z`\n| | |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-1d56f95ceda2",
+    "source": "- |= a |\n\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-1d7dfd0f95f9",
+    "source": "  | |\n"
+  },
+  {
+    "id": "plus-1dc655a1c903",
+    "source": "- > | a |\n   + b |\n>   tail\n"
+  },
+  {
+    "id": "plus-1e5622a41cba",
+    "source": "  + b |\nta%%il\n| a | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-1e711f46d293",
+    "source": "> | a |\n> + b |\ntail\n. \ntail\n"
+  },
+  {
+    "id": "plus-1e87d5b6e84c",
+    "source": "> |= a |\n> + b |\n1. > + b |\n1.   + x\ntail\n"
+  },
+  {
+    "id": "plus-1e8a8618a151",
+    "source": " + \n| ^ | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-1ef8f0ae573b",
+    "source": "| a `b |\n$`x`\n"
+  },
+  {
+    "id": "plus-1f05196de67a",
+    "source": "- |= a |\n  + b |\ntil\n"
+  },
+  {
+    "id": "plus-1f3e2e26ae42",
+    "source": "+ two\n"
+  },
+  {
+    "id": "plus-1fd813b34801",
+    "source": "/i/\n- a\n  - b\n  | x | y | Ω\n^[fn]\n+ c\n"
+  },
+  {
+    "id": "plus-2069b5394bac",
+    "source": "> > > + b |\ntail\n> > | a |\n> > + b |\ntil\n"
+  },
+  {
+    "id": "plus-2086e8ec2802",
+    "source": "- a\n   - b\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-20a72f208dea",
+    "source": "+ cont |\n| - |\n"
+  },
+  {
+    "id": "plus-20aa0a47614a",
+    "source": "```$`x`\n| a |\n+ |\n"
+  },
+  {
+    "id": "plus-21a315be7515",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n| ^               | Banana  |\n| ^               | Banana  |\n+ from local      |         |\n"
+  },
+  {
+    "id": "plus-21b116acad03",
+    "source": "> # H\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-21ee7cd3a890",
+    "source": "*b*\n| ^ | b |\n| a | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-223e0fa8d8cc",
+    "source": "   > + b |\n:: t\n:  > | a |\ntail\n"
+  },
+  {
+    "id": "plus-22531cadb3bb",
+    "source": "\n|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-229741296617",
+    "source": "| a | b |\n| a | b |\n"
+  },
+  {
+    "id": "plus-22fa8fc11952",
+    "source": "-- | a |\ntail\n\n"
+  },
+  {
+    "id": "plus-230bd51debd4",
+    "source": ":::: note: term\n: - a\n    | x | y | Ω\n+ c\ntail\n"
+  },
+  {
+    "id": "plus-237290d737c6",
+    "source": ":: t\n:  a\n   + b |\ntai\n"
+  },
+  {
+    "id": "plus-23f1be65c63f",
+    "source": "| |\n+ | |\n+  |\n"
+  },
+  {
+    "id": "plus-242c66d921a8",
+    "source": "| ^ | b ::: ||\n+ x | y |\n"
+  },
+  {
+    "id": "plus-248d63ec5752",
+    "source": ":: term\ntail\n: - a\n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-24d8c5970944",
+    "source": "1. | a| b |\n1. + x\t| y\t|\n"
+  },
+  {
+    "id": "plus-24e7d8db2740",
+    "source": ":  d\n| a |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-24f157beb3bb",
+    "source": "- a\n"
+  },
+  {
+    "id": "plus-2508227ce39f",
+    "source": "  \n+ x | y |\n| ^ | < |\n"
+  },
+  {
+    "id": "plus-25c0859cefeb",
+    "source": "tail\n- a\n---\n"
+  },
+  {
+    "id": "plus-25ca02aeb49a",
+    "source": " + y | c` |\n| x | a `bb |\n"
+  },
+  {
+    "id": "plus-25ee338e9771",
+    "source": "| a `b |\n+ c | d |\ntail\n"
+  },
+  {
+    "id": "plus-261b51fd4aeb",
+    "source": "|a `b |\n+ c` |\n"
+  },
+  {
+    "id": "plus-26367410e1d1",
+    "source": "-  a |\n  + |\n tail\n"
+  },
+  {
+    "id": "plus-26728840dc86",
+    "source": " a\n  :::  box\n+ c\n  | x | y | Ω\n"
+  },
+  {
+    "id": "plus-26a9deaa66f9",
+    "source": " + x | y |\n + | ^ | < |\n"
+  },
+  {
+    "id": "plus-26b84464b3af",
+    "source": "> > > | a |\n> > > | a |\n> > > + b |\n"
+  },
+  {
+    "id": "plus-26e5db9db7c8",
+    "source": " | a | b |\n\n+ | |\n"
+  },
+  {
+    "id": "plus-26e9045cdf9a",
+    "source": "|= a |\n | - |\n::: note\n + cont |\n"
+  },
+  {
+    "id": "plus-271199309f46",
+    "source": "*b*\n> > + b |\n> > | a |\nttail\n"
+  },
+  {
+    "id": "plus-2733adc16b50",
+    "source": "> + x\n| - | - |\n| a | b |\n+  |\n"
+  },
+  {
+    "id": "plus-276d2cfbeea9",
+    "source": "> > > | a |\n>  > > + b |\ntaail\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-278936d564fc",
+    "source": "- a\n  - b\n- a\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-27c4d3a4a059",
+    "source": "+ x\n[^f]\n> > > | a |\n> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-2859d4f3b905",
+    "source": "    + b |\ntail\n"
+  },
+  {
+    "id": "plus-285b78b0c1c3",
+    "source": " :: t\n:  > | a |\n    > + b |\ntail\n"
+  },
+  {
+    "id": "plus-28b84becf58f",
+    "source": "| a `b |\n+ c | d | \n + c` |\n"
+  },
+  {
+    "id": "plus-28e2df231231",
+    "source": "> > > | a |\n> > > + b |\ntai!`z`l\n"
+  },
+  {
+    "id": "plus-28f05838b5db",
+    "source": " || a | b |\n| - | - |\n+ |\n+ |\n"
+  },
+  {
+    "id": "plus-28f897eb9414",
+    "source": "|= Category      |= Item   |\n| Fresh Fruits    | Apple   |\n + from local      |         |\n> > | a |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-2902e25a1f74",
+    "source": "> > | a |\n> # H\n> # H\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-2909cf906093",
+    "source": "| x | a `b |\n| x | a `b |\n: + y | c` |\n"
+  },
+  {
+    "id": "plus-292a637c2743",
+    "source": "- | a |\n  + b |\nail\nail\n"
+  },
+  {
+    "id": "plus-29a3f8278280",
+    "source": "|  a | b |\n+ | |\n"
+  },
+  {
+    "id": "plus-29cf8ff95665",
+    "source": "- a\n + \n\n+ \nb\n\nx\n"
+  },
+  {
+    "id": "plus-2a17b5c4798c",
+    "source": "| a | b |+ \n+ |\n::::\n| - | - |\n"
+  },
+  {
+    "id": "plus-2a40516432b1",
+    "source": "- | a |\n# H\ntail\n"
+  },
+  {
+    "id": "plus-2a58964d3489",
+    "source": ":: t\n:  a\nail\n   + b |\n"
+  },
+  {
+    "id": "plus-2ae738914611",
+    "source": "- a\n\t/i/|x|\n"
+  },
+  {
+    "id": "plus-2b3a254273fe",
+    "source": "| a `b |\n+ c | d` #tag|\n"
+  },
+  {
+    "id": "plus-2b5451421b6b",
+    "source": "| a | b |\n | a | b |\n + c | d | junk\n"
+  },
+  {
+    "id": "plus-2b77f5641007",
+    "source": "| a | b |\n| a | b |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-2b8b9a4beeba",
+    "source": "| a |  |\n| - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-2ba1e8ebac4b",
+    "source": " | a | b |\n| - | - |\n+ |\n*b*\n"
+  },
+  {
+    "id": "plus-2bca1c74608b",
+    "source": "- > | a |\n  + b |\n*[A]: btal\n"
+  },
+  {
+    "id": "plus-2c01058e2129",
+    "source": ": | ^ | b |\n: | ^ | b |\n> > | a |\n  + x | y |\n"
+  },
+  {
+    "id": "plus-2c1e1915d589",
+    "source": "| ^ | b ||\n+ x || y ||\n"
+  },
+  {
+    "id": "plus-2c9642cd2f14",
+    "source": " > | a `b |\n> + c | d` |\n"
+  },
+  {
+    "id": "plus-2c9f08a5aabe",
+    "source": "> > > | a |\n> > > + b \n taill\n"
+  },
+  {
+    "id": "plus-2ce71d251637",
+    "source": "- a\ntail\n  + b |\n"
+  },
+  {
+    "id": "plus-2cfb4febc2df",
+    "source": " | a `b |\n+ c` |\n- \n"
+  },
+  {
+    "id": "plus-2d1afef65a96",
+    "source": "- a\n- a\n  - b\n  | x | y | Ω\n\n+ c\n"
+  },
+  {
+    "id": "plus-2d1c64f5197e",
+    "source": ":: t\n :  > a\n | a | b |\n + | |\n"
+  },
+  {
+    "id": "plus-2d22740b26e9",
+    "source": ":: t\n:  > a\n  > + b |\ntail\n"
+  },
+  {
+    "id": "plus-2d792d75e10d",
+    "source": "- foo\n\t``\n\t  - +\n\t  + \n"
+  },
+  {
+    "id": "plus-2daecc99ed95",
+    "source": "- a\n  - b\n  | x | y | Ω\n+ \n"
+  },
+  {
+    "id": "plus-2dd7330bc793",
+    "source": "- a\n   b |\ntail\n</#h>\n"
+  },
+  {
+    "id": "plus-2e038fdb1c3c",
+    "source": "+ twoo\n"
+  },
+  {
+    "id": "plus-2e09a09d53f4",
+    "source": "- |[^f]: t a |\n  + |\ntail\n"
+  },
+  {
+    "id": "plus-2e3368ce8ff7",
+    "source": ":: t\n:  | a |\n   + b |\n   + b |{}\ntail\n"
+  },
+  {
+    "id": "plus-2e4cf643e8b4",
+    "source": "| a |`` b |\n"
+  },
+  {
+    "id": "plus-2ef28d4782e9",
+    "source": "+ c | d | \n:: t\n:  a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-2f3299586e17",
+    "source": ">> > |` a |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-2f7a1502551a",
+    "source": "+ c | d | \n|{.x} a | b |\n"
+  },
+  {
+    "id": "plus-2fe410449405",
+    "source": "\n a `b |\n+ c` |\n"
+  },
+  {
+    "id": "plus-2ff29d2b8e55",
+    "source": "| a | b |\n+ x\t| y\t|\n+ x | y |\n"
+  },
+  {
+    "id": "plus-30a6a479e947",
+    "source": ":: t\n|= a |= b |:  > | a |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-30ca69b37791",
+    "source": "+ one\n+ two\n| a | b |\n+ c | d | junk\n+ two\n"
+  },
+  {
+    "id": "plus-3146e5278fb7",
+    "source": "| a `b |\n+ c` |> + x\n"
+  },
+  {
+    "id": "plus-317cd94b2592",
+    "source": "- | a |\nttail\n  + b |\n"
+  },
+  {
+    "id": "plus-319421c1a0be",
+    "source": "| a | b |\n + x | y \n"
+  },
+  {
+    "id": "plus-31c5c10245e1",
+    "source": "| |\n| a | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-31d423ba3b37",
+    "source": "-- | a |\n + |\ntail\n"
+  },
+  {
+    "id": "plus-32064def8eb7",
+    "source": " | aa | b |\n+ y | c` |\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-323dba1df260",
+    "source": "- a\n+ \n</#h>\nb\n\nx\n~~~\n"
+  },
+  {
+    "id": "plus-32949134951f",
+    "source": "+ + c | d` |\n|  a `b |\n"
+  },
+  {
+    "id": "plus-32ae5dcb9d9d",
+    "source": "%%\n+ cont |\n| a | b |\n+ more | d |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-32c94d39e347",
+    "source": "- a\n  ::: box\n  | x | y  | Ω\n+ cc\n"
+  },
+  {
+    "id": "plus-336afc0f6bf2",
+    "source": "[d]: u- a\ntail\ntail\n  + b |\n"
+  },
+  {
+    "id": "plus-33ad28c8c54b",
+    "source": "| ^ | < |\n+ x   | y |\n+ x   | y |\n"
+  },
+  {
+    "id": "plus-33bc143cd8b6",
+    "source": "| a | b |\n + x | y |\n\t\n^[fn]\n"
+  },
+  {
+    "id": "plus-33c2ff465396",
+    "source": "> > | a |\n  {}\n  > > + b |\n  tail\n"
+  },
+  {
+    "id": "plus-340779570d5c",
+    "source": "1. ordered\n+  \n - item\n"
+  },
+  {
+    "id": "plus-34aea11dd687",
+    "source": "{}| a  | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-35019f700d49",
+    "source": "| a `b |\n+ c | d` |\n- \n"
+  },
+  {
+    "id": "plus-35d6e0dfb5be",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n|  Smple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-3659cd7b1e27",
+    "source": "- a\n - b\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-36ab60f5f18c",
+    "source": "- | a |\n  + |\n:: t\ntail\n"
+  },
+  {
+    "id": "plus-373e7d3375bd",
+    "source": "|| | |\n+ x   | y |\n"
+  },
+  {
+    "id": "plus-37890609f977",
+    "source": " + x | y  |\n"
+  },
+  {
+    "id": "plus-37be630c223b",
+    "source": "- aa\n  - b\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-3818de78738a",
+    "source": "[d]: u- a\n+ \n\n:: t\nx\n"
+  },
+  {
+    "id": "plus-38335e57d82b",
+    "source": "\n| ^ | b |\n+ x | y |\n+ x  y |\n"
+  },
+  {
+    "id": "plus-3856219be140",
+    "source": "- foo\n\n  - +\n + x\n"
+  },
+  {
+    "id": "plus-385cd668dca2",
+    "source": "tail\n | a | b |\n| ^ | c |\n+ more | d |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-3900a017b2b3",
+    "source": ": > | a | b |\n: > + c | d | junk\n"
+  },
+  {
+    "id": "plus-39224d027fd2",
+    "source": "```x\n| a |\n\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-392669ea498c",
+    "source": "> > | a |\n> # H\n+ x | y |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-394a382d4ad8",
+    "source": "| a |\n|= b |\n> > + b |\n+!`z` c |\n"
+  },
+  {
+    "id": "plus-39df25e8ba12",
+    "source": "|= a |\n: + cont |\n  | - |\n"
+  },
+  {
+    "id": "plus-39eb58ae2706",
+    "source": "1. ordered\n  > > quote\n  > > quote\n+  \n- item\n"
+  },
+  {
+    "id": "plus-3a402a2740ec",
+    "source": "- a\n  -b\n | x | y | Ω\n"
+  },
+  {
+    "id": "plus-3ada65cade38",
+    "source": "| a | b |\n\n+ c | d | junk\n| ^ | < |\n+ x | y \n"
+  },
+  {
+    "id": "plus-3ae1c4491334",
+    "source": ":: t\n| a |\ntail\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-3b4af4b2d7dc",
+    "source": "\n| a | b |\n + cont |\n| - | - |\n"
+  },
+  {
+    "id": "plus-3b4eddb27fe9",
+    "source": ":: t\n   + b |\n :  | a |\n\ntail\n"
+  },
+  {
+    "id": "plus-3b65bc96b516",
+    "source": "> | a |\n> + b |\n\nail\n"
+  },
+  {
+    "id": "plus-3c1dad26cf1d",
+    "source": "  + b |\n- |= a |\n tail\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-3c3da43f4698",
+    "source": "+ | |\n+ | |\n+ | |\n"
+  },
+  {
+    "id": "plus-3c4ac6a5a8b2",
+    "source": ": | a | b |\n: + | ||\n"
+  },
+  {
+    "id": "plus-3cc0c8103c73",
+    "source": "- a\n  ::: box\n  | x | y | Ω\n+ c\n+ c\n"
+  },
+  {
+    "id": "plus-3cd031a679bc",
+    "source": "+ c` |\n| a `b |\n| a `b |\n"
+  },
+  {
+    "id": "plus-3d0e0c9f3dea",
+    "source": "+ > q\n|= a |*b*= b |\n\n+ cont |\n"
+  },
+  {
+    "id": "plus-3dc9b6a1346a",
+    "source": "> > > | a |\n>---> > > + b |\n>---> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-3dfbdc98f02e",
+    "source": "- | a |\n  + |\n::: note\ntail\n"
+  },
+  {
+    "id": "plus-3e052d0082f9",
+    "source": "|= a |= b |\n- a\n  + b |\ntail\n\n"
+  },
+  {
+    "id": "plus-3e74603205fc",
+    "source": "-  a\n  + b |\ntail\ntail\n\n"
+  },
+  {
+    "id": "plus-3eddaff69dd7",
+    "source": "| a | $`x`b |\n+ | |* \n"
+  },
+  {
+    "id": "plus-3f3bd390dc7c",
+    "source": "| a | b |\n+ x | y::: |\n+ x | y::: |\n"
+  },
+  {
+    "id": "plus-3f63904449ab",
+    "source": "\n- a\n+ c\n\t|x|\n"
+  },
+  {
+    "id": "plus-3f67ff77ec3e",
+    "source": "- | a |\n  + |\n/i/tail\n"
+  },
+  {
+    "id": "plus-3fc1a10702ba",
+    "source": "| a | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-3fe9a244ead4",
+    "source": "@user\n| a |\n+ |\n"
+  },
+  {
+    "id": "plus-401af459228e",
+    "source": "> > > | a |\n> > > + b |\ntail\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-405774992867",
+    "source": "1. ordered\n%%%  > > quote\n1. +  \n   - item\n"
+  },
+  {
+    "id": "plus-409150118a74",
+    "source": " |a | b |\n+ c | d | \n"
+  },
+  {
+    "id": "plus-40c8543fdc6b",
+    "source": "> - foo\n  - +\n  + x\n"
+  },
+  {
+    "id": "plus-40d69e9e63ed",
+    "source": "- a\n  + b |\n| a | b |\n+ more | d |\ntail\n"
+  },
+  {
+    "id": "plus-40f9a23ef8ef",
+    "source": "| atext | b |\n"
+  },
+  {
+    "id": "plus-4132bb4b1135",
+    "source": "> = a |\n> |= a |\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-4147ea7fb58b",
+    "source": "- |  |\n  + b |\ntail\n | Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-41491cbd3bd6",
+    "source": "|= a |\n || - |\n+ co[^f]nt |\n"
+  },
+  {
+    "id": "plus-41bf233b0f01",
+    "source": "\n:   + b |\ntail\n"
+  },
+  {
+    "id": "plus-41e654832674",
+    "source": "+||\n"
+  },
+  {
+    "id": "plus-41f73e8929fb",
+    "source": "- item\n| a |\n|= b |\n+  c |\n"
+  },
+  {
+    "id": "plus-41f94c47ec1d",
+    "source": "> | a |\n> + b |\n</#h>\n"
+  },
+  {
+    "id": "plus-4200b4eb86f7",
+    "source": "- a\n + \nb\n \n\n"
+  },
+  {
+    "id": "plus-420d4f74f5ef",
+    "source": ":: t\n:  | a |\n   + b |\n  ::: box\n"
+  },
+  {
+    "id": "plus-42a255bd6a6e",
+    "source": ": | a |*[A]: b < |\n: + x | y |\n| ^ | b |\n"
+  },
+  {
+    "id": "plus-435eef8166c1",
+    "source": "- a\n ::: box\n|= b |\n%%\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-438419a3bfbc",
+    "source": ":: t\n:  | a |\ntail\n   + b |\n"
+  },
+  {
+    "id": "plus-43c4d65201b3",
+    "source": ":: t\n:  a\n   + b |\nttail\n"
+  },
+  {
+    "id": "plus-4402a7526ddb",
+    "source": "| a | b |\n| a | b |\n+ x\t| y\t|\n+ | |\n"
+  },
+  {
+    "id": "plus-4479a3622ce8",
+    "source": "- a\n+ \nb\n\nx\nx\n"
+  },
+  {
+    "id": "plus-449614ab5736",
+    "source": "| ^ | < |\n| ^ | < |\n+ x | y |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-449c215bc30c",
+    "source": ":: term\n : - a\n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-44e17c539831",
+    "source": "| - | - |\n| a | b |\n+ c | d | junk\n| a | b |\n"
+  },
+  {
+    "id": "plus-44f4934a5495",
+    "source": "  | h |\n   | v |\n"
+  },
+  {
+    "id": "plus-4524fdbdbbe4",
+    "source": " | x | a `b |\n + y | c` |\n"
+  },
+  {
+    "id": "plus-453f58737991",
+    "source": "|text x | a `b |\n+ y | c` |\n:: t\n:: t\n"
+  },
+  {
+    "id": "plus-455e91810c80",
+    "source": "- foo\n  - +\n  + x\n``\n+ one\n+ two\n"
+  },
+  {
+    "id": "plus-4585d1375fb6",
+    "source": "| a | b |\n | < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-45d396cef4e1",
+    "source": "| a | b |\n\n| < | c |\n> + x | y |\n"
+  },
+  {
+    "id": "plus-45d8902e3dcd",
+    "source": "| a | b |\n| ^ | c |\n| < | d |\n"
+  },
+  {
+    "id": "plus-4606544c2d88",
+    "source": "- a\n  | h |\n  | v |\n  + text |\n| - |\n:: t\n+ cont |\n"
+  },
+  {
+    "id": "plus-467f52a6778f",
+    "source": "| a | b |\n+ :: tx | y |\n"
+  },
+  {
+    "id": "plus-4683b87397f8",
+    "source": "1. ordered\n  > > quote\n+ \n- item\n- item\n"
+  },
+  {
+    "id": "plus-4692d5892dae",
+    "source": "| |\n\n+ |\n| |\n"
+  },
+  {
+    "id": "plus-46a725051ac1",
+    "source": "| a | b |\n| - | - |\n+ \n+ \n"
+  },
+  {
+    "id": "plus-4730112503fa",
+    "source": "| a | b |\n| - | - |\n+ cont |\n\n"
+  },
+  {
+    "id": "plus-476e8bcde040",
+    "source": "| a | b |\n+ c | d |\ntail\n"
+  },
+  {
+    "id": "plus-479cd05bf324",
+    "source": ":: t|= a |= b |\n:  a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-47b86d7536b9",
+    "source": " + | |\n"
+  },
+  {
+    "id": "plus-47ddd594903f",
+    "source": "- |aa |\n  + b|\ntail\n"
+  },
+  {
+    "id": "plus-47ea3901c0fb",
+    "source": "+ \n| ^ | b |\n| ^ | b |\n"
+  },
+  {
+    "id": "plus-4813d0e5320e",
+    "source": "\n| a  |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-48cc9b8c755b",
+    "source": "+ c | d | junk\n| a | b |\n"
+  },
+  {
+    "id": "plus-48e9a90980ff",
+    "source": ":: t\ntail\n   > + b |\n"
+  },
+  {
+    "id": "plus-490e407d37dc",
+    "source": "| a | b |\n\n| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-492f80974982",
+    "source": " > > > | a |\n > > > + b |\n tail\n"
+  },
+  {
+    "id": "plus-496bed60c2ea",
+    "source": "- a\n\t|x|\n+ > q\n+ c\n"
+  },
+  {
+    "id": "plus-49ceaba894c8",
+    "source": "- a\n- a\n  ::: box\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-4a5157e6d93a",
+    "source": "| a |\n|= b |\n  + c |\n"
+  },
+  {
+    "id": "plus-4a558113b696",
+    "source": "> > | a |\n\n> > + b |\ntail\n{#i}\n"
+  },
+  {
+    "id": "plus-4ac063087294",
+    "source": "|= Categoryy       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-4aee12f36e55",
+    "source": "> >> > + b |\n> > > | a |\ntail\n"
+  },
+  {
+    "id": "plus-4af8b939f1ad",
+    "source": "| a|\n|= b|\n+ c |\n"
+  },
+  {
+    "id": "plus-4b05e091e60e",
+    "source": "> > | a |\n> > + b |\ntail\n* \n* \n"
+  },
+  {
+    "id": "plus-4ba1b57184de",
+    "source": "|= Feature |= Description        |\n:: t\n| Complex  | A long description |\n%%%+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-4ba9f099ae28",
+    "source": ":: t\n:  | a |\n   + b |\n| a | b |\ntail\n"
+  },
+  {
+    "id": "plus-4bab32446ae2",
+    "source": "\n+ more | d |\n| a | b |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-4bbf60341bae",
+    "source": "- a\n  + b |\n| a | b |\ntail\n"
+  },
+  {
+    "id": "plus-4bcd4300d4df",
+    "source": "$`x`\n$`x`\n> > > | a |\n> > > ++ b |\ntail\n"
+  },
+  {
+    "id": "plus-4c06cb95c42b",
+    "source": "| ^ | < |\n+ x | y \n"
+  },
+  {
+    "id": "plus-4c4eeb6de62d",
+    "source": "| a `b |\n+ c> + x | d` |\n\n"
+  },
+  {
+    "id": "plus-4c53266101b1",
+    "source": "| a  | b |\n| - | - |\n+ cont [l](u)|\n+ x | y |\n"
+  },
+  {
+    "id": "plus-4c7cf56f38dd",
+    "source": "> |= a |\n- | a |\n  + b |\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-4c854d799e15",
+    "source": "- |= a |\n  + b |\ntail\n/i/\n/i/\n"
+  },
+  {
+    "id": "plus-4ca6c7db4d91",
+    "source": "| a | bb |\n + x | y |\n"
+  },
+  {
+    "id": "plus-4cbd7ca8fe72",
+    "source": "\n| a |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-4d0884458902",
+    "source": " > > + b |\n> > | a |\ntail\n"
+  },
+  {
+    "id": "plus-4d2acc8e5241",
+    "source": "-  a |\n  + b |\ntail\n| a | b |\n"
+  },
+  {
+    "id": "plus-4d909c51acb6",
+    "source": "|= a |= b |\n\n+ cont |\n"
+  },
+  {
+    "id": "plus-4dff2261a735",
+    "source": "- a\n+ \n+ |\nb\n\nx\n"
+  },
+  {
+    "id": "plus-4ea59fae1517",
+    "source": "- a\n   h |\n  | h |\n | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-4ec0a67fe343",
+    "source": "| |\n+ |\n| |\n| a |\n\n= b |\n"
+  },
+  {
+    "id": "plus-4ef9f387493a",
+    "source": "| x | a `b |\n"
+  },
+  {
+    "id": "plus-4f5886b2fabe",
+    "source": "+ one\n+ two\n+ two\n"
+  },
+  {
+    "id": "plus-4f5e5ab7cbb2",
+    "source": "| a | b |\n| a | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-4fa3280576c1",
+    "source": "|= Feature |= Description        |\n+          | that continues     |\n+          | across lines.      |\n | Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-4fc5873a9047",
+    "source": "- a\n+ \n1. b\n1. xx\n\n"
+  },
+  {
+    "id": "plus-4fe415fdc6bc",
+    "source": "  | h |\n  | v |\n  + text |\n  + text |\n"
+  },
+  {
+    "id": "plus-4feba3d4fa04",
+    "source": "  + b \ntail\n  + b |\n"
+  },
+  {
+    "id": "plus-502178fbac56",
+    "source": "- a\n  + b |\n"
+  },
+  {
+    "id": "plus-50b1677a0256",
+    "source": "+  |\n"
+  },
+  {
+    "id": "plus-50d07ed355d0",
+    "source": "|+ ``` a |\n|= b |\n+ c|= a |= b | |\n+ c|= a |= b | |\n"
+  },
+  {
+    "id": "plus-50d7ab460eeb",
+    "source": " | a | b |\n1. ordered\n  > > quote\n++  \n- item\n"
+  },
+  {
+    "id": "plus-51278d5f772e",
+    "source": "- a\n  ::: box\n  ::: box\n  | x | y | Ω\n + `c\n"
+  },
+  {
+    "id": "plus-51587ef3ea67",
+    "source": ":: t\n:  | a |\n   + b |\n"
+  },
+  {
+    "id": "plus-51691ff100af",
+    "source": "+ x | y |\n| a | b |\n a | b |\n"
+  },
+  {
+    "id": "plus-517300f0f0d2",
+    "source": "+ c | d |\n+ c | d |\n| a | b |\n"
+  },
+  {
+    "id": "plus-519b82116e5a",
+    "source": "-^ capa\n  | h |\n  | v |```\n  + text |\n"
+  },
+  {
+    "id": "plus-519d595c6c95",
+    "source": "| a *b*| ::: noteb |\n| - | - |\n+ cont \n"
+  },
+  {
+    "id": "plus-51ac866376c6",
+    "source": "| a | b |\n. \n| a | b |\n+ c |d | junk\n"
+  },
+  {
+    "id": "plus-51ada4dfb15d",
+    "source": "-  a\n+  \n b\n\nx\n"
+  },
+  {
+    "id": "plus-51bc9b3de45f",
+    "source": "+ y | c` |\n| x | a `b |\n+ |\n"
+  },
+  {
+    "id": "plus-51e1cbf68829",
+    "source": "| a | b |\n:: t\n| ^ | c |!`z`\n| < | d|\n+ x | y |\n"
+  },
+  {
+    "id": "plus-520c90426d64",
+    "source": "| a `b |\n: + c| d` |\n"
+  },
+  {
+    "id": "plus-5262898d78c3",
+    "source": "|~s~ a | b |\n+ cont |\n| - | - |\n"
+  },
+  {
+    "id": "plus-52bf54fc550d",
+    "source": "- a\n  | h |\n  | v |\n   ext |\n"
+  },
+  {
+    "id": "plus-534bef13f895",
+    "source": ":: term\n: - a\n    | x | y | Ω\n| a | b |\n+ | |\n+ c\n"
+  },
+  {
+    "id": "plus-5353b3c15fe2",
+    "source": "+ x | y |\n> |= a |\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-53f8937f4859",
+    "source": "| a |\n\n |= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-5464d27b05df",
+    "source": "| a | b |\n[^f]: t\n+ c| d | junk\n{#i}\n"
+  },
+  {
+    "id": "plus-546f7113e907",
+    "source": "> > > | a |\n> >  + b |\n> >  + b |\ntail\n"
+  },
+  {
+    "id": "plus-546fca462de7",
+    "source": "- a\ntail\n"
+  },
+  {
+    "id": "plus-5488b034e9c5",
+    "source": "| a | < |\n> # H\n  | ^ | b |\n+ x | y \n"
+  },
+  {
+    "id": "plus-54f6dbdab088",
+    "source": "::: term\n: - a\n    | x | y | Ω\n"
+  },
+  {
+    "id": "plus-551f6938f2a5",
+    "source": "> > > || a |\ntail\n> > > + b |\n"
+  },
+  {
+    "id": "plus-553c6dedf3ef",
+    "source": "| a | b |\n\n+ xx\t| y\t|\n\n"
+  },
+  {
+    "id": "plus-5577f4740f56",
+    "source": "|= a |\n| - |\n+ cont |\n_u_\n"
+  },
+  {
+    "id": "plus-55d1be64e499",
+    "source": "tail\n- a\n  ::: box\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-56102d38e01a",
+    "source": "- a\n+ c\n"
+  },
+  {
+    "id": "plus-565a912a76ea",
+    "source": "  + b |\n-a\ntaail\n"
+  },
+  {
+    "id": "plus-56ba9173ce15",
+    "source": "| | |\n+ x | y /i/|\n"
+  },
+  {
+    "id": "plus-5724eaa0b531",
+    "source": " | a `b |\n+c` |\n"
+  },
+  {
+    "id": "plus-57e9125a39d2",
+    "source": "| a | b |:: t\n:  | a |\n:  | a |\n*b*\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-57fde87cbf48",
+    "source": "> > > | a |\n> > > + b  |\ntail\n"
+  },
+  {
+    "id": "plus-583569a54c7e",
+    "source": " | a | b |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-58422ee0d791",
+    "source": "-a\n  | h |\n  | v |\n  + textt |\n"
+  },
+  {
+    "id": "plus-5879456574ac",
+    "source": ":  a\n:: t\n\n\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-588667282891",
+    "source": "- |= a |\n  + b |\ntail\n\n"
+  },
+  {
+    "id": "plus-58f1a89550a9",
+    "source": " - | a |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-5902de0298e1",
+    "source": "+ c` |\n| a | b |\n more | d |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-59733e3985d7",
+    "source": "> > > |a |\n> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-597826051397",
+    "source": "\n|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local       |         |\n+ farms           |         |\n|= a |= b |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-59c0943c5f6a",
+    "source": "- a\n+ \n> b\n\n"
+  },
+  {
+    "id": "plus-5a4ca6fdc695",
+    "source": "| a | b |\n\t|x|\n| - | - |\n+ cont |\n> \n"
+  },
+  {
+    "id": "plus-5a62dc6a3b5c",
+    "source": "- a\n+ \nb\n\n# Hx\n"
+  },
+  {
+    "id": "plus-5aaf0f5dbc96",
+    "source": "| a `b |\n+ c | d` |\n\n^ cap\n"
+  },
+  {
+    "id": "plus-5ac9a5f1fec2",
+    "source": "+ | |\n. \n"
+  },
+  {
+    "id": "plus-5b39fb5e2c49",
+    "source": "tail\n| a | b |\ntail\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-5b5a60e5c54e",
+    "source": ":: t\n:  | a |\n   + b |\n+ tail\n"
+  },
+  {
+    "id": "plus-5bb6a9d40061",
+    "source": "~~~\n+ y | c` |\n| x | a `b |\n"
+  },
+  {
+    "id": "plus-5bff53804ff4",
+    "source": "|= Category       |= Item   |\n+ from local      |         |\n> | a |\n> + b |\n+ farms           |         |\n| ^               | Banana  |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-5c3ac8608ff6",
+    "source": "> | a |\n> + b |\n\t\ntail\n^[fn]\n"
+  },
+  {
+    "id": "plus-5c845ce103a0",
+    "source": "| a | b |\n| ^ | c |\n| ^ | c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-5cb4eb58ab17",
+    "source": " \n | a | b |\n | a | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-5cc45215985b",
+    "source": "  | h |\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-5d9aa2f03881",
+    "source": "+ + | |\n| a | b |\n"
+  },
+  {
+    "id": "plus-5dfd3a8a7dd5",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ x\t| y\t|\n+ from local      |         |\n+ farms           |         |\n"
+  },
+  {
+    "id": "plus-5e1e370e69ef",
+    "source": ": | |\n+ |\n| |\n+ c` |\n"
+  },
+  {
+    "id": "plus-5e25f5345658",
+    "source": "| a `b |\n+ c | d` |\n\n"
+  },
+  {
+    "id": "plus-5e6e3b137901",
+    "source": "1. ordered\n  > > quote\n+  \n\n"
+  },
+  {
+    "id": "plus-5e76fe1e5d74",
+    "source": "| a `b |\n+ c` |\n  \n"
+  },
+  {
+    "id": "plus-5eb0d1799577",
+    "source": "|text ^ | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-5ebd5d62fac8",
+    "source": " a |\n+ |\n\n[r][d]\n"
+  },
+  {
+    "id": "plus-5ec33eeb981a",
+    "source": "|  ^ | < |\n+ x | y |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-5f42254d3343",
+    "source": "| a | b |\n+ c | d | \n+ c | d | \n"
+  },
+  {
+    "id": "plus-5f49b9f62f1f",
+    "source": "- - a\n  + \n  >> b\n\n{#i}\nx\n"
+  },
+  {
+    "id": "plus-5f7323237af1",
+    "source": "| a | b |\n# H\n"
+  },
+  {
+    "id": "plus-5fae8039e713",
+    "source": " | a | b |\n- \n+ \n+ c | d |\n"
+  },
+  {
+    "id": "plus-5fc2091b9eb6",
+    "source": "> |= a |\n\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-5fe7047aafc1",
+    "source": "| x | a `b |\n1. + y | cc` |\n"
+  },
+  {
+    "id": "plus-601427e8efc3",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n +          | across lines.      |\n+          | that continues     |\n| Simple   | Single lline.       |\n"
+  },
+  {
+    "id": "plus-601660f12e0b",
+    "source": "| a\t |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-6044236b813e",
+    "source": "| ^ | b |\n+ x | y \n"
+  },
+  {
+    "id": "plus-605a46c5cdf0",
+    "source": ":: t\n> + b |\ntail\n:  | a |\n\t   + b |\n tail\n"
+  },
+  {
+    "id": "plus-6140c7382a98",
+    "source": " + c | d | junk\n | a | b |\n"
+  },
+  {
+    "id": "plus-61e79b2cd2e9",
+    "source": "    | x | y | Ω\n+ c\n> ```x> | a |\n>  + b |\ntail\n"
+  },
+  {
+    "id": "plus-61eb9ce87731",
+    "source": "-  | a |\n  +  |\ntaail\n"
+  },
+  {
+    "id": "plus-6201fab26ed5",
+    "source": "- a\n \nb\n\nx\n"
+  },
+  {
+    "id": "plus-62118eb20394",
+    "source": "| a | b |\n+ c | d |\n+ c | d |\n\n"
+  },
+  {
+    "id": "plus-6221ee9d0dde",
+    "source": "- a\n  ::: box\n  | x | y |Ω\n\n+ c\n"
+  },
+  {
+    "id": "plus-628aecd0ee14",
+    "source": " ~~~\n ~~~\n| a |\n+ |\n"
+  },
+  {
+    "id": "plus-62d213f30f52",
+    "source": "- | a |\n- | a |\n  + |\ntail\n"
+  },
+  {
+    "id": "plus-62e73d29e244",
+    "source": "> > > | a |\n> > > +  |\ntail\ntail\n"
+  },
+  {
+    "id": "plus-62fb5a2d0206",
+    "source": " | a | < |\n| ^ | b |\n+ x | y |\n  + text |\n"
+  },
+  {
+    "id": "plus-630ded0245d4",
+    "source": "- | a |\n  ++ ``` b |\ntail\n"
+  },
+  {
+    "id": "plus-634339fb026c",
+    "source": "+ cont |\n|= a |= b |\n"
+  },
+  {
+    "id": "plus-638f51d828e3",
+    "source": "+ | a |\n+ | a |\n+ |\n+ |\n"
+  },
+  {
+    "id": "plus-63b3e20e3e6c",
+    "source": "- | a | b |\n- + more | d |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-63eeeeb5cf26",
+    "source": " |= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-63fa9d020688",
+    "source": " | | |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-64ab323df487",
+    "source": " > | a |\n> + b |\nt+ ail\n"
+  },
+  {
+    "id": "plus-64c4568f995b",
+    "source": " + one\n"
+  },
+  {
+    "id": "plus-64f873860242",
+    "source": "\t| a | b |\n | -$`x` | - |\n+ |\n"
+  },
+  {
+    "id": "plus-6549be11e342",
+    "source": "- a\n|x|\n{}\n+-  c\n"
+  },
+  {
+    "id": "plus-65797e5d637d",
+    "source": "| < | c |\n| a | b |\n{.x}\n\n+ x | y |\n"
+  },
+  {
+    "id": "plus-65c933389c04",
+    "source": "1. | a | b |\n| - | - |\n+ ::: cont |\n"
+  },
+  {
+    "id": "plus-65e223538f59",
+    "source": "| a | b |\n| a | b |\n  + x\t| y\t|\n  + c |\n"
+  },
+  {
+    "id": "plus-668e6912c5a8",
+    "source": "| a | b |\n+ ```\n|  ^ | c |\n| < | d |\n\t+ x | y |\n"
+  },
+  {
+    "id": "plus-66a210ef9e03",
+    "source": "\n | a | b |\n+ | |\n"
+  },
+  {
+    "id": "plus-66c8bb221c5c",
+    "source": ":  | a |\n  + |\n"
+  },
+  {
+    "id": "plus-6727c3040dbf",
+    "source": "| a `b |\n| a `b |\n  > > quote\n+  \n+ c` |\n"
+  },
+  {
+    "id": "plus-67461056ebc1",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-675ea4981fd6",
+    "source": "- a\n\n  ::: bbox\n   | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-67628c503507",
+    "source": "| ^ | < |\n+ x | y |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-677e752663d7",
+    "source": "> > | a |\n> > + b |\nta^[fn]il\n\n"
+  },
+  {
+    "id": "plus-67a8d359ed81",
+    "source": "| a | b |\n | a | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-680c2738f726",
+    "source": "+ c | d` |\n  | a `b |\n"
+  },
+  {
+    "id": "plus-683734dadb47",
+    "source": "+ x\t| y\t|\n| a |b |\n:::\n"
+  },
+  {
+    "id": "plus-684db89434cd",
+    "source": "> > |{ a |\n> > + b |\n"
+  },
+  {
+    "id": "plus-6862f4221708",
+    "source": ":: t\n:  | a |\n-    + b |\ntal\n"
+  },
+  {
+    "id": "plus-686cb0f582d7",
+    "source": "| a | b |\n| a `b |\n+ | |\n"
+  },
+  {
+    "id": "plus-688b8510505a",
+    "source": "| a | b |\n| a | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-693d97e66c5d",
+    "source": ": |= Category       |= Item   |\n: | Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-6949db9b8566",
+    "source": "| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-69a7e544c06d",
+    "source": "| |\n\t\n_u_+ |\n| |\n"
+  },
+  {
+    "id": "plus-69d271a411f9",
+    "source": "| a  b |\n+ x | y |\n   > > quote\n"
+  },
+  {
+    "id": "plus-6a4650389044",
+    "source": "- > | a |\ntail\n"
+  },
+  {
+    "id": "plus-6aa5ef0217f7",
+    "source": "| a | b |\n"
+  },
+  {
+    "id": "plus-6ab4a1500a47",
+    "source": ":: t\n:: t\n:  > | a |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-6acfa8f34a8d",
+    "source": ":: t\n:  > | a |\n   > + b |\ntail\n:: t\n"
+  },
+  {
+    "id": "plus-6adc4daaaf6e",
+    "source": "+ > > |  a |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-6b44e5d8fa33",
+    "source": "1. ordered\n  > > quote\n+  \n  | h |\n - item\n"
+  },
+  {
+    "id": "plus-6bb25efbaf4d",
+    "source": "+ | %%|\n"
+  },
+  {
+    "id": "plus-6bbec5064093",
+    "source": "|= Feature |= Description        |\n\n| Complex  | A long description |\n+          | across lines.      |\n+          | that continues     |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-6bc1d550a79a",
+    "source": "| ^ | b |\n+ x | y |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-6bd58a67d59a",
+    "source": "  ::: b!`z`ox\n  ::: b!`z`ox\n- a\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-6bd71571a483",
+    "source": " + \nb\n\n| a | b |\nx\n"
+  },
+  {
+    "id": "plus-6beea1d226f8",
+    "source": "|= a |\n|= a |\n| - |\n+ cont |{#i}\n"
+  },
+  {
+    "id": "plus-6befc1e0927b",
+    "source": ":: t\n:  > | a |\n{.x}\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-6cf58ba5bf9b",
+    "source": "- a\n  - b\n\n  | x | y | Ω\n+ x | y |\n+ c\n"
+  },
+  {
+    "id": "plus-6d0ddfb69816",
+    "source": "- a\n  ::: box\n  ::: box\n  | x | y | Ω\n+ c\n+ c:: t\n"
+  },
+  {
+    "id": "plus-6d643ca54d81",
+    "source": "  | h |\n\n- a\n  | v |\n + text |\n"
+  },
+  {
+    "id": "plus-6d68750f39a9",
+    "source": " > > | a |\n> # H\n---\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-6d7fb31f2a44",
+    "source": "| a | b |\n~s~\n| ^ | c |\n+ m\tore | d |\n\n"
+  },
+  {
+    "id": "plus-6dfb3b2bf60d",
+    "source": "| a | b |\n- + c | d |\n"
+  },
+  {
+    "id": "plus-6e00289c17a1",
+    "source": "+ x | y |\n | ^ | b |\n"
+  },
+  {
+    "id": "plus-6e0a22e1327e",
+    "source": "+ more | d |\n"
+  },
+  {
+    "id": "plus-6e0f99571c7b",
+    "source": " | a | b ^[fn]|\n+ c | d | \n"
+  },
+  {
+    "id": "plus-6e1e020138e4",
+    "source": "| a | b |\n| ^ | c |\n| < | d |\t\ntail\n+ x | y |\n"
+  },
+  {
+    "id": "plus-6e228d268379",
+    "source": "| a | b |\n+ c | d |\n{.x}\n"
+  },
+  {
+    "id": "plus-6e3b590e7bef",
+    "source": "| a | b |\n+ more | d |\n+ more | d |\n[d]: u\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-6e408b0e7c66",
+    "source": "| a | b |\n| a | b |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-6e49dbde85bc",
+    "source": "+ x | y |\n| | |\n"
+  },
+  {
+    "id": "plus-6e6d8273924a",
+    "source": "+ xx | y |\n"
+  },
+  {
+    "id": "plus-6ed419bf5326",
+    "source": "> |= a \n> tail\n  > + b |\n"
+  },
+  {
+    "id": "plus-6eda479b962a",
+    "source": "> |= a |\n\n> + b |\ntail\n \n"
+  },
+  {
+    "id": "plus-6f61be85f75a",
+    "source": "- a\n  ::: box\n   | x | y | Ω\n c\n"
+  },
+  {
+    "id": "plus-6fd319019ff1",
+    "source": "\n| a `b |\n+ c` |\n+ \n"
+  },
+  {
+    "id": "plus-6fd657d53e20",
+    "source": "-/i/ a\n | h |\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-70085f6fda1c",
+    "source": "| a | < |\n| ^ | ^[fn]b |\n - + x | y |\n"
+  },
+  {
+    "id": "plus-703fc17b4914",
+    "source": ": t\n:  >a\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-707379010114",
+    "source": "| a | b |\n+ xx\t| y\t|\n+ xx\t| y\t|\n"
+  },
+  {
+    "id": "plus-70a958445d72",
+    "source": "- > | a |\n  + b |\n/i/tail\n"
+  },
+  {
+    "id": "plus-70c850b55373",
+    "source": "> > | a |\n:: term\n> # H\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-717a75940cbb",
+    "source": "| a `b |\n| a `b |\n"
+  },
+  {
+    "id": "plus-71b7f26607ec",
+    "source": " + c | d | \n"
+  },
+  {
+    "id": "plus-71dc348b231c",
+    "source": "| a | b |\n| < | c |\n| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-71ede68f89e0",
+    "source": "| ^ | b |\n + x | y |\n"
+  },
+  {
+    "id": "plus-71f96748bbd2",
+    "source": "  + b |\ntail\n> > > + b |\n\n"
+  },
+  {
+    "id": "plus-723af6d92307",
+    "source": "- a\n  | h |\n  |  |\n  + text |\n\n"
+  },
+  {
+    "id": "plus-72b8315c0b65",
+    "source": "+ cont |\n| | |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-72ed7ceae669",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-72f6899494cb",
+    "source": "| a | b |\n+  xx\t| y\t|\n"
+  },
+  {
+    "id": "plus-7327c454836e",
+    "source": "- | a |\n  +|\n:::\ntail\n"
+  },
+  {
+    "id": "plus-7335f5a34f62",
+    "source": "| a | b |\n- a\n  + b |\n+ x| y |\n"
+  },
+  {
+    "id": "plus-735f66466278",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n> | Simple   | Single line.       |\n> +          | across lines.      |\n"
+  },
+  {
+    "id": "plus-73720e3d3bbb",
+    "source": "- a\n  ::: bo@userx\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-738612a05cca",
+    "source": "> > + b |\n > > | a |\ntail\n"
+  },
+  {
+    "id": "plus-73b6bf5327ac",
+    "source": "> > | a |\n%%\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-73dff699cae5",
+    "source": "- a\n  ::: box\n  | x | y | Ω\n+c\n+ more | d |\n"
+  },
+  {
+    "id": "plus-74062b56b796",
+    "source": "|= Category     :::  |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n + farms           |         |\n | ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-7407db28a976",
+    "source": "- a\n  ::: box\n  | x | y | Ω\n++  c\n"
+  },
+  {
+    "id": "plus-741dc26bcc2b",
+    "source": " | a | b |\n| - | - |\n+ |\n"
+  },
+  {
+    "id": "plus-74242bfbb6d2",
+    "source": "| a |\n+ \n"
+  },
+  {
+    "id": "plus-7459d22a1c05",
+    "source": "- a\n+ \nb\n\n~~\n x\n"
+  },
+  {
+    "id": "plus-74916670756e",
+    "source": "|  |\n+ |\n| |\n"
+  },
+  {
+    "id": "plus-749cd837facb",
+    "source": "- | a |\n  + |\n+ > q\ntail\n"
+  },
+  {
+    "id": "plus-74abffa86697",
+    "source": "- > | a |\n- > | a |\n\t  + b |\ntail\n"
+  },
+  {
+    "id": "plus-75388f4338b3",
+    "source": "|= Category       |= Item   |\n+ from local      |         |\n- | Fresh Fruits    | Apple   |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-75b0fe966284",
+    "source": "| a | b |\n[^f]\n| ^ | c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-76a1b684fca9",
+    "source": "> > > | a |\ntail\n> > > + b |\n"
+  },
+  {
+    "id": "plus-76c88f25bdc0",
+    "source": "::: t\n\n:  | a |\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-7704898a458a",
+    "source": "\t- |= a |\n\t  + b |\ntail\n"
+  },
+  {
+    "id": "plus-77196416f6ef",
+    "source": "|  | b |\n| ^ | c |\n| < | d |\n"
+  },
+  {
+    "id": "plus-772791b41eab",
+    "source": "| a | b |\n| a | b |\n| ^ |{} c |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-775ed0c72987",
+    "source": "1. ordered\n  > > quote\n+~~~  \n- item\n"
+  },
+  {
+    "id": "plus-7760858c6dcb",
+    "source": "- a\n  - b\n  | x | y | Ω\n+ + c\n"
+  },
+  {
+    "id": "plus-77befa01048b",
+    "source": "|= Category       |= Item   |\n> | Fresh Fruits    | Apple   |\n  + from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-77f045907c00",
+    "source": "| | ||\n+ x | y |\n"
+  },
+  {
+    "id": "plus-78113ad3f43c",
+    "source": "| a | b  |\n+c | d | \n"
+  },
+  {
+    "id": "plus-783130d415b4",
+    "source": "| a | b |\n+ c | d \n+ c | d \n"
+  },
+  {
+    "id": "plus-786dd14bf8d0",
+    "source": "  + b |\n- tail\n"
+  },
+  {
+    "id": "plus-788b783a6259",
+    "source": "/i/\n| ^ | c |\n| < | d |\n| a |\n|= b |\n1. + c |\n"
+  },
+  {
+    "id": "plus-789c694e5ca2",
+    "source": "| a | b |\n: + cont |\n"
+  },
+  {
+    "id": "plus-78e606d31a87",
+    "source": "- |= a |\ntail\n  + b |\n"
+  },
+  {
+    "id": "plus-78f13d61006b",
+    "source": "+ more | d |\n| a | b |\n{}\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-797988690096",
+    "source": "- a\n  + b |\n:  d  + b |\ntail\n"
+  },
+  {
+    "id": "plus-79ac8a9ddf68",
+    "source": "| a | b |\n+ c  d |\n"
+  },
+  {
+    "id": "plus-79f2fc39cfdc",
+    "source": "- foo\n  - +\n{}\n  + x\n"
+  },
+  {
+    "id": "plus-7a570f182882",
+    "source": "- a\n  + b |\nt*[A]: bail\n"
+  },
+  {
+    "id": "plus-7a66b6aa6030",
+    "source": "| a |\n\n>> \n+ |\n"
+  },
+  {
+    "id": "plus-7ab44b649e95",
+    "source": ":: t\n:  >  a\n   > + b |\n- \ntail\n"
+  },
+  {
+    "id": "plus-7ae779740d4d",
+    "source": "> > + b |\n> > | a |\ntail[^f]: t\n"
+  },
+  {
+    "id": "plus-7b41eec6fc10",
+    "source": "> | a |\n> + b |\ntail\n{\n"
+  },
+  {
+    "id": "plus-7bffc5dbaec5",
+    "source": "+ |\n|| a |\n"
+  },
+  {
+    "id": "plus-7c072e4dc264",
+    "source": " a\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-7c4792c3545d",
+    "source": "\n- a\n\t|x|\n\n+ c\n"
+  },
+  {
+    "id": "plus-7ca58a38adb0",
+    "source": "- |  |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-7caa129f45bc",
+    "source": "@user\n| x | a `b ||\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-7cb84fa766a3",
+    "source": "| a*[A]: b | b |\n+x\t| y\t|\n"
+  },
+  {
+    "id": "plus-7cd1fc9cb511",
+    "source": "- > | a |\n  + b |\n1. ttail\n1. ttail\n"
+  },
+  {
+    "id": "plus-7d0f104fcecd",
+    "source": "- a\n++ \n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-7d896a900f19",
+    "source": "| a | b |\n+ c | d |\n:::\n|= Category       |= Item   |\n\n"
+  },
+  {
+    "id": "plus-7d96b2d083d3",
+    "source": "| a | b |\n| ^ | c |\n| < | d |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-7dd106b5921a",
+    "source": "| a | b |\n| < | c |\n> \n+ x | y \n"
+  },
+  {
+    "id": "plus-7e1c0037c9b1",
+    "source": "| |\n- + |\n- + |\n- | |\n"
+  },
+  {
+    "id": "plus-7e59267e8456",
+    "source": "\n| a | b |\n\n| ^ | c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-7edc53b73443",
+    "source": ":: t\n :  a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-7eedd82a93be",
+    "source": " |= Category       |= Item   |\n+ from local      |         |\n> + farms           |         |\n  | ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-7f2b2eb5afdb",
+    "source": ": - a\n     | x | y | Ω\n| a | b |\n | ^ | c |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-801d39ff394e",
+    "source": "^[fn]\n a | b |\n| ^ !`z`| c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-8074f285eb94",
+    "source": "| ^ | c |\n| < | d |\n- foo\n  - +\n  - +\n  + x\n[^f]: t\n"
+  },
+  {
+    "id": "plus-80de61bd0c55",
+    "source": "|= Feature  |= Description        |\n``\n| Complex  | A long description |\n +          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-80e0ffacfe64",
+    "source": "1. ordered\n  > > quote\n\n^ cap\n+  \n- iitem\n"
+  },
+  {
+    "id": "plus-8117461869fb",
+    "source": "| a | < |\n| ^ | b |\n1. + x | y |\n"
+  },
+  {
+    "id": "plus-815393873e1c",
+    "source": "| a `{}b |\n+ c` |\n+ c` |\n"
+  },
+  {
+    "id": "plus-816c0aecf4b5",
+    "source": "</#h>\n| a | b |\n| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-8183b02dc7c9",
+    "source": "|= b |\n+  c |\n"
+  },
+  {
+    "id": "plus-81875c93fd5a",
+    "source": "- > | a |\n  + b |\n: tail\n  {#i}\n"
+  },
+  {
+    "id": "plus-81a9da77272f",
+    "source": "+ :: t\n    > + b |\n:  > a\ntail\n"
+  },
+  {
+    "id": "plus-823f80ed7016",
+    "source": "| a |\n|= b |\n+ c |\n> > + b |\n"
+  },
+  {
+    "id": "plus-825e1dea2d29",
+    "source": "> | a |\n!`z`\n> + b |\n tail\n"
+  },
+  {
+    "id": "plus-82cbda8c1a27",
+    "source": ":: t\n:: t\n:  a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-82e77748384c",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n +          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-82f585970035",
+    "source": "- | a |\n- | a |\n  + b |\n _u_ + |\ntail\n"
+  },
+  {
+    "id": "plus-830f620e133c",
+    "source": "> > | # Ha |\n| a | b |\n> > + b |\n> + x\ntail\n"
+  },
+  {
+    "id": "plus-8327018d02ea",
+    "source": "   + b |\ntail\n"
+  },
+  {
+    "id": "plus-832857bc9227",
+    "source": "+ c | d# H` |\n"
+  },
+  {
+    "id": "plus-8384179bb632",
+    "source": "- a\n+ \nb\n\n\n\nx\n"
+  },
+  {
+    "id": "plus-8390243339fc",
+    "source": ":: t\n:  a\n:  a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-83fb0828955b",
+    "source": "| a | b |\n+ c\n+ x | y |\n"
+  },
+  {
+    "id": "plus-84b55537ce8a",
+    "source": "| ^--- | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-84b9fafe3c91",
+    "source": "| a `b |> + x\n+ c | d` |\n"
+  },
+  {
+    "id": "plus-850d91eebc29",
+    "source": "   > + b |\n:: t\n:  > a\ntail\ntail\n"
+  },
+  {
+    "id": "plus-854ab992e077",
+    "source": "> | a \n> + b |\ntail\n[r][d]\n"
+  },
+  {
+    "id": "plus-854fe2be66e5",
+    "source": "- | a |\n  + b |\n"
+  },
+  {
+    "id": "plus-8585c80641d4",
+    "source": "| ^ | b |\n| ^ | b |\n+  x | y |\n"
+  },
+  {
+    "id": "plus-862ea704e5cf",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n> > + b |\n*[A]: b\n+ from locall      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-8687a97c2717",
+    "source": "| a | b |\n+ | |\n+ | |\n"
+  },
+  {
+    "id": "plus-86b6562b8f60",
+    "source": "| a | b |\n+ more | d |\n | a | b |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-86c54b09c41e",
+    "source": "+ c | d |\n| a | b |\n\n"
+  },
+  {
+    "id": "plus-86cfd0c7da6f",
+    "source": "| ^ | < |\n1. + x | y |\n"
+  },
+  {
+    "id": "plus-8704b5f61dba",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ farms           |         |\n| ^              | Banana  |\n"
+  },
+  {
+    "id": "plus-870985cff77a",
+    "source": "> |= a |\n:::tail\n> + b |\n* \n"
+  },
+  {
+    "id": "plus-8717fb189dfe",
+    "source": "| a | b |\n+ x | y |\n\n+ x[l](u) | y |\n"
+  },
+  {
+    "id": "plus-871a4ed20887",
+    "source": "| a | b |\n  %%++  c | d | \n"
+  },
+  {
+    "id": "plus-879b9160a9d4",
+    "source": "\n|= a |\n| - |\n+ ont |\n"
+  },
+  {
+    "id": "plus-87bc7a700f4e",
+    "source": "| a | b |\n| - | - |\n| - | - |\n+ |\n\n"
+  },
+  {
+    "id": "plus-8805597f0e4e",
+    "source": ">  + b |\n>> |= a |\ntail\n"
+  },
+  {
+    "id": "plus-885c9f023210",
+    "source": ":: t\n:  a\n  + b |\n | a |\ntail\n"
+  },
+  {
+    "id": "plus-886bf18f62c4",
+    "source": "- a\n | h |\n | h |\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-88d7789bced9",
+    "source": "> > + b |\n> > | a |\ntil\n"
+  },
+  {
+    "id": "plus-88f6725f0617",
+    "source": "+oe\n+ ttwo\n"
+  },
+  {
+    "id": "plus-893499386fea",
+    "source": "> |= a |\n> + b |\n| a `b |\n+ c | d` |\ntail\n"
+  },
+  {
+    "id": "plus-893a050403ba",
+    "source": "| - |\n|= a |\n+ cont |\n"
+  },
+  {
+    "id": "plus-8950d7cfc583",
+    "source": "1. ordered\n{\n  > > quote\n+  \n\n- item\n"
+  },
+  {
+    "id": "plus-89a9efd518b0",
+    "source": "| a | < |\n\n| ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-89dc8ece0117",
+    "source": "| |\n+ |\n+ |\n\n| |\n"
+  },
+  {
+    "id": "plus-8a11e2738e8b",
+    "source": " | ||\n+ x | y |\n"
+  },
+  {
+    "id": "plus-8a3c7fcaef2d",
+    "source": "  + x\n|= a |= b |\n+ cont text|\n"
+  },
+  {
+    "id": "plus-8aa3e945a1e6",
+    "source": ":  > | a |\n:: t\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-8aadc95f9a36",
+    "source": " -- |= a |\n  + b |\ntail\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-8ad739d71548",
+    "source": "|x|\n|x|\n- a\n+ c\n"
+  },
+  {
+    "id": "plus-8b27daf9e676",
+    "source": "| |\ntail\n* \n+ |\n| |\n"
+  },
+  {
+    "id": "plus-8b3b9ea0a5f4",
+    "source": " - a\n  + \n  - b\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-8b43d8ca41dc",
+    "source": "| a | b |\n\n+ x | @usery |\n"
+  },
+  {
+    "id": "plus-8c0a3eddc1c3",
+    "source": "- a\n- a\ntail\n  + b |\n"
+  },
+  {
+    "id": "plus-8c34758caeb2",
+    "source": ": - a\n:: term\n    |x | y | Ω\n + c\n"
+  },
+  {
+    "id": "plus-8c5c3cc12855",
+    "source": "| a | b |\n:  | a |\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-8c673da3dd44",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n| Simple   | Single line.       |\n+          | that continues    -  |\n"
+  },
+  {
+    "id": "plus-8c6a913631ce",
+    "source": ":: t\n:  | a |\n   + b |\nttail\n"
+  },
+  {
+    "id": "plus-8c96fd9c9366",
+    "source": "- a\n1. tail\n      + b |\n"
+  },
+  {
+    "id": "plus-8ca51ad695e7",
+    "source": "| a | < |\n| ^ | b |\n+ x | y |\n + x | y |\n"
+  },
+  {
+    "id": "plus-8cd099a0c46f",
+    "source": "1. |= a |\n1. | - ||\n+ cont |\n"
+  },
+  {
+    "id": "plus-8db55a64f46c",
+    "source": "+ one\n+          | across lines.      |\n| Simple   | Single line.       |\n+ two\n"
+  },
+  {
+    "id": "plus-8ddb3e06a0a9",
+    "source": "| a `b |\n+ c` |\n| - | - |\n"
+  },
+  {
+    "id": "plus-8e0b8d1f900a",
+    "source": "- |= a |\n  + b |\ntail\n\n\n"
+  },
+  {
+    "id": "plus-8e99b9b682cb",
+    "source": "|= a |\n| - |\n\n> + cont |\n"
+  },
+  {
+    "id": "plus-8ee12cc7fb34",
+    "source": "1. :: t\n    + b |\ntail\n"
+  },
+  {
+    "id": "plus-8ef7b72cb911",
+    "source": ":: term\n:: term\n: - a\n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-8f15c9aafa05",
+    "source": "- a\n  \t- b\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-8fdfd10aec09",
+    "source": ":  > a\n:: t\n:  | a |\ntail\n\n   + b |\n"
+  },
+  {
+    "id": "plus-901ab7378240",
+    "source": "+ x | y |\n:: t\n:  | a |\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-9029f27d442a",
+    "source": "| a `b |\n+ c | d`  |\n"
+  },
+  {
+    "id": "plus-90d0981c9f29",
+    "source": "- a\n  ++ x b |\ntail\n"
+  },
+  {
+    "id": "plus-90dcfa7b64f3",
+    "source": "+ one\n+  two\n"
+  },
+  {
+    "id": "plus-90e05278c3fc",
+    "source": "|= Feature |= Description        |\n +          | that continues     |\n| Complex  | A long description |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-90fff6bcce93",
+    "source": "\n| a | b |\n+ more | d |\n1. | ^ | c |\n"
+  },
+  {
+    "id": "plus-916e36c87fb5",
+    "source": "-- a\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-920c57ce2a3d",
+    "source": "|a | b |\n| - | - |\n+ |\n"
+  },
+  {
+    "id": "plus-92572fc52517",
+    "source": "|= a ||= b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-9275c82f6673",
+    "source": " |= a |= b |\n| a | b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-92b6ad1da6a7",
+    "source": "- a\n  ::: box\n  | x | y | Ω\n+  c\n"
+  },
+  {
+    "id": "plus-92bc83220e4a",
+    "source": "\n|| a | b |\n+ c | d | \n\n"
+  },
+  {
+    "id": "plus-9378e7601f49",
+    "source": "> > > | a |\n> > > + b |\ntail\ntail\n [d]: u\n"
+  },
+  {
+    "id": "plus-939245fe59b2",
+    "source": "- | a |\n  + >> |\ntail\n"
+  },
+  {
+    "id": "plus-93a6a6062209",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| a | b |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-93afe0940e16",
+    "source": ":: term\n: - a\n    | x | y | Ω\n\n c\n"
+  },
+  {
+    "id": "plus-941fded537fa",
+    "source": "  | h |\n- a\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-94dd194c9983",
+    "source": ":  | a | b |\n: + x | y |\n"
+  },
+  {
+    "id": "plus-94eed4e0bd99",
+    "source": "> - a\n\t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-9536e34d3911",
+    "source": "+ y | c` |\n{\n+ | |\n"
+  },
+  {
+    "id": "plus-9551dab55b12",
+    "source": ": :: t\n  :  > a\n     > + b |\ntail\n"
+  },
+  {
+    "id": "plus-963905c9d299",
+    "source": "|  |\n"
+  },
+  {
+    "id": "plus-96a35d7d4040",
+    "source": "\n- a\n\t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-96cb31329382",
+    "source": "|[d]: u a | b |\n| ^ | c |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-973b7174926e",
+    "source": " a\n  + b |\ntal\n"
+  },
+  {
+    "id": "plus-97530b18ae18",
+    "source": "| a | b |\n| - | - |\n\n+ |\n"
+  },
+  {
+    "id": "plus-976d6ff171b2",
+    "source": "- foo\n  - +\n| a | b |\n  + x\n"
+  },
+  {
+    "id": "plus-97c70059ff2d",
+    "source": "|= a |= b |\n{\n:: t\n:  > a\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-97cce436b3eb",
+    "source": "|= Category       |= Item   |\n|Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-9842e33cd316",
+    "source": "|= Category       |= Item !`z`  |\n| Fresh Fruits    | Apple   |\n+ farms           |         |\n+ from local      |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-986e21b194d7",
+    "source": "- a\n  ::: box\n | x | y | Ω\n+ c\n+ c\n"
+  },
+  {
+    "id": "plus-98b7d8ce27da",
+    "source": " | ^ | < |\n + x | y |\n"
+  },
+  {
+    "id": "plus-98c900eeffd2",
+    "source": "| | |\n +x | y |\n"
+  },
+  {
+    "id": "plus-98dd72442815",
+    "source": "- a\n+1.  \nb\n\tx\n"
+  },
+  {
+    "id": "plus-98ff6e7bbfb7",
+    "source": "- > | a |\n   b |\ntail\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-990f76a3a3a3",
+    "source": "| ^ | < |\n1. + x | y |\n1. + x | y |\n"
+  },
+  {
+    "id": "plus-998ff8bcb6e8",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Aple   |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-99a54bd12128",
+    "source": "| a|\n+ ||\n"
+  },
+  {
+    "id": "plus-99ee09fe3e59",
+    "source": "- a\n   - b\n  | x | y | Ω\n\t+ c\n"
+  },
+  {
+    "id": "plus-9a8cabb7f528",
+    "source": "|= Feature |= Description        |\n|= Feature |= Description        |\n| Compex  | A long description |\n+          | that continues     |\n+          | actextross lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-9b3b01eef9be",
+    "source": "  > |= a |\n``\n  > + b |\n  tail\n"
+  },
+  {
+    "id": "plus-9b59d58b5cda",
+    "source": "> > | a |\n> > | a |\n> # H\n#tag\ntail\n"
+  },
+  {
+    "id": "plus-9b8bacf70321",
+    "source": "- a\n - b\n  |   x | y | Ω\n```\n+ c\n"
+  },
+  {
+    "id": "plus-9bdd2bf3430a",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n:  d\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-9c105f0dbf8c",
+    "source": "| a | b |\n+ x\t| y\t|\n+ x\t| y\t|\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-9c4405db99d8",
+    "source": "\n | a | b |\n"
+  },
+  {
+    "id": "plus-9cfc3f0ae28e",
+    "source": "| a | < |\n- \n| ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-9d0951092e0c",
+    "source": "| a `b |\ntail\n+ c` |\n\n"
+  },
+  {
+    "id": "plus-9d23eff7c18c",
+    "source": "| a | b |\n%%: | ^ | c \n  + more | d |\n"
+  },
+  {
+    "id": "plus-9d2a4e1920fb",
+    "source": "| a | b |\n| ^ | c |\n| | |\n+ x :::| y |\n"
+  },
+  {
+    "id": "plus-9d3234d0d5c9",
+    "source": "> > > | a |\n> > + x> + b |\ntail\n"
+  },
+  {
+    "id": "plus-9d372ed3afad",
+    "source": "| a | b |\n\n+ x | y |\n"
+  },
+  {
+    "id": "plus-9d4c0aa27a4a",
+    "source": "| - | - |\n| a | b |\n+  cont |\n"
+  },
+  {
+    "id": "plus-9d9c5eb6e3fe",
+    "source": "+ y | c` |\n| x | a `b |\n"
+  },
+  {
+    "id": "plus-9e32a8e33046",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n::::\n+          | that continues     |\n+          | that continues     |\n+          | across lines.      |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-9e50af51aa0e",
+    "source": "|= a |\n| - |\n| - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-9ee379faecf7",
+    "source": "- foo\n  - +\n"
+  },
+  {
+    "id": "plus-9f01abe74db9",
+    "source": "\n> > | a |\n> > + b*[A]: b |\n- tail\n"
+  },
+  {
+    "id": "plus-9f896245edd1",
+    "source": "| a [l](u)| b |\n+ c` |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-9f8ac68b7d99",
+    "source": ":: t\n:_u_  a\n   + b |\ntil\n"
+  },
+  {
+    "id": "plus-9fc3951721c3",
+    "source": "- a\n+ \n\n\nx\n"
+  },
+  {
+    "id": "plus-9fc3dca45828",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-9fcfdfad3154",
+    "source": "\n\n- | a |\n|= a |= b |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-9ffe2385af32",
+    "source": "^[fn]- a\n  | h |\n  | v |\n    + text |\n"
+  },
+  {
+    "id": "plus-a00663ebbe67",
+    "source": ":: t\n1. :  > | a |\n   > + b |\n:  | a |\n   + b |\n  tail\n"
+  },
+  {
+    "id": "plus-a01cfea9f5ec",
+    "source": "| x |a ` |\n| x |a ` |\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-a0add7633960",
+    "source": " - | a |\n  + |\ntail\n"
+  },
+  {
+    "id": "plus-a0f3bdfd1f76",
+    "source": "\n1. ordered\n  > > quote\n+  \n- item\n"
+  },
+  {
+    "id": "plus-a0f7cf7091d8",
+    "source": "::  t\n*[A]: b\n:  > | a |\n   > + b |\n> |= a |\ntail\n"
+  },
+  {
+    "id": "plus-a0feb37efe3f",
+    "source": "\t:: t\n\t:  a\n   + b  |\ntail\n"
+  },
+  {
+    "id": "plus-a10f02d56065",
+    "source": "| a | < |\n| a | < |\n| a | < |\n| ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-a1180ba79c43",
+    "source": "| a | b |\n+ x | y |* \n"
+  },
+  {
+    "id": "plus-a1209666d8e1",
+    "source": " |= a |\n| - |\n\n+ cont |\n"
+  },
+  {
+    "id": "plus-a149d2b0d7d9",
+    "source": "> > |= a |\n  > + b |\ntail\n"
+  },
+  {
+    "id": "plus-a15f98443697",
+    "source": "> | a |\n> + b |\n:: t\n:  > | a |\n| a | b |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-a160e2d6523b",
+    "source": "- | a  |\n  + b |\n+ x\t| y\t|\ntail\n"
+  },
+  {
+    "id": "plus-a18421f30ad6",
+    "source": " + y | c` |\n| x | a `b |\n"
+  },
+  {
+    "id": "plus-a1cde10b93a2",
+    "source": "- a\n  | v |\n  | h |\n  + text |\n"
+  },
+  {
+    "id": "plus-a2300c16b877",
+    "source": ":: /i/term\n:- a\n    | x | y | Ω\n"
+  },
+  {
+    "id": "plus-a27fafedeaa0",
+    "source": "| a | < |\n| a | b |\n| ^ | b |\n+ x | %%%y  |\n"
+  },
+  {
+    "id": "plus-a2d966ee1e00",
+    "source": "1.  - > | a |\n1.   + b |\ntail\n"
+  },
+  {
+    "id": "plus-a310befcf543",
+    "source": "> > > | a |\n\n > > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-a3399fc88ce7",
+    "source": "> > > |+  a |\n> > > + b |\ntaiil\n"
+  },
+  {
+    "id": "plus-a377fc867248",
+    "source": "- a\n ::: box\n  | x | y |   Ω\n+ c\n"
+  },
+  {
+    "id": "plus-a388782f91e1",
+    "source": "| |\n+ |\n"
+  },
+  {
+    "id": "plus-a3c388b899c3",
+    "source": "^[fn]\n|=a |= b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-a3cd383aab5f",
+    "source": "|= Category       |= Item   |\n>> \n| Fresh Fruits    | Apple   |\n+ farms           |         |\n* \n+ from local      |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-a3dcbdfbb403",
+    "source": "+ c | d | junk\ntail\n| a | b |\n"
+  },
+  {
+    "id": "plus-a3ec0f6acef5",
+    "source": "|= Category       |= Item  |\n  | Fresh Fruits    | Apple   |\n  + from local      |         |\n  + farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-a41c8b73bd5e",
+    "source": "- a\n\n  + b |\n tail\n"
+  },
+  {
+    "id": "plus-a42eb3665802",
+    "source": "|= Feature |= Description        |\n+ from local      |         |\n+ farms           |         |\n| Complex  | A long description |\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-a469eabbcc80",
+    "source": "| a `b |\n+ > q\n| a `b |\n+ c | d` |\n"
+  },
+  {
+    "id": "plus-a4931cb42a3d",
+    "source": "- a\n \nb\n\t1. \n\t   x\n"
+  },
+  {
+    "id": "plus-a4f6bab83e7a",
+    "source": "- a\n\n+ \nb\n\nxx\n"
+  },
+  {
+    "id": "plus-a4fe40f57ef7",
+    "source": "- > | a |\ntail~~~\n  + b |\n"
+  },
+  {
+    "id": "plus-a524c5552ab8",
+    "source": "| ^ | < |\n- \n\n+ x | y |\n| x | a `b |\n"
+  },
+  {
+    "id": "plus-a5948bf0283d",
+    "source": "| ^ | < |\n| ^ | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-a5c64a7ff5ba",
+    "source": "- | a |\n + b |\ntail\n"
+  },
+  {
+    "id": "plus-a5f833dc298e",
+    "source": " - a\n1~s~.   + b |\ntail\n"
+  },
+  {
+    "id": "plus-a6089c401ff2",
+    "source": ":: t\n:  a\n   + b |\n+ c | d | junk\ntail\n"
+  },
+  {
+    "id": "plus-a6194d05ee1b",
+    "source": "| a |\n| a |\n+ |\n_u_\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-a6620a1e6b53",
+    "source": "- | a |\n  + b |\n  + b |\ntail\n\t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-a68400f28dd2",
+    "source": "- a\n+ c` |\n"
+  },
+  {
+    "id": "plus-a6a571c975a4",
+    "source": "- foo\n  - ++\n  + x\n> \n"
+  },
+  {
+    "id": "plus-a73282e0b876",
+    "source": "| a  b |\n | - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-a73a40bf13b8",
+    "source": "+ one\n+ one\n+ two\n"
+  },
+  {
+    "id": "plus-a7ede6e9ccfd",
+    "source": " - > | aa |\ntail\n  + b |\n"
+  },
+  {
+    "id": "plus-a880a56eb9f9",
+    "source": "| a | << |\n| ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-a8d9ade27934",
+    "source": "| a |b |\n\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-a8f1111b0dad",
+    "source": "> > > + b ||\n> > > | a |\ntail\n\n"
+  },
+  {
+    "id": "plus-a8f59c48c3c5",
+    "source": "+ c |  d |\n^[fn]\n"
+  },
+  {
+    "id": "plus-a97bf0f04d8c",
+    "source": "1. |= a |\n   | - |\n"
+  },
+  {
+    "id": "plus-a9adf0d96592",
+    "source": "| a | b |\n+ x\t| y\t|\n:  a\n:: t\n\n"
+  },
+  {
+    "id": "plus-aa6c7b1ccfcd",
+    "source": "| a |\n+ |\n+ |\n"
+  },
+  {
+    "id": "plus-aad07a2e8535",
+    "source": "+ | a | b |\n| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-aaf3b9385db3",
+    "source": "+|\n"
+  },
+  {
+    "id": "plus-aafa1d728cf9",
+    "source": " | a | b |\n"
+  },
+  {
+    "id": "plus-ab1bace8acc0",
+    "source": "1. ordered\n+  \n- item\n"
+  },
+  {
+    "id": "plus-ab4dd5938aa7",
+    "source": "| a | b |\n+ c  | d | \n> + x\n"
+  },
+  {
+    "id": "plus-ab50314fa09a",
+    "source": "- a\n  - b\n | x | y |:: t Ω\n\n+ c\n"
+  },
+  {
+    "id": "plus-ab53add43762",
+    "source": "| a `b |\n+ c  d` |\n"
+  },
+  {
+    "id": "plus-ac1f14cadb21",
+    "source": "| a `b |\n+ c` |\n- \n"
+  },
+  {
+    "id": "plus-ac4da013d34a",
+    "source": " | a | b |\n| a | b |\n+ c | d | \n\n"
+  },
+  {
+    "id": "plus-ac7440e7cde3",
+    "source": "|= Category       |= Item   |\n+ c\n| Fresh Fruits    | Apple   |\n+ farms           |         |\n+ from local      |         |\n| ^               | Banana   |\n"
+  },
+  {
+    "id": "plus-acbd361c7c2a",
+    "source": "| a | b |\n+ > q\n+ {#i}c | d | \n"
+  },
+  {
+    "id": "plus-acfc43eb5b6a",
+    "source": " |*b* a |\n+ |\n"
+  },
+  {
+    "id": "plus-ad0876ee0315",
+    "source": "- > | a |\n+   + b |\n  til\n"
+  },
+  {
+    "id": "plus-ad0951dc317a",
+    "source": " | a | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-ad7d4a01f1ff",
+    "source": "::+  term\n:  - a\n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-ad8ea61ae9e3",
+    "source": "| a | < |\n| ^ | b |\n + x | y |\n"
+  },
+  {
+    "id": "plus-ada6c790fc8f",
+    "source": " :: t\n:  | a |\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-adbaacd25ff5",
+    "source": "| |+ ``` |\n+ x | y |\n\n"
+  },
+  {
+    "id": "plus-adf63be7fda8",
+    "source": "| a | b |\n| < | d |\n%%%| ^ | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-ae59eb259781",
+    "source": "- a\n  ::: box\n   | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-af4efdff13bb",
+    "source": "+ c | d` |\n"
+  },
+  {
+    "id": "plus-b004ba311581",
+    "source": "  + |  |\n"
+  },
+  {
+    "id": "plus-b014cab0c1c3",
+    "source": "| x | a `b |\n+ y | c` |\n  +  b |\ntail\n"
+  },
+  {
+    "id": "plus-b05a4d0d5db8",
+    "source": ":: term\n: - a\n    | x | y | Ω\n+  c\n"
+  },
+  {
+    "id": "plus-b0bba932ea0a",
+    "source": "| a | b |\n| ^ | c |\n+ more | d |\n+ more | d |\n+ x\n"
+  },
+  {
+    "id": "plus-b0c7c8bf595f",
+    "source": "\n- | a |\n  + |\ntail\n"
+  },
+  {
+    "id": "plus-b0dabc3d347d",
+    "source": "- a\n\t|x|\n  + c\n"
+  },
+  {
+    "id": "plus-b0dd751810b9",
+    "source": "\n|= a |\n| - |\n+ cont |\n+ cont |\n"
+  },
+  {
+    "id": "plus-b1b211412d87",
+    "source": "- | ^ | b |\n"
+  },
+  {
+    "id": "plus-b1c44706734e",
+    "source": "  + b |\n- | a /i/|\ntail\n"
+  },
+  {
+    "id": "plus-b2ae8f2072f4",
+    "source": "| a | b |\n| ^ | c |\n+ more | d \n#H\n"
+  },
+  {
+    "id": "plus-b2bd0cc3bbfd",
+    "source": "| a | b |\n| - | - |\n> + |\n"
+  },
+  {
+    "id": "plus-b2c066af1ee4",
+    "source": "-{} a\n\t|x|\n+ c\n"
+  },
+  {
+    "id": "plus-b2e9e04d76df",
+    "source": "| a |\n|= b |\n + c |\n"
+  },
+  {
+    "id": "plus-b2ed9cdebe5a",
+    "source": " + |\n| a |\n"
+  },
+  {
+    "id": "plus-b35c938a1bb5",
+    "source": "> + x\n+ two\n+ one\n"
+  },
+  {
+    "id": "plus-b3e10d4b94dc",
+    "source": "  `| | |\n\n  + x | y |\n"
+  },
+  {
+    "id": "plus-b46ba07b486f",
+    "source": "- foo\n  - +\n  - +\n  + x\n"
+  },
+  {
+    "id": "plus-b4788d187a4c",
+    "source": "| a | b |\n| - | - |\n++ cont |\n"
+  },
+  {
+    "id": "plus-b49becac0b59",
+    "source": "| x | a `b |\n\n + y | c` |\n"
+  },
+  {
+    "id": "plus-b4c067b39b4d",
+    "source": "- a\ntail\n    + b |\ntail\n"
+  },
+  {
+    "id": "plus-b4ddb62556a4",
+    "source": "| a |\n+ c |\n|= b |\n"
+  },
+  {
+    "id": "plus-b576186e14d4",
+    "source": "+ x | y |\n\n"
+  },
+  {
+    "id": "plus-b58f01a86f56",
+    "source": "- a\n  + b |\n`\n\t tail\n"
+  },
+  {
+    "id": "plus-b5f86b7a0eb5",
+    "source": "  + b |\n- > | a |\ntail\n"
+  },
+  {
+    "id": "plus-b5fd0a5cb998",
+    "source": "| x | a `b |\n+ y | c` |\n\n"
+  },
+  {
+    "id": "plus-b680f5476afb",
+    "source": "| a | b |\n+ c | d | junk\ntail\n"
+  },
+  {
+    "id": "plus-b6a3b3d0221d",
+    "source": "| x | a ``b |\n  + x\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-b6e49b6455d5",
+    "source": "> > > | a |\n> > > + b |\n"
+  },
+  {
+    "id": "plus-b760edba2583",
+    "source": "- | a |\n  | x | y | Ω\n+ c\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-b7ab24d7d743",
+    "source": "| a | b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-b7de21780b5b",
+    "source": "1. | a | b |\n| ^ | c |\n| ^ | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-b89546c65795",
+    "source": "|= a |\n| - |\n  \n  + cont |\n"
+  },
+  {
+    "id": "plus-b896857948c3",
+    "source": "|= a ||\n| - |\n  + cont |\n"
+  },
+  {
+    "id": "plus-b8984094aa2f",
+    "source": " | a `b |\n+ c | d` |\n"
+  },
+  {
+    "id": "plus-b8e734cd3e86",
+    "source": "\n| ^ | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-b9152ac161de",
+    "source": "- > | a |\n  + b |\ntt``ail\n"
+  },
+  {
+    "id": "plus-b967032cf302",
+    "source": "- a\n- a\n  - b\n  | x | y  Ω\n+ c\n"
+  },
+  {
+    "id": "plus-b98f2cc70863",
+    "source": "- |= a |\n- |= a |\n  + b |\n taiil\n"
+  },
+  {
+    "id": "plus-b9a5a0f9a044",
+    "source": "+ more | d |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-ba0480cc67fb",
+    "source": ":: t\n:  > | @usera |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-ba7fe5a66393",
+    "source": ":: t\n- a\n- a\n  ::: box\n:  a\n   + b |\n\ntail\n"
+  },
+  {
+    "id": "plus-baa850a0968e",
+    "source": "- > | a |\n  + b |\n tail\n"
+  },
+  {
+    "id": "plus-babd7f349089",
+    "source": "> + b |\ntail\n"
+  },
+  {
+    "id": "plus-baec61e652a1",
+    "source": " - a\n  + b |\ntai_u_l\n"
+  },
+  {
+    "id": "plus-baf998c9d969",
+    "source": "| a | b |\n+ | - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-bb146a4b6365",
+    "source": "| x  | a `b |\n"
+  },
+  {
+    "id": "plus-bb866155cb90",
+    "source": ":: t\n:  a\n  + b |\ntail\ntail\n"
+  },
+  {
+    "id": "plus-bba4005f32c9",
+    "source": ":: t\n:  > | a |\n\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-bba569348f60",
+    "source": "+ x | y |\n- a\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-bbac01f97653",
+    "source": ":  d| a | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-bc1e1c4db934",
+    "source": "+ c |\n|= a |= b |\n+ cont |\n"
+  },
+  {
+    "id": "plus-bc25ac84fd07",
+    "source": "+ more | d |\n\n | a | b |\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-bc2d901b7d0a",
+    "source": "tail\n"
+  },
+  {
+    "id": "plus-bdc38e4a4f62",
+    "source": "| ^ | b |\n+ x | y |\n~s~\n"
+  },
+  {
+    "id": "plus-bdc3bc57eb97",
+    "source": "- a\n|= a |= b |\n  ::: box\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-bdd645083d6b",
+    "source": "\n- a\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-be1dabf756e3",
+    "source": "- a\n\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-be378e8695b0",
+    "source": ":  > | a |\n:: t\n   > + bb |\ntail\n"
+  },
+  {
+    "id": "plus-be95b86a3b10",
+    "source": "> > > > | a |\n> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-bea64666e6cb",
+    "source": "| a | b |\n+ c | d | junk\n| a |\n+ |\n"
+  },
+  {
+    "id": "plus-beb1730f5844",
+    "source": "- a\n+ \nb\n\n\n"
+  },
+  {
+    "id": "plus-bec093d55f09",
+    "source": "> |= a |\n> + b |\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-bf03e81f4ae0",
+    "source": " - a\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-bf612bc0d2c6",
+    "source": "| a | b |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-bf724ed3c5c0",
+    "source": "| Simple   | Single line.       |\n| a |\n++ |\n"
+  },
+  {
+    "id": "plus-bfedd6058f20",
+    "source": "  + b |\n-  | a |\ntail\n"
+  },
+  {
+    "id": "plus-c0167880f39e",
+    "source": "|= a |= bb |\n cont |\n"
+  },
+  {
+    "id": "plus-c01a491872f5",
+    "source": "  + one\n  :: t\n  + two\n"
+  },
+  {
+    "id": "plus-c04ab67a5ffd",
+    "source": "\t\n| a | b |\n\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-c0c1365210cf",
+    "source": ":: t\n:  | a |\n   + b |\ntail\n@usr\n"
+  },
+  {
+    "id": "plus-c0c7188745e3",
+    "source": "\n|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n| Simple   | Single line.       |\n\n"
+  },
+  {
+    "id": "plus-c0cf1c4d2743",
+    "source": "- | a |\n    + b |\ntail\ntail\n"
+  },
+  {
+    "id": "plus-c11669732a52",
+    "source": "+ c | d |\n+ | |\n"
+  },
+  {
+    "id": "plus-c178a3fd49b2",
+    "source": "> > | a |\n> # H\n> > + b |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-c1f1514d658d",
+    "source": "| ^| < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-c226f1bca81f",
+    "source": "+ > q- a\n  ::: box\n  | x | y | Ω\n+ c\n$``x`\n"
+  },
+  {
+    "id": "plus-c283fa038978",
+    "source": "| ^ | b |\n    | x | y | Ω\n+ c\n+ x | y |\n"
+  },
+  {
+    "id": "plus-c289fcbaf1c9",
+    "source": "  - +\n  + x\n| - | - |\n# H\n+ cont |\n"
+  },
+  {
+    "id": "plus-c2e098601fc7",
+    "source": "| a `b |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-c2faef0c1e35",
+    "source": "| | |\n\n+ x | y |\n"
+  },
+  {
+    "id": "plus-c320b532343c",
+    "source": "| a | b |\n+ c |  | \n"
+  },
+  {
+    "id": "plus-c3334c9723fb",
+    "source": "| a `b |\n+ c | d{` |\n"
+  },
+  {
+    "id": "plus-c368663de145",
+    "source": ":: term\n> :  - a\n      | x | y | Ω\n"
+  },
+  {
+    "id": "plus-c373e9ebd4ca",
+    "source": "| a | b |\n+ more | d |\n| ^ || c |\n"
+  },
+  {
+    "id": "plus-c3784c172307",
+    "source": "+ onee\n+ two\n+ \n"
+  },
+  {
+    "id": "plus-c381391ab0e0",
+    "source": "+ | |\ntail\n"
+  },
+  {
+    "id": "plus-c3c91f4dbaf7",
+    "source": "- > | a |\n\n   + b |\n tail\n"
+  },
+  {
+    "id": "plus-c41d63eebab6",
+    "source": "- | aa |\n  + |\ntail\n"
+  },
+  {
+    "id": "plus-c47f670781bf",
+    "source": "+ onne\n+ two\n"
+  },
+  {
+    "id": "plus-c4967bbd3d2e",
+    "source": "| a | b |\n+ more | d |\n| ^ |  |\n"
+  },
+  {
+    "id": "plus-c4a0c635d16d",
+    "source": "> > | a |\n> >  + b |\ntail\n+ x | y |\n"
+  },
+  {
+    "id": "plus-c4d926f29454",
+    "source": "| - | - |\n| a | b |\n+ |\n::::\n"
+  },
+  {
+    "id": "plus-c4f8ad8c211a",
+    "source": "\t| a | b |\n| a | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-c50ea806050d",
+    "source": "| a | b |\n| ^ | c |\n| < | d |\n+ x | y |\n::: note\n"
+  },
+  {
+    "id": "plus-c56fbf101e39",
+    "source": "1. ordere| a | b |d\n  > > quote\n\n+  \n"
+  },
+  {
+    "id": "plus-c66f2d8874e7",
+    "source": "^ cap\n| a | < |\n| ^ | b |\n+ x | y |\n```\n"
+  },
+  {
+    "id": "plus-c6e25dd18915",
+    "source": ":: term\n: -a\n    | x | y | Ω\n + c\n"
+  },
+  {
+    "id": "plus-c6f979f08466",
+    "source": "  | a | b |\n  | - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-c724e51e6cb0",
+    "source": "| a | b |\n | ^ | c |\n| ^ | c |\n| ^ | c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-c77698a916ca",
+    "source": "| a | b |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-c7ab4dd5928e",
+    "source": ":: t\n:  a\n\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-c830f05c35b1",
+    "source": "| a | b |\n| - | - |\n %%+ |\n"
+  },
+  {
+    "id": "plus-c843bfd6fe62",
+    "source": "- a\n1.    | h |\nb\n\n     | v |\n     + text |\n"
+  },
+  {
+    "id": "plus-c85634a1f165",
+    "source": " |= a |\n|= a |\n+ cont |\n| - |\n"
+  },
+  {
+    "id": "plus-c85aadc640ed",
+    "source": "> | a |\n> + b [^f]|\ntail\n"
+  },
+  {
+    "id": "plus-c896eb9dff5c",
+    "source": "> > | a |\n| a | b |\n\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-c8ca7977ff65",
+    "source": "- a\n   + b |\n"
+  },
+  {
+    "id": "plus-c8e1c4f68e14",
+    "source": "-- a\n  + b |\n*[A]: b\ntail\n"
+  },
+  {
+    "id": "plus-c8e4eb9da370",
+    "source": "- a\n  - b\n  | x | y | Ω\n+ c\n#tag| ^ | b |\n"
+  },
+  {
+    "id": "plus-c8e7413ca41f",
+    "source": "> # H\n> > | a |\n\n> {.x}> + b |\ntail\n"
+  },
+  {
+    "id": "plus-c8f10c7295b0",
+    "source": "- a\n  | h |\n::: |\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-c8f6425460b7",
+    "source": "| ||\n| ||\n+  |\n| |\n"
+  },
+  {
+    "id": "plus-c917bf488be6",
+    "source": "- a\n  ::: box\n  | x | y | Ω\n"
+  },
+  {
+    "id": "plus-c924865398d5",
+    "source": "| a | b ||\n::: |\n| ^ | c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-c9501c8048ce",
+    "source": " - a\n+ \nb\n\nx\n"
+  },
+  {
+    "id": "plus-c9b15267edf6",
+    "source": "> -- a\n+ \nb\nx\n\n"
+  },
+  {
+    "id": "plus-c9b9711e51eb",
+    "source": "| aa | b |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-ca1804506cb5",
+    "source": "- \n  ::: box\n  | x | y | Ω\n + c\n"
+  },
+  {
+    "id": "plus-ca6ec29ac3a0",
+    "source": "- > # H\n  > > | a |\n  > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-ca8dfd7dff26",
+    "source": " | aa  b |\n+ | |\n"
+  },
+  {
+    "id": "plus-cae3030eeb85",
+    "source": "- a\n  -b\n  | x | y | Ω\n\n + c\n"
+  },
+  {
+    "id": "plus-cbb0063a296c",
+    "source": "\n|= Feature |= Description        |\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-cbb5a4f23b00",
+    "source": "| a | b |\n| < | c |\n\n+ x | y |\n"
+  },
+  {
+    "id": "plus-cc12525799f1",
+    "source": ":: t\n:  > a\n\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-cc6ef8d419f3",
+    "source": "- a\n  - b\n  | x | y | Ω\n+ c\n* \n"
+  },
+  {
+    "id": "plus-cca555a42ec6",
+    "source": " | a |\n\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-ccc4cce1b43d",
+    "source": "+ cont |\n+ cont |\n| a | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-ccdac8bc9a18",
+    "source": ":: t\n:  > aa\ntail\n"
+  },
+  {
+    "id": "plus-cd2649354b96",
+    "source": "| a `b |\n@user\n+  | d` |\ntail\n"
+  },
+  {
+    "id": "plus-cd2c465fd869",
+    "source": "%%%\n| a | b |\n- | ^ | c |\n  | < | d |\n+ xx | y |\n"
+  },
+  {
+    "id": "plus-cd5afe49f09c",
+    "source": "| |\n+ |\n# H\n| |\n"
+  },
+  {
+    "id": "plus-cd5c73353658",
+    "source": "- a\ntail\n  +  b |\n"
+  },
+  {
+    "id": "plus-cd74fab32ff5",
+    "source": ":: t\n:  > a\ntail\n   > + b |\n"
+  },
+  {
+    "id": "plus-cd81fd70d7d0",
+    "source": "> | | |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-cda4a8fad277",
+    "source": ":: t\n:  > a\n   > + b |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-cde21abb8b84",
+    "source": "1. - a\n     + b |\ntail\n"
+  },
+  {
+    "id": "plus-cdee9a6fd10b",
+    "source": "+ one\n+ two\n\n"
+  },
+  {
+    "id": "plus-ce2544c358f6",
+    "source": "1. ordered\n  > > quote\n+ \n- item\n"
+  },
+  {
+    "id": "plus-ceb60b2eabdb",
+    "source": "| a | b |\n| - |  - |\n+ cont ||\n"
+  },
+  {
+    "id": "plus-cef12596ef2d",
+    "source": "```\n| x | a `b |\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-cf5c75e1d2a3",
+    "source": "| a `b |\n+ + > qc | d` |\n"
+  },
+  {
+    "id": "plus-cf5e2069858e",
+    "source": "+ |= Feature |= Description        |\n  | Complex  | A long description |\n  +          | that continues     |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-cf7cf566ac3a",
+    "source": "> > > | a |\n  > > > + b |\n- a\n  - b\n  | x | y | Ω\n- + c\n"
+  },
+  {
+    "id": "plus-cf94b8acd922",
+    "source": "| a | b |\n| a | b |\n| - | - |\n+ coont |\n"
+  },
+  {
+    "id": "plus-cfaea3f2c6c6",
+    "source": "- | a |\ntail\n"
+  },
+  {
+    "id": "plus-cfb7bea3dd84",
+    "source": "\n| a | b |\n+ more | d |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-d037394f75c0",
+    "source": "| a | b |\n| ^ | c |\n| < | d |\n+ x | y |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-d052f41ed873",
+    "source": "| a  < |\n| ^ | b |\n+ x | y |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-d05e5e8042be",
+    "source": "| a | b |\n+ more | d |\n- | ^ | c |\n"
+  },
+  {
+    "id": "plus-d061c053dbd6",
+    "source": "+ x | y |\n"
+  },
+  {
+    "id": "plus-d0c53087b69d",
+    "source": " a |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-d0c6db287918",
+    "source": "  |= a |\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-d0dba2774e49",
+    "source": " - a\n \t|x* |\n+ c\n"
+  },
+  {
+    "id": "plus-d0f0de4fd33c",
+    "source": "| a | b |\n| a | b |\n| Complex  | A long description |\n| < | c |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-d1094d0aa11b",
+    "source": "- | a |\n  + |\n1. ordered\n"
+  },
+  {
+    "id": "plus-d10f558fd06c",
+    "source": "| a | b |\n{\n + x\t| y\t|\n"
+  },
+  {
+    "id": "plus-d1296e77f351",
+    "source": "  + b |\n- |= a |\nai*[A]: bl\n"
+  },
+  {
+    "id": "plus-d1cd39640837",
+    "source": "| a | b |\n  :::\n"
+  },
+  {
+    "id": "plus-d1f5bdff7a13",
+    "source": "1. ordeered\n  > > quote\n+  \n\t-item\n"
+  },
+  {
+    "id": "plus-d2164c9cbb83",
+    "source": "- |= a |\n  $`x`+ b |\ntail\n"
+  },
+  {
+    "id": "plus-d2255cd44d34",
+    "source": "- aa\n  ::: box\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-d2398b26c70b",
+    "source": "> > > + b |\n\ntail\n"
+  },
+  {
+    "id": "plus-d2bbc3f759a3",
+    "source": "tail\n:: t\n:  a\n   + b ||\ntai*b*l\n"
+  },
+  {
+    "id": "plus-d2dfd8db459c",
+    "source": ":: t\n:  > | a |\n   > + b |\n\ntail\n"
+  },
+  {
+    "id": "plus-d2e2400548d1",
+    "source": "| < | c |\n| < | c |\n+ x | y |\n#tag\n"
+  },
+  {
+    "id": "plus-d3042bf3c8c5",
+    "source": "``\n@user| x | a `b |\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-d3124219d9b5",
+    "source": "| a | b  |\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-d38d23b58ca6",
+    "source": " > |= a |\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-d38ed93522ee",
+    "source": ":: t\n:  a\n  + b |\n1. tail\n"
+  },
+  {
+    "id": "plus-d438ebc082a8",
+    "source": "| a | b |\n+ c || d | \n"
+  },
+  {
+    "id": "plus-d478aeb1bc72",
+    "source": "> |= a |\n> + b |\n+ tail\n"
+  },
+  {
+    "id": "plus-d48b01b99b01",
+    "source": "  + c | d` |\n: | a `b |\n"
+  },
+  {
+    "id": "plus-d491632aace7",
+    "source": " |\n+ c` |\n+ |\n[^f]\n| |\n"
+  },
+  {
+    "id": "plus-d49410f6f344",
+    "source": "> |= a |\n> + b |\ntail\n\n"
+  },
+  {
+    "id": "plus-d4a66fe69513",
+    "source": "|  = a |\n| - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-d4a68bcf23bc",
+    "source": ":: term\n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-d4b88f1daf33",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues      |\n+          | across lines.      |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-d4bad68b244e",
+    "source": "- |= a |\n  + b |\ntail\n ```x\n"
+  },
+  {
+    "id": "plus-d4eb612e449c",
+    "source": ":::\n| a| b |\n| a |\n+ |\n"
+  },
+  {
+    "id": "plus-d5433a0eaeb7",
+    "source": "| a | b |\n| a | b |\n| ^ |c |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-d56b7236c3a0",
+    "source": "| a | b |\n+ x\t| y\t|\n+ x\t| y\t|\n"
+  },
+  {
+    "id": "plus-d5a37db92c1b",
+    "source": "\t> | a |\n\t> + b |\ntail{\n"
+  },
+  {
+    "id": "plus-d5af1ffc2851",
+    "source": "[r][d]\n\n\n| a | < |\n| ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-d62195e71e9b",
+    "source": "|  | b |\n| - | - |\n+ |\n"
+  },
+  {
+    "id": "plus-d6b77645a23d",
+    "source": " + x | y |\n"
+  },
+  {
+    "id": "plus-d7393aaaeede",
+    "source": "| a | b |\n| a || b |\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-d73db8902f84",
+    "source": "^ cap:: t\n:  | a |\ntail\n\n   + b |\n"
+  },
+  {
+    "id": "plus-d74a898be0c8",
+    "source": "+  \n| a | b |\n+ c | d |\n"
+  },
+  {
+    "id": "plus-d7aaab020c10",
+    "source": "\t- foo\n\t  - +\n\t  +*[A]: b x\n"
+  },
+  {
+    "id": "plus-d7cce9e86f4f",
+    "source": "| | |\n- \n+ x | y |\n"
+  },
+  {
+    "id": "plus-d802065f88c7",
+    "source": "- a\n  ::: ```xbox\n\n  | x | y | Ω\n++ c\n"
+  },
+  {
+    "id": "plus-d814c1920441",
+    "source": "+ y | c` |\n"
+  },
+  {
+    "id": "plus-d8301c63ffb9",
+    "source": "- | a |\n  + |\ntail\n\n"
+  },
+  {
+    "id": "plus-d864ef5a1f84",
+    "source": ":: t\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-d868f22d87eb",
+    "source": "| ^ | b |\n  + ext |\n + x | y |\n"
+  },
+  {
+    "id": "plus-d8ccb920b2aa",
+    "source": "1. | a | b |\n\n"
+  },
+  {
+    "id": "plus-d8e6fc680713",
+    "source": "|^ cap x | a `b |\n\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-d8ecf6263804",
+    "source": "- | a | < |\n| a | b |\n+ | |\n  | ^ | b |\n  + x | y |\n\n"
+  },
+  {
+    "id": "plus-d91db842eac8",
+    "source": "> > | a |\n> # H\n::: |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-d93129e79dc4",
+    "source": "| a | b |\n| ^ | c |\n+more | d |\n"
+  },
+  {
+    "id": "plus-d9ca203f9021",
+    "source": ":: term\n:: term\n: - a\n \n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-da17052edbb5",
+    "source": "- - foo\n-   - +\n-   + x\n"
+  },
+  {
+    "id": "plus-da25cdbc20ec",
+    "source": " -  a\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-da40e178aed0",
+    "source": "  + one\n  + . two```\n"
+  },
+  {
+    "id": "plus-da557301718d",
+    "source": "@user| ^ | < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-da5e3afa5253",
+    "source": "- a/i/\n  ::: box\n  | x | y | Ω\n+  c\n"
+  },
+  {
+    "id": "plus-daa763399e63",
+    "source": ":: t\n  + x\n:  > | a |\n   > + b |\ntail\n- | a |\n"
+  },
+  {
+    "id": "plus-dab78497a169",
+    "source": "+ c | d` |\n| a `b |\n| a `b |\n"
+  },
+  {
+    "id": "plus-daebdd819779",
+    "source": "#tag\n~s~\n~s~\n| a |\n+ |\n"
+  },
+  {
+    "id": "plus-daf1d564260d",
+    "source": "\n- a\n  ::: box\n  | x | y | Ω\n++ c\n"
+  },
+  {
+    "id": "plus-db126f810eb8",
+    "source": "| a |\n++ |\n"
+  },
+  {
+    "id": "plus-dc21ec0b846c",
+    "source": ":: t\n+ :  > a\n  :  > a\n  \nx\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-dcb52b59bc8d",
+    "source": "| a |\n|=  |\n+ c |\n"
+  },
+  {
+    "id": "plus-dd077ae60c3d",
+    "source": "> > > | a |\n> > > | a |\n> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-dd4a5d96ff69",
+    "source": "| a | b</#h> |\n| - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-dda9c9349500",
+    "source": ":  a\n:: t\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-de0e48aa3261",
+    "source": "| a | b |\n``+ c | d | \n"
+  },
+  {
+    "id": "plus-dea661ad1827",
+    "source": "::*[A]: b[l](u) term\n: - a\n    | x | y | Ω\n++ c\n"
+  },
+  {
+    "id": "plus-dec4c8b8fd13",
+    "source": "\t + | ~s~|\n"
+  },
+  {
+    "id": "plus-decaeaa86103",
+    "source": ":: t\n:  | a |\n   + b |\n::: note\ntail\n"
+  },
+  {
+    "id": "plus-df186b8ea7e2",
+    "source": "> + x\n| a | bb |\n| - | - |\ntext\n+ cont |\n"
+  },
+  {
+    "id": "plus-df23a6e99260",
+    "source": "| a | b |\n| -```x | - |\n  + cnt |\n"
+  },
+  {
+    "id": "plus-df4a35a83c6c",
+    "source": "1. ordered\n > > quote\n+  \n- item\n"
+  },
+  {
+    "id": "plus-df5853b8588a",
+    "source": "- a\n- a\n+\nb\n\nx\nx\n"
+  },
+  {
+    "id": "plus-df63b0123804",
+    "source": "|= a |\n| - |\n+ cont ||\n"
+  },
+  {
+    "id": "plus-dfaa20dbb652",
+    "source": "+ c` |\n| a `b |\n"
+  },
+  {
+    "id": "plus-e01ee5fa2a2f",
+    "source": ":: t\n:  > | a |\ntail\n   > + b |\n"
+  },
+  {
+    "id": "plus-e0356e2c9b9f",
+    "source": "1. | a |\n|= b |\n+ c |\n"
+  },
+  {
+    "id": "plus-e046c5113927",
+    "source": "- foo\n - +\n  ++ x\n"
+  },
+  {
+    "id": "plus-e086bc537cf6",
+    "source": "| a | b |\n| a | b |\n+ more | d |\n> | ^ | c |\n"
+  },
+  {
+    "id": "plus-e08d33c89f89",
+    "source": "1. | | ||\n"
+  },
+  {
+    "id": "plus-e0f29f61f0d0",
+    "source": "- a\n  ^ cap- b\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-e106efb2acf9",
+    "source": " | |\n\n"
+  },
+  {
+    "id": "plus-e11d70d506f3",
+    "source": "- | a |\n>   + |\n>   + |\n> taill\n"
+  },
+  {
+    "id": "plus-e11e63e495da",
+    "source": "++ | a `b |\n  + c` |\n  | a | b |\n+ | |\n"
+  },
+  {
+    "id": "plus-e14d1827f5d1",
+    "source": "| ^ | b |\n"
+  },
+  {
+    "id": "plus-e14e0acb47ed",
+    "source": "- foo\n - +\n\n  + x\n"
+  },
+  {
+    "id": "plus-e1507ff573ad",
+    "source": "> | a |\n\n> + b |\ntail\n"
+  },
+  {
+    "id": "plus-e1528284c9bd",
+    "source": "> + b |\n: tail\n  - a\n  | h |\n  | v |\n```\n  + text |\n"
+  },
+  {
+    "id": "plus-e1653bd29cac",
+    "source": "+  | ||\n"
+  },
+  {
+    "id": "plus-e16b5d433fdb",
+    "source": "> | a |\n> | a |\n- > + b |\n- tail\n"
+  },
+  {
+    "id": "plus-e1a9e8e15894",
+    "source": " > |= a |\n> + b |\n::: |\n::: |\ntail\n"
+  },
+  {
+    "id": "plus-e1ac7bf19f18",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n\n+          | that continues     |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-e1c9521ed69f",
+    "source": "> > | a |\n> # H\n> > + b |\n> > + b |\ntail\n| a | < |\n^ cap\n"
+  },
+  {
+    "id": "plus-e1cdf515228c",
+    "source": "+ | |\n| a |  |\n"
+  },
+  {
+    "id": "plus-e254b09f0847",
+    "source": ": | a | b |\n: + | |\n"
+  },
+  {
+    "id": "plus-e259b61e9f80",
+    "source": " > > > | a |\n> > > + b |\nttail\n"
+  },
+  {
+    "id": "plus-e283ab0023a1",
+    "source": "- | a |\n   + |\ntaiil\n"
+  },
+  {
+    "id": "plus-e2ec542bf5c7",
+    "source": "> # H\n> > | a |\n| | |\n> > + b |\ntail\n"
+  },
+  {
+    "id": "plus-e2f7e0eea056",
+    "source": "|  | |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-e2fa4467a9a7",
+    "source": "+ |_u__ |\n+ |_u__ |\n"
+  },
+  {
+    "id": "plus-e34d93dd8233",
+    "source": "> > | a |\n> > + b |\n tail\n"
+  },
+  {
+    "id": "plus-e3b3da446435",
+    "source": "\n> | x | a `b |\n> + y | c` ||\n"
+  },
+  {
+    "id": "plus-e3cfa50357be",
+    "source": ":: t\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-e4c74ca91b99",
+    "source": "| a | b|\n+ cont |\n\n"
+  },
+  {
+    "id": "plus-e53e36fafa6a",
+    "source": "- a\n  ::: box\n  | x | y | Ω\n::::\n+ c\n"
+  },
+  {
+    "id": "plus-e59b3e4e4a04",
+    "source": "```\n- | a |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-e668a5bee900",
+    "source": "> | a |\n> + b |\n+ cont > + x|\n\ntail\n"
+  },
+  {
+    "id": "plus-e69aa4ba58df",
+    "source": "| a | b |\n+ more | d |\n| ^ | c |\n%%\n"
+  },
+  {
+    "id": "plus-e6ae3df26b95",
+    "source": " - > | a |\n1.   + b |\ntail\n"
+  },
+  {
+    "id": "plus-e6c0e94ed117",
+    "source": "| a | b |\n| < | c |\n1. ordered\n   > quote\n+  \n- ittem\n"
+  },
+  {
+    "id": "plus-e6cc8ba0d9f9",
+    "source": "  || h |\n  | v |\n  + text |\n"
+  },
+  {
+    "id": "plus-e73904e9a183",
+    "source": ":: t\n:  > | a |\n   > + b |\ntail\n\n"
+  },
+  {
+    "id": "plus-e73941082de4",
+    "source": "-  a\n + \nb\n\nx\n"
+  },
+  {
+    "id": "plus-e76d70381360",
+    "source": "| a |\n+ |\n\n"
+  },
+  {
+    "id": "plus-e7c5be3113dc",
+    "source": "1. | ^ | < |\n1. + x | y |\n"
+  },
+  {
+    "id": "plus-e7f19dc5eb67",
+    "source": "- a\n  + b |\n| a | b |\nttail\n"
+  },
+  {
+    "id": "plus-e802569ffdb4",
+    "source": ": - | a |\n  + |\ntail\n:+ x:: |\n"
+  },
+  {
+    "id": "plus-e82e97f65c60",
+    "source": "| aa | b |\n"
+  },
+  {
+    "id": "plus-e83dbbe08e39",
+    "source": "+ > # H\n+ > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-e86abfe2208f",
+    "source": "- |= a |\n- |= a |\n- |= a |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-e879b2949ca2",
+    "source": "+ | |\n+ \n"
+  },
+  {
+    "id": "plus-e8ab4af9227e",
+    "source": ":: t\n + > q\n:  > a\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-e8c75523c9f4",
+    "source": "| a |b |\n\n>> \n+ | |\n"
+  },
+  {
+    "id": "plus-e977c80c23bc",
+    "source": " | a | b |\n\n+ c | d |\n"
+  },
+  {
+    "id": "plus-e9bd029fa863",
+    "source": "|= Featur |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-e9d1ef5c2932",
+    "source": "|= a |= b |\n| < | d |\n| ^ | c |\n+ cont |\n"
+  },
+  {
+    "id": "plus-ea04e33d80c2",
+    "source": "+ one\n+ two\ntext\n"
+  },
+  {
+    "id": "plus-ea55a4d7e08a",
+    "source": "> | a |\n>  b |\ntai^ capl\n"
+  },
+  {
+    "id": "plus-eac63ca50169",
+    "source": "| a | < |\n| ^ | b:::: |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-eacb05f84447",
+    "source": "| a | b |\n+ more | d |\n\n- | ^ | c |\n"
+  },
+  {
+    "id": "plus-eacfba9908e0",
+    "source": "|= Category       ||= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ farms           |         |\n | ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-eb91000dcd3c",
+    "source": "- a\n\n+ c\n"
+  },
+  {
+    "id": "plus-eb9794a2f7df",
+    "source": "+ | a |\n| a | b |\n  + |\n"
+  },
+  {
+    "id": "plus-ec031aa178b7",
+    "source": "| a | < |\n1. ordered\n\n| ^ | b |\n`+ x | y |\n"
+  },
+  {
+    "id": "plus-ec27549aca36",
+    "source": "\n- a\n\t|x^[fn]|\n+ c\n"
+  },
+  {
+    "id": "plus-ec3ab55ce025",
+    "source": "\n:: t\n:  | a |\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-ec601c8c1dea",
+    "source": "| a | b |\n++ x | y |\n"
+  },
+  {
+    "id": "plus-ec6e5b0ac5fa",
+    "source": ">> \n|= a |\n| - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-ec6e8d83c5a9",
+    "source": "+ | |\n| a | b |\n| - | - |\n"
+  },
+  {
+    "id": "plus-ec7678b2523e",
+    "source": "+ c | d` |\n| a `~~~b |\n| a `~~~b |\n"
+  },
+  {
+    "id": "plus-ec8c7ab7c3cd",
+    "source": "| a | b|\n+ | |\n"
+  },
+  {
+    "id": "plus-eca31494faf4",
+    "source": "| a | b |\n| - | - |\n+ connt |\n"
+  },
+  {
+    "id": "plus-ecbc447a694e",
+    "source": "- |=^[fn] a |= b |\n- |=^[fn] a |= b |\n- + cont |\n"
+  },
+  {
+    "id": "plus-ed0562b39908",
+    "source": "1. orderedd\n+   > > quote\n+  \n- item\n"
+  },
+  {
+    "id": "plus-ed3f58159644",
+    "source": "+ > q\n- foo\n  - +\n  + x\n"
+  },
+  {
+    "id": "plus-ed4dc23f2524",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n +          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-eddb1a2c5fcd",
+    "source": " | a | b |\n+ more | d |\n| ^ | c |\n"
+  },
+  {
+    "id": "plus-ede731381b2a",
+    "source": "| |\n + |\n| |\n"
+  },
+  {
+    "id": "plus-ee001c2f9610",
+    "source": " | a || b |\n+ c | d | junk\n"
+  },
+  {
+    "id": "plus-ee0e71e4fada",
+    "source": "> > > | a |\n> > > ++ b |\ntail\n"
+  },
+  {
+    "id": "plus-ee256358762f",
+    "source": "\t|x|\n| a | b |\n+ c |d | \n"
+  },
+  {
+    "id": "plus-ee3ebc1cea1d",
+    "source": "| a | b |\n  + c | d | junk\n+ \n"
+  },
+  {
+    "id": "plus-eeb4edbaef68",
+    "source": "-  + x a\ntail\n + b |\n"
+  },
+  {
+    "id": "plus-eee49942028f",
+    "source": "- |= a |\n[l](u)\ntail\n"
+  },
+  {
+    "id": "plus-ef44f49fc527",
+    "source": "> + b |\n> |= a |\ntail\n"
+  },
+  {
+    "id": "plus-ef4c5f25165d",
+    "source": ". \n::: note+ | |\n"
+  },
+  {
+    "id": "plus-ef6a9256fd57",
+    "source": "+ c | d` |\n|^ || < |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-efdf802fc632",
+    "source": "+ \nb\n\nx\n"
+  },
+  {
+    "id": "plus-f012782ea3d6",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n| Complex  | A long description |\n+          | that continues     |\n+ farms           |         |\n| [d]: u^               | Banana  |\n"
+  },
+  {
+    "id": "plus-f0a8df96e3a4",
+    "source": "|= a |\n+ cont |\n\n| - |\n"
+  },
+  {
+    "id": "plus-f109b2174310",
+    "source": "| a | b |\n| - | - |\n[l](u)\n++  |\n"
+  },
+  {
+    "id": "plus-f14bd2b556e3",
+    "source": "| a  | b |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-f14d40f179c4",
+    "source": ":: t\n:  > a\n+ cont |\n   > + b |\ntail\n"
+  },
+  {
+    "id": "plus-f1898253f04d",
+    "source": "1. ordered\n  > > qquote\n+  \n- item\n"
+  },
+  {
+    "id": "plus-f1af7c4ab921",
+    "source": " | x | a `b |\n+ y | c` |\n"
+  },
+  {
+    "id": "plus-f1bfd8d7a96e",
+    "source": "+ x | y |\n- a\n  - b\n+   | x | y | Ω\n+c\n"
+  },
+  {
+    "id": "plus-f1c1f7af74f7",
+    "source": "| a | b |\n+ \t| y\t|\n"
+  },
+  {
+    "id": "plus-f1de6cdd895c",
+    "source": "| a | b |\n{#ii}\n| ^ | c |\n\t+ more | d |\n"
+  },
+  {
+    "id": "plus-f215afd3ca4e",
+    "source": "1. rdered\n[^f]\n  + ```> > quote\n+  \n- item\n"
+  },
+  {
+    "id": "plus-f21838ba761f",
+    "source": "- fo\n  - +\n-   + x\n"
+  },
+  {
+    "id": "plus-f21fc2baa1e9",
+    "source": "| a | b%%% |\n+ c | d |  \n"
+  },
+  {
+    "id": "plus-f244c2d2712a",
+    "source": "-[r][d] a\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-f247d4b6bc13",
+    "source": "- | a |\ntail\n  + |\n"
+  },
+  {
+    "id": "plus-f251593afbbe",
+    "source": "+ | a | b |\n"
+  },
+  {
+    "id": "plus-f28bd80c315c",
+    "source": "| a | b |\n: | - | - |\n: | - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-f2a8b29b308f",
+    "source": " | ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-f2e752ef1d76",
+    "source": "|= b |\n| a |\n"
+  },
+  {
+    "id": "plus-f32bf47bd64d",
+    "source": "+ one\n+ ttwo\n%%%\n"
+  },
+  {
+    "id": "plus-f351013e0438",
+    "source": " :: t\n :  | a |\ntail\n   + b |\n"
+  },
+  {
+    "id": "plus-f37157ceef80",
+    "source": "| a | b |\n- + x | y |\n"
+  },
+  {
+    "id": "plus-f3825032510f",
+    "source": ":: term\n: - a\n-     | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-f3df85881848",
+    "source": "| a | b |\n| a | b |\n| ^ | c |\n| < | d |\n+ x |  |\n"
+  },
+  {
+    "id": "plus-f4463a1b6f30",
+    "source": "| |\n+ |\n|| |\n"
+  },
+  {
+    "id": "plus-f453a89cab9a",
+    "source": " + x | y |\n\t| a | b |\n\t| - | - |\n+ |\n"
+  },
+  {
+    "id": "plus-f48716a517e5",
+    "source": ":: t\n:   > | a |\n   > + b \n|= a |= b |\ntail\n"
+  },
+  {
+    "id": "plus-f4e1a88a1816",
+    "source": "| a | b |\n\n| - | - |\n- a\n  ::: box\n  | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-f4f44e4e5e77",
+    "source": ":  > a\n:: t\n\ntail\n"
+  },
+  {
+    "id": "plus-f506ec26d220",
+    "source": "> > > > | a |\n> > > > + b |\n> tail\n"
+  },
+  {
+    "id": "plus-f564d8133b5b",
+    "source": "| ^ | < |\n```\n{}\n+ x | y |\n"
+  },
+  {
+    "id": "plus-f56c0c6d25a9",
+    "source": "| a | b |\n+ m|= a |= b |ore | d |\n\t| ^ | c |\n"
+  },
+  {
+    "id": "plus-f56cdc160d8d",
+    "source": "| a `b |\n- + |= a |= b |c^ cap | d` |\n"
+  },
+  {
+    "id": "plus-f68a3a8c9d62",
+    "source": "\n| a | b |\n+ x\t| y\t|\n>> \n"
+  },
+  {
+    "id": "plus-f6e119ac3619",
+    "source": "| a | b |\n\n+ + more | d |\n  | ^ | c |\n  | a | b |\n"
+  },
+  {
+    "id": "plus-f6e2779cba7c",
+    "source": "| a | < |\n  + x\n + x\n| ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-f7210101582b",
+    "source": "| a |\n|= b |\n c |\n+ c |\n"
+  },
+  {
+    "id": "plus-f726cb9bc990",
+    "source": "| < | c |\n"
+  },
+  {
+    "id": "plus-f7861c53dcfe",
+    "source": "| a `b |\n| a `b |\n+ c | d` |\n"
+  },
+  {
+    "id": "plus-f78b6ab41949",
+    "source": "- > | a |\n  ++ b |\ntail\n"
+  },
+  {
+    "id": "plus-f79a7f6b837e",
+    "source": "> > | a |\n: > # H\n: > > + b |\n: tail\n"
+  },
+  {
+    "id": "plus-f7aefbb561df",
+    "source": "+ \n> > | a |\n_u_\n> > + b |\ntail\n{\n"
+  },
+  {
+    "id": "plus-f7ca978ccd08",
+    "source": "\n> > > | a |\n~~~\n> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-f7f3d5b92c31",
+    "source": "| a | b |\n| a `b |\n+ c` |\n"
+  },
+  {
+    "id": "plus-f845ba72ec4c",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-f8a59483b79c",
+    "source": ":: t\n:  > | a |\n:  > | a |\n   > + b |\n tail\n"
+  },
+  {
+    "id": "plus-f9169e1d2919",
+    "source": "- > | a |\n  + b |\n !`z`\ntail\n"
+  },
+  {
+    "id": "plus-f96e590c4950",
+    "source": "> > | a |\n> # H\n> > + b |\n"
+  },
+  {
+    "id": "plus-f989dcdb0e78",
+    "source": "| ^ | c \n\t| a | b |\n| < | d |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-f9b23728ca50",
+    "source": "  | h |\n- a\n  | v |\n :: t + text |\n"
+  },
+  {
+    "id": "plus-f9ba939d295e",
+    "source": "| a | |= a |= b |b |\n+  | d |\n"
+  },
+  {
+    "id": "plus-f9f194120643",
+    "source": "- a\n    | h |\n    | v |\n\n  + tex---t |\n"
+  },
+  {
+    "id": "plus-f9fcbac888a7",
+    "source": "| a | b |\n  | x | y | Ω\n*[A]: b+ c\n| ^ | c |\n#tag\n+ more | d |\n"
+  },
+  {
+    "id": "plus-fa728c1660d5",
+    "source": "+ cont |\n\n|= a |= b |\n"
+  },
+  {
+    "id": "plus-fa74c85a0ce4",
+    "source": "- a\n {#i}   + b |\n  + tail\n"
+  },
+  {
+    "id": "plus-fa7bebf0138d",
+    "source": "| * ^ | b |\n+ x | y |\n"
+  },
+  {
+    "id": "plus-faa748b75cf9",
+    "source": "|= Category       |= Item   |\n| Fresh Fruits    | Apple   |\n+ from local      |         |\n+ from local      |         |\n+ farms           |         |\n| ^               | Banana  |\n"
+  },
+  {
+    "id": "plus-fac2d4fe74a8",
+    "source": "| a `b |>> \n+ c` |\n"
+  },
+  {
+    "id": "plus-fb1f8d08e2fe",
+    "source": "- | a |\n  + b |\n tail\n"
+  },
+  {
+    "id": "plus-fb6e323d9d4d",
+    "source": "| a |\n+ c text|\n%%\n"
+  },
+  {
+    "id": "plus-fb72afe0409d",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n::::\n[l](u)\n+          | that continues     |\n+          | across lines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-fbd8e4611b26",
+    "source": "\n- |= a |\ntail\n   + b |\n"
+  },
+  {
+    "id": "plus-fbfff435b3e3",
+    "source": "+ c` |\n"
+  },
+  {
+    "id": "plus-fc0ac9edf7d4",
+    "source": "> | a |\n> + b |\n+ c` |\n| - | - |\ntail\n"
+  },
+  {
+    "id": "plus-fc0f45a329cb",
+    "source": "+ c | d |\n| a | b |\n"
+  },
+  {
+    "id": "plus-fc6a332bdd7c",
+    "source": "| a | b |\n+ ```\n  | a | b |\n  | - | - |\n+ cont |\n"
+  },
+  {
+    "id": "plus-fc961142888f",
+    "source": "|= a |= b |\n"
+  },
+  {
+    "id": "plus-fcad79640220",
+    "source": "| a | b |\n|^ | c |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-fceb407e4f30",
+    "source": "| |\n + |\n | |\n"
+  },
+  {
+    "id": "plus-fcf7f88ac71b",
+    "source": "| a | b |\n| ^ | c |\n+ more | d |\n+ more | d |\n> > + b |\n\n"
+  },
+  {
+    "id": "plus-fd054272b468",
+    "source": "+ cont |\n\n- |= a |\n  + b |\ntail\n"
+  },
+  {
+    "id": "plus-fd071de56a73",
+    "source": "| Simple   | Single line.       |\n :: term\n: - a\n    | x | y | Ω\n+ c\n"
+  },
+  {
+    "id": "plus-fd798e8b718c",
+    "source": "> + > > | a |\n> > > + b |\ntail\n"
+  },
+  {
+    "id": "plus-fd8ffb60cc14",
+    "source": " | a*b* | bb |\n+ | |\n"
+  },
+  {
+    "id": "plus-fdb7fc3fe315",
+    "source": "| a | b |\n\t+ x | y |\n"
+  },
+  {
+    "id": "plus-fde58134d3e2",
+    "source": "| a `b |\n- |=  a |\n  + b |\n"
+  },
+  {
+    "id": "plus-fdf7ef790058",
+    "source": " > > | a |\n# H\n > > + b |\n tail\n"
+  },
+  {
+    "id": "plus-fe956b399843",
+    "source": "|= Feature |= Description        |\n| Complex  | A long description |\n+          | that continues     |\n   + b |\ntail\n+          | acrosslines.      |\n| Simple   | Single line.       |\n"
+  },
+  {
+    "id": "plus-fec8c7128fc4",
+    "source": "   + x\n| a | b |\n| ^ | c |\n+ more | d |\n"
+  },
+  {
+    "id": "plus-fed01f6f8906",
+    "source": "> | a |\n > + b |\n>~~~ + b |\ntail\n"
+  },
+  {
+    "id": "plus-fed7ad41ff29",
+    "source": "\t- a\n\t\t|x|\n\t+ c\n"
+  },
+  {
+    "id": "plus-ff70e2d4126f",
+    "source": "\n+ \n- a\nb\n\nx\n"
+  },
+  {
+    "id": "plus-ff831798dab0",
+    "source": "- a\n\n  + b |\n> tail\n"
+  },
+  {
+    "id": "plus-ff86cefd9e79",
+    "source": "- a\n  + _u_b |\ntail\n"
+  },
+  {
+    "id": "plus-ffcd137ca45b",
+    "source": " :: t\n:  | a |\n   + b |\n   + b |\ntail\n"
+  },
+  {
+    "id": "plus-ffd9dd5c9124",
+    "source": ":: t\n:[^f]: t  > | a |\n   > + b |\ntail\n*b*\n*b*\n"
+  },
+  {
+    "id": "plus-ffdafeeee523",
+    "source": "+ | |\n| a | b |\n\n"
+  },
+  {
+    "id": "plus-ffe731c5204f",
+    "source": "::_u_ t\n:  a\n   + b |\n tail\n"
+  }
+]

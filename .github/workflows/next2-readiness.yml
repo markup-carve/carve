@@ -1,0 +1,130 @@
+name: Carve 0.2 readiness
+
+on:
+  push:
+    branches: [main, next2]
+  pull_request:
+    branches: [main, next2]
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      js_ref:
+        description: carve-js ref to replay (branch, tag, SHA or refs/pull/N/head)
+        default: next2
+      php_ref:
+        description: carve-php ref to replay
+        default: next2
+      rs_ref:
+        description: carve-rs ref to replay
+        default: next2
+
+permissions:
+  contents: read
+
+jobs:
+  engine-readiness:
+    # baseline: the engine commits the baseline names, so a red run means the spec data, generator or runner regressed.
+    # heads: the engine next2 heads or the dispatched refs; a red run means an engine regressed.
+    name: ${{ matrix.mode == 'baseline' && 'Engine readiness parity and upgrade replay' || 'Engine heads readiness replay' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: ${{ fromJSON(github.event_name == 'pull_request' && '["baseline"]' || github.event_name == 'push' && '["baseline","heads"]' || '["heads"]') }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: next2-readiness-${{ github.event_name }}-${{ github.ref }}-${{ matrix.mode }}
+      cancel-in-progress: true
+    timeout-minutes: 25
+    env:
+      CARGO_BUILD_JOBS: 4
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.cargo-next2-target
+      CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+      CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+      CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+      CARVE_RS_READINESS_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve-next2-readiness
+      CARVE_RS_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve
+    steps:
+      - uses: actions/checkout@v6
+      - name: Choose engine refs
+        id: refs
+        env:
+          MODE: ${{ matrix.mode }}
+          JS_REF: ${{ inputs.js_ref || 'next2' }}
+          PHP_REF: ${{ inputs.php_ref || 'next2' }}
+          RS_REF: ${{ inputs.rs_ref || 'next2' }}
+        run: |
+          if test "$MODE" = baseline; then
+            node -e 'const h = require("./scripts/next2-readiness-baseline.json").engineHeads; for (const [k, v] of Object.entries(h)) console.log(`${k}=${v}`)' >> "$GITHUB_OUTPUT"
+          else
+            printf 'js=%s\nphp=%s\nrs=%s\n' "$JS_REF" "$PHP_REF" "$RS_REF" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: ${{ steps.refs.outputs.js }}
+          path: engines/carve-js
+          submodules: recursive
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          ref: ${{ steps.refs.outputs.php }}
+          path: engines/carve-php
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ steps.refs.outputs.rs }}
+          path: engines/carve-rs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engines/carve-js/package-lock.json
+      - name: Build JavaScript 0.2 engine and upgrade tool
+        working-directory: engines/carve-js
+        run: npm ci && npm run build
+      - name: Install PHP 0.2 engine
+        working-directory: engines/carve-php
+        run: composer install --no-dev --no-interaction --no-progress
+      - uses: actions/cache@v6
+        with:
+          path: ${{ github.workspace }}/.cargo-next2-target
+          key: carve-next2-readiness-${{ runner.os }}-${{ hashFiles('scripts/next2-readiness-rs/Cargo.lock', 'scripts/next2-readiness-rs/src/main.rs', 'engines/carve-rs/Cargo.toml', 'engines/carve-rs/Cargo.lock', 'engines/carve-rs/build.rs', 'engines/carve-rs/src/**', 'engines/carve-rs/spec-data/**') }}
+          restore-keys: carve-next2-readiness-${{ runner.os }}-
+      - name: Build Rust 0.2 engine and batch adapter
+        run: |
+          cargo build --manifest-path engines/carve-rs/Cargo.toml --bin carve
+          cargo build --manifest-path scripts/next2-readiness-rs/Cargo.toml
+      - name: Baseline classifier tests
+        run: node --test tests/next2-readiness-classify.test.mjs tests/next2-readiness-extensions.test.mjs
+      # The tests that need carve-js skip in the plain test job.
+      - name: Expected-section check tests
+        if: matrix.mode == 'baseline'
+        run: node --test tests/expected-check.test.mjs
+      - name: Replay the 0.2 contract and check the baseline
+        env:
+          MODE: ${{ matrix.mode }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          flags=(--prepared --json=_readiness.json --markdown=_readiness.md --baseline-out=_readiness-baseline.json)
+          if test "$MODE" = baseline; then flags+=(--baseline-heads); fi
+          # next2 pushes and the schedule report engine regressions; a dispatched engine ref fails on them.
+          if test "$MODE" = heads && test "$EVENT" != workflow_dispatch; then flags+=(--report-only); fi
+          npm --prefix scripts run readiness:next2 -- "${flags[@]}"
+      - name: Write job summary
+        if: always()
+        run: |
+          if test -f _readiness.md; then cat _readiness.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Upload readiness measurement
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: next2-readiness-${{ matrix.mode }}
+          path: |
+            _readiness.json
+            _readiness.md
+            _readiness-baseline.json
+          if-no-files-found: warn

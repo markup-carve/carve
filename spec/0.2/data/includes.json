@@ -1,0 +1,248 @@
+{
+  "$schema": "schemas/includes.schema.json",
+  "causes": [
+    {
+      "rank": 1,
+      "name": "no_resolver",
+      "code": "include-no-resolver",
+      "stage": "before_resolver",
+      "when": "no resolver is given (C2-N-003)",
+      "clauses": [
+        "C2-N-003",
+        "C2-N-061",
+        "C2-N-062"
+      ]
+    },
+    {
+      "rank": 2,
+      "name": "option_invalid",
+      "code": "include-option-invalid",
+      "stage": "before_resolver",
+      "when": "the directive holds an invalid option (C2-B-206)",
+      "clauses": [
+        "C2-N-025",
+        "C2-N-061",
+        "C2-N-062"
+      ]
+    },
+    {
+      "rank": 3,
+      "name": "conflict",
+      "code": "include-selection-conflict",
+      "stage": "before_resolver",
+      "when": "the options break a row of conflicts",
+      "clauses": [
+        "C2-N-024",
+        "C2-N-061",
+        "C2-N-062"
+      ]
+    },
+    {
+      "rank": 4,
+      "name": "depth",
+      "code": "include-depth",
+      "stage": "before_resolver",
+      "when": "the file would stand deeper than include_depth",
+      "clauses": [
+        "C2-N-062",
+        "C2-N-064"
+      ]
+    },
+    {
+      "rank": 5,
+      "name": "size_spent",
+      "code": "include-budget",
+      "stage": "before_resolver",
+      "when": "the returned texts have already reached include_bytes",
+      "clauses": [
+        "C2-N-062",
+        "C2-N-065"
+      ]
+    },
+    {
+      "rank": 6,
+      "name": "outside_root",
+      "code": "include-outside-root",
+      "stage": "resolver",
+      "when": "the canonical target lies outside the containment root or the path starts with a URI scheme",
+      "clauses": [
+        "C2-N-007",
+        "C2-N-012",
+        "C2-N-013"
+      ]
+    },
+    {
+      "rank": 7,
+      "name": "not_found",
+      "code": "include-not-found",
+      "stage": "resolver",
+      "when": "no target exists inside the root",
+      "clauses": [
+        "C2-N-007",
+        "C2-N-013"
+      ]
+    },
+    {
+      "rank": 8,
+      "name": "unreadable",
+      "code": "include-unreadable",
+      "stage": "resolver",
+      "when": "the target exists and cannot be read, or the resolver refuses it",
+      "clauses": [
+        "C2-N-007",
+        "C2-N-013"
+      ]
+    },
+    {
+      "rank": 9,
+      "name": "non_text",
+      "code": "include-non-text",
+      "stage": "resolver",
+      "when": "the content is not well-formed UTF-8 or holds U+0000",
+      "clauses": [
+        "C2-N-007",
+        "C2-N-011"
+      ]
+    },
+    {
+      "rank": 10,
+      "name": "cycle",
+      "code": "include-cycle",
+      "stage": "after_resolver",
+      "when": "the returned id is the top-level document or the file of an include around this one",
+      "clauses": [
+        "C2-N-062",
+        "C2-N-066"
+      ]
+    },
+    {
+      "rank": 11,
+      "name": "size_exceeded",
+      "code": "include-budget",
+      "stage": "after_resolver",
+      "when": "the returned text would carry the sum past include_bytes",
+      "clauses": [
+        "C2-N-062",
+        "C2-N-065"
+      ]
+    },
+    {
+      "rank": 12,
+      "name": "section_missing",
+      "code": "include-section",
+      "stage": "after_resolver",
+      "when": "the section selects nothing",
+      "clauses": [
+        "C2-N-029",
+        "C2-N-030"
+      ]
+    },
+    {
+      "rank": 13,
+      "name": "region_invalid",
+      "code": "include-region-invalid",
+      "stage": "after_resolver",
+      "when": "the region markers are malformed or the region is missing",
+      "clauses": [
+        "C2-N-037",
+        "C2-N-038",
+        "C2-N-039",
+        "C2-N-040",
+        "C2-N-041"
+      ]
+    },
+    {
+      "rank": 14,
+      "name": "lines_past_end",
+      "code": "include-lines-out-of-range",
+      "stage": "after_resolver",
+      "when": "the line range starts past the last line",
+      "clauses": [
+        "C2-N-034",
+        "C2-N-035"
+      ]
+    },
+    {
+      "rank": 15,
+      "name": "rows_past_end",
+      "code": "include-rows-out-of-range",
+      "stage": "after_resolver",
+      "when": "the row range starts past the last record",
+      "clauses": [
+        "C2-N-046"
+      ]
+    },
+    {
+      "rank": 16,
+      "name": "cols_invalid",
+      "code": "include-cols-invalid",
+      "stage": "after_resolver",
+      "when": "a requested column name is missing from the head or stands there twice, or a column range is invalid for the table",
+      "clauses": [
+        "C2-N-047"
+      ]
+    },
+    {
+      "rank": 17,
+      "name": "cols_duplicate",
+      "code": "include-cols-duplicate",
+      "stage": "after_resolver",
+      "when": "a column is named twice",
+      "clauses": [
+        "C2-N-047"
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "name": "cols_needs_table",
+      "rule": "requires_table_code",
+      "options": [
+        "cols"
+      ],
+      "code": "include-selection-conflict",
+      "clauses": [
+        "C2-N-024",
+        "C2-N-047"
+      ]
+    },
+    {
+      "name": "rows_needs_table",
+      "rule": "requires_table_code",
+      "options": [
+        "rows"
+      ],
+      "code": "include-selection-conflict",
+      "clauses": [
+        "C2-N-024",
+        "C2-N-046"
+      ]
+    },
+    {
+      "name": "section_with_code",
+      "rule": "exclusive",
+      "options": [
+        "section",
+        "code"
+      ],
+      "code": "include-selection-conflict",
+      "clauses": [
+        "C2-N-024"
+      ]
+    },
+    {
+      "name": "two_selections",
+      "rule": "at_most_one",
+      "options": [
+        "section",
+        "lines",
+        "region",
+        "rows"
+      ],
+      "code": "include-selection-conflict",
+      "clauses": [
+        "C2-N-024"
+      ]
+    }
+  ]
+}

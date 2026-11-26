@@ -1,0 +1,19 @@
+{
+  "description": "CC-1568 as pinned before carve#6572 applied the C2-W-088 ruling of carve#6561",
+  "case": {
+    "id": "CC-1568",
+    "clauses": [
+      "C2-W-088",
+      "C2-W-091"
+    ],
+    "why": "C2-W-088: For each kind reported in a block, the round escapes every potential opener of that kind in that block, not only the reported ones, and the text is then parsed again.",
+    "summary": "nested superscript and escaped brace openers are escaped by kind in one round",
+    "kind": "format",
+    "input": "{^\\^\\{\\^\\\\\\{\\^\\{\\^\\^\\^\\{\\^\\{\\^\\{\\^\\{\\^\\^\\{\\^{\\{\\^\\{^^}{^{^{^{^{^{^{^{^{^{^{^{^{^^}^}^}^}^}^}^}^}^}^}^}^}^^}^}^}^}^}^}}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}\n",
+    "options": {},
+    "expected": {
+      "carve": "{^^\\{^\\\\\\{^\\{^^^\\{^\\{^\\{^\\{^^\\{^{\\{^\\{\\^^}{^{^{^{^{^{^{^{^{^{^{^{^\\{\\^\\^}^}^}^}^}^}^}^}^}^}^}^}^^}^}^}^}^}^}}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}\n"
+    },
+    "from": []
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/spec/0.2/data/layout-schema.json",
+  "title": "Carve source layout version 2",
+  "description": "C2-L-007 to C2-L-015, C2-L-055 to C2-L-057",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": 2
+    },
+    "encoding": {
+      "enum": [
+        "utf-8",
+        "base64"
+      ]
+    },
+    "source": {
+      "type": "string"
+    },
+    "lineEndings": {
+      "enum": [
+        "none",
+        "lf",
+        "crlf",
+        "cr",
+        "mixed"
+      ]
+    },
+    "bom": {
+      "type": "boolean"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?:|/(?:[^~/]|~[01])*)*$"
+          },
+          "startByte": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endByte": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "markerRaw": {
+            "type": "string"
+          },
+          "openerRaw": {
+            "type": "string"
+          },
+          "closerRaw": {
+            "type": "string"
+          },
+          "metadataSeparatorRaw": {
+            "type": "string"
+          },
+          "rawRef": {
+            "type": "string"
+          },
+          "markerColumn": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "contentColumn": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "blankLinesBefore": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "blankLinesAfter": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "continuationLines": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bare": {
+            "type": "boolean"
+          },
+          "fenced": {
+            "type": "boolean"
+          },
+          "hardBreakOpener": {
+            "type": "boolean"
+          },
+          "headerRows": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sourceFormat": {
+            "enum": [
+              "pipe",
+              "csv",
+              "tsv"
+            ]
+          },
+          "continuationStyle": {
+            "enum": [
+              "lazy",
+              "indent",
+              "marker_line",
+              "none"
+            ]
+          },
+          "attachment": {
+            "enum": [
+              "preceding",
+              "none"
+            ]
+          },
+          "wraps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "path": {
+                  "type": "string"
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "row": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "col": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "line",
+                "path",
+                "offset"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "optionSpelling": {
+            "type": "object",
+            "properties": {
+              "lines": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string"
+              },
+              "rows": {
+                "type": "string"
+              },
+              "cols": {
+                "type": "string"
+              },
+              "shift": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "path",
+          "startByte",
+          "endByte"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "version",
+    "encoding",
+    "source",
+    "lineEndings",
+    "bom",
+    "nodes"
+  ],
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "encoding": {
+        "const": "base64"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "source": {
+        "type": "string",
+        "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+      }
+    }
+  }
+}

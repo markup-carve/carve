@@ -1,7 +1,3 @@
-# Plugin Dogfood
+= A Carve 0.2 example
 
-This snippet is rendered from a `.crv` import by *vite-plugin-carve*.
-
-Inline math like $`E = mc^2` and a display equation render with KaTeX:
-
-$$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`
+This source renders during the docs build. It has a *strong* word and a link to [the specification](https://github.com/markup-carve/carve/tree/next2/spec/0.2).

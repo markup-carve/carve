@@ -1,143 +1,70 @@
 ---
-description: Choose and enable optional Carve features without losing readable fallback output.
+description: How extensions claim existing Carve forms without adding new syntax.
 ---
 
 # Optional features and extensions
 
-Carve documents remain readable when an optional feature is unavailable. The
-syntax still parses; only the richer behavior may be missing. Use this page to
-choose features for an application and understand their fallback.
+Carve 0.2 keeps core syntax fixed. An extension claims an existing inline `:name[content]`, a named div, or a fenced code block after core parsing. It cannot add a new delimiter or line shape. The [extension specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching) defines registration, transformation, fallbacks, and rendering.
 
-For the API rules used to implement an extension, read the
-[extension contract](./extension-contract). For a complete worked example, see
-[Write an extension](./extension-tutorial).
+## What a document carries
 
-## What is available {#feature-tiers-quick-reference}
+A host can register a matcher for this core inline form:
 
-| Availability | What it means | Default |
-|---|---|---|
-| **Core syntax** | Every conforming Carve processor supports it, including headings, links, lists, tables, captions, footnotes, and math. | On |
-| **Default-on behavior** | Every reference processor supplies it, but applications may disable it. This includes smart typography and `@mention` / `#tag` recognition. | On |
-| **Standard optional** | The reference implementations provide it, but applications enable it explicitly. | Off |
-| **Processor feature** | A host supplies file access, as with `{{ path }}` includes. Check that processor’s settings. | Off without a file resolver |
-| **Application extension** | A particular implementation or host supplies it. Check that application. | Off |
+```carve
+:badge[Ready]
+```
 
-These are availability groups, not quality levels. “Optional” means that a
-document has a useful fallback when the feature is not enabled.
+A qualified extension has a name such as `org.example.badge` and an exact version. A producer declares it at the document root or envelope. Its node has a same-role core fallback. A reader that does not know an optional extension keeps the declaration and uses the fallback; a reader refuses an unknown required extension. Unclaimed source forms remain core nodes. See [AST extension nodes](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#extension-nodes-foreign-data-and-resources) and [matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching).
 
-## Frequently used optional features
+## Enable a renderer
 
-| Feature | Availability | What it adds | Without the feature |
-|---|---|---|---|
-| Citations | Standard optional | `[@key]` and locators | Citation source remains visible |
-| List tables | Standard optional | Block content, row spans, and column spans in table cells | The containing list remains readable |
-| Details | Standard optional | Native `<details>` and `<summary>` disclosure | A normal details container |
-| Spoiler | Standard optional | Hidden content with an accessible reveal control | A visible generic span or container |
-| Tabs | Standard optional | A set of named panels | Panels remain ordinary document content |
-| Code callouts | Standard optional | Numbered explanations attached to code | Code and explanation list remain |
-| Semantic spans | Standard optional | `samp`, `var`, `cite`, and `dfn` elements | A span carrying the semantic attribute |
+The JavaScript reference host accepts `extensions` for parser transforms and a `renderers` map for static HTML rendering. Match the qualified name and version. A renderer is trusted code; use the host's escaping and URL helpers for dynamic content. Without a matching renderer, HTML uses the fallback and reports a diagnostic. See [extension rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#resolution-rendering-and-equality).
 
-For the reasons behind these boundaries, see [Feature design
-notes](./native-features-analysis). Use this page for current availability.
+The standard catalog ([`data/extensions.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/extensions.json)) covers tabs, details, spoiler, code groups, Mermaid diagrams, math blocks, SVG image fences, wiki links, and citations. The extension interface and that catalog are provisional in the freeze candidate. Check [status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) before pinning an extension integration.
 
-### Spoilers
+For implementation details, read the [contract map](./extension-contract.md) and [runnable tutorial](./extension-tutorial.md).
 
-A spoiler can be inline or a block. The inline form hides a few words inside a
-sentence:
+## Spoilers
+
+A spoiler can be inline or a block. Both use existing core forms:
 
 ```carve
 The killer is :spoiler[the butler] all along.
-```
 
-```html
-<p>The killer is <span class="spoiler">the butler</span> all along.</p>
-```
-
-The block form hides whole paragraphs behind a disclosure:
-
-```carve
 ::: spoiler "Ending"
 The butler did it.
 :::
 ```
 
+The `spoiler` factory in `@markup-carve/carve/extensions` registers both forms (`carve.spoiler` and `carve.spoilerBlock`, [C2-X-064](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md)) with their renderers:
+
+```js
+import { render } from '@markup-carve/carve'
+import { spoiler } from '@markup-carve/carve/extensions'
+
+const { extensions, renderers } = spoiler()
+render(source, { extensions, renderers })
+```
+
 ```html
+<p>The killer is <span class="spoiler">the butler</span> all along.</p>
 <details class="spoiler">
   <summary>Ending</summary>
   <p>The butler did it.</p>
 </details>
 ```
 
-Carve only marks the hidden content. The blur and the click to reveal come from
-the host's CSS. With the extension off, the inline form renders as
-`<span class="ext-spoiler">` and the block as `<div class="spoiler">`, so the
-text stays visible.
+Carve only marks the hidden content; the blur and the click to reveal come from the host's CSS. A block without a title gets `<summary>Spoiler</summary>`. Static output reveals the content and adds the `spoiler-revealed` class.
 
-## Features supplied by applications
+Without the extension, core HTML still keeps a class on each form, `<span class="ext-spoiler">` and `<div class="spoiler">`, so the text stays readable.
 
-These depend on a renderer, data source, or user-interface environment and may
-not exist in every implementation:
+## Feature tiers (quick reference) {#feature-tiers-quick-reference}
 
-- Mermaid and other diagram renderers
-- bibliography formatting from CSL-JSON data as an option on citations
-- glossary and index generation
-- table-of-contents placement
-- heading numbers and permalinks
-- tabbed code groups
-- external-link policies
-- wikilinks and references to headings in the current document
-- color swatches and other presentation helpers
-- sanitized SVG image fences
+The 0.2 extension catalog is provisional. Check the [status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) and [extension specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md) for the current set. The 0.1 tier table does not classify 0.2 features.
 
-Check the documentation for your chosen implementation before designing a
-workflow around one of these features.
+<a id="_9-headingnumbers-tier-3"></a>
+<a id="_6-1-data-source"></a>
 
-## Enable a feature
+## Changed extension catalog
 
-Extensions are registered on a processor or renderer. The exact constructor
-names differ by language, but the workflow is the same:
-
-1. Create the extension or choose a supplied one.
-2. Register it when creating the processor.
-3. Render a representative document and inspect its fallback with the extension
-   disabled.
-4. For interactive output, also test the [static-output fallback](./graceful-degradation).
-
-Implementation-specific setup is linked from [Implementations and
-tooling](./ecosystem).
-
-## Unknown extension names
-
-The inline form `:name[text]` and block form `::: name` are core syntax. If no
-handler recognizes `name`, Carve uses a generic span or container. This keeps
-the content present and gives applications a stable place to add behavior.
-
-```carve
-:product[Trail shoes]{sku=TR-42}
-
-::: product-card
-Trail shoes are available in three sizes.
-:::
-```
-
-An application can later attach meaning to `product` and `product-card`; a
-plain processor still preserves their words and attributes.
-
-## Choosing between document syntax and an extension
-
-Prefer core syntax when the meaning belongs in the document and should work in
-every processor. Prefer an extension when the behavior needs external data,
-application state, a third-party renderer, or an interactive interface.
-
-Good extension behavior has three properties:
-
-- the source remains understandable without the extension;
-- disabling the extension does not silently discard authored words;
-- unavailable interaction degrades to useful static output.
-
-## Technical reference
-
-The [extension contract](./extension-contract) defines matcher purity,
-transforms, rendering hooks, generated identifiers, configuration, feature
-tiers, and the normative behavior of the standard extensions. It is intended
-for extension and engine authors rather than readers choosing a feature.
+Older documentation linked to heading-number and bibliography integrations at these anchors. Bibliographies are part of the citation extension: a named `bibliography` or `references` directive holds the entries ([C2-X-058](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#standard-extension-source-forms)). Heading numbers are a document transform that every engine ships: `headingNumbers()` in `@markup-carve/carve/extensions` (JavaScript), `Navigation::headingNumbers()` (PHP) and `heading_numbers()` (Rust). The specification catalog does not define their output yet, so check it per engine, and build other integrations as extensions against the current [extension interface](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md), with a core fallback, after checking the [status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md).

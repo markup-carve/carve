@@ -1,5 +1,0 @@
-Before.
-
-<!-- TODO secret -->
-
-After.

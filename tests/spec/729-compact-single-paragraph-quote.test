@@ -1,7 +1,0 @@
-Compact single-paragraph quote
-
-```
-> q
-.
-<blockquote><p>q</p></blockquote>
-```

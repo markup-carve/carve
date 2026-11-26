@@ -1,0 +1,10 @@
+[package]
+name = "carve-next2-readiness"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+carve = { package = "carve-lang", path = "../../engines/carve-rs" }
+serde = "1"
+serde_json = { version = "1", features = ["unbounded_depth"] }
