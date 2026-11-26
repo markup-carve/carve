@@ -85,6 +85,15 @@ test('the command exits 1 on the conflicts and 0 on cases the model gives', { sk
   }
 })
 
+test('a case names a standard extension as the CLI does (carve#6858)', { skip }, async () => {
+  const model = await loadModel(jsDir)
+  const options = { extensions: ['carve.listTable'], renderers: { 'carve.listTable': 'standard' } }
+  const r = model.run('html', '::: list-table\n- - a\n:::\n', options)
+  assert.equal(r.error, undefined)
+  assert.match(r.output, /^<table>\n  <tbody>\n    <tr><td>a<\/td><\/tr>/)
+  assert.deepEqual(options.extensions, ['carve.listTable'])
+})
+
 test('a Carve 0.2 level-2 heading starts a case as well', () => {
   const [c] = parseCaseFile('== x\n\n- operation: html\n\n```crv\na\n```\n\n```html\n<p>a</p>\n```\n')
   assert.equal(c.id, 'x')
