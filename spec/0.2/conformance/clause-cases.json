@@ -89207,6 +89207,700 @@
     "html": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">x</td><td>y</td></tr>\n    <tr><td>&lt;</td></tr>\n  </tbody>\n</table>"
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2188",
+  "clauses": [
+   "C2-H-210",
+   "C2-I-062"
+  ],
+  "why": "C2-H-210: On `<ins>` and `<del>`, `author` is written as `data-author`, and `datetime` and `cite`, which are HTML attributes of these elements, are written as they are.",
+  "summary": "a replacement annotated with author and datetime on both nodes: author is data-author, datetime stays native",
+  "kind": "render",
+  "input": "The fee is {-10-}{author=Ann datetime=2026-11-20T10:00Z}{+12+}{author=Ann datetime=2026-11-20T10:00Z} euros.\n",
+  "options": {},
+  "expected": {
+   "html": "<p>The fee is <del data-author=\"Ann\" datetime=\"2026-11-20T10:00Z\">10</del><ins data-author=\"Ann\" datetime=\"2026-11-20T10:00Z\">12</ins> euros.</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is "
+      },
+      {
+       "type": "delete",
+       "children": [
+        {
+         "type": "text",
+         "value": "10"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ],
+         [
+          "datetime",
+          "2026-11-20T10:00Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "insert",
+       "children": [
+        {
+         "type": "text",
+         "value": "12"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ],
+         [
+          "datetime",
+          "2026-11-20T10:00Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": " euros."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2189",
+  "clauses": [
+   "C2-I-063",
+   "C2-I-036",
+   "C2-H-210"
+  ],
+  "why": "C2-I-063: It is an atom and a host: a glued attribute block attaches to it (C2-I-036). C2-H-210: On the span of a `critic_comment`, `author` and `datetime` are written as `data-author` and `data-datetime`.",
+  "summary": "an attribute block glued to an editorial comment attaches; author and datetime go out as data attributes",
+  "kind": "render",
+  "input": "The fee is 12{# check with finance #}{author=bob@example.org datetime=2026-11-21T09:30Z} euros.\n",
+  "options": {},
+  "expected": {
+   "html": "<p>The fee is 12<span class=\"critic-comment\" data-author=\"bob@example.org\" data-datetime=\"2026-11-21T09:30Z\"> check with finance </span> euros.</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is 12"
+      },
+      {
+       "type": "critic_comment",
+       "value": " check with finance ",
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "bob@example.org"
+         ],
+         [
+          "datetime",
+          "2026-11-21T09:30Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": " euros."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2190",
+  "clauses": [
+   "C2-I-063"
+  ],
+  "why": "C2-I-063: `{#` opens an editorial comment that closes at the first `#}` in the content.",
+  "summary": "control: an editorial comment without an attribute block carries no attrs",
+  "kind": "render",
+  "input": "The fee is 12{# check with finance #} euros.\n",
+  "options": {},
+  "expected": {
+   "html": "<p>The fee is 12<span class=\"critic-comment\"> check with finance </span> euros.</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is 12"
+      },
+      {
+       "type": "critic_comment",
+       "value": " check with finance "
+      },
+      {
+       "type": "text",
+       "value": " euros."
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2191",
+  "clauses": [
+   "C2-I-063",
+   "C2-I-036"
+  ],
+  "why": "C2-I-063: It is an atom and a host: a glued attribute block attaches to it (C2-I-036). C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise.",
+  "summary": "the block after an editorial comment that 0.1 left as text now attaches as a class",
+  "kind": "render",
+  "input": "{#note#}{.k} c\n",
+  "options": {},
+  "expected": {
+   "html": "<p><span class=\"critic-comment k\">note</span> c</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "critic_comment",
+       "value": "note",
+       "attrs": {
+        "classes": [
+         "k"
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": " c"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2192",
+  "clauses": [
+   "C2-I-063",
+   "C2-I-036"
+  ],
+  "why": "C2-I-063: It is an atom and a host: a glued attribute block attaches to it (C2-I-036).",
+  "summary": "an attribute block glued to an editorial comment is not unattached",
+  "kind": "lint",
+  "input": "The fee is 12{# check with finance #}{author=bob@example.org datetime=2026-11-21T09:30Z} euros.\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "unattached-inline-attribute"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2193",
+  "clauses": [
+   "C2-I-036",
+   "C2-I-063"
+  ],
+  "why": "C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise.",
+  "summary": "control: an attribute block after a space behind an editorial comment stays text",
+  "kind": "lint",
+  "input": "{#note#} {.k} c\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    "unattached-inline-attribute"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2194",
+  "clauses": [
+   "C2-H-210",
+   "C2-H-013"
+  ],
+  "why": "C2-H-210: An authored `data-author` or `data-datetime` wins over the derived one, which is then not written (C2-H-013).",
+  "summary": "an authored data-author wins over the one author derives",
+  "kind": "render",
+  "input": "{+x+}{author=Ann data-author=Bob}\n",
+  "options": {},
+  "expected": {
+   "html": "<p><ins data-author=\"Bob\">x</ins></p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "insert",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ],
+         [
+          "data-author",
+          "Bob"
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2195",
+  "clauses": [
+   "C2-H-210"
+  ],
+  "why": "C2-H-210: On every other node they are ordinary attributes.",
+  "summary": "control: author on a span is an ordinary attribute",
+  "kind": "render",
+  "input": "[x]{author=Ann}\n",
+  "options": {},
+  "expected": {
+   "html": "<p><span author=\"Ann\">x</span></p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "span",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2196",
+  "clauses": [
+   "C2-W-076",
+   "C2-I-063"
+  ],
+  "why": "C2-W-076: An attribute block of an inline host is written glued to the host, as one block in the order of C2-W-048. Glued blocks of the source are merged (C2-I-039).",
+  "summary": "the writer keeps the block glued to an editorial comment and merges two",
+  "kind": "format",
+  "input": "a{#c#}{author=Ann}{datetime=2026-11-21} b\n",
+  "options": {},
+  "expected": {
+   "carve": "a{#c#}{author=Ann datetime=2026-11-21} b\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2197",
+  "clauses": [
+   "C2-M-044",
+   "C2-H-210"
+  ],
+  "why": "C2-M-044: The revision keys of C2-H-210 read back: `data-author` on `<ins>` and `<del>` is the key `author`, and `data-author` and `data-datetime` on an editorial comment span (C2-M-035) are `author` and `datetime`.",
+  "summary": "data-author on <ins> imports as the key author",
+  "kind": "import",
+  "html": "<ins data-author=\"Ann\">x</ins>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "insert",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "carve": "{+x+}{author=Ann}\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2198",
+  "clauses": [
+   "C2-M-044"
+  ],
+  "why": "C2-M-044: `datetime` and `cite` on `<ins>` and `<del>` are kept as written.",
+  "summary": "cite on <del> stays cite, a reason URL, and gives no author",
+  "kind": "import",
+  "html": "<del cite=\"/reviews/42\">old</del>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "delete",
+       "children": [
+        {
+         "type": "text",
+         "value": "old"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "cite",
+          "/reviews/42"
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "carve": "{-old-}{cite=/reviews/42}\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2199",
+  "clauses": [
+   "C2-M-044",
+   "C2-M-035",
+   "C2-H-210"
+  ],
+  "why": "C2-M-044: The revision keys of C2-H-210 read back: `data-author` on `<ins>` and `<del>` is the key `author`, and `data-author` and `data-datetime` on an editorial comment span (C2-M-035) are `author` and `datetime`.",
+  "summary": "data-author and data-datetime on an editorial comment span import as author and datetime",
+  "kind": "import",
+  "html": "<p>The fee is 12<span class=\"critic-comment\" data-author=\"bob@example.org\" data-datetime=\"2026-11-21T09:30Z\"> check with finance </span> euros.</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is 12"
+      },
+      {
+       "type": "critic_comment",
+       "value": " check with finance ",
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "bob@example.org"
+         ],
+         [
+          "datetime",
+          "2026-11-21T09:30Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": " euros."
+      }
+     ]
+    }
+   ],
+   "carve": "The fee is 12{# check with finance #}{author=bob@example.org datetime=2026-11-21T09:30Z} euros.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2200",
+  "clauses": [
+   "C2-M-044",
+   "C2-H-210"
+  ],
+  "why": "C2-M-044: The revision keys of C2-H-210 read back: `data-author` on `<ins>` and `<del>` is the key `author`, and `data-author` and `data-datetime` on an editorial comment span (C2-M-035) are `author` and `datetime`. C2-M-044: `datetime` and `cite` on `<ins>` and `<del>` are kept as written.",
+  "summary": "the HTML of an annotated replacement imports back to its source",
+  "kind": "import",
+  "html": "<p>The fee is <del data-author=\"Ann\" datetime=\"2026-11-20T10:00Z\">10</del><ins data-author=\"Ann\" datetime=\"2026-11-20T10:00Z\">12</ins> euros.</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is "
+      },
+      {
+       "type": "delete",
+       "children": [
+        {
+         "type": "text",
+         "value": "10"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ],
+         [
+          "datetime",
+          "2026-11-20T10:00Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "insert",
+       "children": [
+        {
+         "type": "text",
+         "value": "12"
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "Ann"
+         ],
+         [
+          "datetime",
+          "2026-11-20T10:00Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": " euros."
+      }
+     ]
+    }
+   ],
+   "carve": "The fee is {-10-}{author=Ann datetime=2026-11-20T10:00Z}{+12+}{author=Ann datetime=2026-11-20T10:00Z} euros.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2201",
+  "clauses": [
+   "C2-M-113",
+   "C2-M-082",
+   "C2-H-210"
+  ],
+  "why": "C2-M-113: A ranged comment is read as a point comment. A `span` whose first class is `comment-start`, as Pandoc writes a word processor comment, is a `critic_comment` at its place whose value is its text, with the markup inside dropped. Its `data-author` is the key `author` and its `data-date` the key `datetime` (C2-H-210), the class `comment-start` and `data-comment-id` are not kept, and its other attributes are the comment's attributes. ... Those inlines are the range the comment covers, and a `critic_comment` is a point (C2-I-063), so the range is lost: the comment is reported with one `import-structure-repaired` entry at its `comment-start` (C2-M-082).",
+  "summary": "a Pandoc ranged comment imports as a point comment before its range, and the lost range is reported",
+  "kind": "import",
+  "html": "<p>The fee is 12 <span class=\"comment-start\" data-comment-id=\"3\" data-author=\"bob@example.org\" data-date=\"2026-11-21T09:30:00Z\">check with finance</span>euros<span class=\"comment-end\" data-comment-id=\"3\"></span>.</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is 12 "
+      },
+      {
+       "type": "critic_comment",
+       "value": "check with finance",
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "bob@example.org"
+         ],
+         [
+          "datetime",
+          "2026-11-21T09:30:00Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": "euros."
+      }
+     ]
+    }
+   ],
+   "carve": "The fee is 12 {#check with finance#}{author=bob@example.org datetime=2026-11-21T09:30:00Z}euros.\n",
+   "diagnostics": [
+    {
+     "code": "import-structure-repaired",
+     "channel": "render-loss",
+     "severity": "warning",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2202",
+  "clauses": [
+   "C2-M-113"
+  ],
+  "why": "C2-M-113: Where no inline stands between the two, or no `comment-end` follows, no range is lost and nothing is reported.",
+  "summary": "a ranged comment whose range is empty loses nothing and is not reported",
+  "kind": "import",
+  "html": "<p>a <span class=\"comment-start\" data-comment-id=\"1\">note</span><span class=\"comment-end\" data-comment-id=\"1\"></span> b</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a "
+      },
+      {
+       "type": "critic_comment",
+       "value": "note"
+      },
+      {
+       "type": "text",
+       "value": " b"
+      }
+     ]
+    }
+   ],
+   "carve": "a {#note#} b\n",
+   "notReported": [
+    "import-structure-repaired"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2203",
+  "clauses": [
+   "C2-M-113",
+   "C2-I-063"
+  ],
+  "why": "C2-M-113: A `comment-start` with no text gives no comment, since a comment holds at least one character: it and its `comment-end` are dropped and reported with one `import-element-dropped` entry at the `comment-start`.",
+  "summary": "a ranged comment with no text is dropped with its end, and its range stays as text",
+  "kind": "import",
+  "html": "<p>a <span class=\"comment-start\" data-comment-id=\"2\"></span>b<span class=\"comment-end\" data-comment-id=\"2\"></span> c</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a b c"
+      }
+     ]
+    }
+   ],
+   "carve": "a b c\n",
+   "diagnostics": [
+    {
+     "code": "import-element-dropped",
+     "channel": "render-loss",
+     "severity": "warning",
+     "line": 1,
+     "column": 6
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2204",
+  "clauses": [
+   "C2-M-113"
+  ],
+  "why": "C2-M-113: A `comment-end` that ends no comment is an ordinary span.",
+  "summary": "a comment-end span that ends no comment is an ordinary span",
+  "kind": "import",
+  "html": "<p><span class=\"comment-end\">x</span></p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "span",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ],
+       "attrs": {
+        "classes": [
+         "comment-end"
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "carve": "[x]{.comment-end}\n"
+  },
+  "from": []
+ }
  ]
 }
