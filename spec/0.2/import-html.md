@@ -1729,7 +1729,7 @@ ab
 | `data-carve-snippets` | nothing: the snippet definitions are gone |
 | `data-carve-source-level` | a heading at its shifted level |
 | `data-carve-src` | nothing |
-| `data-carve-tight` | spacing by C2-M-033: a tight list whose item holds more than one block reads as loose |
+| `data-carve-tight` | spacing by C2-M-033: a tight list with more than one item reads as loose if an item holds more than one block that is no list, or begins with an attribute-free `<p>` that C2-H-018 keeps |
 | `data-carve-xref` | a link to `#ID` whose text is the generated text |
 | `data-marker` | the bullet `-` |
 
