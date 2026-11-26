@@ -10,7 +10,8 @@
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "start": { "$ref": "#/$defs/endpoint" },
-          "end": { "$ref": "#/$defs/endpoint" }
+          "end": { "$ref": "#/$defs/endpoint" },
+          "data": { "type": "object", "description": "Qualified keys declared on the root or envelope of the tree, opaque JSON (C2-A-029, C2-A-214)" }
         },
         "required": ["id", "start", "end"],
         "additionalProperties": false

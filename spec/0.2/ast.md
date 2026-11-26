@@ -771,7 +771,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-213** A supplied `link` or `image` with `refForm` equal to `shortcut` and a key with no definition is valid. Resolution leaves it unresolved, and rendering writes the unresolved reference as text.
 
-**C2-A-214** The annotation-range sidecar is a JSON object with a `ranges` list. Each range has a nonempty string `id`, a `start` object and an `end` object. Each endpoint has an RFC 6901 `path` into the tree and a nonnegative integer `offset` measured in UTF-8 bytes of the annotation text of that node (C2-A-207). The schema is `data/annotation-ranges.schema.json`.
+**C2-A-214** The annotation-range sidecar is a JSON object with a `ranges` list. Each range has a nonempty string `id`, a `start` object and an `end` object. Each endpoint has an RFC 6901 `path` into the tree and a nonnegative integer `offset` measured in UTF-8 bytes of the annotation text of that node (C2-A-207). A range may carry `data` under C2-A-029, declared on the root or envelope of the tree, and a reader keeps unknown optional `data` on a range. The schema is `data/annotation-ranges.schema.json`.
 
 **C2-A-215** A table group made from a delimited table may omit `pos`. Its rows, cells, cell paragraphs and decoded text nodes omit `pos`; the table itself carries the position of its source fence. A pipe table group carries `pos`. These are the delimited table cases of C2-A-158, including the group and decoded text nodes.
 
