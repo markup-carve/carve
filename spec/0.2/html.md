@@ -1916,6 +1916,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-col-widths` | `<table>` | the dash widths of a separator row | goes: the separator row is cut and `table.separatorWidths` is deleted |
 | `data-carve-label` | `<pre>` | the label of a code fence | stays |
 | `data-carve-tight` | `<ul>`, `<ol>` | the list is tight | stays; written on every tight list (C2-H-138) |
+| `data-carve-loose` | `<ul>`, `<ol>` | the list is loose | new in 0.2; written on every loose list with two or more items (C2-H-138) |
 | `data-carve-xref` | `<a>` | the link is a cross-reference | stays |
 | `data-carve-caption-number` | `<span>` | the caption number mark | stays |
 | `data-carve-div` | `<div>` | a div with no other attribute written, `data-source-line` included | stays |
@@ -1929,7 +1930,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data-carve-col-widths` and `data-carve-substitution`.
 
-**C2-H-115** The reserved names are the 23 names of this table that stay, are new or stay reserved: 15 stay, 7 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
+**C2-H-115** The reserved names are the 24 names of this table that stay, are new or stay reserved: 15 stay, 8 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
 
 **C2-H-116** An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. The attribute line of a definition inside an abbreviation template (C2-H-179) is text and not an attribute of an element: it keeps every key it holds, a reserved name included.
 
@@ -1955,7 +1956,7 @@ Reported: `carrier-attribute-dropped`.
 
 **C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form, the declared head count of a delimited table and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023, C2-L-057) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
-**C2-H-120** The HTML importer is part of 0.2.0. It reads the 22 carriers of C2-H-115, the abbreviation and snippet templates among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
+**C2-H-120** The HTML importer is part of 0.2.0. It reads the 23 carriers of C2-H-115, the abbreviation and snippet templates among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
 
 The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
 
@@ -1999,7 +2000,7 @@ in
 
 :::
 
-**C2-H-138** `data-carve-tight` is written on every tight list, with no test on its items.
+**C2-H-138** `data-carve-tight` is written on every tight list, with no test on its items. `data-carve-loose` is written on every loose list with two or more items, also with no test on its items. A loose list with one item carries neither: C2-B-062 makes every one-item list tight, so its spacing does not survive an import (C2-H-195 row 23).
 
 **C2-H-140** Under `roundtrip` a resolved reference written in the collapsed form carries the presence carrier `data-carve-ref-collapsed` beside `data-carve-ref`. A reference in the full form carries `data-carve-ref` alone. A shortcut reference carries the presence carrier `data-carve-ref-shortcut` beside `data-carve-ref`.
 
@@ -2156,7 +2157,7 @@ Reported: `profile-construct-degraded`.
 
 ## Import
 
-**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 19 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as `import-html.md` maps that element (C2-M-007). Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
+**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 24 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as `import-html.md` maps that element (C2-M-007). Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
 
 **C2-H-197** A carrier sets only the facts its row of C2-H-186 names. How the importer reads an element that carries no carrier does not depend on carriers elsewhere in the document, except a carrier of an ancestor whose row names that reading, as `data-carve-line-block` does for the lines it holds. So `<p>a&nbsp;b</p>` imports to the same tree alone and beside `<ul data-carve-tight>`, and a render with `roundtrip` that holds no carrier imports as every other render does.
 
@@ -2171,7 +2172,8 @@ Reported: `profile-construct-degraded`.
 | Name | Element | Tree fact it sets | Ignored when |
 |---|---|---|---|
 | `data-marker` | `<ul>` | `list.marker.char` is the value | the value is not `-` or `*` |
-| `data-carve-tight` | `<ul>`, `<ol>` | `list.spacing` is `tight` | an item's first block is a `<p>` with no attribute, which a tight list writes bare (C2-H-034, C2-H-018), unless C2-H-018 keeps that `<p>` for its run: its content is only `<img>` elements, whitespace and comments, or the next block of the item is a bare `<img>` |
+| `data-carve-tight` | `<ul>`, `<ol>` | `list.spacing` is `tight` | an item's first block is a `<p>` with no attribute, which a tight list writes bare (C2-H-034, C2-H-018), unless C2-H-018 keeps that `<p>` for its run: its content is only `<img>` elements, whitespace and comments, or the next block of the item is a bare `<img>`; the list carries `data-carve-loose` |
+| `data-carve-loose` | `<ul>`, `<ol>` | `list.spacing` is `loose` | the list has one `<li>`, since a one-item list is tight (C2-B-062); it carries `data-carve-tight`; an item holds a run that C2-M-012 reads as a paragraph, other than an image run of Exception C2-M-013, since a loose list writes every paragraph in `<p>` (C2-H-034) |
 | `data-carve-explicit-id` | the `<section>` of a heading (C2-H-027), or an `<h1>` to `<h6>` that opens no section | the `id` of the element is the heading's authored `attrs.id` | the element has no `id`; it carries `data-carve-generated-id`; a `<section>` whose first child is no heading element |
 | `data-carve-generated-id` | as `data-carve-explicit-id` | the `id` of the element is generated: the heading has no `attrs.id`, and resolution computes `generatedId` again (C2-A-134) | the element has no `id`; it carries `data-carve-explicit-id`; a `<section>` whose first child is no heading element |
 | `data-carve-source-level` | an `<h1>` to `<h6>`, or a `<div role="heading">` that C2-M-024 reads as a heading | the heading's `level` is the value, in place of the level of the element (C2-H-208) | the value is not a decimal integer of at least 1 without a leading zero; it is not smaller than the level of the element |
@@ -2274,7 +2276,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 
 **C2-H-188** Round trip is promised only for HTML that the renderer wrote with `roundtrip` on and that was not changed afterwards. For such HTML the importer recovers each fact that a carrier names. It does not recover what has no carrier: the sidecar facts of C2-H-119 and the facts that HTML and the carriers do not hold.
 
-**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24.
+**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1, 5, 6, 12, 15, 18, 22 and 23.
 
 | Row | Fact | Input | Comes back as |
 |---|---|---|---|
@@ -2283,29 +2285,28 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 3 | a `non_breaking_space` node | `a\ b` | `a`, U+00A0, `b`: the character in text. A literal U+00A0 writes the same `&nbsp;` (C2-H-002) and survives |
 | 4 | a `non_breaking_space` node that starts a line of a line block | `::: \|⏎\ a⏎:::` | `::: \|⏎ a⏎:::`: a leading space, which C2-H-043 writes as the same `&nbsp;` |
 | 5 | a soft break directly before a hard break | `a⏎\⏎b` | `a\⏎b`: the line ending before `<br>` is layout |
-| 6 | the spacing of a loose list whose items start with no paragraph | `- > q⏎⏎- > r` | `- > q⏎- > r`: a tight list, since no item writes a `<p>` of its own (C2-H-034) |
-| 7 | a line feed in the text of a delimited-table cell | ```` {table}⏎```csv⏎x⏎"2⏎3"⏎``` ```` | `\|= x \|⏎\| 2 3 \|`: the line feed reads as a space |
-| 8 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone, and `valigns` in the same way |
-| 9 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
-| 10 | a span whose first class is `ext-NAME`, NAME an inline extension name (C2-I-094) | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
-| 11 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
-| 12 | a paragraph that holds only one display math node and has no role, in a supplied tree | the tree of `` $$`more` `` without `role` | `` $$`more` ``: a paragraph of the role `math`, which writes the same element (C2-H-077) |
-| 13 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |
-| 14 | a link definition whose destination is the heading its key finds | `[Intro][]⏎⏎[Intro]: #intro⏎⏎{#intro}⏎# Intro` | `[Intro][]⏎⏎{#intro}⏎= Intro`: no definition, by C2-H-198; the reference resolves to the heading |
-| 15 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
-| 16 | the whitespace at the edge of a delimited-table cell | ```` {table}⏎```csv⏎a, d⏎``` ```` | `\|= a \|= d \|`: the cell is written `<th scope="col"> d</th>`, and the import removes the space at the edge of its inline content (C2-M-018) |
-| 17 | an authored key with the name of a structural attribute that its element does not generate | `[a](/u){title=x}` | `[a](/u "x")`: the import reads the attribute as the structure it names (C2-H-013); `{type=A}` above `. a` comes back as a list of the style `A` the same way |
-| 18 | a hard break that ends a line of a line block other than the last line of its stanza, where the line holds more than the break and its last inline node before the break is no text ending in a space or tab | `::: \|⏎a\⏎b⏎:::` | `::: \|⏎a⏎b⏎:::`: the one `<br>` reads as the line end (C2-H-043); a line that holds only the break, or whose last inline node before it is text ending in a space or tab, keeps it, since an empty line ends a stanza (C2-A-069) and only a backslash keeps that whitespace (C2-I-002, C2-I-102) |
-| 19 | a semantic key in another case on a span | `[x]{KBD}` | `[x]{kbd}`: the HTML parser lowers the case of the attribute name (C2-H-183), and the key in lower case is the element of that key, `<kbd>x</kbd>` (C2-H-075); 0.1 had the same limit |
-| 20 | the key of a cross-reference typed in another normal form than its id | `= Café⏎⏎</#Cafe`, U+0301 and `>` | `</#Café>` with the precomposed `é`: the `href` names the id (C2-I-097), and `data-carve-xref` takes the key from the `href` (C2-H-011) |
-| 21 | a body with no rows in a table with `body-rows` | `{body-rows="1,0,1"}⏎\| a \|⏎\| b \|` | `{body-rows=1,1}⏎\| a \|⏎\| b \|`: a body with no rows writes no `<tbody>` (C2-H-056), and `body-rows` is never written (C2-H-153) |
-| 22 | `rowHeadColumns` of a body | `{body-rows=2 body-header-cols=1}⏎\| a \| b \|⏎\| c \| d \|` | `\|= a \| b \|⏎\|= c \| d \|`: header cells, since `<th scope="row">` (C2-H-056) carries no count (C2-H-153) |
-| 23 | the absence of a final line feed in a supplied nonempty code block value | a supplied `code_block` with value `a` | a `code_block` with value `a⏎`: C2-M-030 appends a line feed when the `<pre><code>` text has none |
-| 24 | loose spacing of a supplied list with one item, even when the item starts with a paragraph | a supplied one-item `list` with `spacing` `loose` and paragraph `a` | a tight list with the same item: C2-M-033 makes every one-item list tight |
-| 25 | a tab in a line of a line block, outside a code, math, raw or literal span | `::: \|⏎wide`, two tabs, `gap⏎:::` | `::: \|⏎wide        gap⏎:::`: the spaces of its columns, which C2-H-043 writes as the same `&nbsp;` |
-| 26 | a U+00A0 in a line of a line block that leads the line, stands beside another U+00A0, or stands beside a run of spaces and tabs of two or more columns, unless its run of U+00A0 stands beside a run of spaces and tabs of one column, which C2-H-043 writes as one space (C2-M-111) | `::: \|⏎a`, U+00A0, U+00A0, `b⏎:::` | `::: \|⏎a  b⏎:::`: spaces, which C2-H-043 writes as the same `&nbsp;` |
-| 27 | a run of spaces and tabs of two or more columns in a line of a line block that stands beside a U+00A0, where a run of spaces and tabs of one column stands beside the same U+00A0 run | `::: \|⏎x`, two spaces, U+00A0, a space, `y⏎:::` | `::: \|⏎x`, three U+00A0, a space, `y⏎:::`: U+00A0, one per column, which C2-H-043 writes as the same `&nbsp;`; the one-column run beside them keeps the whole `&nbsp;` run a literal (C2-M-111) |
-| 28 | a span with two or more of the keys `abbr`, `time` and `kbd` | `[v]{abbr kbd}` | `[[v]{abbr}]{kbd}`: one span per element, nested as C2-H-075 writes them, the remaining attributes on the outermost span (C2-M-047) |
+| 6 | a line feed in the text of a delimited-table cell | ```` {table}⏎```csv⏎x⏎"2⏎3"⏎``` ```` | `\|= x \|⏎\| 2 3 \|`: the line feed reads as a space |
+| 7 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone, and `valigns` in the same way |
+| 8 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
+| 9 | a span whose first class is `ext-NAME`, NAME an inline extension name (C2-I-094) | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
+| 10 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
+| 11 | a paragraph that holds only one display math node and has no role, in a supplied tree | the tree of `` $$`more` `` without `role` | `` $$`more` ``: a paragraph of the role `math`, which writes the same element (C2-H-077) |
+| 12 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |
+| 13 | a link definition whose destination is the heading its key finds | `[Intro][]⏎⏎[Intro]: #intro⏎⏎{#intro}⏎# Intro` | `[Intro][]⏎⏎{#intro}⏎= Intro`: no definition, by C2-H-198; the reference resolves to the heading |
+| 14 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
+| 15 | the whitespace at the edge of a delimited-table cell | ```` {table}⏎```csv⏎a, d⏎``` ```` | `\|= a \|= d \|`: the cell is written `<th scope="col"> d</th>`, and the import removes the space at the edge of its inline content (C2-M-018) |
+| 16 | an authored key with the name of a structural attribute that its element does not generate | `[a](/u){title=x}` | `[a](/u "x")`: the import reads the attribute as the structure it names (C2-H-013); `{type=A}` above `. a` comes back as a list of the style `A` the same way |
+| 17 | a hard break that ends a line of a line block other than the last line of its stanza, where the line holds more than the break and its last inline node before the break is no text ending in a space or tab | `::: \|⏎a\⏎b⏎:::` | `::: \|⏎a⏎b⏎:::`: the one `<br>` reads as the line end (C2-H-043); a line that holds only the break, or whose last inline node before it is text ending in a space or tab, keeps it, since an empty line ends a stanza (C2-A-069) and only a backslash keeps that whitespace (C2-I-002, C2-I-102) |
+| 18 | a semantic key in another case on a span | `[x]{KBD}` | `[x]{kbd}`: the HTML parser lowers the case of the attribute name (C2-H-183), and the key in lower case is the element of that key, `<kbd>x</kbd>` (C2-H-075); 0.1 had the same limit |
+| 19 | the key of a cross-reference typed in another normal form than its id | `= Café⏎⏎</#Cafe`, U+0301 and `>` | `</#Café>` with the precomposed `é`: the `href` names the id (C2-I-097), and `data-carve-xref` takes the key from the `href` (C2-H-011) |
+| 20 | a body with no rows in a table with `body-rows` | `{body-rows="1,0,1"}⏎\| a \|⏎\| b \|` | `{body-rows=1,1}⏎\| a \|⏎\| b \|`: a body with no rows writes no `<tbody>` (C2-H-056), and `body-rows` is never written (C2-H-153) |
+| 21 | `rowHeadColumns` of a body | `{body-rows=2 body-header-cols=1}⏎\| a \| b \|⏎\| c \| d \|` | `\|= a \| b \|⏎\|= c \| d \|`: header cells, since `<th scope="row">` (C2-H-056) carries no count (C2-H-153) |
+| 22 | the absence of a final line feed in a supplied nonempty code block value | a supplied `code_block` with value `a` | a `code_block` with value `a⏎`: C2-M-030 appends a line feed when the `<pre><code>` text has none |
+| 23 | loose spacing of a supplied list with one item, even when the item starts with a paragraph | a supplied one-item `list` with `spacing` `loose` and paragraph `a` | a tight list with the same item: C2-M-033 makes every one-item list tight |
+| 24 | a tab in a line of a line block, outside a code, math, raw or literal span | `::: \|⏎wide`, two tabs, `gap⏎:::` | `::: \|⏎wide        gap⏎:::`: the spaces of its columns, which C2-H-043 writes as the same `&nbsp;` |
+| 25 | a U+00A0 in a line of a line block that leads the line, stands beside another U+00A0, or stands beside a run of spaces and tabs of two or more columns, unless its run of U+00A0 stands beside a run of spaces and tabs of one column, which C2-H-043 writes as one space (C2-M-111) | `::: \|⏎a`, U+00A0, U+00A0, `b⏎:::` | `::: \|⏎a  b⏎:::`: spaces, which C2-H-043 writes as the same `&nbsp;` |
+| 26 | a run of spaces and tabs of two or more columns in a line of a line block that stands beside a U+00A0, where a run of spaces and tabs of one column stands beside the same U+00A0 run | `::: \|⏎x`, two spaces, U+00A0, a space, `y⏎:::` | `::: \|⏎x`, three U+00A0, a space, `y⏎:::`: U+00A0, one per column, which C2-H-043 writes as the same `&nbsp;`; the one-column run beside them keeps the whole `&nbsp;` run a literal (C2-M-111) |
+| 27 | a span with two or more of the keys `abbr`, `time` and `kbd` | `[v]{abbr kbd}` | `[[v]{abbr}]{kbd}`: one span per element, nested as C2-H-075 writes them, the remaining attributes on the outermost span (C2-M-047) |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names, nor a fact the render does not write (C2-H-188), is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 

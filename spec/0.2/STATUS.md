@@ -704,9 +704,9 @@ The ruling on #6772 makes the escape rounds of C2-W-088 read every reference fro
 
 ## Engine gaps from the line-block hard break ruling of 26 November (#6786)
 
-The ruling on #6786 narrows row 18 of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node before the break is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
+The ruling on #6786 narrows row 18 (now row 17) of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node before the break is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
 
-- `carve-js`, `carve-php` and `carve-rs`: done. The ruling audit of #6812 rewords row 18 to test the last inline node before the break; on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`) CC-2167 to CC-2171 pass in all three.
+- `carve-js`, `carve-php` and `carve-rs`: done. The ruling audit of #6812 rewords row 18 (now row 17) to test the last inline node before the break; on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`) CC-2167 to CC-2171 pass in all three.
 
 ## Engine gaps from the empty list-table cell ruling of 26 November (#6794)
 
@@ -869,3 +869,9 @@ The ruling on #6853 drops a list-table row that has no cell and no slot a row sp
 Two shapes of the snippet ruling that a document transform meets had no clause case. A use the expansion pass refused keeps its `snippet-unresolved` finding when a transform then changes the view, since the pass runs once, before the first transform (C2-N-091, C2-N-093, C2-N-095). A definition an include brings is in the registry of the expanded tree and no node a transform inserted, so a transform that changes the view reports nothing for it, and it renders nothing (C2-N-090, C2-N-095, C2-H-214). Clause cases CC-2437 and CC-2438. Measured on `carve-js` `next2` `2924a6c2`: both pass. A case compares the message only where it states `messageWhen` (C2-T-020), so the wording of CC-2437 and CC-2367 is not part of the case (carve-js#5673). `carve-php` `next2` `6d8ac3e` and `carve-rs` `next2` `ac59de0` have no snippets yet and fail both.
 
 - `carve-php` and `carve-rs`: keep the finding of a refused use through a transform, and report nothing for an included definition, as they implement snippets.
+
+## Engine gaps from the loose list carrier ruling of 26 November (#6844)
+
+The ruling on #6844 adds the presence carrier `data-carve-loose`: under `roundtrip` it stands on every loose list with two or more items, with no test on its items (C2-H-138), and the importer reads it as `list.spacing` `loose`. It is ignored on a one-item list, next to `data-carve-tight`, and where an item holds a bare paragraph run (C2-H-186); C2-M-033 applies only when no spacing carrier was accepted. C2-H-195 row 6 is gone and the later rows move up by one. The reserved names are 24 (C2-H-115), the importer reads 23 carriers (C2-H-120), and C2-H-182 names all 24. Clause cases CC-2440 to CC-2454, and CC-2414 now expects the carrier.
+
+- `carve-js` first, then `carve-php` and `carve-rs`: write `data-carve-loose` in the render, read and ignore it in the importer, and drop it as an authored attribute.
