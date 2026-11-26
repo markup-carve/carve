@@ -60111,8 +60111,8 @@
     "C2-T-049",
     "C2-T-050"
    ],
-   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~` under `--upgrade`, with `--rules` turning `djot-subscript-tilde` on, it and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other. C2-T-050: A file ends with the status that `lint` gives its fixed source (C2-T-031). Catalog djot-subscript-tilde-braced: each formed braced strike node from `{~x~}`",
-   "summary": "under upgrade, turning the subscript rule off picks the braced strike, which upgrade still reports",
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~` under `--upgrade`, with `--rules` turning `djot-subscript-tilde` on, it and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other. C2-T-050: A file ends with the status that `lint` gives its fixed source (C2-T-031).",
+   "summary": "under upgrade, turning the subscript rule off picks the braced strike, which nothing then reports",
    "kind": "cli",
    "args": [
     "fix",
@@ -60123,7 +60123,7 @@
    "stdin": "a ~s~ b\n",
    "options": {},
    "expected": {
-    "status": 1,
+    "status": 0,
     "stdout": "a {~s~} b\n",
     "stderrCategory": null
    },
