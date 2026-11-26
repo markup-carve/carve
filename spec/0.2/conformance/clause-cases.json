@@ -97620,6 +97620,131 @@
    "carve": "{body-header-rows=1 header-rows=1 footer-rows=1}\n|= h | d |\n|= h | < |\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-2475",
+  "clauses": [
+   "C2-H-163",
+   "C2-H-129",
+   "C2-H-165"
+  ],
+  "why": "C2-H-163: Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. C2-H-129: A construct outside the profile renders in its degraded form and is reported. C2-H-165: A node that leaves no text is dropped. A degraded node is reported once (C2-H-129)",
+  "summary": "under comment a link definition, a footnote reference and its definition are each reported",
+  "kind": "render",
+  "input": "[r]: /u\n\nSee [x][r] and[^n].\n\n[^n]: note\n",
+  "options": {
+   "profile": "comment"
+  },
+  "expected": {
+   "html": "<p>See <a href=\"/u\" rel=\"nofollow ugc\">x</a> and[^n].</p>",
+   "diagnostics": [
+    {
+     "code": "profile-construct-degraded",
+     "line": 1,
+     "column": 1,
+     "channel": "render-loss",
+     "severity": "warning"
+    },
+    {
+     "code": "profile-construct-degraded",
+     "line": 3,
+     "column": 15,
+     "channel": "render-loss",
+     "severity": "warning"
+    },
+    {
+     "code": "profile-construct-degraded",
+     "line": 5,
+     "column": 1,
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true,
+   "diagnosticsOrdered": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2476",
+  "clauses": [
+   "C2-H-178",
+   "C2-H-163",
+   "C2-H-129"
+  ],
+  "why": "C2-H-178: A profile does not degrade an `abbreviation_def`, also one outside the profile (C2-H-165): the template is data and no presentation, so it is written under every profile, and the definition is not reported as degraded. C2-H-163: Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. C2-H-129: A construct outside the profile renders in its degraded form and is reported.",
+  "summary": "under minimal a link definition is reported and an abbreviation definition is not",
+  "kind": "render",
+  "input": "*[B]: bee\n\n[r]: /u\n\nA B.\n",
+  "options": {
+   "profile": "minimal"
+  },
+  "expected": {
+   "html": "<p>A B.</p>",
+   "diagnostics": [
+    {
+     "code": "profile-construct-degraded",
+     "line": 3,
+     "column": 1,
+     "channel": "render-loss",
+     "severity": "warning"
+    },
+    {
+     "code": "profile-construct-degraded",
+     "line": 5,
+     "column": 3,
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true,
+   "diagnosticsOrdered": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2477",
+  "clauses": [
+   "C2-H-163",
+   "C2-H-165",
+   "C2-A-151"
+  ],
+  "why": "C2-H-163: Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. C2-H-165: a `comment` and a `critic_comment` give no text ... A node that leaves no text is dropped. A degraded node is reported once (C2-H-129) C2-A-151: to a line comment at the end of the line, which starts at the first space or tab before its `%%` and ends at the line ending",
+  "summary": "under comment a line, a block and a braced comment are each reported and write nothing",
+  "kind": "render",
+  "input": "x %% c\n\n%%%\nblock\n%%%\n\nb {% c %} d\n",
+  "options": {
+   "profile": "comment"
+  },
+  "expected": {
+   "html": "<p>x</p>\n<p>b  d</p>",
+   "diagnostics": [
+    {
+     "code": "profile-construct-degraded",
+     "line": 1,
+     "column": 2,
+     "channel": "render-loss",
+     "severity": "warning"
+    },
+    {
+     "code": "profile-construct-degraded",
+     "line": 3,
+     "column": 1,
+     "channel": "render-loss",
+     "severity": "warning"
+    },
+    {
+     "code": "profile-construct-degraded",
+     "line": 7,
+     "column": 3,
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true,
+   "diagnosticsOrdered": true
+  },
+  "from": []
  }
  ]
 }
