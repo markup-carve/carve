@@ -94752,7 +94752,7 @@
    "C2-M-009"
   ],
   "why": "C2-H-185: A carrier whose value is malformed, which contradicts the HTML around it or which contradicts another carrier of its element is ignored.",
-  "summary": "import: an ordinal with a leading zero is ignored and the span reads as content",
+  "summary": "import: an ordinal with a leading zero is ignored and the element reads as a plain span",
   "kind": "import",
   "html": "<p><span data-carve-snippet=\"01:inline:$v\">X</span></p>",
   "options": {},
@@ -94762,8 +94762,13 @@
      "type": "paragraph",
      "children": [
       {
-       "type": "text",
-       "value": "X"
+       "type": "span",
+       "children": [
+        {
+         "type": "text",
+         "value": "X"
+        }
+       ]
       }
      ]
     }
