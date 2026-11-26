@@ -464,7 +464,7 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 
 **C2-A-114** A link or image may carry `targetKind` (`url`, `wiki`, `doc` or `xref`) for a target that is not a URL.
 
-**C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip`, `resourceId` and `longDescription`, a list of blocks. `decorative: true` requires `alt` to be absent, and an absent `alt` requires `decorative: true`; a reader refuses either contradictory pair. A parse of Carve source produces no `longDescription` or `decorative` field. A resolved reference takes its tooltip from its definition.
+**C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip`, `resourceId` and `longDescription`, a list of blocks. An image is in one of three states: it has alt text, held in `alt`; its alt text is unknown, with neither `alt` nor `decorative`; or it is decorative, with `decorative: true` and no `alt`. `decorative: true` requires `alt` to be absent, and a reader refuses an image with both, and one with `decorative: false` and no `alt`. A parse of Carve source produces no `longDescription` or `decorative` field. It always produces `alt`, the empty string for `![](x)`, so the unknown state comes only from an import or a supplied tree. A resolved reference takes its tooltip from its definition.
 
 **C2-A-116** An `xref` carries `key`, `namespace`, and optional `display` (`number`, `page`, `title` or `full`); resolution may add `href`. The `display` field records cross-reference display separately from reference spelling. A Carve writer reports `display` as unspellable (C2-I-096). A parsed `xref` always carries the namespace `heading`, read as the namespace of the document's ids, which numbered captions share (C2-H-095): the parse does not know whether the key names a heading or a caption.
 
@@ -614,6 +614,7 @@ The invariants below are written so that a test can check each one on any tree a
 | `table_cell.scope` and `headerIds` | reports each field | writes `scope` and `headers` attributes |
 | `image.longDescription` | reports the field | renders its blocks after the image |
 | `image.decorative` | reports the field | writes empty `alt` |
+| an `image` with neither `alt` nor `decorative` | writes empty brackets and reports the field `alt` at the image | writes no `alt` |
 | `xref.display` | reports the field | uses the default core text |
 | blocks in `table_cell.children` | reports the loss | renders the blocks in the cell |
 | `small_caps` | writes the children | `span` with class `smallcaps` |

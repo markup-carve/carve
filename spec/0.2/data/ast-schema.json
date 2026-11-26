@@ -8746,10 +8746,7 @@
               "decorative": {
                 "const": true
               }
-            },
-            "required": [
-              "decorative"
-            ]
+            }
           }
         }
       ]

@@ -4333,6 +4333,30 @@
    }
   },
   {
+   "id": "image-decorative-false-without-alt",
+   "clauses": [
+    "C2-A-115"
+   ],
+   "reason": "decorative false with alt absent is none of the three image states",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "a.png",
+        "decorative": false
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
    "id": "decorative-image-with-alt",
    "clauses": [
     "C2-A-115"
