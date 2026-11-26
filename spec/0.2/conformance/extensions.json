@@ -2518,6 +2518,104 @@
           "extension-fallback-rendered"
         ]
       }
+    },
+    {
+      "id": "EXT-120",
+      "extension": "carve.toc",
+      "summary": "without a renderers entry writes its fallback and reports it",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ]
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-121",
+      "extension": "carve.toc",
+      "summary": "without a renderers entry in static mode writes the same fallback",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.toc"
+        ],
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-122",
+      "extension": "carve.tocPlacement",
+      "summary": "without a renderers entry writes its fallback and reports it",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: toc\n:::\n\n= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.tocPlacement"
+        ]
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
+    },
+    {
+      "id": "EXT-123",
+      "extension": "carve.tocPlacement",
+      "summary": "without a renderers entry in static mode writes the same fallback",
+      "clauses": [
+        "C2-X-052",
+        "C2-X-035",
+        "C2-H-123"
+      ],
+      "expectedFrom": "0.2",
+      "kind": "render",
+      "input": "::: toc\n:::\n\n= A\n\n== B\n",
+      "options": {
+        "extensions": [
+          "carve.tocPlacement"
+        ],
+        "mode": "static"
+      },
+      "expected": {
+        "html": "<div class=\"toc\">\n  <ul>\n    <li><a href=\"#A\">A</a>\n      <ul>\n        <li><a href=\"#B\">B</a></li>\n      </ul>\n    </li>\n  </ul>\n</div>\n<section id=\"A\">\n  <h1>A</h1>\n  <section id=\"B\">\n    <h2>B</h2>\n  </section>\n</section>",
+        "diagnostics": [
+          "extension-fallback-rendered"
+        ]
+      }
     }
   ]
 }

@@ -844,3 +844,9 @@ Named snippets enter 0.2.0 core: `{$name}:` definitions, `{{ $name }}` uses, the
 The ruling on #6832 keeps the `<p>` of a paragraph that C2-H-034 or C2-H-040 would write bare when its bare form would not import as that one paragraph: its content is only images, whitespace and comments (Exception C2-M-013), or a bare block image of the same item follows it (C2-M-012) (C2-H-018). Under `roundtrip` the `data-carve-tight` carrier stands over such a `<p>` (C2-H-186); without it a tight list with more than one item and such an item reads as loose, a listed loss (C2-M-091). C2-M-033 is unchanged. Clause cases CC-2398 to CC-2415. Measured on `carve-js` `next2` `1bfbf6ed`: the imports CC-2400, CC-2401, CC-2404, CC-2405, CC-2408 and CC-2411 and the loose controls CC-2413 to CC-2415 pass; the renders write the paragraph bare (CC-2398, CC-2399, CC-2402, CC-2403, CC-2406, CC-2407, CC-2409, CC-2410), and the importer ignores the carrier over the kept `<p>` (CC-2412).
 
 - `carve-js` first, then `carve-php` and `carve-rs`: keep the `<p>` in the render, and read `data-carve-tight` over it in the importer.
+
+## Engine gaps from the carve-php toc renderer ruling of 26 November (carve-js#5309)
+
+The ruling on carve-js#5309 for carve-php: a factory may ship a renderer, but the host still registers it through `renderers`. Without a `renderers` entry, `carve.toc` and `carve.tocPlacement` write their fallback and report `extension-fallback-rendered` in both modes (C2-X-052, C2-X-035, C2-H-123; EXT-120 to EXT-123). Measured on `carve-js` `next2` `1bfbf6ed` and `carve-rs` `next2` `bc9c2e1b`: all four cases pass. `carve-php` `next2` `a2f92893` writes the `<nav>` from the renderer its definitions carry.
+
+- `carve-php`: `tableOfContents()` and `tocPlacement()` carry no renderer; `renderers` with `standard` registers the bundled one.

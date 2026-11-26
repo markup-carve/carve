@@ -81,9 +81,8 @@ function optionsOf(array $case): array
         }
         $made = $named[$extension]();
         // A transform-only extension is one definition, not a bundle.
+        // Its renderer is the `renderers` entry (C2-X-052), so `standard` goes through to the engine.
         if (!method_exists($made, 'definitions')) {
-            // Such a definition carries its own renderer (carve.toc, carve.tocPlacement).
-            unset($options['renderers'][$extension]);
             $extensions[] = $made;
             continue;
         }
