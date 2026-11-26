@@ -92439,6 +92439,177 @@
     "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>"
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2313",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "2^53 + 1 in a metadata number has no binary64 value of its own and is refused",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":9007199254740993}}}}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/metadata/fields/n/value"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2314",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "a 20-digit metadata number is refused, not rounded",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":12345678901234567890}}}}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/metadata/fields/n/value"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2315",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "a metadata number with more digits than binary64 holds is refused, not read as 0.1",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":0.10000000000000000001}}}}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/metadata/fields/n/value"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2316",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "a metadata number that rounds to zero is refused",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":2e-324}}}}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/metadata/fields/n/value"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2317",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "a metadata number beyond the binary64 range is refused",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":1e400}}}}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/metadata/fields/n/value"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2318",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "2^53 + 1 in the opaque props of an extension node is refused",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"extensions\":[{\"name\":\"ex.box\",\"version\":\"1\",\"required\":false,\"slots\":[]}],\"children\":[{\"type\":\"block_extension\",\"name\":\"ex.box\",\"version\":\"1\",\"children\":[],\"fallback\":[{\"type\":\"paragraph\",\"children\":[{\"type\":\"text\",\"value\":\"f\"}]}],\"props\":{\"k\":9007199254740993}}]}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/children/0/props/k"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2319",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text",
+  "summary": "2^53 + 1 as a heading level is refused",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[{\"type\":\"heading\",\"level\":9007199254740993,\"children\":[{\"type\":\"text\",\"value\":\"T\"}]}]}",
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/children/0/level"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2320",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A number in a tree, in any field and in opaque `props`, `data` and payload values, is a finite IEEE 754 binary64 value, and C2-A-217 writes it in the spelling RFC 8785 gives, the shortest that reads back as that value, with `-0` written `0`.",
+  "summary": "2^53 is a binary64 value and is written as it stands: 9007199254740992",
+  "kind": "fingerprint",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":9007199254740992}}}}",
+  "options": {},
+  "expected": {
+   "fingerprint": "sha256:5f96905d442e7e8aab1f5d6fae4d7dc9986c90d22bc195ee5e7af5e95946778a"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2321",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A number in a tree, in any field and in opaque `props`, `data` and payload values, is a finite IEEE 754 binary64 value, and C2-A-217 writes it in the spelling RFC 8785 gives, the shortest that reads back as that value, with `-0` written `0`.",
+  "summary": "-0 is written 0, so its tree has the fingerprint of the tree with 0",
+  "kind": "fingerprint",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"number\",\"value\":-0}}}}",
+  "options": {},
+  "expected": {
+   "fingerprint": "sha256:5c90710c93f6e56324f47aa45d3c961f7bc665899a880f6493efca7a7f28e962"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2322",
+  "clauses": [
+   "C2-A-219"
+  ],
+  "why": "C2-A-219: A number in a tree, in any field and in opaque `props`, `data` and payload values, is a finite IEEE 754 binary64 value, and C2-A-217 writes it in the spelling RFC 8785 gives, the shortest that reads back as that value, with `-0` written `0`.",
+  "summary": "1.0, 1E2, 0.1, 1e21, 1e-7, 5e-324 and -1.5E-7 are written 1, 100, 0.1, 1e+21, 1e-7, 5e-324 and -1.5e-7",
+  "kind": "fingerprint",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[],\"metadata\":{\"fields\":{\"n\":{\"kind\":\"list\",\"value\":[{\"kind\":\"number\",\"value\":1.0},{\"kind\":\"number\",\"value\":1E2},{\"kind\":\"number\",\"value\":0.1},{\"kind\":\"number\",\"value\":1e21},{\"kind\":\"number\",\"value\":1e-7},{\"kind\":\"number\",\"value\":5e-324},{\"kind\":\"number\",\"value\":-1.5E-7}]}}}}",
+  "options": {},
+  "expected": {
+   "fingerprint": "sha256:142980e5e7472291b1480c89bf69a048589a88b6db43e2815a2cc40f971be1c5"
+  },
+  "from": []
+ }
  ]
 }

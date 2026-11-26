@@ -809,3 +809,11 @@ The audit of carve-rs#4838 settles two conflicts. C2-T-008 refuses an unlisted f
 The audit of #6771 asks for the rendering contract of `carve.listTable`, which C2-B-188 left to the extension. C2-X-078 states it: which div the transform claims, the attributes and caption of `<table>`, rows and cells, padding of short rows, head and footer rows, header columns and the key `header`, the cell keys that are read and not written, and block cells. Clause cases CC-2301 to CC-2312. Measured on the same heads: `carve-js`, `carve-php` and `carve-rs` render all twelve alike, except that `carve-rs` writes a second `style` attribute for `align` beside an authored `style` (CC-2308).
 
 - `carve-rs`: append the alignment declaration to an authored `style` of a list-table cell (C2-H-057), as the pipe table does.
+
+## Engine gaps from the ruling audit, group 7 (tooling), of 26 November (#6812)
+
+Mark's option A on #6812 ships the audit finding on #6099 in 0.2.0. The auto-ruling on #6099 closes the number domain of a tree instead of widening the encoder: every number is a finite binary64 value, and a reader refuses a number whose RFC 8785 spelling does not denote the number its JSON text gives (C2-A-219). Fingerprint cases may now decode a `json` input. Clause cases CC-2313 to CC-2322. Measured on the next2 heads of 26 November (`carve-js` `d4331d7e`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`):
+
+- `carve-js`: reads `9007199254740993`, `12345678901234567890`, `0.10000000000000000001` and `2e-324` as rounded values. Failing: CC-2313 to CC-2316, CC-2318, CC-2319.
+- `carve-php`: the same, and writes `1e400` as `null`. Failing: CC-2313 to CC-2319.
+- `carve-rs`: the same as `carve-js`, refuses `1e400` with no path, and writes `1.0` and `-0` as `1.0` and `-0.0`. Failing: CC-2313 to CC-2319 (CC-2317 on the path), CC-2321, CC-2322.

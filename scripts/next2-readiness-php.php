@@ -302,6 +302,10 @@ function runCase(array $case): array
                     return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $path];
                 }
             case 'fingerprint':
+                if (isset($case['json'])) {
+                    return ['fingerprint' => Carve2::treeFingerprint(Carve2::decodeTree($case['json']))];
+                }
+
                 return ['fingerprint' => ($case['of'] ?? null) === 'tree'
                     ? Carve2::treeFingerprint(positionlessTree($source))
                     : Carve2::sourceFingerprint($source)];

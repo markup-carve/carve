@@ -145,7 +145,7 @@
         "inputBytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$", "description": "The input as bytes in hex, for a source that is not a string." },
         "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" }, "description": "The files a resolver serves, each under its name, which is also its id." },
         "tree": { "type": "object", "description": "A tree or an envelope as a JSON value: the input of a tree, migrate, render or write case." },
-        "json": { "type": "string", "description": "The JSON text a tree case decodes, where the input is not a JSON value." },
+        "json": { "type": "string", "description": "The JSON text a tree case decodes, where the input is not a JSON value, or whose decoded tree a fingerprint case hashes (C2-A-219)." },
         "layout": { "type": "object", "description": "The source-layout sidecar a write case gives the writer beside its tree." },
         "annotations": { "type": "object", "description": "The annotation-range sidecar passed to a tree reader call." },
         "html": { "type": "string", "description": "The HTML an import case reads." },
@@ -217,7 +217,7 @@
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["diff"] } } }, "then": { "required": ["input", "inputAfter"], "properties": { "input": true, "inputAfter": true, "expected": { "type": "object", "required": ["applies"], "properties": { "applies": true } } } } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["patch"] } } }, "then": { "required": ["input", "patch"], "properties": { "input": true, "patch": true } } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["export"] } } }, "then": { "required": ["input", "to"], "properties": { "input": true, "to": true } } },
-        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["fingerprint"] } } }, "then": { "properties": { "expected": { "type": "object", "required": ["fingerprint"], "properties": { "fingerprint": true } } }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } }
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["fingerprint"] } } }, "then": { "properties": { "expected": { "type": "object", "required": ["fingerprint"], "properties": { "fingerprint": true } } }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }, { "required": ["json"], "properties": { "json": true } }] } }
       ],
       "additionalProperties": false
     },

@@ -268,7 +268,7 @@ function refusalProblems(entry) {
       else if (schemaAccepts && refusal.path !== undefined && refusedNodePath(entry, readerProblems) !== refusal.path) problems.push(`refuses at ${refusal.path}, but the reader check that cites its clause refuses at ${refusedNodePath(entry, readerProblems)}`)
     } else if (refused) problems.push(`reads a tree the ${schemaAccepts ? `reader refuses at ${found[0].path} (${found[0].clause})` : `schema refuses at ${validateTree.errors[0].instancePath || '/'}`}`)
   }
-  if (entry.json !== undefined && !refusal && entry.expected.accepted === undefined && !entry.expected.tree) problems.push('decodes JSON text and expects neither a refusal nor a tree')
+  if (entry.json !== undefined && kind === 'tree' && !refusal && entry.expected.accepted === undefined && !entry.expected.tree) problems.push('decodes JSON text and expects neither a refusal nor a tree')
   return problems
 }
 

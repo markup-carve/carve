@@ -59,7 +59,9 @@ Conventions:
 
 **C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
 
-**C2-A-217** `encodeTree` writes the JSON text of the JSON Canonicalization Scheme (RFC 8785): no whitespace, the members of every object in ascending order of their names compared as UTF-16 code units, and each string and number in the one spelling that scheme gives. So one tree has one encoding in every engine, and its `treeFingerprint` (C2-T-046) agrees across engines. A reader does not depend on that order: `decodeTree` reads the members of an object in any order (C2-A-188).
+**C2-A-217** `encodeTree` writes the JSON text of the JSON Canonicalization Scheme (RFC 8785): no whitespace, the members of every object in ascending order of their names compared as UTF-16 code units, and each string and number in the one spelling that scheme gives. So one tree has one encoding in every engine, and its `treeFingerprint` (C2-T-046) agrees across engines. A reader does not depend on that order: `decodeTree` reads the members of an object in any order (C2-A-188). The numbers it writes are those of C2-A-219.
+
+**C2-A-219** A number in a tree, in any field and in opaque `props`, `data` and payload values, is a finite IEEE 754 binary64 value, and C2-A-217 writes it in the spelling RFC 8785 gives, the shortest that reads back as that value, with `-0` written `0`. A reader of JSON text takes the binary64 value nearest to each number and refuses the number, at its path, when there is no finite one or its spelling does not denote the same number as the text; a supplied tree with a number that is no finite binary64 value is refused too. So `1.0`, `1E2` and `-0` are read and written as `1`, `100` and `0`, and `9007199254740993`, `0.10000000000000000001`, `2e-324` and `1e400` are refused. Every number a reader accepts keeps its value through `encodeTree`.
 
 ```json
 {
@@ -695,7 +697,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks, which are every refusal of this document that the schema does not express. Among them are nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), the children of a table cell (C2-A-091), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph and the source of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count, annotation ids against a supplied range sidecar, frontmatter nested below a node other than the document or an include (C2-A-049), a span count against its mark (C2-A-093), an extension node inside a qualified fallback (C2-X-022), a qualified extension node without its declaration (C2-A-123) or with another version than its declaration (C2-X-018), and an unknown required extension (C2-A-018). A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks, which are every refusal of this document that the schema does not express. Among them are nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), the children of a table cell (C2-A-091), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph and the source of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count, annotation ids against a supplied range sidecar, frontmatter nested below a node other than the document or an include (C2-A-049), a span count against its mark (C2-A-093), an extension node inside a qualified fallback (C2-X-022), a qualified extension node without its declaration (C2-A-123) or with another version than its declaration (C2-X-018), and an unknown required extension (C2-A-018), and a number that does not keep its value as binary64 (C2-A-219). A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. A node-shaped object is an object whose `type` is the name of a core node type; the rest of the object is not validated. The core walker ignores that data.
 
@@ -775,11 +777,11 @@ The fixtures of `spec/0.2/trees/`, including the typed metadata block trees of `
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 165 | 2 |
+| Existing AST contract | 166 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **200** | **3** |
+| **Total** | **201** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-218; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-219; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 
