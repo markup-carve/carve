@@ -92,9 +92,19 @@
         "channel": { "enum": ["parse", "render-loss", "lint"] },
         "path": { "type": "string" },
         "file": { "type": "string" },
-        "messageWhen": { "type": "string", "description": "Exact when condition of the selected catalog message variant." }
+        "messageWhen": { "type": "string", "description": "Exact when condition of the selected catalog message variant." },
+        "includedBy": {
+          "type": "array",
+          "description": "The include chain of the entry (C2-T-020), from the top-level document inward: per include node, the file it stands in, absent for the input, and the line and column of the start of its range.",
+          "items": {
+            "type": "object",
+            "required": ["line", "column"],
+            "properties": { "file": { "type": "string" }, "line": { "type": "integer", "minimum": 1 }, "column": { "type": "integer", "minimum": 1 } },
+            "additionalProperties": false
+          }
+        }
       },
-      "dependentRequired": { "column": ["line"], "line": ["column"], "endColumn": ["endLine"], "endLine": ["endColumn"] },
+      "dependentRequired": { "column": ["line"], "line": ["column"], "endColumn": ["endLine"], "endLine": ["endColumn"], "includedBy": ["file"] },
       "additionalProperties": false
     },
     "diagnostics": { "type": "array", "items": { "anyOf": [{ "$ref": "#/$defs/code" }, { "$ref": "#/$defs/diagnostic" }] } },

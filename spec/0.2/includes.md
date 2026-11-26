@@ -1112,7 +1112,7 @@ Reported: `duplicate-id`.
 
 **C2-N-062** The causes that are tested before the resolver is called, `no_resolver`, `option_invalid`, `conflict`, `depth` and `size_spent`, never call it, and the node has no `file`. A cause the resolver returns leaves the node without `file`. A cause tested after the resolver returned a text, `cycle`, `size_exceeded` and every selection cause, leaves `file` on the node: the file was read.
 
-**C2-N-063** A failure in an included file is reported at the include node in that file. The range of a finding is counted in the file of the node its path names (C2-A-173, C2-N-053). An entry with `file` may also carry `includedBy`, the chain of include nodes that read that file, from the top-level document inward, each with its `file` and `range` (C2-T-020).
+**C2-N-063** A failure in an included file is reported at the include node in that file. The range of a finding is counted in the file of the node its path names (C2-A-173, C2-N-053). An entry with `file` also carries `includedBy`, the chain of include nodes that read that file, from the top-level document inward, each with its `file` and `range`, of the first reach where there are several (C2-T-020, C2-N-087).
 
 **C2-N-064** The top-level document stands at depth 0, and a file included from a file at depth D stands at depth D + 1. A directive whose file would stand deeper than the limit `include_depth` of `data/limits.json`, 16, is not resolved and reports `include-depth`. A host may lower the limit and may not raise it.
 

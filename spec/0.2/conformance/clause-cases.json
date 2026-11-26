@@ -92885,6 +92885,100 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2335",
+   "clauses": [
+    "C2-T-020",
+    "C2-N-087"
+   ],
+   "why": "C2-T-020: `includedBy` is the 0.1 field of that name, and every entry with `file` carries it; where one position is reached more than once, it is the chain of the first reach, the one that supplies the path (C2-N-087). C2-N-087: where one position is reached more than once, the first reach in document order supplies the path.",
+   "summary": "a lint finding in a file included twice, and one a level deeper, carry the include chain of their first reach",
+   "kind": "lint",
+   "input": "{{ b.crv }}\n\n{{ b.crv }}\n",
+   "files": {
+    "b.crv": {
+     "text": "See [x][missing].\n\n{{ c.crv }}\n"
+    },
+    "c.crv": {
+     "text": "Go [y](#nope).\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unresolved-reference-link",
+      "file": "b.crv",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning",
+      "includedBy": [
+       {
+        "line": 1,
+        "column": 1
+       }
+      ]
+     },
+     {
+      "code": "broken-fragment-link",
+      "file": "c.crv",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "includedBy": [
+       {
+        "line": 1,
+        "column": 1
+       },
+       {
+        "file": "b.crv",
+        "line": 3,
+        "column": 1
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2336",
+   "clauses": [
+    "C2-T-020",
+    "C2-N-063"
+   ],
+   "why": "C2-T-020: `includedBy` is the 0.1 field of that name, and every entry with `file` carries it C2-N-063: A failure in an included file is reported at the include node in that file.",
+   "summary": "a parse entry for an include that fails inside an included file carries the include chain",
+   "kind": "lint",
+   "input": "{{ b.crv }}\n",
+   "files": {
+    "b.crv": {
+     "text": "x\n\n{{ nothere.crv }}\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-not-found",
+      "file": "b.crv",
+      "line": 3,
+      "column": 1,
+      "channel": "parse",
+      "severity": "warning",
+      "includedBy": [
+       {
+        "line": 1,
+        "column": 1
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

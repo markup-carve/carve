@@ -100,7 +100,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-019** A diagnostic line is `FILE:LINE:COLUMN: SEVERITY CODE MESSAGE`, and an entry with no range is written `FILE: SEVERITY CODE MESSAGE`. FILE is the `file` of the entry where it has one (C2-N-063) and the input otherwise. LINE counts line feeds from 1, and COLUMN counts the code points of that line from 1, both at the start of the range.
 
-**C2-T-020** An entry of the record (C2-A-173) is a JSON object with the fields of this table. The library gives every field but `line` and `column`; the command line adds those two where the entry has a range, and to each object of `includedBy`. `includedBy` is the 0.1 field of that name; an engine may give it and a comparison does not require it. The `message` is the text of the engine, for which the catalog row gives the reference wording (C2-W-106); a comparison of two reports does not compare it. A conformance case that states `messageWhen` compares the selected catalog condition separately, as C2-W-106 defines it.
+**C2-T-020** An entry of the record (C2-A-173) is a JSON object with the fields of this table. The library gives every field but `line` and `column`; the command line adds those two where the entry has a range, and to each object of `includedBy`. `includedBy` is the 0.1 field of that name, and every entry with `file` carries it; where one position is reached more than once, it is the chain of the first reach, the one that supplies the path (C2-N-087). The `message` is the text of the engine, for which the catalog row gives the reference wording (C2-W-106); a comparison of two reports does not compare it. A conformance case that states `messageWhen` compares the selected catalog condition separately, as C2-W-106 defines it.
 
 | Field | Value | Present | Clauses |
 |---|---|---|---|
@@ -112,7 +112,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `range` | an object of `startOffset` and `endOffset`, in UTF-8 bytes | where the entry has a position in source | C2-A-173 |
 | `file` | the id of the included file the range is counted in | where that is not the top-level document | C2-N-063 |
 | `foreignType` | the name of the HTML node | on an entry of the importer that has one | C2-M-081 |
-| `includedBy` | the include chain: a list of objects of `file`, absent for the top-level document, and `range`, one per include node from the top-level document inward to the one that read `file` | optional, on an entry that has `file` | C2-N-063 |
+| `includedBy` | the include chain: a list of objects of `file`, absent for the top-level document, and `range`, one per include node from the top-level document inward to the one that read `file` | on an entry that has `file` | C2-N-063, C2-N-087 |
 | `line` | the LINE of C2-T-019 | on the command line, with `range` | C2-T-019 |
 | `column` | the COLUMN of C2-T-019 | on the command line, with `range` | C2-T-019 |
 
