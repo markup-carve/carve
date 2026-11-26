@@ -91811,6 +91811,138 @@
     "diagnosticsComplete": true
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2270",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: A namespace declaration `xmlns:xlink` is not written when its value, with character references read, is empty or holds a space, tab, line feed, carriage return or U+00A0 anywhere",
+  "summary": "an xmlns:xlink value with a leading space is not written",
+  "kind": "render",
+  "input": "```img\n<svg><g xmlns:xlink=\" urn:x\"/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2271",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: A namespace declaration `xmlns:xlink` is not written when its value, with character references read, is empty or holds a space, tab, line feed, carriage return or U+00A0 anywhere",
+  "summary": "an xmlns:xlink value with a trailing space is not written",
+  "kind": "render",
+  "input": "```img\n<svg><g xmlns:xlink=\"urn:x \"/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2272",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: A namespace declaration `xmlns:xlink` is not written when its value, with character references read, is empty or holds a space, tab, line feed, carriage return or U+00A0 anywhere",
+  "summary": "an xmlns:xlink value with an inner space is not written",
+  "kind": "render",
+  "input": "```img\n<svg><g xmlns:xlink=\"urn: x\"/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2273",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: A namespace declaration `xmlns:xlink` is not written when its value, with character references read, is empty or holds a space, tab, line feed, carriage return or U+00A0 anywhere",
+  "summary": "an xmlns:xlink value with a no-break space is not written",
+  "kind": "render",
+  "input": "```img\n<svg><g xmlns:xlink=\"urn: x\"/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2274",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: A namespace declaration `xmlns:xlink` is not written when its value, with character references read, is empty or holds a space, tab, line feed, carriage return or U+00A0 anywhere",
+  "summary": "an xmlns:xlink value of a no-break space character reference is not written",
+  "kind": "render",
+  "input": "```img\n<svg><g xmlns:xlink=\"&#160;\"/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2275",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: A namespace declaration `xmlns:xlink` is not written when its value, with character references read, is empty or holds a space, tab, line feed, carriage return or U+00A0 anywhere",
+  "summary": "an xmlns:xlink value without whitespace stays",
+  "kind": "render",
+  "input": "```img\n<svg><g xmlns:xlink=\"urn:x\"/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20xmlns%3Axlink%3D%22urn%3Ax%22%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ }
  ]
 }
