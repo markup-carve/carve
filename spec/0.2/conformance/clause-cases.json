@@ -96473,6 +96473,62 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2439",
+  "clauses": [
+   "C2-H-195",
+   "C2-H-075",
+   "C2-M-047"
+  ],
+  "why": "C2-H-195: Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24. C2-H-075: Several keys nest in the fixed order `abbr`, `time`, `kbd` from inside out, and the remaining attributes go on the outermost element. C2-M-047: `<kbd>` is a `span` with the key `kbd` and an empty value",
+  "summary": "nested kbd and abbr elements import as nested spans, one key each",
+  "kind": "import",
+  "html": "<p><kbd><abbr>v</abbr></kbd></p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "span",
+       "children": [
+        {
+         "type": "span",
+         "children": [
+          {
+           "type": "text",
+           "value": "v"
+          }
+         ],
+         "attrs": {
+          "keyValues": [
+           [
+            "abbr",
+            ""
+           ]
+          ]
+         }
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "kbd",
+          ""
+         ]
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "carve": "[[v]{abbr}]{kbd}\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
  }
  ]
 }
