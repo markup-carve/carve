@@ -529,10 +529,10 @@
       "status": "new",
       "default": "upgrade",
       "messages": [
-        "`header-rows` does not apply to a pipe table in 0.2. Mark header cells with the header mark and write alignment on the cells."
+        "`header-rows` on a pipe table no longer makes the cells of its rows header cells in 0.2: they keep the kind they are written with. Mark header cells with the header mark."
       ],
       "message_origin": "design",
-      "reports": "`header-rows` on a pipe table",
+      "reports": "`header-rows` on a pipe table, whose head cells 0.1 made header cells",
       "change": "only `header-rows`; `aligns`, `valigns`, `widths` and `footer-rows` stay as in 0.1, and `header-cols` has no effect in 0.2.0",
       "clauses": ["C2-B-186"]
     },
@@ -1147,7 +1147,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "reports": "an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` or `valign` beside a declaration of its axis, a `col` style that gives no width or holds another declaration, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces",
+      "reports": "an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` or `valign` beside a declaration of its axis, a `col` style that gives no width, holds another declaration or marks its width important, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces",
       "clauses": ["C2-M-004", "C2-M-026", "C2-M-027", "C2-M-030", "C2-M-031", "C2-M-032", "C2-M-040", "C2-M-041", "C2-M-043", "C2-M-052", "C2-M-054", "C2-M-075"]
     },
     {
@@ -1187,7 +1187,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "reports": "content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a data cell of the table head, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key",
+      "reports": "content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key",
       "clauses": ["C2-M-034", "C2-M-036", "C2-M-037", "C2-M-039", "C2-M-041", "C2-M-048", "C2-M-061", "C2-M-069", "C2-M-070"]
     },
     {

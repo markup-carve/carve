@@ -5712,7 +5712,7 @@ Example 281 (unverified)
 
 **C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174). Where the source declares no grouping, the rest of the rows form one body.
 
-**C2-B-179** `header-rows` sets the number of head rows of a delimited table. C2-B-209 and C2-B-210 state its default and its value.
+**C2-B-179** `header-rows` sets the number of head rows of a table. C2-B-186, C2-B-209 and C2-B-210 state its default and its value.
 
 **C2-B-180** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table, and `delimited-table-malformed` reports an unclosed quote as C2-B-181 states, with severity error.
 
@@ -5772,9 +5772,9 @@ A vertical mark without a horizontal mark or `?` before it is no mark: `{^}` is 
 
 **C2-B-185** A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.
 
-**C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
+**C2-B-186** On a pipe table a valid `header-rows` count sets the head as on a delimited table (C2-B-209): the first N rows, whatever their cells, so a head can hold data cells. Without the key the head is that of C2-B-178. In 0.1 the key also made the cells of those rows header cells, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N smaller than the number of rows, the head ends above those rows, they are the footer, and the table has no body. So `{footer-rows=1 body-rows}` above `|= A |` and `|= F |` gives the head row `A` and the footer row `F`, whose cell stays a header cell. Without `body-rows`, or with a count of all the rows or more, the head takes its rows as before. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all, and `body-rows`, `body-header-rows` and `body-header-cols` keep their 0.1 definitions, applied to the rows below the 0.2 head. C2-B-210 to C2-B-214, C2-B-227 and C2-B-230 state them.
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N not larger than the number of rows, the head ends above those rows, they are the footer, and the table has no body; a count of all the rows leaves no head. So `{footer-rows=1 body-rows}` above `|= A |` and `|= F |` gives the head row `A` and the footer row `F`, whose cell stays a header cell. Without `body-rows`, or with a count larger than the number of rows, the head takes its rows as before. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all, and `body-rows`, `body-header-rows` and `body-header-cols` keep their 0.1 definitions, applied to the rows below the 0.2 head. C2-B-210 to C2-B-214, C2-B-227 and C2-B-230 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it.
 
@@ -6494,7 +6494,7 @@ Example 218 (generated)
 
 :::
 
-The key does not make a head on a pipe table (C2-B-186).
+On a pipe table the key makes a head of the rows it counts, and their cells keep their kind (C2-B-186).
 
 Example 219 (unverified)
 
@@ -6508,8 +6508,10 @@ Example 219 (unverified)
 
 ```html
 <table>
-  <tbody>
+  <thead>
     <tr><td>a</td></tr>
+  </thead>
+  <tbody>
     <tr><td>b</td></tr>
   </tbody>
 </table>
@@ -6589,9 +6591,9 @@ Reported: `table-column-overlap`.
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key.
 
-**C2-B-227** A table reads `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` and `body-header-cols` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
+**C2-B-227** A table reads `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` and `body-header-cols` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230) has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
 
-**C2-B-230** `body-rows` splits the rows between the head and the foot into bodies, one `table_body` each in source order. Its value is a list of entries separated by commas, spaces around an entry ignored, one entry per body giving its data rows. An entry of `body-rows` and of `body-header-rows` is one or more decimal digits; unlike a count (C2-B-210) it has no empty form. `0` is an empty body, and an empty value gives no body. `body-header-rows`, one entry per body, puts that many rows before the data rows of its body, and every cell of such a row is a header cell. `body-header-cols`, one entry per body, sets `rowHeadColumns` of its body (C2-A-088), and an empty entry sets none; the cells of those columns stay data cells in the tree and are written as header cells (C2-H-056). `body-rows` can stand alone. The two header lists need `body-rows` and exactly one entry per body, and the header and data rows of the bodies must be exactly the rows between the head and the foot; where a value breaks one of these rules, none of the three keys has an effect. The head stays that of C2-B-178 or C2-B-209, so a pipe table writes its head with header marks, not `header-rows` (C2-B-186).
+**C2-B-230** `body-rows` splits the rows between the head and the foot into bodies, one `table_body` each in source order. Its value is a list of entries separated by commas, spaces around an entry ignored, one entry per body giving its data rows. An entry of `body-rows` and of `body-header-rows` is one or more decimal digits; unlike a count (C2-B-210) it has no empty form. `0` is an empty body, and an empty value gives no body. `body-header-rows`, one entry per body, puts that many rows before the data rows of its body, and every cell of such a row is a header cell. `body-header-cols`, one entry per body, sets `rowHeadColumns` of its body (C2-A-088), and an empty entry sets none; the cells of those columns stay data cells in the tree and are written as header cells (C2-H-056). `body-rows` can stand alone. The two header lists need `body-rows` and exactly one entry per body, and the header and data rows of the bodies must be exactly the rows between the head and the foot; where a value breaks one of these rules, none of the three keys has an effect. The head stays that of C2-B-178, C2-B-186 or C2-B-209.
 
 The body keys split the rows below the head into two bodies; the second body starts with a header row, and the first body's first column holds row headers (C2-B-230). The cells of the header row are header cells of a body, so they take `scope="row"` (C2-H-056).
 

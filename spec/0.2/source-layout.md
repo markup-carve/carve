@@ -100,7 +100,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells in the same groups (C2-A-088): blocks Examples 267 and 268 give equal trees.
 
-**C2-L-057** `headerRows` on the entry of a delimited table is the effective count of a valid `header-rows` attribute the source gave (C2-B-209, C2-B-221), 0 included. A table without the attribute, and a pipe table, on which the attribute has no effect (C2-B-186), have no such fact. The groups of the tree hold the partition; the fact records only that the count was written. A `headerRows` that differs from the number of head rows of the tree contradicts the tree, and the writer ignores it (C2-L-006).
+**C2-L-057** `headerRows` on the entry of a delimited table is the effective count of a valid `header-rows` attribute the source gave (C2-B-209, C2-B-221), 0 included. A table without the attribute, and a pipe table, have no such fact: the writer writes `header-rows` on a pipe table from its groups (C2-W-066). The groups of the tree hold the partition; the fact records only that the count was written. A `headerRows` that differs from the number of head rows of the tree contradicts the tree, and the writer ignores it (C2-L-006).
 
 ```json
 {
