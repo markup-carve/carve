@@ -863,3 +863,10 @@ The ruling on #6853 drops a list-table row that has no cell and no slot a row sp
 
 - `carve-js` and `carve-php`: take the three counts over the rows that give an item.
 - `carve-rs`: do the same as it implements `listTable`.
+
+## Engine gaps from the snippet transform clause cases of 26 November (#6395)
+
+Two shapes of the snippet ruling that a document transform meets had no clause case. A use the expansion pass refused keeps its `snippet-unresolved` finding when a transform then changes the view, since the pass runs once, before the first transform (C2-N-091, C2-N-093, C2-N-095). A definition an include brings is in the registry of the expanded tree and no node a transform inserted, so a transform that changes the view reports nothing for it, and it renders nothing (C2-N-090, C2-N-095, C2-H-214). Clause cases CC-2437 and CC-2438. Measured on `carve-js` `next2` `2924a6c2`: CC-2438 passes; CC-2437 gives the right code, range and channel and fails only on its message, as CC-2367 does (carve-js#5673). `carve-php` `next2` `6d8ac3e` and `carve-rs` `next2` `ac59de0` have no snippets yet and fail both.
+
+- `carve-js`: write the catalog message of `snippet-unresolved` (carve-js#5673).
+- `carve-php` and `carve-rs`: keep the finding of a refused use through a transform, and report nothing for an included definition, as they implement snippets.

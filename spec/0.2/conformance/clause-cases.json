@@ -96384,6 +96384,95 @@
     "carve": "::: list-table\n- - - a\n  - b\n- - ^\n:::\n"
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2437",
+  "clauses": [
+   "C2-N-093",
+   "C2-N-091",
+   "C2-N-095"
+  ],
+  "why": "C2-N-091: Snippets are expanded in one pass over the render view, after includes and before ordinary resolution and document transforms (C2-X-053). C2-N-093: A use is not expanded when no definition carries its name (`snippet-unresolved`) C2-N-095: Document transforms see each copy as ordinary nodes, and snippets are not expanded again.",
+  "summary": "a refused use keeps its finding when a document transform changes the view",
+  "kind": "render",
+  "input": "a {{ $missing }}\n",
+  "options": {},
+  "host": {
+   "documentTransforms": [
+    {
+     "name": "sample.a",
+     "after": "/children/0",
+     "insert": {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "expected": {
+   "html": "<p>a {{ $missing }}</p>\n<p>b</p>",
+   "diagnostics": [
+    {
+     "code": "snippet-unresolved",
+     "line": 1,
+     "column": 3,
+     "endLine": 1,
+     "endColumn": 17,
+     "channel": "render-loss"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2438",
+  "clauses": [
+   "C2-N-095",
+   "C2-N-090",
+   "C2-H-214"
+  ],
+  "why": "C2-N-095: a `snippet_definition` that a transform inserts renders nothing, enters no registry and reports the same code. C2-N-090: It holds the snippet definitions of the expanded authored tree in document order, those an include appends under C2-N-020 and C2-N-031 too C2-H-214: A snippet definition renders nothing.",
+  "summary": "a definition an include brings is no node a transform inserted, so a transform that changes the view reports nothing",
+  "kind": "render",
+  "input": "{{ d.crv }}\n",
+  "options": {},
+  "files": {
+   "d.crv": {
+    "text": "{$x}: Hi\n"
+   }
+  },
+  "host": {
+   "documentTransforms": [
+    {
+     "name": "sample.a",
+     "after": "/children/0",
+     "insert": {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "e"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "expected": {
+   "html": "<p>e</p>",
+   "diagnostics": [],
+   "diagnosticsComplete": true,
+   "notReported": [
+    "snippet-unexpanded-transform"
+   ]
+  },
+  "from": []
+ }
  ]
 }
