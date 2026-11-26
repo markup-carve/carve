@@ -10,7 +10,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-002** The program is `carve`.
 
-**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import of its `import` command (C2-M-100), and its scanner and event helpers. Every engine also offers Markdown, plain-text and ANSI export renderers through its library API and `carve render --to markdown`, `--to plain` and `--to ansi`. Their output, options and export-only loss codes are engine behavior outside this specification, except the option `headingShift`, which the Markdown export reads and the plain-text and ANSI exports refuse (C2-H-209); those codes are outside `data/lint-rules.json` (C2-W-106). An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
+**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import of its `import` command (C2-M-100), and its scanner and event helpers. Every engine also offers Markdown, plain-text and ANSI export renderers through its library API and `carve render --to markdown`, `--to plain` and `--to ansi`. Their output, options and export-only loss codes are engine behavior outside this specification, except the option `headingShift`, which the Markdown export reads and the plain-text and ANSI exports refuse (C2-H-209); those codes are outside `data/lint-rules.json` (C2-W-106). An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning. The Rust engine keeps its 0.1 flag `--quote-locale LOCALE` on `render`, which registers `carve.smartQuotes` with that `locale` (C2-X-075).
 
 **C2-T-004** `data/cli.json` holds the commands, flags, failure categories, calls and entry fields of this document. A row is normative together with the clauses it cites; where a row and its clause disagree, the clause wins.
 
@@ -70,7 +70,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `fix` | Carve source | what `lint --fix` writes | C2-T-049 |
 | `upgrade` | 0.1 source | outside this specification (C2-T-003) | |
 
-**C2-T-008** A flag is `--name value` or `--name=value`. A switch is `--name` and takes no value; `--no-name` turns it off. `--` ends the flags, and every argument after it is a file. A flag that the table of its command does not list is refused with the category `usage`.
+**C2-T-008** A flag is `--name value` or `--name=value`. A switch is `--name` and takes no value; `--no-name` turns it off. `--` ends the flags, and every argument after it is a file. A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).
 
 **C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value. `--ignore` collects every value too.
 

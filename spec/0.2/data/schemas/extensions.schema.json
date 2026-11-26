@@ -147,6 +147,10 @@
                     "type": "string"
                   }
                 },
+                "open": {
+                  "description": "The option also takes a string outside values; its clauses say how such a value reads (C2-X-075).",
+                  "type": "boolean"
+                },
                 "default": {
                   "type": "string"
                 },

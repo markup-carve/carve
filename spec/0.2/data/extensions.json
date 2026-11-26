@@ -560,6 +560,7 @@
             "nn",
             "uk"
           ],
+          "open": true,
           "default": "en",
           "clauses": [
             "C2-X-075"

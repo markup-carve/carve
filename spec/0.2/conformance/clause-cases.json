@@ -28907,7 +28907,7 @@
    "clauses": [
     "C2-T-008"
    ],
-   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).",
    "summary": "an unknown flag is refused with usage",
    "kind": "cli",
    "files": {
@@ -28932,7 +28932,7 @@
    "clauses": [
     "C2-T-008"
    ],
-   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).",
    "summary": "a flag of fmt given to render is refused with usage",
    "kind": "cli",
    "files": {
@@ -66373,7 +66373,7 @@
     "C2-T-008",
     "C2-H-208"
    ],
-   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).",
    "summary": "ast does not take --heading-shift",
    "kind": "cli",
    "files": {
@@ -86191,7 +86191,7 @@
     "C2-T-010",
     "C2-X-075"
    ],
-   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, one of the values of its row with `en` the default, so that `de` writes `„a“`.",
+   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, a string with `en` the default, so that `de` writes `„a“`.",
    "summary": "--extension-options gives the smart quotes their locale",
    "kind": "cli",
    "files": {
@@ -86222,8 +86222,8 @@
     "C2-T-010",
     "C2-X-075"
    ],
-   "why": "C2-T-010: A value the option refuses is refused with the category `usage`. C2-X-075: one of the values of its row with `en` the default",
-   "summary": "a smart quotes locale outside its row is a usage error on the command line",
+   "why": "C2-X-075: The values of its row are the locales with glyphs of their own, and any other string is taken too: ignoring ASCII case and reading `_` as `-`, a locale takes the glyphs of its value, else of its language, the part before the first `-`, else of `en`.",
+   "summary": "a smart quotes locale outside its row falls back to en on the command line (carve-rs#4838)",
    "kind": "cli",
    "files": {
     "a.crv": {
@@ -86241,8 +86241,9 @@
    ],
    "options": {},
    "expected": {
-    "status": 2,
-    "stderrCategory": "usage"
+    "status": 0,
+    "stdout": "<p>“a” b</p>\n",
+    "stderrCategory": null
    },
    "from": []
   },
@@ -92079,6 +92080,98 @@
     "status": 0,
     "stdout": "<pre><code>  a\n</code></pre>\n",
     "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2298",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-X-075: The values of its row are the locales with glyphs of their own, and any other string is taken too: ignoring ASCII case and reading `_` as `-`, a locale takes the glyphs of its value, else of its language, the part before the first `-`, else of `en`.",
+   "summary": "a region locale outside the row takes the glyphs of its language (carve-rs#4838)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":\"de-AT\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>„a“ b</p>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2299",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-X-075: The values of its row are the locales with glyphs of their own, and any other string is taken too: ignoring ASCII case and reading `_` as `-`, a locale takes the glyphs of its value, else of its language, the part before the first `-`, else of `en`.",
+   "summary": "a locale matches its row ignoring ASCII case, with _ read as - (carve-rs#4838)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":\"DE_ch\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>«a» b</p>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2300",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, a string with `en` the default C2-T-010: A value the option refuses is refused with the category `usage`.",
+   "summary": "a smart quotes locale that is no string is a usage error (carve-rs#4838)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":1}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
    },
    "from": []
   }
