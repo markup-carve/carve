@@ -856,3 +856,10 @@ The ruling on carve-js#5309 for carve-php: a factory may ship a renderer, but th
 Two sentences of C2-X-078 had no clause case. A bare key has the empty value (C2-I-029), so a `header-rows`, `footer-rows` or `header-cols` without a value, like one with a quoted empty value, has no effect and is not written on `<table>`. A row item that holds anything beside its one list, a block after it, a block before it or a second list, leaves the div a core div. Clause cases CC-2416 to CC-2425. Measured on `carve-js` `next2` `1bfbf6ed`, `carve-php` `next2` `a2f92893` and `carve-rs` `next2` `bc9c2e1b`: all three pass the paragraph before the list (CC-2422), the paragraph indented into the cell (CC-2424) and the blank line between rows (CC-2425); all three read a key without a value as 1 (CC-2416 to CC-2419) and claim a row item with a block after its list or a second list (CC-2420, CC-2421, CC-2423).
 
 - `carve-js`, `carve-php` and `carve-rs`: give an empty value of the three keys no effect, and leave a div whose row item holds more than one list a core div.
+
+## Engine gaps from the list-table empty row ruling of 26 November (#6853)
+
+The ruling on #6853 drops a list-table row that has no cell and no slot a row span covers, reports it with `import-structure-repaired`, and takes `header-rows`, `header-cols` and `footer-rows` over the rows that give an item (C2-M-112). A row that a row span covers entirely keeps its `^` item. Clause cases CC-2433 to CC-2436. Measured on `carve-js` `next2` `dc3ee6d` and `carve-php` `next2` `6d8ac3e`: both drop and report the row but count it, so they write `footer-rows=2` (CC-2433), `header-rows=2` (CC-2434) and no `header-cols` with a `header` key on each header cell (CC-2435); both pass CC-2436. `carve-rs` `next2` `b73cda8` has no `listTable` import yet.
+
+- `carve-js` and `carve-php`: take the three counts over the rows that give an item.
+- `carve-rs`: do the same as it implements `listTable`.

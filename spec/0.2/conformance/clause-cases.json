@@ -95808,6 +95808,582 @@
    "diagnosticsComplete": true
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2433",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A row that has no cell and no slot a row span covers gives no item: it is dropped and reported with `import-structure-repaired`, and the counts below are taken over the rows that give an item.",
+   "summary": "an empty row of the foot gives no item and footer-rows counts the rows that give one (carve#6853)",
+   "kind": "import",
+   "html": "<table><tbody><tr><td><ul><li>a</li></ul></td></tr><tr><td>b</td></tr></tbody><tfoot><tr></tr><tr><td>f</td></tr></tfoot></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "f"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ],
+       "keyValues": [
+        [
+         "footer-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{footer-rows=1}\n::: list-table\n- - - a\n- - b\n- - f\n:::\n",
+    "diagnostics": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2434",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A row that has no cell and no slot a row span covers gives no item: it is dropped and reported with `import-structure-repaired`, and the counts below are taken over the rows that give an item.",
+   "summary": "an empty row of the head gives no item and header-rows counts the rows that give one (carve#6853)",
+   "kind": "import",
+   "html": "<table><thead><tr><th>h</th></tr><tr></tr></thead><tbody><tr><td><ul><li>a</li></ul></td></tr><tr><td>b</td></tr></tbody></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "h"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ],
+       "keyValues": [
+        [
+         "header-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{header-rows=1}\n::: list-table\n- - h\n- - - a\n- - b\n:::\n",
+    "diagnostics": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2435",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A row that has no cell and no slot a row span covers gives no item: it is dropped and reported with `import-structure-repaired`, and the counts below are taken over the rows that give an item.",
+   "summary": "an empty row does not lower header-cols (carve#6853)",
+   "kind": "import",
+   "html": "<table><tr><th>R</th><td><ul><li>a</li></ul></td></tr><tr></tr><tr><th>S</th><td>b</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "R"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "S"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ],
+       "keyValues": [
+        [
+         "header-cols",
+         "1"
+        ]
+       ]
+      }
+     }
+    ],
+    "carve": "{header-cols=1}\n::: list-table\n- - R\n  - - a\n- - S\n  - b\n:::\n",
+    "diagnostics": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2436",
+   "clauses": [
+    "C2-M-112",
+    "C2-W-145"
+   ],
+   "why": "C2-M-112: A row that has no cell and no slot a row span covers gives no item ... A slot that a span covers holds an item with the text `<` or `^`, placed as C2-W-145 places the marks",
+   "summary": "a row that a row span covers entirely is no empty row: it keeps its span mark item (carve#6853)",
+   "kind": "import",
+   "html": "<table><tr><td rowspan=\"2\"><ul><li>a</li></ul></td><td>b</td></tr><tr></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "^"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - - a\n  - b\n- - ^\n:::\n"
+   },
+   "from": []
+  }
  ]
 }
