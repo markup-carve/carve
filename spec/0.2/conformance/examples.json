@@ -84194,8 +84194,7 @@
      "type": "document"
     },
     "diagnostics": [
-     "deprecated-bare-underline",
-     "djot-emphasis-underscore"
+     "deprecated-bare-underline"
     ]
    },
    "status": "unverified",

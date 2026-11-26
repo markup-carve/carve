@@ -8,7 +8,7 @@ Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a co
 
 ## Command line
 
-`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `--upgrade` turns on the migration notices, which report valid 0.2 text that 0.1 or Djot read differently and the spellings 0.2 removed (the `deprecated-` rules and most `djot-` rules among them); they are also on for a document whose line-1 frontmatter declares `carve: 0.1`. See [migration notices](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint). `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
+`carve lint FILE` prints parse and lint findings. `--json` writes the diagnostics report. `--rules '{"rule-id":"off"}'` changes a rule; `--platforms '["github"]'` enables platform checks. `--upgrade` turns on the migration notices, which report valid 0.2 text that 0.1 read differently and the spellings 0.2 removed (the `deprecated-` rules among them); they are also on for a document whose line-1 frontmatter declares `carve: 0.1`. The `djot-` rules are off unless `--rules` turns them on by id. See [migration notices](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint). `carve diagnostics FILE` reports the parse channel. A lint run exits 1 for a warning or error, but 0 for hints alone. See [CLI lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-lint) and [diagnostics command](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-diagnostics).
 
 `carve fmt --check FILE` checks canonical source without writing it. Use `carve fmt -w FILE` to write it and `--normalize` to discard measured spelling. Formatting is not automatic repair of a semantic error. See [formatter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#carve-fmt).
 
@@ -63,19 +63,19 @@ The following 121 lint-channel rows, every row except the two with status `void`
 | `deprecated-table-attribute` | warning | upgrade |
 | `description-separator-below-content-column` | warning | on |
 | `description-term-multi-line` | hint | on |
-| `djot-definition-list` | hint | upgrade |
-| `djot-emphasis-underscore` | warning | upgrade |
-| `djot-emphasis-underscore-braced` | hint | upgrade |
-| `djot-heading-continuation` | warning | upgrade |
+| `djot-definition-list` | hint | off |
+| `djot-emphasis-underscore` | warning | off |
+| `djot-emphasis-underscore-braced` | hint | off |
+| `djot-heading-continuation` | warning | off |
 | `djot-highlight-braces` | warning | off |
-| `djot-intraword-underscore` | warning | upgrade |
-| `djot-ordered-marker` | hint | upgrade |
-| `djot-plus-bullet` | warning | upgrade |
-| `djot-subscript-tilde` | warning | upgrade |
-| `djot-subscript-tilde-braced` | warning | upgrade |
-| `djot-superscript-caret` | warning | upgrade |
-| `djot-tag-mention` | hint | upgrade |
-| `djot-typography-sign` | hint | upgrade |
+| `djot-intraword-underscore` | warning | off |
+| `djot-ordered-marker` | hint | off |
+| `djot-plus-bullet` | warning | off |
+| `djot-subscript-tilde` | warning | off |
+| `djot-subscript-tilde-braced` | warning | off |
+| `djot-superscript-caret` | warning | off |
+| `djot-tag-mention` | hint | off |
+| `djot-typography-sign` | hint | off |
 | `duplicate-reference-url` | warning | off |
 | `emphasis-as-heading` | warning | off |
 | `emphasis-marker-before-attributes` | warning | on |

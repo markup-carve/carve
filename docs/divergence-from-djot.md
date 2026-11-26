@@ -21,7 +21,7 @@ These eight change a Djot document without a parse error, and most of them get n
 7. `-->`, `==>`, `!=`, `<=`, `>=`, `+-` and `(tm)` become `→`, `⇒`, `≠`, `≤`, `≥`, `±` and `™`.
 8. `::: note`, `::: warning` and the other admonition names render as `<aside>`, and `::: toc`, `::: footnotes` and `::: figure` are directives, not plain divs.
 
-Under `carve lint --upgrade`, or in a document that declares `carve: 0.1`, the upgrade-only `djot-` hints report items 2, 5, 6 and 7 and the `(1)` and `A. x` list markers: `djot-definition-list`, `djot-emphasis-underscore-braced`, `djot-tag-mention`, `djot-typography-sign` and `djot-ordered-marker`. Items 1 and 4 are reported under `--upgrade` too, and item 3 by default. Item 8 has no migration notice.
+With `--rules` turning them on by id, the `djot-` hints report items 2, 5, 6 and 7 and the `(1)` and `A. x` list markers: `djot-definition-list`, `djot-emphasis-underscore-braced`, `djot-tag-mention`, `djot-typography-sign` and `djot-ordered-marker`. Item 4 has `djot-` rules too, item 1 is reported under `--upgrade`, and item 3 by default. Item 8 has no migration notice.
 
 ## Inline marks
 

@@ -792,3 +792,10 @@ The ruling audit of 26 November replaced the ruling on #6465: C2-B-029 strips th
 ## Ruling audit group 5 of 26 November: ids, tables of contents, numbering (#6812)
 
 C2-H-103 and C2-H-105 make a streaming renderer wait for every generated id before it writes a note mark (#6055). C2-X-077 counts the top-level headings for `carve.headingNumbers`, `carve.toc` and `carve.tocPlacement` whether `sections` is on or off, and leaves a cross-reference to a heading without a number to the core (#6531, EXT-113 to EXT-116). C2-H-123 reads `renderers` in both modes, and `mode` selects the channel (carve-js#5309, EXT-117 to EXT-119). Measured on `carve-js` `next2` `d4331d7`, `carve-php` `next2` `8fd0c4a` and `carve-rs` `next2` `afed9a7`: all seven cases pass in all three engines.
+
+## Engine gaps from ruling audit group 8 (#6812: #6499, #6768, carve-rs#4838, #6771)
+
+The audit of #6499 separates the Djot gate from the 0.1 gate: every `djot-` row of `data/lint-rules.json` has the default `off`, and only `rules` turns one on, never a `carve: 0.1` declaration or `upgrade` (C2-W-156, C2-T-031, C2-T-049). Before, `carve fix` rewrote declared 0.1 text by its Djot reading, `a_b_c` to `a{/b/}c`. CC-1831, CC-1832, CC-1834, CC-1835, CC-1837, CC-1838, CC-1840, CC-1841, CC-1843, CC-1844, CC-1846, CC-1847, CC-1849, CC-1850, CC-1953, CC-1957, CC-1961, CC-1968 and CC-1973 now expect the rule off; CC-1952, CC-1955, CC-1956, CC-1959, CC-1960, CC-1963 to CC-1967, CC-1970 to CC-1972 and CC-1975 to CC-1978 turn their rule on with `rules` instead of `upgrade`; CC-1932, CC-1933, CC-1937, CC-1938, CC-1942 and CC-1943 expect `fix` to keep the source, and CC-1353 adds `--rules` for the tilde conflict. Measured on `carve-js` `next2` `d4331d7e`, `carve-php` `8fd0c4af` and `carve-rs` `afed9a76`: all three turn the `djot-` rules on through the declaration and `upgrade`.
+
+- `carve-js`: the new defaults arrive with the spec pin.
+- `carve-php` and `carve-rs`: set the thirteen `djot-` rows to `off` in their rule lists.
