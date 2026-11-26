@@ -18,7 +18,7 @@ Conventions:
 
 **C2-M-002** The input is a document when, after any leading ASCII whitespace and comments, it starts with `<!doctype` or with `<html`, compared without ASCII case. A document is parsed with the HTML Standard's parsing algorithm for documents. Any other input is a fragment and is parsed with the HTML fragment parsing algorithm with a `body` element as the context element.
 
-**C2-M-003** The importer reads the tree the parser builds, not the input text. So character references are decoded, a carriage return and a CR LF pair are one line feed (C2-H-195 row 1), U+0000 in text is U+FFFD, attribute names are in lower case (C2-H-195 row 13), and the elements the parser opens, closes or moves stand where the parser put them. The importer repeats none of this work and reports none of it.
+**C2-M-003** The importer reads the tree the parser builds, not the input text. So character references are decoded, a carriage return and a CR LF pair are one line feed (C2-H-195 row 1), U+0000 in text is U+FFFD, attribute names are in lower case (C2-H-195 row 12), and the elements the parser opens, closes or moves stand where the parser put them. The importer repeats none of this work and reports none of it.
 
 **C2-M-004** A document's children are the children of its `<body>`. The `lang` of `<body>`, or else of `<html>`, is the `lang` of the document node, and the same holds for a `dir` read as the attribute row `dir` reads it (C2-M-052). Every other attribute of `<html>` and `<body>` is dropped and reported with `import-attribute-dropped`.
 
@@ -474,7 +474,7 @@ The first box gives the task mark; the second is dropped, and the space before `
 
 Reported: `import-element-dropped`, `import-whitespace-normalized`.
 
-**C2-M-033** A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034). A list is also loose when an item holds more than one block that is no list. Otherwise it is tight. A list with one item is tight even so (C2-B-062).
+**C2-M-033** A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034). A list is also loose when an item holds more than one block that is no list. Otherwise it is tight. A list with one item is tight even so (C2-B-062). These tests apply only to a list on which the importer accepted no spacing carrier, `data-carve-tight` or `data-carve-loose` (C2-H-186).
 
 **C2-M-034** A child of a list that is no `<li>` is dropped with its content and reported with `import-structure-repaired`. Text that holds only whitespace is not such a child.
 
@@ -640,7 +640,7 @@ Example 50 (unverified)
 
 HTML 4 wrote the foot before the body; the foot is the last group of the tree, where a browser shows it.
 
-**C2-M-038** A cell that holds no block element holds one `cell_paragraph` of its inline content. A `soft_break` or `hard_break` in it becomes one space (C2-H-195 row 7) and is reported with `import-whitespace-normalized`. A cell that holds a block element holds those blocks, and one empty `cell_paragraph` when every one of them is dropped (C2-M-069, C2-M-070, C2-A-091).
+**C2-M-038** A cell that holds no block element holds one `cell_paragraph` of its inline content. A `soft_break` or `hard_break` in it becomes one space (C2-H-195 row 6) and is reported with `import-whitespace-normalized`. A cell that holds a block element holds those blocks, and one empty `cell_paragraph` when every one of them is dropped (C2-M-069, C2-M-070, C2-A-091).
 
 Example 49 (unverified)
 
@@ -985,9 +985,9 @@ A `class` of spaces only leaves no class, and a tree holds no empty `classes`.
 | admonition | `aside` | first class `admonition`, second class a kind of C2-H-154 | admonition; `aria-label` and `aria-labelledby` are not kept |
 | admonition-title | `p` | class exactly `admonition-title`, first block of a div, an admonition or a footnote section (C2-M-061) | its title |
 | critic-comment | `span` | first class `critic-comment` | critic_comment |
-| directive | `div` | first class a directive kind: `bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc` | directive (C2-H-195 row 9) |
+| directive | `div` | first class a directive kind: `bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc` | directive (C2-H-195 row 8) |
 | div-label | `p` | class exactly `div-label`, after the title | groupLabel |
-| ext | `span` | first class `ext-NAME`, where NAME is an inline extension name (C2-I-094) | inline_extension NAME (C2-H-195 row 10) |
+| ext | `span` | first class `ext-NAME`, where NAME is an inline extension name (C2-I-094) | inline_extension NAME (C2-H-195 row 9) |
 | figure-group | `figure` | first class `carve-figure-group` | figure_group |
 | math | `span` | classes `math inline` or `math display`, text between `\(` and `\)` or `\[` and `\]` | math |
 | mention | `span` | first class `mention`, one `strong` child whose text starts with the sigil | mention |
@@ -1719,6 +1719,7 @@ ab
 | `data-carve-inline-footnote` | a footnote reference and a footnote definition |
 | `data-carve-label` | no `groupLabel` on the code block |
 | `data-carve-line-block` | a div with class `line-block` of paragraphs with hard breaks |
+| `data-carve-loose` | spacing by C2-M-033: a loose list reads as tight if no item begins with an attribute-free `<p>` and no item holds more than one block that is no list |
 | `data-carve-raw` | the payload as text |
 | `data-carve-ref` | an inline link or image with its `href`, `src` and `title`; no definition is rebuilt |
 | `data-carve-ref-collapsed` | as `data-carve-ref` |
@@ -1735,7 +1736,7 @@ ab
 
 **C2-M-092** The list of C2-M-091 is complete as far as known. A tree fact that it does not name is expected to survive a render without `roundtrip` and an import. A round trip that loses another fact is a defect of this specification or of the engine.
 
-**C2-M-093** Evidence, measured on the 434 examples of the specification that the harness of the reference importer reads (`import/scripts/roundtrip.ts`, `carve-js` commit `cd8e431b`), whose importer keeps raw content as the option `rawHtml` on does. With `roundtrip`: 320 trees are equal as they stand and 431 after the losses the harness applies. Without `roundtrip`: 250 are equal as they stand and 337 after the same losses. Of the other 97, 94 differ only in facts of the table above, so 431 are equal after the losses of C2-M-091; this count attributes each remaining difference of the harness to a carrier and is not a mode of the harness. The remaining three are the same three in both runs, and their only differences are C2-H-195 row 8 and the declared head count, which was then the tree field `table_body.headRows` and is now a sidecar fact (C2-A-088); the harness applies neither. With those two all 434 come back equal after the listed losses.
+**C2-M-093** Evidence, measured on the 434 examples of the specification that the harness of the reference importer reads (`import/scripts/roundtrip.ts`, `carve-js` commit `cd8e431b`), whose importer keeps raw content as the option `rawHtml` on does. With `roundtrip`: 320 trees are equal as they stand and 431 after the losses the harness applies. Without `roundtrip`: 250 are equal as they stand and 337 after the same losses. Of the other 97, 94 differ only in facts of the table above, so 431 are equal after the losses of C2-M-091; this count attributes each remaining difference of the harness to a carrier and is not a mode of the harness. The remaining three are the same three in both runs, and their only differences are C2-H-195 row 7 and the declared head count, which was then the tree field `table_body.headRows` and is now a sidecar fact (C2-A-088); the harness applies neither. With those two all 434 come back equal after the listed losses.
 
 Example 40 (verified)
 
@@ -1832,6 +1833,6 @@ The reference names `_ftn1`, the marker anchor of the note, whose nearest block 
 
 ## Counts
 
-**C2-M-099** This document holds 97 clauses: 96 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 23 loss rows and 7 adapter rows.
+**C2-M-099** This document holds 97 clauses: 96 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 24 loss rows and 7 adapter rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.
