@@ -487,7 +487,8 @@
       "clauses": [
         "C2-B-188",
         "C2-X-072",
-        "C2-X-076"
+        "C2-X-076",
+        "C2-X-078"
       ],
       "slotOrder": [
         "rows",
@@ -560,6 +561,7 @@
             "nn",
             "uk"
           ],
+          "open": true,
           "default": "en",
           "clauses": [
             "C2-X-075"

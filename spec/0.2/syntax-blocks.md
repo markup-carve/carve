@@ -5776,7 +5776,7 @@ A vertical mark without a horizontal mark or `?` before it is no mark: `{^}` is 
 
 **C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. An empty `body-rows` (C2-B-230) is the one exception: where it stands and the head of C2-B-178 would take one of the last N rows of a count N not larger than the number of rows, the head ends above those rows, they are the footer, and the table has no body; a count of all the rows leaves no head. So `{footer-rows=1 body-rows}` above `|= A |` and `|= F |` gives the head row `A` and the footer row `F`, whose cell stays a header cell. Without `body-rows`, or with a count larger than the number of rows, the head takes its rows as before. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all, and `body-rows`, `body-header-rows` and `body-header-cols` keep their 0.1 definitions, applied to the rows below the 0.2 head. C2-B-210 to C2-B-214, C2-B-227 and C2-B-230 state them.
 
-**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it.
+**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: `carve.listTable` defines it (C2-X-076, C2-X-078), it gives the same table as a pipe table, and this chapter does not restate it.
 
 Line 1 ends with a tab and a space, line 2 with two spaces.
 

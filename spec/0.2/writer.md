@@ -1194,7 +1194,7 @@ Written:
 
 **C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are migration notices of C2-W-156 through 0.2.x. `deprecated-indented-line-under-heading` reports no removed spelling: it is a migration notice of C2-W-156 and keeps its id. `continuation-reading-changed` reports no removed spelling either: it is the migration notice of C2-W-156 for a line that a definition, a term or a caption reads otherwise than 0.1 did (C2-B-083, C2-B-084, C2-B-234).
 
-`_a_` was underline in 0.1 and is a deprecated spelling in 0.2, and Djot reads it as emphasis; a document that declares Carve 0.1 reports both (C2-W-110, C2-W-156).
+`_a_` was underline in 0.1 and is a deprecated spelling in 0.2; a document that declares Carve 0.1 reports it. Djot reads it as emphasis, which `djot-emphasis-underscore` reports only where `rules` turns it on (C2-W-110, C2-W-156).
 
 Example 24 (unverified)
 
@@ -1207,7 +1207,7 @@ carve: 0.1
 _a_
 ```
 
-Reported: `deprecated-bare-underline`, `djot-emphasis-underscore`.
+Reported: `deprecated-bare-underline`.
 
 An indented title below a link definition is its tail in 0.2 and was a paragraph in 0.1, so a document that declares Carve 0.1 reports the line (C2-W-110, C2-W-156).
 
@@ -1230,7 +1230,7 @@ Reported: `continuation-reading-changed`.
 
 **C2-W-111** Each `deprecated-` rule states its trigger on the 0.2 tokens and tree. The 0.2 engine holds no 0.1 parsing code for them.
 
-**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 only because 0.1 or Djot read the same text otherwise, or a spelling that 0.2 removed. A valid 0.2 document lints clean of them with the default options. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. `lint --fix` and the command `fix` keep this gate: a migration notice that has a fix rewrites only what it reports (C2-T-049). The migration notices are the `deprecated-` rules (C2-W-110), the `djot-` rules except `djot-highlight-braces`, which reports a spelling that Djot and Carve read alike and stays off, `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label`, `tight-list-item-with-blank-line`, `thematic-break-spelling`, `continuation-reading-changed` and `code-span-padding-kept`. A rule that reports a likely mistake or an ambiguity in the 0.2 document itself is no migration notice and keeps its default, even where Markdown or 0.1 read the text otherwise: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented` are such rules.
+**C2-W-156** A rule whose row in `data/lint-rules.json` has the default `upgrade` is a migration notice: it reports text that is valid 0.2 only because 0.1 read the same text otherwise, or a spelling that 0.2 removed. A valid 0.2 document lints clean of them with the default options. Such a rule is off by default. It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true. A document declares its version with the key `carve` or `carve-version` of its line-1 frontmatter (C2-B-231); the version is below 0.2 when it is dot-separated decimal digits whose first part is 0 and whose second part, 0 when missing, is 0 or 1, so `0.1` and `0.1.13`. The option `rules` turns such a rule on or off by its id, and its setting wins over the declaration and over `upgrade`. `lint --fix` and the command `fix` keep this gate: a migration notice that has a fix rewrites only what it reports (C2-T-049). The migration notices are the `deprecated-` rules (C2-W-110), `comment-fence-closer-with-text`, `sigil-after-letter`, `blank-reference-label`, `tight-list-item-with-blank-line`, `thematic-break-spelling`, `continuation-reading-changed` and `code-span-padding-kept`. A rule that reports a likely mistake or an ambiguity in the 0.2 document itself is no migration notice and keeps its default, even where Markdown or 0.1 read the text otherwise: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented` are such rules. The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).
 
 ### Rules kept from 0.1
 
@@ -1313,14 +1313,14 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `unused-link-reference-definition` | `This link reference definition is unused.` | unchanged |
 | `markdown-strong-double-star` | `` Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks. `` | new message text |
 | `markdown-strikethrough-double-tilde` | `` Markdown `~~strikethrough~~` is literal text in Carve. Carve strikethrough is the braced `{~x~}`. `` | new message text |
-| `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check; migration notice (C2-W-156) |
-| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text; migration notice (C2-W-156) |
-| `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check; migration notice (C2-W-156) |
-| `djot-emphasis-underscore` | `` Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`. `` | opt-in Djot check; new message text; migration notice (C2-W-156) |
-| `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check; migration notice (C2-W-156) |
+| `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check (C2-W-156) |
+| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text (C2-W-156) |
+| `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check (C2-W-156) |
+| `djot-emphasis-underscore` | `` Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`. `` | opt-in Djot check; new message text (C2-W-156) |
+| `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check (C2-W-156) |
 | `djot-highlight-braces` | `` Djot highlight `{=x=}` is also Carve highlight (`{=x=}`). `` | opt-in Djot check; new message text |
-| `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`. `` | opt-in Djot check; migration notice (C2-W-156) |
-| `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes. `` | opt-in Djot check; migration notice (C2-W-156) |
+| `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`. `` | opt-in Djot check (C2-W-156) |
+| `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes. `` | opt-in Djot check (C2-W-156) |
 | `a11y/image-alt` | `image has empty alternative text and is not marked decorative` | accessibility extension; severity warning, where the 0.1 source sets error |
 
 84 rules are kept, one of them under a new id.
@@ -1401,11 +1401,11 @@ Nine findings of the syntax chapters, one of the tree and writer chapters, three
 | `blank-reference-label` | warning, migration notice (C2-W-156) | a footnote or link reference or definition whose label holds only spaces, tabs or a line break, `[^ ]: x` and `a[^ ]`: it is no label and stays text, where 0.1 read it as a label (C2-I-079, U-340) |
 | `link-definition-indented-line` | hint | the line directly below a link definition or its tail that is indented past column 0 and holds neither a title nor an attribute block, so it is the next block and no part of a destination (C2-B-083) |
 | `continuation-reading-changed` | warning, migration notice (C2-W-156) | a line that 0.2 reads otherwise than 0.1: the first indented line a link or abbreviation definition takes, the first indented line a term takes, and an unindented text line directly below a caption, which 0.1 took into the caption (C2-B-083, C2-B-084, C2-B-234) |
-| `djot-emphasis-underscore-braced` | hint, migration notice (C2-W-156) | a braced underline `{_x_}`, which Djot reads as emphasis (C2-I-043, C2-I-055) |
-| `djot-typography-sign` | hint, migration notice (C2-W-156) | a replaced run that is an arrow, a comparison sign, `+-` or `(tm)`, which Djot keeps as typed; quotes, dashes and the ellipsis are replaced in both (C2-I-115, C2-I-117) |
-| `djot-definition-list` | hint, migration notice (C2-W-156) | the first line of a paragraph that starts with `:` and a space or a tab, which Djot reads as the term of a definition list; a later line is left to `markdown-definition-paragraph` (C2-B-067, C2-B-074) |
-| `djot-ordered-marker` | hint, migration notice (C2-W-156) | the first line of a paragraph, or a lazy line at or left of the marker column of the list item that holds it, that starts with an ordered marker Djot reads and Carve does not: a marker in parentheses such as `(1)`, or an uppercase marker with a dot and one space such as `A. x` (C2-B-036, C2-B-040) |
-| `djot-tag-mention` | hint, migration notice (C2-W-156) | a tag `#word` or a mention `@word`, which Djot reads as text (C2-I-090 to C2-I-092) |
+| `djot-emphasis-underscore-braced` | hint, opt-in Djot check (C2-W-156) | a braced underline `{_x_}`, which Djot reads as emphasis (C2-I-043, C2-I-055) |
+| `djot-typography-sign` | hint, opt-in Djot check (C2-W-156) | a replaced run that is an arrow, a comparison sign, `+-` or `(tm)`, which Djot keeps as typed; quotes, dashes and the ellipsis are replaced in both (C2-I-115, C2-I-117) |
+| `djot-definition-list` | hint, opt-in Djot check (C2-W-156) | the first line of a paragraph that starts with `:` and a space or a tab, which Djot reads as the term of a definition list; a later line is left to `markdown-definition-paragraph` (C2-B-067, C2-B-074) |
+| `djot-ordered-marker` | hint, opt-in Djot check (C2-W-156) | the first line of a paragraph, or a lazy line at or left of the marker column of the list item that holds it, that starts with an ordered marker Djot reads and Carve does not: a marker in parentheses such as `(1)`, or an uppercase marker with a dot and one space such as `A. x` (C2-B-036, C2-B-040) |
+| `djot-tag-mention` | hint, opt-in Djot check (C2-W-156) | a tag `#word` or a mention `@word`, which Djot reads as text (C2-I-090 to C2-I-092) |
 | `code-span-padding-kept` | warning, migration notice (C2-W-156) | a code, literal-text, math or raw inline span whose value differs from the 0.1 value: 0.1 removed one space from each end when both ends held one, and 0.2 removes only a space between a backtick and the run (C2-I-016, U-441) |
 | `reserved-syntax` | warning | a directive with a section and no path, `{{ #id }}`, inside a sentence or on its own line, and the first line of a top-level paragraph that starts with a definition marker such as `{#id}:` or `{#id .c}:` and a space, both reserved for snippets in a later 0.2 release (C2-N-089, C2-B-236, #6395) |
 

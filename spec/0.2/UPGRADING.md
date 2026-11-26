@@ -625,7 +625,8 @@ A second ruling of 24 November extends #6499 to every rule whose only job is hel
 | `deprecated-substitution-arrow` | `~>` in a braced strike, which is text | a substitution |
 | `deprecated-table-attribute` | `header-rows` on a pipe table, whose head keeps its data cells | a head of header cells |
 | `thematic-break-spelling` | a line of `---` or `___`, which is text | a thematic break |
-| the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet, a folded heading line, a definition list, an ordered list, or text where Carve makes a sign, a tag or a mention |
+
+The `djot-` rules had the default `upgrade` too until the ruling audit of 26 November (#6812): a document that declares `carve: 0.1` turned them on, and `carve fix` rewrote 0.1 text by its Djot reading, `a_b_c` to `a{/b/}c`. They now have the default `off` and only `--rules` turns them on, by id (C2-W-156).
 
 The rules that report a likely mistake or an ambiguity in the 0.2 document itself keep their defaults: `setext-heading-underline`, `frontmatter-shaped-thematic-break`, the `markdown-` rules, `block-opener-overindented` and `list-item-block-overindented`. `carve fix` keeps these defaults (C2-T-049): it rewrites a deprecated or Djot spelling only in a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names the rule.
 
@@ -671,7 +672,7 @@ Write a two-line caption or term with its second line indented past the marker; 
 
 ### Ruling of 24 November 2026: `carve fix` keeps the lint defaults
 
-A ruling of 24 November decides #6523: under `--fix` a rule keeps the default it has under `lint` (C2-T-049, C2-W-156). Earlier 0.2 turned on every rule that has a fix, so `carve fix` rewrote valid 0.2 text through the migration notices and changed what it renders. Now a migration notice and a `djot-` rule rewrite only a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names the rule, and `--rules` turning a rule off keeps it off over both. A rule with a fix that is on by default, such as `markdown-strong-double-star`, still rewrites.
+A ruling of 24 November decides #6523: under `--fix` a rule keeps the default it has under `lint` (C2-T-049, C2-W-156). Earlier 0.2 turned on every rule that has a fix, so `carve fix` rewrote valid 0.2 text through the migration notices and changed what it renders. Now a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or when `--rules` names the rule, and a `djot-` rule only when `--rules` names it, and `--rules` turning a rule off keeps it off over both. A rule with a fix that is on by default, such as `markdown-strong-double-star`, still rewrites.
 
 | 0.2 source | `carve fix`, earlier 0.2 | `carve fix` now | with `--upgrade` or `carve: 0.1` |
 | --- | --- | --- | --- |
@@ -685,7 +686,7 @@ A ruling of 24 November decides #6523: under `--fix` a rule keeps the default it
 
 ### Ruling of 24 November 2026: Djot constructs that change meaning
 
-A ruling of 24 November decides #6522: five Djot constructs that Carve 0.2 reads otherwise, with no other finding, get a `djot-` migration notice each. They are hints with the default `upgrade` (C2-W-156), so `carve lint --upgrade` or a document that declares `carve: 0.1` reports them, and none has a fix.
+A ruling of 24 November decides #6522: five Djot constructs that Carve 0.2 reads otherwise, with no other finding, get a `djot-` rule each. They are hints with the default `off` (C2-W-156), so `--rules` turns each on by its id, and none has a fix.
 
 | Djot source | Djot reads | Carve 0.2 reads | Rule |
 | --- | --- | --- | --- |
@@ -1131,7 +1132,7 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `decisionTraceJsonLines` | No 0.2 counterpart and no `trace` command; whether a trace returns is open in markup-carve/carve#6264. |
 | `defaultAttributes` | The `defaultAttributes` factory in `@markup-carve/carve/extensions`. |
 | `details` | The `details` factory in `@markup-carve/carve/extensions`. |
-| `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids, or by `upgrade` for all of them but `djot-highlight-braces`; they are off by default (C2-W-109, C2-W-156). The `markdown-` rules report the Markdown habits. |
+| `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids; they are off by default, and neither `upgrade` nor a 0.1 declaration turns them on (C2-W-109, C2-W-156). The `markdown-` rules report the Markdown habits. |
 | `expandsForTarget` | Internal in 0.1: the command line's choice of which targets expand includes. No replacement needed; C2-N-004 and C2-T-018 state when the command line expands. |
 | `externalLinks` | The `externalLinks()` navigation extension in `@markup-carve/carve/extensions`. Sets `target` and `rel` on external HTTP links; options are `target`, `rel`, and `nofollow`. |
 | `fencedRender` | The `fencedRender` factory in `@markup-carve/carve/extensions`. |
@@ -1190,14 +1191,14 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`, without the 0.1 member `attrs`, and is final: where it returns nothing or throws, the template is not used and the mention or tag is the inert span. A resolver that needs the attributes resolves on the tree. A linked mention or tag holds its text directly, `<a class="mention" href="URL">@NAME</a>`, as in 0.1. A template takes `{name}` only: the 0.1 aliases `{user}` and `{tag}` are refused (U-341). |
 | `profile` object and `profileBaseHost` | `profile` string: `full`, `article`, `comment`, or `minimal`; default `full`. The base host is the `baseHost` option of the `linkPolicy()` navigation extension, which carve-js ships in `@markup-carve/carve/extensions` and the provisional extension catalog does not list yet: with `allowExternal: false`, a link to `https://<baseHost>/...` stays and a link to another host is written as its text. With a named profile, 0.1 `profileBaseHost` changed no output, because no named profile limits link hosts. |
 | `mode`, `sections`, `roundtrip` | Same names and defaults: `interactive`, true, false. Review changed HTML semantics. |
-| `smartTypography` | Boolean, default true. The 0.1 value `'source'` is `false`: each smart-punctuation node writes its source (C2-H-078). The 0.1 value `{ quotes: false }` (carve#2875), straight quotes with the other substitutions on, has no 0.2 spelling, since a render option of 0.2 has one type (C2-H-127). Register `smartQuotes()` with `openDoubleQuote` and `closeDoubleQuote` set to `"` and `openSingleQuote` and `closeSingleQuote` set to `'` instead (C2-X-075). |
+| `smartTypography` | Boolean, default true. The 0.1 value `'source'` is `false`: each smart-punctuation node writes its source (C2-H-078). The 0.1 value `{ quotes: false }` (carve#2875), straight quotes with the other substitutions on, has no 0.2 spelling, since a render option of 0.2 has one type (C2-H-127). Register `smartQuotes()` with `openDoubleQuote` and `closeDoubleQuote` set to `"` and `openSingleQuote` and `closeSingleQuote` set to `'` instead (C2-X-075). These are options of the library call only: the command line has no spelling for straight quotes with the other substitutions on. |
 | `labels`, `symbols` | Same names; labels are escaped text, symbols are host-supplied output. |
 | `positions` | Parse option, default true. |
 | `extensions`, `includes`, `renderers` | `includes` holds a resolver and two limits (C2-N-003). `extensions` and `renderers` follow the [extension interface](extensions.md). |
 | `strictLosses` | Same name, default false. `renderWithDiagnostics` returns empty HTML on a render loss when true. |
 | `defaultFrontmatterFormat` | No 0.2 option: a bare `---` opener gives the format `yaml` (C2-A-049). Write any other format on the opener, as `---toml` (C2-B-164). |
 | `semanticSpanNames` | The `semanticSpan()` extension, `carve.semanticSpan` (C2-X-066, C2-X-072). It writes the semantic keys `samp`, `var`, `kbd`, `cite` and `dfn` as their elements; a list of names is not carried. |
-| `codeBlockTabWidth` | The `tabNormalize(width)` transform, `carve.tabNormalize` (C2-X-073), which replaces each tab in a code block or code span with `width` spaces, 2 by default. |
+| `codeBlockTabWidth` | The `tabNormalize(width)` transform, `carve.tabNormalize` (C2-X-073), which replaces each tab in a code block or code span with `width` spaces, 2 by default. `width` is an option of the library call only: `--extensions '["carve.tabNormalize"]'` gives two spaces, and the command line has no other width. |
 | parser callbacks | No 0.2 option. An unknown option throws `CarveOptionError`. |
 | 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
 | 0.1 lint options | `lint` reads `rules`, `platforms` and `upgrade`; `carve lint` takes them as `--rules` and `--platforms` with JSON values and the switch `--upgrade` (C2-T-010, C2-W-156). |
@@ -1300,7 +1301,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
 | `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
 | `lint --rule ID`, `lint --platform NAME` | `carve lint --rules '{"ID":"on"}'`, `--platforms '["NAME"]'` (C2-T-010) |
-| `lint --from-djot` | `--upgrade`, or turn on the `djot-` rules by their ids in `--rules` (C2-T-031, C2-W-156) |
+| `lint --from-djot` | turn on the `djot-` rules by their ids in `--rules` (C2-T-031, C2-W-156) |
 | `lint --caption-hints` | none needed: `caption-looking-paragraph` is on by default |
 | `lint --ignore ID` | `carve lint --ignore FILE-ID`, repeatable (C2-T-052) |
 | `fmt --migrate` | `carve upgrade --migrate`, the upgrade tool's repair of a reference whose only target differs in case; each respelled line is a record `case-reference` of entry U-429 |
@@ -1310,7 +1311,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `--tabs-mode css\|aria` of the Rust engine | `--extension-options '{"carve.tabs":{"mode":"aria"}}'` (C2-T-010, C2-X-056) |
 | `--citation-mode numbered\|author-date` of the Rust engine | `--extension-options '{"carve.cite":{"mode":"author-date"}}'` with `--extensions '["carve.cite"]'` (C2-T-010, C2-X-068) |
 | `--extension KEY` of the Rust engine for the other keys of its registry | the name of the catalog row in `--extensions` (C2-T-010, C2-X-072): `autolink` is `carve.autolink`, `code-callouts` `carve.codeCallouts`, `color-swatch` `carve.colorSwatch`, `external-links` `carve.externalLinks`, `fenced-render-abc`, `-chart`, `-d2`, `-plantuml`, `-vega-lite` and `-wavedrom` `carve.fencedRender.abc` and so on, `fenced-render-graphviz` `carve.fencedRender.dot` and `carve.fencedRender.graphviz`, `glossary` `carve.glossary`, `heading-numbers` `carve.headingNumbers`, `heading-permalinks` `carve.headingPermalinks`, `heading-reference` `carve.headingReference`, `index` `carve.index`, `list-table` `carve.listTable`, `semantic-span` `carve.semanticSpan`, `smart-quotes` `carve.smartQuotes`, `tab-normalize` `carve.tabNormalize`, `table-of-contents` `carve.toc`, `toc` `carve.tocPlacement`, `wikilinks` `carve.wiki`; `heading-level-shift` is the core option `headingShift` |
-| `--quote-locale LOCALE` of the Rust engine | `--extension-options '{"carve.smartQuotes":{"locale":"de"}}'` with `--extensions '["carve.smartQuotes"]'` and `--smart-typography` (C2-T-010, C2-X-075) |
+| `--quote-locale LOCALE` of the Rust engine | kept in the Rust engine as a further flag (C2-T-003); in every engine `--extension-options '{"carve.smartQuotes":{"locale":"de"}}'` with `--extensions '["carve.smartQuotes"]'` and `--smart-typography` gives the same glyphs, a locale outside the table falling back as in 0.1 (C2-T-010, C2-X-075) |
 | `--carve`, `--to carve` | `carve fmt`, which writes the canonical source, and `carve fmt --from-ast` for a 2.0 tree (C2-W-100); `render --to` takes `markdown`, `plain` and `ansi` (C2-T-003) |
 | `--static` | `--mode static` (C2-H-122) |
 | `--symbol NAME=VALUE`, repeatable | `--symbols` with a JSON object, as `--symbols '{"rocket":"🚀"}'` (C2-T-010) |

@@ -28907,7 +28907,7 @@
    "clauses": [
     "C2-T-008"
    ],
-   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).",
    "summary": "an unknown flag is refused with usage",
    "kind": "cli",
    "files": {
@@ -28932,7 +28932,7 @@
    "clauses": [
     "C2-T-008"
    ],
-   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).",
    "summary": "a flag of fmt given to render is refused with usage",
    "kind": "cli",
    "files": {
@@ -29074,7 +29074,7 @@
     "C2-T-009",
     "C2-T-031"
    ],
-   "why": "C2-T-009: A flag given twice takes its last value C2-T-031: A migration notice, as the other `djot-` rules are, is on for a document that declares a Carve version below 0.2 and under `--upgrade`, and `--rules` turns it on or off by its id over both (C2-W-156).",
+   "why": "C2-T-009: A flag given twice takes its last value C2-T-031: A rule that is off by default, as the `djot-` rules are, is turned on by its id in `--rules`.",
    "summary": "the last rules value wins and the djot rule stays off",
    "kind": "cli",
    "files": {
@@ -31151,7 +31151,7 @@
    "clauses": [
     "C2-T-031"
    ],
-   "why": "C2-T-031: A migration notice, as the other `djot-` rules are, is on for a document that declares a Carve version below 0.2 and under `--upgrade`, and `--rules` turns it on or off by its id over both (C2-W-156).",
+   "why": "C2-T-031: A rule that is off by default, as the `djot-` rules are, is turned on by its id in `--rules`.",
    "summary": "rules turns on the djot plus bullet rule",
    "kind": "cli",
    "files": {
@@ -60086,13 +60086,15 @@
    "clauses": [
     "C2-T-049"
    ],
-   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other.",
-   "summary": "a tilde pair that two fixes disagree on stays as written",
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~` under `--upgrade`, with `--rules` turning `djot-subscript-tilde` on, it and `deprecated-bare-strike` disagree",
+   "summary": "a tilde pair that two fixes disagree on stays as written (with --rules turning djot-subscript-tilde on)",
    "kind": "cli",
    "args": [
     "lint",
     "--fix",
-    "--upgrade"
+    "--upgrade",
+    "--rules",
+    "{\"djot-subscript-tilde\":\"on\"}"
    ],
    "stdin": "a ~s~ b\n",
    "options": {},
@@ -60109,7 +60111,7 @@
     "C2-T-049",
     "C2-T-050"
    ],
-   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other. C2-T-050: A file ends with the status that `lint` gives its fixed source (C2-T-031). Catalog djot-subscript-tilde-braced: each formed braced strike node from `{~x~}`",
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~` under `--upgrade`, with `--rules` turning `djot-subscript-tilde` on, it and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other. C2-T-050: A file ends with the status that `lint` gives its fixed source (C2-T-031). Catalog djot-subscript-tilde-braced: each formed braced strike node from `{~x~}`",
    "summary": "under upgrade, turning the subscript rule off picks the braced strike, which upgrade still reports",
    "kind": "cli",
    "args": [
@@ -66371,7 +66373,7 @@
     "C2-T-008",
     "C2-H-208"
    ],
-   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`.",
+   "why": "C2-T-008: A flag that the table of its command does not list is refused with the category `usage`, unless the engine offers it as a further flag (C2-T-003).",
    "summary": "ast does not take --heading-shift",
    "kind": "cli",
    "files": {
@@ -75890,20 +75892,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-emphasis-underscore is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-emphasis-underscore stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\na _b_\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-emphasis-underscore",
-      "line": 4,
-      "column": 3,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-emphasis-underscore"
     ]
    },
    "from": []
@@ -75913,22 +75909,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-emphasis-underscore is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-emphasis-underscore stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "a _b_\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-emphasis-underscore",
-      "line": 1,
-      "column": 3,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-emphasis-underscore"
     ]
    },
    "from": []
@@ -75956,20 +75946,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-heading-continuation is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-heading-continuation stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n# a\nb\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-heading-continuation",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-heading-continuation"
     ]
    },
    "from": []
@@ -75979,22 +75963,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-heading-continuation is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-heading-continuation stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "# a\nb\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-heading-continuation",
-      "line": 1,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-heading-continuation"
     ]
    },
    "from": []
@@ -76022,20 +76000,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-intraword-underscore is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-intraword-underscore stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\na_b_c\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-intraword-underscore",
-      "line": 4,
-      "column": 2,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-intraword-underscore"
     ]
    },
    "from": []
@@ -76045,22 +76017,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-intraword-underscore is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-intraword-underscore stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "a_b_c\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-intraword-underscore",
-      "line": 1,
-      "column": 2,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-intraword-underscore"
     ]
    },
    "from": []
@@ -76088,20 +76054,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-plus-bullet is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-plus-bullet stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n+ a\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-plus-bullet",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-plus-bullet"
     ]
    },
    "from": []
@@ -76111,22 +76071,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-plus-bullet is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-plus-bullet stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "+ a\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-plus-bullet",
-      "line": 1,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-plus-bullet"
     ]
    },
    "from": []
@@ -76154,20 +76108,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-subscript-tilde is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-subscript-tilde stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n~x~\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-subscript-tilde",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-subscript-tilde"
     ]
    },
    "from": []
@@ -76177,22 +76125,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-subscript-tilde is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-subscript-tilde stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "~x~\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-subscript-tilde",
-      "line": 1,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-subscript-tilde"
     ]
    },
    "from": []
@@ -76220,20 +76162,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-subscript-tilde-braced is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-subscript-tilde-braced stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n{~x~}\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-subscript-tilde-braced",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-subscript-tilde-braced"
     ]
    },
    "from": []
@@ -76243,22 +76179,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-subscript-tilde-braced is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-subscript-tilde-braced stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "{~x~}\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-subscript-tilde-braced",
-      "line": 1,
-      "column": 1,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-subscript-tilde-braced"
     ]
    },
    "from": []
@@ -76286,20 +76216,14 @@
     "C2-W-156",
     "C2-B-231"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-superscript-caret is on in a document that declares Carve 0.1 (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-superscript-caret stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\nx^2^\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-superscript-caret",
-      "line": 4,
-      "column": 2,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-superscript-caret"
     ]
    },
    "from": []
@@ -76309,22 +76233,16 @@
    "clauses": [
     "C2-W-156"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "djot-superscript-caret is on under the option upgrade (carve#6499)",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-superscript-caret stays off under the option upgrade (carve#6812)",
    "kind": "lint",
    "input": "x^2^\n",
    "options": {
     "upgrade": true
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-superscript-caret",
-      "line": 1,
-      "column": 2,
-      "channel": "lint",
-      "severity": "warning"
-     }
+    "notReported": [
+     "djot-superscript-caret"
     ]
    },
    "from": []
@@ -79169,8 +79087,8 @@
     "C2-T-049",
     "C2-W-156"
    ],
-   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
-   "summary": "fix rewrites a Djot underscore emphasis in a document that declares carve 0.1",
+   "why": "C2-T-049: A `djot-` rule rewrites only where `--rules` turns it on, so a document that declares Carve 0.1 keeps `a_b_c` and `x^2^`.",
+   "summary": "fix keeps a Djot underscore emphasis in a document that declares carve 0.1 (carve#6812)",
    "kind": "cli",
    "args": [
     "fix"
@@ -79178,8 +79096,8 @@
    "stdin": "---\ncarve: 0.1\n---\na _x_ b\n",
    "options": {},
    "expected": {
-    "status": 0,
-    "stdout": "---\ncarve: 0.1\n---\na /x/ b\n",
+    "status": 1,
+    "stdout": "---\ncarve: 0.1\n---\na _x_ b\n",
     "stderrCategory": null
    },
    "from": []
@@ -79190,8 +79108,8 @@
     "C2-T-049",
     "C2-W-156"
    ],
-   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
-   "summary": "fix --upgrade rewrites a Djot underscore emphasis",
+   "why": "C2-T-049: A `djot-` rule rewrites only where `--rules` turns it on, so a document that declares Carve 0.1 keeps `a_b_c` and `x^2^`.",
+   "summary": "fix --upgrade keeps a Djot underscore emphasis (carve#6812)",
    "kind": "cli",
    "args": [
     "fix",
@@ -79200,8 +79118,8 @@
    "stdin": "a _x_ b\n",
    "options": {},
    "expected": {
-    "status": 0,
-    "stdout": "a /x/ b\n",
+    "status": 1,
+    "stdout": "a _x_ b\n",
     "stderrCategory": null
    },
    "from": []
@@ -79280,8 +79198,8 @@
     "C2-T-049",
     "C2-W-156"
    ],
-   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
-   "summary": "fix rewrites a Djot tilde subscript in a document that declares carve 0.1",
+   "why": "C2-T-049: A `djot-` rule rewrites only where `--rules` turns it on, so a document that declares Carve 0.1 keeps `a_b_c` and `x^2^`.",
+   "summary": "fix keeps a Djot tilde subscript in a document that declares carve 0.1 (carve#6812)",
    "kind": "cli",
    "args": [
     "fix"
@@ -79290,7 +79208,7 @@
    "options": {},
    "expected": {
     "status": 0,
-    "stdout": "---\ncarve: 0.1\n---\nH{,2,}O\n",
+    "stdout": "---\ncarve: 0.1\n---\nH~2~O\n",
     "stderrCategory": null
    },
    "from": []
@@ -79301,8 +79219,8 @@
     "C2-T-049",
     "C2-W-156"
    ],
-   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
-   "summary": "fix --upgrade rewrites a Djot tilde subscript",
+   "why": "C2-T-049: A `djot-` rule rewrites only where `--rules` turns it on, so a document that declares Carve 0.1 keeps `a_b_c` and `x^2^`.",
+   "summary": "fix --upgrade keeps a Djot tilde subscript (carve#6812)",
    "kind": "cli",
    "args": [
     "fix",
@@ -79312,7 +79230,7 @@
    "options": {},
    "expected": {
     "status": 0,
-    "stdout": "H{,2,}O\n",
+    "stdout": "H~2~O\n",
     "stderrCategory": null
    },
    "from": []
@@ -79391,8 +79309,8 @@
     "C2-T-049",
     "C2-W-156"
    ],
-   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
-   "summary": "fix rewrites a Djot caret superscript in a document that declares carve 0.1",
+   "why": "C2-T-049: A `djot-` rule rewrites only where `--rules` turns it on, so a document that declares Carve 0.1 keeps `a_b_c` and `x^2^`.",
+   "summary": "fix keeps a Djot caret superscript in a document that declares carve 0.1 (carve#6812)",
    "kind": "cli",
    "args": [
     "fix"
@@ -79401,7 +79319,7 @@
    "options": {},
    "expected": {
     "status": 0,
-    "stdout": "---\ncarve: 0.1\n---\nx{^2^}\n",
+    "stdout": "---\ncarve: 0.1\n---\nx^2^\n",
     "stderrCategory": null
    },
    "from": []
@@ -79412,8 +79330,8 @@
     "C2-T-049",
     "C2-W-156"
    ],
-   "why": "C2-T-049: So a migration notice rewrites only a document that declares a Carve version below 0.2, under `--upgrade`, or where `--rules` turns it on, and `--rules` turning it off keeps it off over the declaration and over `--upgrade`; a valid 0.2 document keeps every spelling that a migration notice reports.",
-   "summary": "fix --upgrade rewrites a Djot caret superscript",
+   "why": "C2-T-049: A `djot-` rule rewrites only where `--rules` turns it on, so a document that declares Carve 0.1 keeps `a_b_c` and `x^2^`.",
+   "summary": "fix --upgrade keeps a Djot caret superscript (carve#6812)",
    "kind": "cli",
    "args": [
     "fix",
@@ -79423,7 +79341,7 @@
    "options": {},
    "expected": {
     "status": 0,
-    "stdout": "x{^2^}\n",
+    "stdout": "x^2^\n",
     "stderrCategory": null
    },
    "from": []
@@ -79615,11 +79533,13 @@
     "C2-I-055"
    ],
    "why": "Catalog djot-emphasis-underscore-braced: each underline node whose source starts with `{_`",
-   "summary": "a braced underscore pair, Djot emphasis, is reported under upgrade",
+   "summary": "a braced underscore pair, Djot emphasis, is reported when rules turns the rule on",
    "kind": "lint",
    "input": "a {_b_} c\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-emphasis-underscore-braced": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79641,20 +79561,14 @@
     "C2-B-231",
     "C2-I-055"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "a document that declares Carve 0.1 reports a braced underscore pair",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-emphasis-underscore-braced stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n{_x_}\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-emphasis-underscore-braced",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "djot-emphasis-underscore-braced"
     ]
    },
    "from": []
@@ -79688,7 +79602,9 @@
    "kind": "lint",
    "input": "a {/b/} c\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-emphasis-underscore-braced": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -79705,11 +79621,13 @@
     "C2-I-117"
    ],
    "why": "Catalog djot-typography-sign: each smart punctuation node of an arrow, a comparison sign, the plus-minus sign or the trademark sign, which Djot keeps as typed",
-   "summary": "an arrow and a comparison sign are reported under upgrade",
+   "summary": "an arrow and a comparison sign are reported when rules turns the rule on",
    "kind": "lint",
    "input": "a --> b != c\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-typography-sign": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79738,20 +79656,14 @@
     "C2-B-231",
     "C2-I-117"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "a document that declares Carve 0.1 reports the trademark run",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-typography-sign stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\nx (tm)\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-typography-sign",
-      "line": 4,
-      "column": 3,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "djot-typography-sign"
     ]
    },
    "from": []
@@ -79786,7 +79698,9 @@
    "kind": "lint",
    "input": "a -- b --- c ... \"q\"\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-typography-sign": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -79802,11 +79716,13 @@
     "C2-B-074"
    ],
    "why": "Catalog djot-definition-list: the first line of a paragraph that after its container prefixes and indent starts with `:`, a space or a tab and a further character",
-   "summary": "a Djot definition list term line is reported under upgrade",
+   "summary": "a Djot definition list term line is reported when rules turns the rule on",
    "kind": "lint",
    "input": ": term\n\n  def\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-definition-list": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79828,20 +79744,14 @@
     "C2-B-231",
     "C2-B-074"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "a document that declares Carve 0.1 reports a Djot definition list term line",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-definition-list stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n: term\n\n  def\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-definition-list",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "djot-definition-list"
     ]
    },
    "from": []
@@ -79874,7 +79784,9 @@
    "kind": "lint",
    "input": ":: term\n: def\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-definition-list": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -79893,7 +79805,9 @@
    "kind": "lint",
    "input": "p\n: term\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-definition-list": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79918,11 +79832,13 @@
     "C2-B-036"
    ],
    "why": "Catalog djot-ordered-marker: a Djot ordered marker ... enclosed in parentheses",
-   "summary": "a marker in parentheses is reported under upgrade",
+   "summary": "a marker in parentheses is reported when rules turns the rule on",
    "kind": "lint",
    "input": "(1) x\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79944,11 +79860,13 @@
     "C2-B-040"
    ],
    "why": "Catalog djot-ordered-marker: an uppercase marker with a dot has only one space (C2-B-040)",
-   "summary": "an uppercase marker with a dot and one space is reported under upgrade",
+   "summary": "an uppercase marker with a dot and one space is reported when rules turns the rule on",
    "kind": "lint",
    "input": "A. x\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79971,11 +79889,13 @@
     "C2-B-036"
    ],
    "why": "Catalog djot-ordered-marker: or a lazy line (C2-B-024)",
-   "summary": "a lazy marker line in a list item is reported under upgrade",
+   "summary": "a lazy marker line in a list item is reported when rules turns the rule on",
    "kind": "lint",
    "input": "- a\n(2) b\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -79997,20 +79917,14 @@
     "C2-B-231",
     "C2-B-036"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "a document that declares Carve 0.1 reports a marker in parentheses",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-ordered-marker stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n(a) x\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-ordered-marker",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "djot-ordered-marker"
     ]
    },
    "from": []
@@ -80044,7 +79958,9 @@
    "kind": "lint",
    "input": "p\n(1) x\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -80063,7 +79979,9 @@
    "kind": "lint",
    "input": "A.  x\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -80079,11 +79997,13 @@
     "C2-I-090"
    ],
    "why": "Catalog djot-tag-mention: each tag and each mention node",
-   "summary": "a mention and a tag are reported under upgrade",
+   "summary": "a mention and a tag are reported when rules turns the rule on",
    "kind": "lint",
    "input": "see @ann and #tag\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-tag-mention": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -80112,20 +80032,14 @@
     "C2-B-231",
     "C2-I-090"
    ],
-   "why": "C2-W-156: It is on when the document declares a Carve version below 0.2, or when the lint option `upgrade` is true.",
-   "summary": "a document that declares Carve 0.1 reports a tag",
+   "why": "C2-W-156: The `djot-` rules report text that Djot reads otherwise and have the default `off`: only `rules` turns them on, by id, never the declaration or `upgrade`, so `fix` does not rewrite 0.1 text by its Djot reading (`a_b_c` held an underline in 0.1).",
+   "summary": "djot-tag-mention stays off in a document that declares Carve 0.1 (carve#6812)",
    "kind": "lint",
    "input": "---\ncarve: 0.1\n---\n#tag\n",
    "options": {},
    "expected": {
-    "diagnostics": [
-     {
-      "code": "djot-tag-mention",
-      "line": 4,
-      "column": 1,
-      "channel": "lint",
-      "severity": "hint"
-     }
+    "notReported": [
+     "djot-tag-mention"
     ]
    },
    "from": []
@@ -80158,7 +80072,9 @@
    "kind": "lint",
    "input": "a#b x@y\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-tag-mention": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -80175,11 +80091,13 @@
     "C2-B-036"
    ],
    "why": "Catalog djot-ordered-marker: or a lazy line (C2-B-024) ... Djot ends a quote or a list item at such a line",
-   "summary": "a lazy marker line below a quote is reported under upgrade",
+   "summary": "a lazy marker line below a quote is reported when rules turns the rule on",
    "kind": "lint",
    "input": "> p\n(1) x\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "diagnostics": [
@@ -80205,7 +80123,9 @@
    "kind": "lint",
    "input": "- a\n (2) b\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -80225,7 +80145,9 @@
    "kind": "lint",
    "input": "1. a\n  (2) b\n",
    "options": {
-    "upgrade": true
+    "rules": {
+     "djot-ordered-marker": "on"
+    }
    },
    "expected": {
     "notReported": [
@@ -86269,7 +86191,7 @@
     "C2-T-010",
     "C2-X-075"
    ],
-   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, one of the values of its row with `en` the default, so that `de` writes `„a“`.",
+   "why": "C2-T-010: `--extension-options` takes a JSON object of their renderer options keyed by extension name C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, a string with `en` the default, so that `de` writes `„a“`.",
    "summary": "--extension-options gives the smart quotes their locale",
    "kind": "cli",
    "files": {
@@ -86300,8 +86222,8 @@
     "C2-T-010",
     "C2-X-075"
    ],
-   "why": "C2-T-010: A value the option refuses is refused with the category `usage`. C2-X-075: one of the values of its row with `en` the default",
-   "summary": "a smart quotes locale outside its row is a usage error on the command line",
+   "why": "C2-X-075: The values of its row are the locales with glyphs of their own, and any other string is taken too: ignoring ASCII case and reading `_` as `-`, a locale takes the glyphs of its value, else of its language, the part before the first `-`, else of `en`.",
+   "summary": "a smart quotes locale outside its row falls back to en on the command line (carve-rs#4838)",
    "kind": "cli",
    "files": {
     "a.crv": {
@@ -86319,8 +86241,9 @@
    ],
    "options": {},
    "expected": {
-    "status": 2,
-    "stderrCategory": "usage"
+    "status": 0,
+    "stdout": "<p>“a” b</p>\n",
+    "stderrCategory": null
    },
    "from": []
   },
@@ -92071,6 +91994,451 @@
    "html": "<img src=\"x\" alt=\"t\">"
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2295",
+   "clauses": [
+    "C2-X-075",
+    "C2-T-010"
+   ],
+   "why": "C2-X-075: `width` and the four glyphs are no renderer options of the rows, so `--extension-options` refuses them (C2-T-010).",
+   "summary": "a quote glyph is no renderer option of carve.smartQuotes on the command line (carve#6768)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"openDoubleQuote\":\"«\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2296",
+   "clauses": [
+    "C2-X-075",
+    "C2-X-073",
+    "C2-T-010"
+   ],
+   "why": "C2-X-075: `width` and the four glyphs are no renderer options of the rows, so `--extension-options` refuses them (C2-T-010).",
+   "summary": "width is no renderer option of carve.tabNormalize on the command line (carve#6768)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "```\n\ta\n```\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabNormalize\"]",
+    "--extension-options",
+    "{\"carve.tabNormalize\":{\"width\":4}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2297",
+   "clauses": [
+    "C2-X-073",
+    "C2-X-072"
+   ],
+   "why": "C2-X-073: `carve.tabNormalize` replaces each tab in the value of a code block or a code span with two spaces",
+   "summary": "--extensions registers carve.tabNormalize with two spaces (carve#6768)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "```\n\ta\n```\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabNormalize\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<pre><code>  a\n</code></pre>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2298",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-X-075: The values of its row are the locales with glyphs of their own, and any other string is taken too: ignoring ASCII case and reading `_` as `-`, a locale takes the glyphs of its value, else of its language, the part before the first `-`, else of `en`.",
+   "summary": "a region locale outside the row takes the glyphs of its language (carve-rs#4838)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":\"de-AT\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>„a“ b</p>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2299",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-X-075: The values of its row are the locales with glyphs of their own, and any other string is taken too: ignoring ASCII case and reading `_` as `-`, a locale takes the glyphs of its value, else of its language, the part before the first `-`, else of `en`.",
+   "summary": "a locale matches its row ignoring ASCII case, with _ read as - (carve-rs#4838)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":\"DE_ch\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>«a» b</p>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2300",
+   "clauses": [
+    "C2-T-010",
+    "C2-X-075"
+   ],
+   "why": "C2-X-075: `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, a string with `en` the default C2-T-010: A value the option refuses is refused with the category `usage`.",
+   "summary": "a smart quotes locale that is no string is a usage error (carve-rs#4838)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"locale\":1}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2301",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `<table>` carries the div's `id`, its classes but `list-table`, and its pairs but `header-rows`, `header-cols` and `footer-rows`; the div's title is a `<caption>` that holds its inlines. C2-X-078: Below the head, a cell in one of the first `header-cols` columns, and a cell whose item has the key `header`, with any value, is `<th scope=\"row\">`; every other cell is `<td>`.",
+   "summary": "a list table with title, id, class, header rows, header column, footer row, cell attributes and block cells (carve#6771)",
+   "kind": "render",
+   "input": "{.k #t header-rows=1 header-cols=1 footer-rows=1}\n::: list-table \"Q /t/\"\n- - H1\n  - H2\n- - R\n  -{#c align=right valign=top} b\n- - S\n  -{header} T\n- - x\n\n    y\n  - ```\n    code\n    ```\n- - F\n  - G\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table id=\"t\" class=\"k\">\n  <caption>Q <em>t</em></caption>\n  <thead>\n    <tr><th scope=\"col\">H1</th><th scope=\"col\">H2</th></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">R</th><td id=\"c\" style=\"text-align: right; vertical-align: top;\">b</td></tr>\n    <tr><th scope=\"row\">S</th><th scope=\"row\">T</th></tr>\n    <tr><th scope=\"row\"><p>x</p>\n<p>y</p></th><td><pre><code>code\n</code></pre></td></tr>\n  </tbody>\n  <tfoot>\n    <tr><th scope=\"row\">F</th><td>G</td></tr>\n  </tfoot>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2302",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The table has as many columns as its widest row, counting the spans of C2-X-076, and each slot a shorter row lacks is an empty `<td></td>` at its end.",
+   "summary": "a shorter row ends with an empty data cell for each missing slot (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\n- - a\n  - b\n- - c\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>c</td><td></td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2303",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `header-rows` N puts the first N rows in `<thead>` and `footer-rows` M the last M of the rows below them in `<tfoot>`, each taking at most the rows there are (C2-B-187); the rest is one `<tbody>`.",
+   "summary": "header-rows larger than the rows puts every row in the head (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=5 footer-rows=2}\n::: list-table\n- - a\n- - b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n    <tr><th scope=\"col\">b</th></tr>\n  </thead>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2304",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `header-rows` N puts the first N rows in `<thead>` and `footer-rows` M the last M of the rows below them in `<tfoot>`, each taking at most the rows there are (C2-B-187); the rest is one `<tbody>`.",
+   "summary": "a head row and a footer row leave no body (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=1 footer-rows=1}\n::: list-table\n- - a\n- - b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tfoot>\n    <tr><td>b</td></tr>\n  </tfoot>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2305",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `<table>` carries the div's `id`, its classes but `list-table`, and its pairs but `header-rows`, `header-cols` and `footer-rows`; the div's title is a `<caption>` that holds its inlines. C2-X-078: The table has as many columns as its widest row, counting the spans of C2-X-076, and each slot a shorter row lacks is an empty `<td></td>` at its end.",
+   "summary": "the div's other pairs go to the table, and a padded slot of a head row is a data cell (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=1 header-cols=1 data-x=1 width=50%}\n::: list-table\n- - a\n- - b\n  - c\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table data-x=\"1\" width=\"50%\">\n  <thead>\n    <tr><th scope=\"col\">a</th><td></td></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">b</th><td>c</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2306",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: A cell carries the `id`, classes and pairs of its item, but `header`, `scope`, `rowspan` and `colspan`, which are not written, and `align` and `valign`, which write the `style` of C2-H-057 with their values. C2-X-078: Below the head, a cell in one of the first `header-cols` columns, and a cell whose item has the key `header`, with any value, is `<th scope=\"row\">`; every other cell is `<td>`.",
+   "summary": "header, scope, rowspan and colspan of a cell are not written; header makes a row header (carve#6771)",
+   "kind": "render",
+   "input": "{align=center}\n::: list-table\n- - a\n  -{rowspan=2 colspan=3 scope=x width=3 header=1 align=center} b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table align=\"center\">\n  <tbody>\n    <tr><td>a</td><th scope=\"row\" width=\"3\" style=\"text-align: center;\">b</th></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2307",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: Those three keys take a decimal integer above 0, and another value has no effect.",
+   "summary": "header-rows, footer-rows and header-cols that are no integer above 0 have no effect (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=x footer-rows=-1 header-cols=1.5}\n::: list-table\n- - a\n- - c\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2308",
+   "clauses": [
+    "C2-X-078",
+    "C2-H-057"
+   ],
+   "why": "C2-X-078: A cell carries the `id`, classes and pairs of its item, but `header`, `scope`, `rowspan` and `colspan`, which are not written, and `align` and `valign`, which write the `style` of C2-H-057 with their values. C2-H-057: An authored `style` keeps its value and takes the declarations after it.",
+   "summary": "align on a cell adds its declaration after an authored style (carve#6771)",
+   "kind": "render",
+   "input": "{style=\"color: red;\"}\n::: list-table\n- -{align=left style=\"x: y;\"} a\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table style=\"color: red;\">\n  <tbody>\n    <tr><td style=\"x: y; text-align: left;\">a</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2309",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+   "summary": "a row item that holds no list leaves the div a core div (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\n- - a\n  - b\n  - c\n- - d\n- plain\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"list-table\">\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n        <li>b</li>\n        <li>c</li>\n      </ul>\n    </li>\n    <li>\n      <ul>\n        <li>d</li>\n      </ul>\n    </li>\n    <li>plain</li>\n  </ul>\n</div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2310",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+   "summary": "a paragraph before the list of rows leaves the div a core div (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\npara\n\n- - a\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"list-table\">\n  <p>para</p>\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n      </ul>\n    </li>\n  </ul>\n</div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2311",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: A cell whose item holds one paragraph holds that paragraph's inlines; any other cell holds its blocks as they are written at the top level, one line feed apart.",
+   "summary": "block cells write their blocks as at the top level (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=1}\n::: list-table\n- -{scope=row} a\n- -{scope=col header} b\n  - > q\n    > r\n  - - x\n    - y\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><td></td><td></td></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">b</th><td><blockquote><p>q\nr</p></blockquote></td><td><ul>\n  <li>x</li>\n  <li>y</li>\n</ul></td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2312",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+   "summary": "an ordered list of rows and an ordered list of cells form a table (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\n1. - a\n2. - b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  }
  ]
 }
