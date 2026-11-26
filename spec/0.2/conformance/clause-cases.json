@@ -94846,6 +94846,611 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2398",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-034"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "a bare paragraph before a bare block image keeps its <p>",
+  "kind": "render",
+  "input": "- a\n\n  ![x](i.png)\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li><p>a</p>\n    <img src=\"i.png\" alt=\"x\">\n  </li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2399",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-034"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "under roundtrip a paragraph before a bare block image keeps its <p>",
+  "kind": "render",
+  "input": "- a\n\n  ![x](i.png)\n",
+  "options": {
+   "roundtrip": true
+  },
+  "expected": {
+   "html": "<ul data-carve-tight>\n  <li><p>a</p>\n    <img src=\"i.png\" alt=\"x\">\n  </li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2400",
+  "clauses": [
+   "C2-H-018",
+   "C2-M-012"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "import: a kept <p> before a bare block image reads back as two blocks",
+  "kind": "import",
+  "html": "<ul>\n  <li><p>a</p>\n    <img src=\"i.png\" alt=\"x\">\n  </li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "type": "paragraph",
+         "role": "image",
+         "children": [
+          {
+           "type": "image",
+           "src": "i.png",
+           "alt": "x"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2401",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-186"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012). C2-H-186: An importer never keeps a reserved name as an authored attribute, whether it reads the carrier or ignores it.",
+  "summary": "import: a kept <p> before a bare block image keeps the tight carrier",
+  "kind": "import",
+  "html": "<ul data-carve-tight>\n  <li><p>a</p>\n    <img src=\"i.png\" alt=\"x\">\n  </li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "type": "paragraph",
+         "role": "image",
+         "children": [
+          {
+           "type": "image",
+           "src": "i.png",
+           "alt": "x"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2402",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-034"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "an image-only first paragraph of a tight item keeps its <p>",
+  "kind": "render",
+  "input": "- ![x](i.png)![y](j.png)\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2403",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-034"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "under roundtrip an image-only first paragraph keeps its <p>",
+  "kind": "render",
+  "input": "- ![x](i.png)![y](j.png)\n",
+  "options": {
+   "roundtrip": true
+  },
+  "expected": {
+   "html": "<ul data-carve-tight>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2404",
+  "clauses": [
+   "C2-H-018",
+   "C2-M-013"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "import: a kept image-only <p> reads back as one paragraph",
+  "kind": "import",
+  "html": "<ul>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "i.png",
+           "alt": "x"
+          },
+          {
+           "type": "image",
+           "src": "j.png",
+           "alt": "y"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2405",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-186"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012). C2-H-186: An importer never keeps a reserved name as an authored attribute, whether it reads the carrier or ignores it.",
+  "summary": "import: a kept image-only <p> keeps the tight carrier",
+  "kind": "import",
+  "html": "<ul data-carve-tight>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "i.png",
+           "alt": "x"
+          },
+          {
+           "type": "image",
+           "src": "j.png",
+           "alt": "y"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2406",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-040"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "an image-only paragraph of a one-block description keeps its <p>",
+  "kind": "render",
+  "input": ":: t\n: ![x](a.png)![y](b.png)\n",
+  "options": {},
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd><p><img src=\"a.png\" alt=\"x\"><img src=\"b.png\" alt=\"y\"></p></dd>\n</dl>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2407",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-040"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "under roundtrip an image-only paragraph of a one-block description keeps its <p>",
+  "kind": "render",
+  "input": ":: t\n: ![x](a.png)![y](b.png)\n",
+  "options": {
+   "roundtrip": true
+  },
+  "expected": {
+   "html": "<dl>\n  <dt>t</dt>\n  <dd><p><img src=\"a.png\" alt=\"x\"><img src=\"b.png\" alt=\"y\"></p></dd>\n</dl>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2408",
+  "clauses": [
+   "C2-H-018",
+   "C2-M-013"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "import: a kept image-only <p> of a description reads back as one paragraph",
+  "kind": "import",
+  "html": "<dl>\n  <dt>t</dt>\n  <dd><p><img src=\"a.png\" alt=\"x\"><img src=\"b.png\" alt=\"y\"></p></dd>\n</dl>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "definition_list",
+     "children": [
+      {
+       "type": "definition_term",
+       "children": [
+        {
+         "type": "text",
+         "value": "t"
+        }
+       ]
+      },
+      {
+       "type": "definition_description",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "a.png",
+           "alt": "x"
+          },
+          {
+           "type": "image",
+           "src": "b.png",
+           "alt": "y"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2409",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-034"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "a two-item tight list keeps the <p> of an image-only item",
+  "kind": "render",
+  "input": "- ![x](i.png)![y](j.png)\n- c\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n  <li>c</li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2410",
+  "clauses": [
+   "C2-H-018",
+   "C2-H-034"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).",
+  "summary": "under roundtrip a two-item tight list keeps the <p> of an image-only item",
+  "kind": "render",
+  "input": "- ![x](i.png)![y](j.png)\n- c\n",
+  "options": {
+   "roundtrip": true
+  },
+  "expected": {
+   "html": "<ul data-carve-tight>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n  <li>c</li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2411",
+  "clauses": [
+   "C2-M-091",
+   "C2-M-033"
+  ],
+  "why": "C2-M-091: Without the carrier, each element reads as it stands C2-M-033: A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034).",
+  "summary": "import: without the carrier a tight list with a kept <p> reads as loose",
+  "kind": "import",
+  "html": "<ul>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n  <li>c</li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "loose",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "i.png",
+           "alt": "x"
+          },
+          {
+           "type": "image",
+           "src": "j.png",
+           "alt": "y"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2412",
+  "clauses": [
+   "C2-H-186",
+   "C2-H-018"
+  ],
+  "why": "C2-H-018: A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012). C2-H-186: An importer never keeps a reserved name as an authored attribute, whether it reads the carrier or ignores it.",
+  "summary": "import: the tight carrier stands over a kept image-only <p>",
+  "kind": "import",
+  "html": "<ul data-carve-tight>\n  <li><p><img src=\"i.png\" alt=\"x\"><img src=\"j.png\" alt=\"y\"></p></li>\n  <li>c</li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "tight",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "i.png",
+           "alt": "x"
+          },
+          {
+           "type": "image",
+           "src": "j.png",
+           "alt": "y"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2413",
+  "clauses": [
+   "C2-H-035"
+  ],
+  "why": "C2-H-035: In a loose list every paragraph of every item gets `<p>`.",
+  "summary": "a loose list of image-only items writes <p> and no carrier",
+  "kind": "render",
+  "input": "- ![x](a.png)![y](b.png)\n\n- ![z](c.png)![w](d.png)\n",
+  "options": {},
+  "expected": {
+   "html": "<ul>\n  <li><p><img src=\"a.png\" alt=\"x\"><img src=\"b.png\" alt=\"y\"></p></li>\n  <li><p><img src=\"c.png\" alt=\"z\"><img src=\"d.png\" alt=\"w\"></p></li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2414",
+  "clauses": [
+   "C2-H-035"
+  ],
+  "why": "C2-H-035: In a loose list every paragraph of every item gets `<p>`.",
+  "summary": "under roundtrip a loose list of image-only items writes no tight carrier",
+  "kind": "render",
+  "input": "- ![x](a.png)![y](b.png)\n\n- ![z](c.png)![w](d.png)\n",
+  "options": {
+   "roundtrip": true
+  },
+  "expected": {
+   "html": "<ul>\n  <li><p><img src=\"a.png\" alt=\"x\"><img src=\"b.png\" alt=\"y\"></p></li>\n  <li><p><img src=\"c.png\" alt=\"z\"><img src=\"d.png\" alt=\"w\"></p></li>\n</ul>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2415",
+  "clauses": [
+   "C2-M-033"
+  ],
+  "why": "C2-M-033: A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034).",
+  "summary": "import: a loose list of image-only items stays loose",
+  "kind": "import",
+  "html": "<ul>\n  <li><p><img src=\"a.png\" alt=\"x\"><img src=\"b.png\" alt=\"y\"></p></li>\n  <li><p><img src=\"c.png\" alt=\"z\"><img src=\"d.png\" alt=\"w\"></p></li>\n</ul>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "list",
+     "marker": {
+      "kind": "bullet",
+      "char": "-"
+     },
+     "spacing": "loose",
+     "children": [
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "a.png",
+           "alt": "x"
+          },
+          {
+           "type": "image",
+           "src": "b.png",
+           "alt": "y"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "list_item",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "c.png",
+           "alt": "z"
+          },
+          {
+           "type": "image",
+           "src": "d.png",
+           "alt": "w"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

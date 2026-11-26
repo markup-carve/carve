@@ -181,7 +181,7 @@ roses
 
 ## Paragraphs, headings and sections
 
-**C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them. A block image is no such paragraph: its `<img>` carries them (C2-H-020).
+**C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them. A block image is no such paragraph: its `<img>` carries them (C2-H-020). A paragraph otherwise written bare by C2-H-034 or C2-H-040 keeps its `<p>` if its bare content would be a run of only `<img>` elements, whitespace and comments (Exception C2-M-013), or if a following bare block image of the same item would join its run (C2-M-012).
 
 **C2-H-019** A paragraph that holds one or more comments and nothing else but the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph of breaks alone holds no comment and is written with `<p>`. A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well, and so does a paragraph whose content writes nothing once the profile has degraded it (C2-H-165).
 
@@ -2171,7 +2171,7 @@ Reported: `profile-construct-degraded`.
 | Name | Element | Tree fact it sets | Ignored when |
 |---|---|---|---|
 | `data-marker` | `<ul>` | `list.marker.char` is the value | the value is not `-` or `*` |
-| `data-carve-tight` | `<ul>`, `<ol>` | `list.spacing` is `tight` | an item's first block is a `<p>` with no attribute, which a tight list writes bare (C2-H-034, C2-H-018) |
+| `data-carve-tight` | `<ul>`, `<ol>` | `list.spacing` is `tight` | an item's first block is a `<p>` with no attribute, which a tight list writes bare (C2-H-034, C2-H-018), unless C2-H-018 keeps that `<p>` for its run: its content is only `<img>` elements, whitespace and comments, or the next block of the item is a bare `<img>` |
 | `data-carve-explicit-id` | the `<section>` of a heading (C2-H-027), or an `<h1>` to `<h6>` that opens no section | the `id` of the element is the heading's authored `attrs.id` | the element has no `id`; it carries `data-carve-generated-id`; a `<section>` whose first child is no heading element |
 | `data-carve-generated-id` | as `data-carve-explicit-id` | the `id` of the element is generated: the heading has no `attrs.id`, and resolution computes `generatedId` again (C2-A-134) | the element has no `id`; it carries `data-carve-explicit-id`; a `<section>` whose first child is no heading element |
 | `data-carve-source-level` | an `<h1>` to `<h6>`, or a `<div role="heading">` that C2-M-024 reads as a heading | the heading's `level` is the value, in place of the level of the element (C2-H-208) | the value is not a decimal integer of at least 1 without a leading zero; it is not smaller than the level of the element |

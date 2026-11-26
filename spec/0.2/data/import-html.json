@@ -184,7 +184,7 @@
     {"name": "data-carve-snippets", "comes_back": "nothing: the snippet definitions are gone", "clauses": ["C2-H-186", "C2-M-091"]},
     {"name": "data-carve-source-level", "comes_back": "a heading at its shifted level", "clauses": ["C2-H-186", "C2-M-091"]},
     {"name": "data-carve-src", "comes_back": "nothing", "clauses": ["C2-H-186", "C2-M-091"]},
-    {"name": "data-carve-tight", "comes_back": "spacing by C2-M-033: a tight list whose item holds more than one block reads as loose", "clauses": ["C2-H-186", "C2-M-091"]},
+    {"name": "data-carve-tight", "comes_back": "spacing by C2-M-033: a tight list with more than one item reads as loose if an item holds more than one block that is no list, or begins with an attribute-free `<p>` that C2-H-018 keeps", "clauses": ["C2-H-186", "C2-M-091"]},
     {"name": "data-carve-xref", "comes_back": "a link to `#ID` whose text is the generated text", "clauses": ["C2-H-186", "C2-M-091"]},
     {"name": "data-marker", "comes_back": "the bullet `-`", "clauses": ["C2-H-186", "C2-M-091"]}
   ]
