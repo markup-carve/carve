@@ -90796,7 +90796,7 @@
   "input": "{header-rows=1}\n| a | b |\n| 1 | 2 |\n",
   "options": {},
   "expected": {
-   "html": "<table>\n  <thead>\n    <tr><td>a</td><td>b</td></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>\n"
+   "html": "<table>\n  <thead>\n    <tr><td>a</td><td>b</td></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>"
   },
   "from": []
  },
@@ -90812,7 +90812,7 @@
   "input": "{header-rows=0}\n|= a |\n| 1 |\n",
   "options": {},
   "expected": {
-   "html": "<table>\n  <tbody>\n    <tr><th scope=\"row\">a</th></tr>\n    <tr><td>1</td></tr>\n  </tbody>\n</table>\n"
+   "html": "<table>\n  <tbody>\n    <tr><th scope=\"row\">a</th></tr>\n    <tr><td>1</td></tr>\n  </tbody>\n</table>"
   },
   "from": []
  },
@@ -90827,7 +90827,7 @@
   "input": "{header-rows=1}\n|= a |\n|= b |\n| 1 |\n",
   "options": {},
   "expected": {
-   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">b</th></tr>\n    <tr><td>1</td></tr>\n  </tbody>\n</table>\n"
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">b</th></tr>\n    <tr><td>1</td></tr>\n  </tbody>\n</table>"
   },
   "from": []
  },
@@ -90843,7 +90843,7 @@
   "input": "{header-rows=1 footer-rows=1}\n| a |\n| b |\n| c |\n",
   "options": {},
   "expected": {
-   "html": "<table>\n  <thead>\n    <tr><td>a</td></tr>\n  </thead>\n  <tbody>\n    <tr><td>b</td></tr>\n  </tbody>\n  <tfoot>\n    <tr><td>c</td></tr>\n  </tfoot>\n</table>\n"
+   "html": "<table>\n  <thead>\n    <tr><td>a</td></tr>\n  </thead>\n  <tbody>\n    <tr><td>b</td></tr>\n  </tbody>\n  <tfoot>\n    <tr><td>c</td></tr>\n  </tfoot>\n</table>"
   },
   "from": []
  },
@@ -90953,7 +90953,7 @@
   "input": "{footer-rows=2 body-rows}\n|= F |\n| x |\n",
   "options": {},
   "expected": {
-   "html": "<table>\n  <tfoot>\n    <tr><th scope=\"row\">F</th></tr>\n    <tr><td>x</td></tr>\n  </tfoot>\n</table>\n"
+   "html": "<table>\n  <tfoot>\n    <tr><th scope=\"row\">F</th></tr>\n    <tr><td>x</td></tr>\n  </tfoot>\n</table>"
   },
   "from": []
  },
@@ -90985,7 +90985,7 @@
   "input": "{footer-rows=3 body-rows}\n|= A |\n|= F |\n",
   "options": {},
   "expected": {
-   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th></tr>\n    <tr><th scope=\"col\">F</th></tr>\n  </thead>\n</table>\n"
+   "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th></tr>\n    <tr><th scope=\"col\">F</th></tr>\n  </thead>\n</table>"
   },
   "from": []
  },
