@@ -146,9 +146,9 @@ function main() {
     process.exit(64)
   }
   // The target keeps its ids: in a rebase that is stage 2, the upstream being built on.
-  // In a merge it is the side already contained in --base (default origin/next2).
+  // In a merge it is the side already contained in --base (default origin/main).
   const flag = process.argv.find((a) => a.startsWith('--keep='))?.slice(7)
-  const baseRef = process.argv.find((a) => a.startsWith('--base='))?.slice(7) ?? 'origin/next2'
+  const baseRef = process.argv.find((a) => a.startsWith('--base='))?.slice(7) ?? 'origin/main'
   const inBase = (rev) => {
     try { git(['merge-base', '--is-ancestor', rev, baseRef], root); return true } catch { return false }
   }

@@ -2,9 +2,9 @@ name: Carve 0.2 readiness
 
 on:
   push:
-    branches: [main, next2]
+    branches: [main]
   pull_request:
-    branches: [main, next2]
+    branches: [main]
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:
