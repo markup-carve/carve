@@ -13,7 +13,8 @@
         "div_opener"
       ],
       "when": ["always"],
-      "clauses": ["C2-B-013", "C2-B-014", "C2-B-070", "C2-B-078"]
+      "not_when": ["opens_a_counted_block_while_200_are_open"],
+      "clauses": ["C2-B-013", "C2-B-014", "C2-B-070", "C2-B-078", "C2-B-190", "C2-B-228"]
     },
     {
       "name": "b",
