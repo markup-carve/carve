@@ -92737,6 +92737,154 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2329",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block glued to no host on a line of a line block is reported",
+   "kind": "lint",
+   "input": "::: |\nx {#id} y\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 3,
+      "endLine": 2,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2330",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "a line block in a list item: the attribute block on its line is reported",
+   "kind": "lint",
+   "input": "- ::: |\n  a {.c}\n  :::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 5,
+      "endLine": 2,
+      "endColumn": 9,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2331",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a run at the start of a paragraph or of a line of a line block that `block-marker-as-text` reports C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "a line of a line block that starts with an attribute block is left to block-marker-as-text",
+   "kind": "lint",
+   "input": "::: |\n{#id} b\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-marker-as-text",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ],
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2332",
+   "clauses": [
+    "C2-I-036"
+   ],
+   "why": "C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host",
+   "summary": "near miss: an attribute block glued to a span on a line of a line block",
+   "kind": "lint",
+   "input": "::: |\nx [s]{#id} y\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2333",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block glued to no host in a caption paragraph is reported",
+   "kind": "lint",
+   "input": "| a |\n^ cap {#x} more\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 7,
+      "endLine": 2,
+      "endColumn": 11,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2334",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block glued to no host in a description paragraph is reported",
+   "kind": "lint",
+   "input": ":: term\n: desc {#x} more\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 8,
+      "endLine": 2,
+      "endColumn": 12,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

@@ -2081,7 +2081,7 @@
         "This attribute block is attached to nothing and renders as text. Glue it to a span, link or code span, or escape the brace."
       ],
       "message_origin": "design",
-      "reports": "a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
+      "reports": "a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); a line of a line block is such an inline content too, and the text of a caption or a description is that of its paragraphs; `{}`, an escaped brace, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph or of a line of a line block that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
       "clauses": ["C2-I-028", "C2-I-035", "C2-I-036"]
     },
     {

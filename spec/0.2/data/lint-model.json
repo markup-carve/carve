@@ -14474,6 +14474,7 @@
                 "definition_term",
                 "heading",
                 "paragraph"
+                "line",
               ]
             ]
           },
@@ -14593,6 +14594,7 @@
                                 [
                                   "caption",
                                   "paragraph"
+                                  "line",
                                 ]
                               ]
                             },
@@ -14877,6 +14879,7 @@
                                     [
                                       "caption",
                                       "paragraph"
+                                      "line",
                                     ]
                                   ]
                                 },
