@@ -244,7 +244,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-235** Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count, as C2-B-020 limits interrupters (b) and (c) for quotes. Below `- ::::` and `  x`, the line ` - y` is indented past the item's marker and is a lazy line of `x`; below `- ::::`, `  :: t` and `  : x` it is a lazy line too, and `   - y`, indented past the description's mark, opens a list in the description.
 
-**C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item.
+**C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item. Where a div in the item holds the quote, the item's marker does not count (C2-B-235): below `- ::::` and `  > x`, the line ` - y` is a lazy line of `x`.
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 
@@ -546,7 +546,7 @@ More prose.
 
 **C2-B-028** The first line of a nested block sets that block's base column.
 
-**C2-B-029** The content of a fence is stripped by at most the indent of its opener. Where the opener stands left of the content column of its item, the body is stripped by at most the opener's column.
+**C2-B-029** The content of a fence, the body of a code fence or a comment block, is stripped by at most the indent of its opener, also where the comment block stands in a line block (C2-B-123). Where the opener stands left of the content column of its item, the body is stripped by at most the opener's column.
 
 **C2-B-030** A marker left of the list's column, directly after item text, is a sibling item (C2-B-015, C2-B-054), so markers that are right-aligned, as ` 9.` above `10.`, form one list. The list's column is then the column of that sibling's marker: after ` - a` and `- b`, the line ` 2. c` stands past the column of the list and is a lazy line of `b`. `ordered-marker-right-aligned` reports an ordered marker of such a sibling that ends where the list's markers end, `uneven-list-indent` reports the other uneven columns (C2-B-054), and the formatter writes all markers at one column.
 

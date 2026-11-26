@@ -240,7 +240,11 @@ function positionFailures(tree, source, files = {}) {
         const breaks = BREAKS.has(last.type) && BREAKS.has(node.type)
         const before = last.type === 'comment' && inside(last.pos, node.pos)
         const after = node.type === 'comment' && last.type === 'code_block' && inside(node.pos, last.pos)
-        if (!breaks && !before && !after) found.push(`${path}: ${last.type} overlaps ${node.type} (C2-A-145)`)
+        // C2-A-145: a comment block in a line block, inside the line that a lazy `%%` comment behind it ends.
+        const tail = last.type === 'line' ? last.children?.at(-1) : undefined
+        const lazy = node.type === 'comment' && node.form === 'block' && tail?.type === 'comment' && tail.form === 'line' &&
+          tail.pos && tail.pos.startOffset >= node.pos.endOffset && inside(node.pos, last.pos)
+        if (!breaks && !before && !after && !lazy) found.push(`${path}: ${last.type} overlaps ${node.type} (C2-A-145)`)
       }
       last = node
     }
@@ -413,6 +417,14 @@ for (const entry of layouts.layouts) {
 
 const metadataBlocks = existsSync(join(dir, 'metadata-blocks.json')) ? read('metadata-blocks.json').trees : (fail('metadata-blocks.json: missing'), [])
 for (const entry of metadataBlocks) { checkPositive(entry, 'metadata-blocks.json'); positive++ }
+
+// positions.json: positioned trees for the exemptions of C2-A-145; an entry with `fails` must break that clause.
+const positions = existsSync(join(dir, 'positions.json')) ? read('positions.json').trees : (fail('positions.json: missing'), [])
+for (const entry of positions) {
+  if (!entry.clauses?.length) fail(`positions.json ${entry.id}: needs clauses`)
+  if (!entry.fails) { checkPositive(entry, 'positions.json'); positive++; continue }
+  if (!positionFailures(entry.tree, entry.source).some(failure => failure.includes(`(${entry.fails})`))) fail(`positions.json ${entry.id}: no ${entry.fails} failure`)
+}
 
 const nodes = existsSync(join(dir, 'nodes.json')) ? read('nodes.json').trees : (fail('nodes.json: missing'), [])
 for (const entry of nodes) { checkPositive(entry, 'nodes.json'); positive++ }

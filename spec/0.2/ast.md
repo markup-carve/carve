@@ -548,7 +548,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-144** A child lies inside its parent: its `startOffset` is not before the parent's and its `endOffset` is not after it. A node without `pos` is skipped, and its children are compared with the nearest ancestor that has one.
 
-**C2-A-145** Siblings are ordered and disjoint: for two nodes `a` before `b` in one node list, `a.endOffset` is not greater than `b.startOffset`. Nodes without `pos` are skipped. Two cases are exempt: the comment of a comment-only line that stands between an attribute line and the block that takes it (C2-B-137) lies inside the span of that block (C2-A-148) and is its sibling before it, and the comment of a comment-only line between a code block or a delimited table and its caption lies inside the span of that block (C2-A-154) and is its sibling after it (C2-A-082).
+**C2-A-145** Siblings are ordered and disjoint: for two nodes `a` before `b` in one node list, `a.endOffset` is not greater than `b.startOffset`. Nodes without `pos` are skipped. Three cases are exempt: the comment of a comment-only line that stands between an attribute line and the block that takes it (C2-B-137) lies inside the span of that block (C2-A-148) and is its sibling before it, the comment of a comment-only line between a code block or a delimited table and its caption lies inside the span of that block (C2-A-154) and is its sibling after it (C2-A-082), and a comment block in a line block that stands between a line and the lazy `%%` line whose comment ends that line (C2-B-024, C2-B-123) lies inside the span of that line and is its sibling after it.
 
 **Exception C2-A-146** Two breaks that meet at one line ending share it, against C2-A-145.
 

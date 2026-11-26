@@ -64,11 +64,13 @@
             "items": {
               "enum": [
                 "at_description_list_column_after_term_or_description_text",
-                "not_owned_by_container_of_captioned_block"
+                "indented_past_only_markers_outside_enclosing_div",
+                "not_owned_by_container_of_captioned_block",
+                "opens_a_counted_block_while_200_are_open"
               ]
             },
             "uniqueItems": true,
-            "description": "Cases in which the line is a lazy line even where a condition of `when` holds: the exception of C2-B-022 and the ownership test of C2-B-017 and C2-B-146."
+            "description": "Cases in which the line is a lazy line even where a condition of `when` holds: the exception of C2-B-022, the markers outside a div that C2-B-235 does not count, the ownership test of C2-B-017 and C2-B-146, and a fence line that would open a div while 200 blocks are open (C2-B-190, C2-B-228); a closer still interrupts."
           }
         }
       },

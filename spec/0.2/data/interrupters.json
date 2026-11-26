@@ -13,7 +13,8 @@
         "div_opener"
       ],
       "when": ["always"],
-      "clauses": ["C2-B-013", "C2-B-014", "C2-B-070", "C2-B-078"]
+      "not_when": ["opens_a_counted_block_while_200_are_open"],
+      "clauses": ["C2-B-013", "C2-B-014", "C2-B-070", "C2-B-078", "C2-B-190", "C2-B-228"]
     },
     {
       "name": "b",
@@ -21,7 +22,7 @@
       "shapes": ["bullet", "ordered"],
       "when": ["at_open_list_column", "between_columns_of_two_open_lists", "indented_past_enclosing_marker_as_bullet_bare_dot_or_one", "left_of_every_open_list"],
       "carries_quote_marks": true,
-      "not_when": ["at_description_list_column_after_term_or_description_text"],
+      "not_when": ["at_description_list_column_after_term_or_description_text", "indented_past_only_markers_outside_enclosing_div"],
       "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-235", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-054", "C2-B-055", "C2-B-228"]
     },
     {

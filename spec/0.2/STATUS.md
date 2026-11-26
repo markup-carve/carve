@@ -767,3 +767,9 @@ Mark's option A on #6812 ships the four audit findings on HTML table import in 0
 - carve-js#5574: the `width` declaration of a `<col>` style that applies is the last one marked `!important`, else the last one, and gives a width only where it is `N%`; an important width is reported (C2-M-041). Failing: CC-2252 to CC-2256; passing controls CC-2046 to CC-2052, CC-2257.
 
 - `carve-js`, `carve-php` and `carve-rs`: implement the four changes above.
+
+## Engine gaps from the comment block strip ruling of 26 November (#6465)
+
+The ruling audit of 26 November replaced the ruling on #6465: C2-B-029 strips the body of a comment block by at most the indent of its opener, also inside a line block, so a straddling tab before the opener is stripped from each body line. C2-B-029 now names the comment block and the line block. Clause cases CC-2263 and CC-2264. Measured on `carve-js` `next2` `d4331d7e`, `carve-php` `next2` `8fd0c4af` and `carve-rs` `next2` `afed9a76`: all three keep the opener's indent in a comment block inside a line block (`"\tc\td"`, `"  c"`) and strip it elsewhere.
+
+- `carve-js`, `carve-php` and `carve-rs`: strip a comment block inside a line block by its opener's indent (CC-2263, CC-2264).
