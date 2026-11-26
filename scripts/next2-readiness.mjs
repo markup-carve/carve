@@ -246,10 +246,38 @@ function namedBundleOptions(options) {
   }
   return { ...options, extensions, renderers, transforms }
 }
+// Every other catalog name goes through the table of carve-js `--extensions` (C2-T-010), which registers
+// each definition once, so `carve.glossary` with `carve.term` claims `term` once (C2-X-072).
+const cliCatalogPath = resolve(jsDir, 'cli/standard-extensions.ts')
+const cliCatalog = existsSync(cliCatalogPath) ? await import(pathToFileURL(cliCatalogPath)) : null
+const catalogNamed = name => typeof name === 'string' && !namedBundles[name] && !standardDefinitions.has(name) &&
+  cliCatalog !== null && (() => { try { cliCatalog.extensionNames([name]); return true } catch { return false } })()
+function catalogOptions(options) {
+  const choices = options.renderers ?? {}
+  const renderers = { ...choices }
+  const seen = new Set(options.extensions.filter(name => !catalogNamed(name)).map(name => typeof name === 'string' ? name : name.name))
+  const extensions = []
+  const transforms = [...(options.transforms ?? [])]
+  const listed = new Set()
+  for (const name of options.extensions) {
+    if (!catalogNamed(name)) { extensions.push(name); continue }
+    if (listed.has(name)) continue
+    listed.add(name)
+    const choice = choices[name]
+    if (renderers[name] === choice) delete renderers[name]
+    const hostOptions = choice?.standard ?? {}
+    const made = cliCatalog.registration([name], new Map([[name, hostOptions]]), true)
+    for (const definition of made.extensions) if (!seen.has(definition.name)) { seen.add(definition.name); extensions.push(definition) }
+    if (choice === 'standard' || choice?.standard) Object.assign(renderers, made.renderers)
+    transforms.push(...made.transforms)
+  }
+  return { ...options, extensions, renderers, transforms }
+}
 function jsOptions(c) {
   let options = { ...(c.options ?? {}) }
   if (c.files) options.includes = { ...(options.includes ?? {}), resolver: resolver(c.files) }
   if (options.extensions?.some(name => namedBundles[name])) options = namedBundleOptions(options)
+  if (options.extensions?.some(catalogNamed)) options = catalogOptions(options)
   if (options.extensions) {
     const names = new Set(options.extensions)
     if (names.has('carve.tabs')) names.add('carve.tab')
