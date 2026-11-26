@@ -10,7 +10,7 @@
       "messages": ["image has empty alternative text and is not marked decorative"],
       "message_origin": "engine_0_1",
       "change": "accessibility extension; severity warning, where the 0.1 source sets error",
-      "reports": "an image whose alt text is empty, as `![](a.png)`, once per image; an image with any alt text is not reported, and a parse of Carve source never marks an image decorative (C2-I-074, C2-A-115)",
+      "reports": "an image that is not decorative and whose alt text is empty or unknown, as `![](a.png)`, once per image; an image with any alt text is not reported; a parse of Carve source never marks an image decorative and never leaves its alt unknown, so in source the rule reports exactly the empty alt (C2-I-074, C2-A-115)",
       "clauses": ["C2-I-074", "C2-A-115"]
     },
     {

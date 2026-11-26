@@ -735,3 +735,9 @@ The amendment of the same day (#6788) reads a ranged comment, the `comment-start
 The ruling on #6793, as amended the same day, makes a page break a thematic break with the class `page-break` (`html.md`, "Page breaks", non-normative) and adds one sentence to C2-A-199: an importer that reads a page break from its source writes that thematic break, not `carve.style.pageBreakBefore`. The writer does not convert `pageBreakBefore`; C2-A-193 and CC-499 are unchanged. The convention already works in `carve-js` `next2` `71e03e1`, `carve-php` `next2` `6d209bb` and `carve-rs` `next2` `df4b350` (attach, `fmt`, render, HTML import of `<hr class="page-break">`).
 
 - No engine port remains from the spec side. HTML import of `break-before: page` and `page-break-before: always` has no clause yet.
+
+## Engine gaps from the unknown image alt ruling of 26 November (#6804)
+
+The ruling on #6804 gives an image three states, alt text, unknown (neither `alt` nor `decorative`) and decorative (C2-A-115). The HTML importer maps an `<img>` with no `alt` attribute to the unknown state and `alt=""` to `decorative: true` (C2-M-050); the renderer writes no `alt` for the unknown state (C2-H-080); the writer writes it as `![](URL)` and reports `field-unspellable` at the image (C2-W-011). A parse of Carve source is unchanged: `![](x)` gives `alt: ""` in all three engines. Clause cases CC-2205 to CC-2216. Measured on `carve-js` `d71975e0`: the controls CC-2205, CC-2209, CC-2211, CC-2212, CC-2215 and CC-2216 pass; the reader refuses the unknown tree (CC-2206, CC-2210, CC-2213), and the importer still gives `alt: ""` for both HTML inputs (CC-2207, CC-2208, CC-2214).
+
+- `carve-js`, `carve-php` and `carve-rs`: accept an image with neither field, import the three states, render the unknown state with no `alt`, and report it in the writer.

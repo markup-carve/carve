@@ -717,6 +717,16 @@ A ruling of 26 November decides #6788: an editorial comment takes a glued attrib
 
 `cite` on an insertion or a deletion stays the URL of a text that explains the change, as in HTML; write the author in `author`.
 
+### Ruling of 26 November 2026: image alt text that is unknown
+
+A ruling of 26 November decides #6804: an image whose alt text is unknown has neither `alt` nor `decorative` in the tree, and `decorative: true` is the decorative state (C2-A-115). Carve source is unchanged: `![](x)` still gives an empty `alt`.
+
+| HTML input or tree | 0.1 | 0.2 |
+| --- | --- | --- |
+| `<img src="x">` imported | `![](x)` | the image has no `alt` (unknown); `carve import` reports `field-unspellable` and fails with `writer-refused` unless `--allow-loss field-unspellable` is given, then writes `![](x)` |
+| `<img src="x" alt="">` imported | `![](x)` | the image is decorative; the same loss and refusal |
+| an image with no `alt` rendered from a tree | `alt=""` | no `alt` attribute: `<img src="x">` (C2-H-080) |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.

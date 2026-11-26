@@ -89901,6 +89901,363 @@
    "carve": "[x]{.comment-end}\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-2205",
+  "clauses": [
+   "C2-A-115",
+   "C2-I-074"
+  ],
+  "why": "C2-A-115: It always produces `alt`, the empty string for `![](x)`, so the unknown state comes only from an import or a supplied tree.",
+  "summary": "a parse of an image with empty brackets gives an empty alt, not the unknown state",
+  "kind": "parse",
+  "input": "![](x)\n",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x",
+       "alt": ""
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2206",
+  "clauses": [
+   "C2-A-115"
+  ],
+  "why": "C2-A-115: An image is in one of three states: it has alt text, held in `alt`; its alt text is unknown, with neither `alt` nor `decorative`; or it is decorative, with `decorative: true` and no `alt`.",
+  "summary": "a tree with an image that has neither alt nor decorative is accepted",
+  "kind": "tree",
+  "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[{\"type\":\"paragraph\",\"role\":\"image\",\"children\":[{\"type\":\"image\",\"src\":\"x\"}]}]}",
+  "options": {},
+  "expected": {
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "role": "image",
+      "children": [
+       {
+        "type": "image",
+        "src": "x"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2207",
+  "clauses": [
+   "C2-M-050",
+   "C2-A-115"
+  ],
+  "why": "C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115) C2-A-115: An image is in one of three states: it has alt text, held in `alt`; its alt text is unknown, with neither `alt` nor `decorative`; or it is decorative, with `decorative: true` and no `alt`.",
+  "summary": "an img with no alt attribute imports as an image whose alt is unknown, reported by the writer at the image",
+  "kind": "import",
+  "html": "<p><img src=\"x\"></p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x"
+      }
+     ]
+    }
+   ],
+   "carve": "![](x)\n",
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0",
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2208",
+  "clauses": [
+   "C2-M-050",
+   "C2-A-115"
+  ],
+  "why": "C2-M-050: an `alt` attribute with the empty value makes it decorative, `decorative: true` and no `alt` C2-A-115: An image is in one of three states: it has alt text, held in `alt`; its alt text is unknown, with neither `alt` nor `decorative`; or it is decorative, with `decorative: true` and no `alt`.",
+  "summary": "an img with an empty alt attribute imports as a decorative image",
+  "kind": "import",
+  "html": "<p><img src=\"x\" alt=\"\"></p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x",
+       "decorative": true
+      }
+     ]
+    }
+   ],
+   "carve": "![](x)\n",
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/decorative",
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2209",
+  "clauses": [
+   "C2-M-050"
+  ],
+  "why": "C2-M-050: `<img>` is an `image` with `src`, `alt` and `tooltip` from `title`",
+  "summary": "near miss: an img with alt text imports with that alt and nothing to report",
+  "kind": "import",
+  "html": "<p><img src=\"x\" alt=\"A\"></p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x",
+       "alt": "A"
+      }
+     ]
+    }
+   ],
+   "carve": "![A](x)\n",
+   "notReported": [
+    "field-unspellable"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2210",
+  "clauses": [
+   "C2-H-080",
+   "C2-A-115"
+  ],
+  "why": "C2-H-080: `alt` is written empty for a decorative image and not at all for an image whose alt text is unknown, which has neither `alt` nor `decorative` (C2-A-115)",
+  "summary": "an image whose alt is unknown renders with no alt attribute",
+  "kind": "render",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "html": "<img src=\"x\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2211",
+  "clauses": [
+   "C2-H-080",
+   "C2-A-115"
+  ],
+  "why": "C2-H-080: `alt` is written empty for a decorative image and not at all for an image whose alt text is unknown, which has neither `alt` nor `decorative` (C2-A-115)",
+  "summary": "a decorative image renders an empty alt attribute",
+  "kind": "render",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x",
+       "decorative": true
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "html": "<img src=\"x\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2212",
+  "clauses": [
+   "C2-H-080",
+   "C2-A-115"
+  ],
+  "why": "C2-H-080: `alt` is written empty for a decorative image and not at all for an image whose alt text is unknown, which has neither `alt` nor `decorative` (C2-A-115) C2-A-115: It always produces `alt`, the empty string for `![](x)`, so the unknown state comes only from an import or a supplied tree.",
+  "summary": "near miss: a source image with empty brackets renders an empty alt attribute",
+  "kind": "render",
+  "input": "a ![](x) b\n",
+  "options": {},
+  "expected": {
+   "html": "<p>a <img src=\"x\" alt=\"\"> b</p>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2213",
+  "clauses": [
+   "C2-W-011",
+   "C2-A-115"
+  ],
+  "why": "C2-W-011: An image with neither `alt` nor `decorative`, whose alt text is unknown (C2-A-115), is written with empty brackets, which read back as an empty `alt`, and reported with `field-unspellable` at the path of the image, since the absent field has no path of its own.",
+  "summary": "the writer writes an image whose alt is unknown with empty brackets and reports it at the image",
+  "kind": "write",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "role": "image",
+     "children": [
+      {
+       "type": "image",
+       "src": "x"
+      }
+     ]
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "carve": "![](x)\n",
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0",
+     "severity": "warning",
+     "channel": "render-loss"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2214",
+  "clauses": [
+   "C2-T-034",
+   "C2-M-050"
+  ],
+  "why": "C2-T-034: Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
+  "summary": "import of an img with no alt fails with writer-refused",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "-"
+  ],
+  "stdin": "<p><img src=\"x\"></p>",
+  "options": {},
+  "expected": {
+   "status": 1,
+   "stderrCategory": "writer-refused"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2215",
+  "clauses": [
+   "C2-T-027",
+   "C2-T-034",
+   "C2-M-050"
+  ],
+  "why": "C2-T-027: An allowed code is neither written on standard error nor in the report. C2-T-034: Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`. C2-M-050: an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115)",
+  "summary": "import of an img with no alt and field-unspellable allowed writes empty brackets",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "--allow-loss",
+   "field-unspellable",
+   "-"
+  ],
+  "stdin": "<p><img src=\"x\"></p>",
+  "options": {},
+  "expected": {
+   "status": 0,
+   "stdout": "![](x)\n",
+   "stderrCategory": null
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2216",
+  "clauses": [
+   "C2-W-106",
+   "C2-A-115"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-115: It always produces `alt`, the empty string for `![](x)`, so the unknown state comes only from an import or a supplied tree.",
+  "summary": "an inline image with empty brackets is reported as having no alternative text",
+  "kind": "lint",
+  "input": "a ![](x) b\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "a11y/image-alt",
+     "line": 1,
+     "column": 3,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

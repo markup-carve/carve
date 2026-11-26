@@ -1183,7 +1183,7 @@ $`y`
 
 ## Links and images
 
-**C2-M-050** `<a>` with an `href` is a `link` whose `href` is the value and whose `tooltip` is its `title`. `<a>` without an `href` is its content, in a `span` when it has attributes. `<img>` is an `image` with `src`, `alt` (empty when absent) and `tooltip` from `title`; a `longdesc` is its long description, a paragraph with one link to that URL.
+**C2-M-050** `<a>` with an `href` is a `link` whose `href` is the value and whose `tooltip` is its `title`. `<a>` without an `href` is its content, in a `span` when it has attributes. `<img>` is an `image` with `src`, `alt` and `tooltip` from `title`; an `alt` attribute with the empty value makes it decorative, `decorative: true` and no `alt`, and an `<img>` with no `alt` attribute has neither field, its alt text unknown (C2-A-115); a `longdesc` is its long description, a paragraph with one link to that URL.
 
 **C2-M-051** A destination is tested with the default deny list of C2-H-159 and C2-H-160. A link whose `href` fails is its content, in a span when it has attributes, and an image whose `src` fails is its alternative text, in a span when it has attributes. A `longdesc` that fails is dropped. Each failure is reported with `import-destination-denied`. The importer applies no other URL policy: a renderer applies its own policy to the tree it is given (C2-H-189).
 
