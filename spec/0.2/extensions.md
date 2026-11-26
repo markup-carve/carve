@@ -281,6 +281,8 @@ These extensions follow the catalog status of the tabs section. Each with a matc
 
 **C2-X-075** `carve.smartQuotes` gives smart typography the quote glyphs of the host option `locale`, one of the values of its row with `en` the default, so that `de` writes `„a“`. It changes nothing while `smartTypography` is off. A locale that is not in the row falls back to its language, then to `en`.
 
+**C2-X-076** `carve.listTable` reads an item of a row as a span mark only when the item holds exactly one paragraph whose only inline is a text node with the value `<` or `^`. A literal-text span is never a mark: an item `` !`<` `` is a cell that holds `<` (C2-I-018). A `<` joins its cell to the cell on its left and a `^` to the cell above, within one group of rows: the rows that `header-rows` counts, one body, or the rows that `footer-rows` counts. A `<` in the first column, a `<` whose left cell a row span covers from above, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing, and the item is an ordinary cell that holds the mark as text.
+
 ## Writing consistency
 
 **C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`. The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023. A `write` call reads the option `extensions` for this test.
@@ -336,6 +338,6 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | Resolution, rendering and equality | 13 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
-| Standard extensions of the 0.1 catalog | 15 |
+| Standard extensions of the 0.1 catalog | 16 |
 | Writing consistency | 1 |
-| **Total** | **75** |
+| **Total** | **76** |

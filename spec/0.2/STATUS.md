@@ -716,6 +716,6 @@ The ruling on #6794 fills the item of an empty list-table cell with one empty li
 
 ## Engine gaps from the list-table span mark ruling of 26 November (#6795)
 
-The ruling on #6795 keeps a cell of the text `<` or `^` as text in a list table and reports `import-structure-repaired` at the cell when its item joins a neighbor as a span mark (C2-B-172); a mark that joins nothing (C2-B-173) is not reported (C2-M-112). The tree does not change. Clause cases CC-2180 to CC-2182.
+The ruling on #6795 (option D, replacing option C) spells a list-table cell whose blocks are one paragraph holding only the text `<` or `^` as the literal-text span `` !`<` `` or `` !`^` `` (C2-M-112, C2-I-018), with nothing reported, and `carve.listTable` reads a span mark only from a text node (C2-X-076), so the cell renders as text. Clause cases CC-2180 to CC-2182 and CC-2183 to CC-2187. Measured on `carve-js` `next2` `71e03e1`: the importer writes the bare `<` or `^`; the renderer already renders a literal-text span as text, and joins a `<` whose left cell a row span covers from above (CC-2187).
 
-- `carve-js`, `carve-php` and `carve-rs`: report the joining cell as they implement `listTable` (carve-js#5646 for `carve-js`).
+- `carve-js`, `carve-php` and `carve-rs`: spell such a cell as a literal-text span as they implement `listTable`, and join no `<` beside a cell covered from above.
