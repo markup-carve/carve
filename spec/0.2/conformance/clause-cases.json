@@ -88886,6 +88886,327 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2183",
+   "clauses": [
+    "C2-M-112",
+    "C2-I-018",
+    "C2-X-076"
+   ],
+   "why": "C2-M-112: A cell whose blocks are one paragraph that holds only the text `<` or `^` is the exception: its item holds that text as a literal-text span (C2-I-018), `` !`<` `` or `` !`^` ``, which `carve.listTable` never reads as a span mark (C2-X-076), and nothing is reported.",
+   "summary": "a cell of the text ^ below a cell of two columns is written as a literal-text span, the covered slot stays a mark",
+   "kind": "import",
+   "html": "<table><tr><td colspan=\"2\">a</td></tr><tr><td>^</td><td><ul><li>b</li></ul></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "<"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "literal_inline",
+                  "value": "^"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "b"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - a\n  - <\n- - !`^`\n  - - b\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2184",
+   "clauses": [
+    "C2-M-112",
+    "C2-I-018",
+    "C2-X-076"
+   ],
+   "why": "C2-M-112: A cell whose blocks are one paragraph that holds only the text `<` or `^` is the exception: its item holds that text as a literal-text span (C2-I-018), `` !`<` `` or `` !`^` ``, which `carve.listTable` never reads as a span mark (C2-X-076), and nothing is reported.",
+   "summary": "a cell of the text ^ in the first row is written as a literal-text span",
+   "kind": "import",
+   "html": "<table><tr><td>^</td><td><ul><li>b</li></ul></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "literal_inline",
+                  "value": "^"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "b"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - !`^`\n  - - b\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2185",
+   "clauses": [
+    "C2-X-076",
+    "C2-I-018",
+    "C2-H-049"
+   ],
+   "why": "C2-X-076: A literal-text span is never a mark: an item `` !`<` `` is a cell that holds `<` (C2-I-018).",
+   "summary": "an authored literal-text span < in a list table is a cell that holds <",
+   "kind": "render",
+   "input": "::: list-table\n- - a\n  - !`<`\n- - - b\n  - w\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>&lt;</td></tr>\n    <tr><td><ul>\n  <li>b</li>\n</ul></td><td>w</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2186",
+   "clauses": [
+    "C2-X-076",
+    "C2-I-018",
+    "C2-H-049"
+   ],
+   "why": "C2-X-076: A literal-text span is never a mark: an item `` !`<` `` is a cell that holds `<` (C2-I-018).",
+   "summary": "an authored literal-text span ^ below a cell of one column is a cell that holds ^",
+   "kind": "render",
+   "input": "::: list-table\n- - - b\n  - a\n- - w\n  - !`^`\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td><ul>\n  <li>b</li>\n</ul></td><td>a</td></tr>\n    <tr><td>w</td><td>^</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2187",
+   "clauses": [
+    "C2-X-076"
+   ],
+   "why": "C2-X-076: A `<` in the first column, a `<` whose left cell a row span covers from above, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing, and the item is an ordinary cell that holds the mark as text.",
+   "summary": "a < whose left cell a row span covers from above joins nothing in a list table",
+   "kind": "render",
+   "input": "::: list-table\n- - x\n  - y\n- - ^\n  - <\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">x</td><td>y</td></tr>\n    <tr><td>&lt;</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
   }
  ]
 }
