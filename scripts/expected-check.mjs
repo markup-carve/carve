@@ -186,10 +186,11 @@ export async function loadModel(dir) {
   const js = await import(pathToFileURL(entry))
   const catalogPath = resolve(dir, 'cli/standard-extensions.ts')
   const catalog = existsSync(catalogPath) ? await import(pathToFileURL(catalogPath)) : null
-  const named = options => namedExtensions(catalog, options)
   const run = (operation, input, options = {}) => {
     try {
-      options = named(options)
+      const { transforms, ...rest } = namedExtensions(catalog, options, operation === 'html')
+      options = rest
+      if (operation === 'html' && transforms) { const r = js.renderWithDocumentTransforms(input, transforms, options); return { output: r.html, diagnostics: lintEntries(r.diagnostics, input) } }
       if (operation === 'fmt') { const r = js.formatWithDiagnostics(input, options); return { output: r.source, diagnostics: lintEntries(r.diagnostics, input) } }
       if (operation === 'html') { const r = js.renderWithDiagnostics(input, options); return { output: r.html, diagnostics: lintEntries(r.diagnostics, input) } }
       if (operation === 'ast') return { output: js.parse(input, { ...options, positions: false }).children }
@@ -197,13 +198,14 @@ export async function loadModel(dir) {
     } catch (e) { return { error: `${e.name}: ${e.message}` } }
   }
   const parse = input => { try { return js.parse(input, { positions: false }) } catch { return null } }
-  const write = (tree, options = {}) => { try { const r = js.writeWithDiagnostics(tree, named(options)); return { output: r.source, diagnostics: r.diagnostics } } catch (e) { return { error: `${e.name}: ${e.message}` } } }
+  const write = (tree, options = {}) => { try { const r = js.writeWithDiagnostics(tree, namedExtensions(catalog, options, false)); return { output: r.source, diagnostics: r.diagnostics } } catch (e) { return { error: `${e.name}: ${e.message}` } } }
   return { run, parse, write, dir }
 }
 
 // A case names standard extensions as the CLI does (C2-T-010); carve-js takes definitions, so each name goes
-// through its CLI table, with the standard renderers where `renderers` chooses `standard` for it.
-export function namedExtensions(catalog, options) {
+// through its CLI table. A render adds the standard renderers and transforms where `renderers` chooses
+// `standard` for the name; the other operations take the definitions alone.
+export function namedExtensions(catalog, options, render) {
   const isNamed = name => typeof name === 'string' && (() => { try { catalog.extensionNames([name]); return true } catch { return false } })()
   if (!catalog || !Array.isArray(options.extensions) || !options.extensions.some(isNamed)) return options
   const renderers = { ...(options.renderers ?? {}) }
@@ -213,14 +215,15 @@ export function namedExtensions(catalog, options) {
   for (const name of options.extensions) {
     if (!isNamed(name)) { extensions.push(name); continue }
     const choice = renderers[name]
-    const render = choice === 'standard' || choice?.standard !== undefined
-    if (render) delete renderers[name]
-    const made = catalog.registration([name], new Map([[name, choice?.standard ?? {}]]), render)
+    const standard = choice === 'standard' || choice?.standard !== undefined
+    if (standard || !render) delete renderers[name]
+    const made = catalog.registration([name], new Map([[name, choice?.standard ?? {}]]), render && standard)
     for (const definition of made.extensions) if (!seen.has(definition.name)) { seen.add(definition.name); extensions.push(definition) }
     Object.assign(renderers, made.renderers)
     transforms.push(...made.transforms)
   }
-  return { ...options, extensions, renderers, ...(transforms.length ? { transforms } : {}) }
+  const { renderers: _, ...rest } = options
+  return { ...rest, extensions, ...(render || Object.keys(renderers).length ? { renderers } : {}), ...(transforms.length ? { transforms } : {}) }
 }
 
 // --- constructs -------------------------------------------------------------------------------------------

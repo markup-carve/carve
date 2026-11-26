@@ -92,6 +92,11 @@ test('a case names a standard extension as the CLI does (carve#6858)', { skip },
   assert.equal(r.error, undefined)
   assert.match(r.output, /^<table>\n  <tbody>\n    <tr><td>a<\/td><\/tr>/)
   assert.deepEqual(options.extensions, ['carve.listTable'])
+  for (const operation of ['fmt', 'ast', 'lint']) assert.equal(model.run(operation, '::: list-table\n- - a\n:::\n', options).error, undefined, operation)
+  // A standard renderer that brings document transforms renders through renderWithDocumentTransforms.
+  for (const name of ['carve.cite', 'carve.glossary', 'carve.index']) {
+    assert.equal(model.run('html', 'a\n', { extensions: [name], renderers: { [name]: 'standard' } }).output, '<p>a</p>', name)
+  }
 })
 
 test('a Carve 0.2 level-2 heading starts a case as well', () => {
