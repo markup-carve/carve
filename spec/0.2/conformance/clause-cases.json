@@ -93075,6 +93075,227 @@
     ]
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-2341",
+  "clauses": [
+   "C2-B-119",
+   "C2-H-042",
+   "C2-H-157"
+  ],
+  "why": "C2-B-119: A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  \"T\"` opens a div with a title, and `:::[x]` is text. C2-H-042: A title on its opener is written as its first child, `<p class=\"admonition-title\">`, as in 0.1. C2-H-157: A plain div writes its title and its label as an admonition does, and carries no name and no generated id.",
+  "summary": "a quoted title two spaces behind the run, with no name, opens a plain div with a title",
+  "kind": "render",
+  "input": ":::  \"T\"\nx\n:::\n",
+  "options": {},
+  "expected": {
+   "html": "<div>\n  <p class=\"admonition-title\">T</p>\n  <p>x</p>\n</div>",
+   "children": [
+    {
+     "type": "div",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ],
+     "title": [
+      {
+       "type": "text",
+       "value": "T"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2342",
+  "clauses": [
+   "C2-B-119",
+   "C2-H-042",
+   "C2-H-157"
+  ],
+  "why": "C2-B-119: A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  \"T\"` opens a div with a title, and `:::[x]` is text. C2-H-042: A title on its opener is written as its first child, `<p class=\"admonition-title\">`, as in 0.1. C2-H-157: A plain div writes its title and its label as an admonition does, and carries no name and no generated id.",
+  "summary": "a quoted title one space behind the run, with no name, opens a plain div with a title",
+  "kind": "render",
+  "input": "::: \"T\"\nx\n:::\n",
+  "options": {},
+  "expected": {
+   "html": "<div>\n  <p class=\"admonition-title\">T</p>\n  <p>x</p>\n</div>",
+   "children": [
+    {
+     "type": "div",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ],
+     "title": [
+      {
+       "type": "text",
+       "value": "T"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2343",
+  "clauses": [
+   "C2-B-119",
+   "C2-H-154",
+   "C2-H-157"
+  ],
+  "why": "C2-B-119: After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. C2-B-119: A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  \"T\"` opens a div with a title, and `:::[x]` is text. C2-H-154: A title on the opener is its first child, `<p class=\"admonition-title\">`, and a label in brackets follows as `<p class=\"div-label\">`. C2-H-157: A plain div writes its title and its label as an admonition does, and carries no name and no generated id.",
+  "summary": "a quoted title and a label with no name open a plain div with both paragraphs",
+  "kind": "render",
+  "input": "::: \"T\" [l]\nx\n:::\n",
+  "options": {},
+  "expected": {
+   "html": "<div>\n  <p class=\"admonition-title\">T</p>\n  <p class=\"div-label\">l</p>\n  <p>x</p>\n</div>",
+   "children": [
+    {
+     "type": "div",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ],
+     "title": [
+      {
+       "type": "text",
+       "value": "T"
+      }
+     ],
+     "groupLabel": "l"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2344",
+  "clauses": [
+   "C2-B-119",
+   "C2-H-154",
+   "C2-H-157"
+  ],
+  "why": "C2-B-119: A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  \"T\"` opens a div with a title, and `:::[x]` is text. C2-H-154: A title on the opener is its first child, `<p class=\"admonition-title\">`, and a label in brackets follows as `<p class=\"div-label\">`. C2-H-157: A plain div writes its title and its label as an admonition does, and carries no name and no generated id.",
+  "summary": "a label with no name opens a plain div with a label paragraph",
+  "kind": "render",
+  "input": "::: [l]\nx\n:::\n",
+  "options": {},
+  "expected": {
+   "html": "<div>\n  <p class=\"div-label\">l</p>\n  <p>x</p>\n</div>",
+   "children": [
+    {
+     "type": "div",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ],
+     "groupLabel": "l"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2345",
+  "clauses": [
+   "C2-B-119"
+  ],
+  "why": "C2-B-119: A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  \"T\"` opens a div with a title, and `:::[x]` is text.",
+  "summary": "near miss: a label glued to the run makes the line text",
+  "kind": "render",
+  "input": ":::[x]\n",
+  "options": {},
+  "expected": {
+   "html": "<p>:::[x]</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": ":::[x]"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2346",
+  "clauses": [
+   "C2-B-119",
+   "C2-I-104"
+  ],
+  "why": "C2-B-119: A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  \"T\"` opens a div with a title, and `:::[x]` is text. C2-I-104: Opening punctuation is one of `(`, `[`, `{`, `=`, `:`, `“` and `‘`, or a straight quote that opens.",
+  "summary": "near miss: a quoted title glued to the run makes the line text, with smart quotes",
+  "kind": "render",
+  "input": ":::\"T\"\n",
+  "options": {},
+  "expected": {
+   "html": "<p>:::“T”</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": ":::"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "left_double_quote",
+       "glyph": "“",
+       "source": "\""
+      },
+      {
+       "type": "text",
+       "value": "T"
+      },
+      {
+       "type": "smart_punctuation",
+       "kind": "right_double_quote",
+       "glyph": "”",
+       "source": "\""
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
+ }
  ]
 }
