@@ -92174,6 +92174,271 @@
     "stderrCategory": "usage"
    },
    "from": []
+  },
+  {
+   "id": "CC-2301",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `<table>` carries the div's `id`, its classes but `list-table`, and its pairs but `header-rows`, `header-cols` and `footer-rows`; the div's title is a `<caption>` that holds its inlines. C2-X-078: Below the head, a cell in one of the first `header-cols` columns, and a cell whose item has the key `header`, with any value, is `<th scope=\"row\">`; every other cell is `<td>`.",
+   "summary": "a list table with title, id, class, header rows, header column, footer row, cell attributes and block cells (carve#6771)",
+   "kind": "render",
+   "input": "{.k #t header-rows=1 header-cols=1 footer-rows=1}\n::: list-table \"Q /t/\"\n- - H1\n  - H2\n- - R\n  -{#c align=right valign=top} b\n- - S\n  -{header} T\n- - x\n\n    y\n  - ```\n    code\n    ```\n- - F\n  - G\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table id=\"t\" class=\"k\">\n  <caption>Q <em>t</em></caption>\n  <thead>\n    <tr><th scope=\"col\">H1</th><th scope=\"col\">H2</th></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">R</th><td id=\"c\" style=\"text-align: right; vertical-align: top;\">b</td></tr>\n    <tr><th scope=\"row\">S</th><th scope=\"row\">T</th></tr>\n    <tr><th scope=\"row\"><p>x</p>\n<p>y</p></th><td><pre><code>code\n</code></pre></td></tr>\n  </tbody>\n  <tfoot>\n    <tr><th scope=\"row\">F</th><td>G</td></tr>\n  </tfoot>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2302",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The table has as many columns as its widest row, counting the spans of C2-X-076, and each slot a shorter row lacks is an empty `<td></td>` at its end.",
+   "summary": "a shorter row ends with an empty data cell for each missing slot (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\n- - a\n  - b\n- - c\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>c</td><td></td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2303",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `header-rows` N puts the first N rows in `<thead>` and `footer-rows` M the last M of the rows below them in `<tfoot>`, each taking at most the rows there are (C2-B-187); the rest is one `<tbody>`.",
+   "summary": "header-rows larger than the rows puts every row in the head (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=5 footer-rows=2}\n::: list-table\n- - a\n- - b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n    <tr><th scope=\"col\">b</th></tr>\n  </thead>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2304",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `header-rows` N puts the first N rows in `<thead>` and `footer-rows` M the last M of the rows below them in `<tfoot>`, each taking at most the rows there are (C2-B-187); the rest is one `<tbody>`.",
+   "summary": "a head row and a footer row leave no body (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=1 footer-rows=1}\n::: list-table\n- - a\n- - b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tfoot>\n    <tr><td>b</td></tr>\n  </tfoot>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2305",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: `<table>` carries the div's `id`, its classes but `list-table`, and its pairs but `header-rows`, `header-cols` and `footer-rows`; the div's title is a `<caption>` that holds its inlines. C2-X-078: The table has as many columns as its widest row, counting the spans of C2-X-076, and each slot a shorter row lacks is an empty `<td></td>` at its end.",
+   "summary": "the div's other pairs go to the table, and a padded slot of a head row is a data cell (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=1 header-cols=1 data-x=1 width=50%}\n::: list-table\n- - a\n- - b\n  - c\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table data-x=\"1\" width=\"50%\">\n  <thead>\n    <tr><th scope=\"col\">a</th><td></td></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">b</th><td>c</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2306",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: A cell carries the `id`, classes and pairs of its item, but `header`, `scope`, `rowspan` and `colspan`, which are not written, and `align` and `valign`, which write the `style` of C2-H-057 with their values. C2-X-078: Below the head, a cell in one of the first `header-cols` columns, and a cell whose item has the key `header`, with any value, is `<th scope=\"row\">`; every other cell is `<td>`.",
+   "summary": "header, scope, rowspan and colspan of a cell are not written; header makes a row header (carve#6771)",
+   "kind": "render",
+   "input": "{align=center}\n::: list-table\n- - a\n  -{rowspan=2 colspan=3 scope=x width=3 header=1 align=center} b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table align=\"center\">\n  <tbody>\n    <tr><td>a</td><th scope=\"row\" width=\"3\" style=\"text-align: center;\">b</th></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2307",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: Those three keys take a decimal integer above 0, and another value has no effect.",
+   "summary": "header-rows, footer-rows and header-cols that are no integer above 0 have no effect (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=x footer-rows=-1 header-cols=1.5}\n::: list-table\n- - a\n- - c\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2308",
+   "clauses": [
+    "C2-X-078",
+    "C2-H-057"
+   ],
+   "why": "C2-X-078: A cell carries the `id`, classes and pairs of its item, but `header`, `scope`, `rowspan` and `colspan`, which are not written, and `align` and `valign`, which write the `style` of C2-H-057 with their values. C2-H-057: An authored `style` keeps its value and takes the declarations after it.",
+   "summary": "align on a cell adds its declaration after an authored style (carve#6771)",
+   "kind": "render",
+   "input": "{style=\"color: red;\"}\n::: list-table\n- -{align=left style=\"x: y;\"} a\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table style=\"color: red;\">\n  <tbody>\n    <tr><td style=\"x: y; text-align: left;\">a</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2309",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+   "summary": "a row item that holds no list leaves the div a core div (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\n- - a\n  - b\n  - c\n- - d\n- plain\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"list-table\">\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n        <li>b</li>\n        <li>c</li>\n      </ul>\n    </li>\n    <li>\n      <ul>\n        <li>d</li>\n      </ul>\n    </li>\n    <li>plain</li>\n  </ul>\n</div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2310",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+   "summary": "a paragraph before the list of rows leaves the div a core div (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\npara\n\n- - a\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"list-table\">\n  <p>para</p>\n  <ul>\n    <li>\n      <ul>\n        <li>a</li>\n      </ul>\n    </li>\n  </ul>\n</div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2311",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: A cell whose item holds one paragraph holds that paragraph's inlines; any other cell holds its blocks as they are written at the top level, one line feed apart.",
+   "summary": "block cells write their blocks as at the top level (carve#6771)",
+   "kind": "render",
+   "input": "{header-rows=1}\n::: list-table\n- -{scope=row} a\n- -{scope=col header} b\n  - > q\n    > r\n  - - x\n    - y\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><td></td><td></td></tr>\n  </thead>\n  <tbody>\n    <tr><th scope=\"row\">b</th><td><blockquote><p>q\nr</p></blockquote></td><td><ul>\n  <li>x</li>\n  <li>y</li>\n</ul></td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2312",
+   "clauses": [
+    "C2-X-078"
+   ],
+   "why": "C2-X-078: The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div.",
+   "summary": "an ordered list of rows and an ordered list of cells form a table (carve#6771)",
+   "kind": "render",
+   "input": "::: list-table\n1. - a\n2. - b\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.listTable"
+    ],
+    "renderers": {
+     "carve.listTable": "standard"
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
   }
  ]
 }

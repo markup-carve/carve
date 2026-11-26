@@ -285,6 +285,8 @@ These extensions follow the catalog status of the tabs section. Each with a matc
 
 **C2-X-076** `carve.listTable` reads an item of a row as a span mark only when the item holds exactly one paragraph whose only inline is a text node with the value `<` or `^`. A literal-text span is never a mark: an item `` !`<` `` is a cell that holds `<` (C2-I-018). A `<` joins its cell to the cell on its left and a `^` to the cell above, within one group of rows: the rows that `header-rows` counts, one body, or the rows that `footer-rows` counts. A `<` in the first column, a `<` whose left cell a row span covers from above, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing, and the item is an ordinary cell that holds the mark as text.
 
+**C2-X-078** The transform of `carve.listTable` claims a div named `list-table` only when its body is one list, bullet or ordered, each item of which holds one list and nothing else; another such div stays a core div. Each item of the outer list is a row, and each item of its list is a cell. The standard renderer writes the rows as a table laid out by C2-H-055. `<table>` carries the div's `id`, its classes but `list-table`, and its pairs but `header-rows`, `header-cols` and `footer-rows`; the div's title is a `<caption>` that holds its inlines. Those three keys take a decimal integer above 0, and another value has no effect. The table has as many columns as its widest row, counting the spans of C2-X-076, and each slot a shorter row lacks is an empty `<td></td>` at its end. `header-rows` N puts the first N rows in `<thead>` and `footer-rows` M the last M of the rows below them in `<tfoot>`, each taking at most the rows there are (C2-B-187); the rest is one `<tbody>`. A cell of a head row is `<th scope="col">`. Below the head, a cell in one of the first `header-cols` columns, and a cell whose item has the key `header`, with any value, is `<th scope="row">`; every other cell is `<td>`. A cell carries the `id`, classes and pairs of its item, but `header`, `scope`, `rowspan` and `colspan`, which are not written, and `align` and `valign`, which write the `style` of C2-H-057 with their values. A cell whose item holds one paragraph holds that paragraph's inlines; any other cell holds its blocks as they are written at the top level, one line feed apart.
+
 ## Writing consistency
 
 **C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`. The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023. A `write` call reads the option `extensions` for this test.
@@ -340,6 +342,6 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | Resolution, rendering and equality | 13 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
-| Standard extensions of the 0.1 catalog | 17 |
+| Standard extensions of the 0.1 catalog | 18 |
 | Writing consistency | 1 |
-| **Total** | **77** |
+| **Total** | **78** |
