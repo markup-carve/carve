@@ -122,4 +122,15 @@ export const SNIPPETS = [
       ': The version this playground renders.',
     ],
   },
+  {
+    id: 'snippets',
+    label: 'Snippets',
+    source: [
+      '{$ver}: 0.2',
+      '',
+      '{$rel .badge}: [release notes](https://github.com/markup-carve/carve)',
+      '',
+      'Carve {{ $ver }} repeats named text. Read the {{ $rel }}.',
+    ],
+  },
 ].map((snippet) => ({ ...snippet, source: `${snippet.source.join('\n')}\n` }))
