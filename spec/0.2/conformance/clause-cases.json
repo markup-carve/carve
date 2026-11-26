@@ -90494,6 +90494,407 @@
     "carve": "{#c .wide .line-numbers data-line-start=42}\n```php\na\n```\n^ Cap.\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-2230",
+   "clauses": [
+    "C2-M-047",
+    "C2-A-035"
+   ],
+   "why": "C2-M-047: An authored attribute of the span's element with the name of that key, as `abbr` on `<abbr>`, is the key in upper case, `ABBR`, `KBD` or `TIME`, with its value, at its place among the other keys and not reported",
+   "summary": "an authored abbr attribute on abbr is kept as the key ABBR beside the key abbr",
+   "kind": "import",
+   "html": "<p><abbr title=\"a\" abbr=\"b\">y</abbr></p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "abbr",
+           "a"
+          ],
+          [
+           "ABBR",
+           "b"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "carve": "[y]{abbr=a ABBR=b}\n",
+    "notReported": [
+     "import-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2231",
+   "clauses": [
+    "C2-M-047",
+    "C2-A-035"
+   ],
+   "why": "C2-M-047: An authored attribute of the span's element with the name of that key, as `abbr` on `<abbr>`, is the key in upper case, `ABBR`, `KBD` or `TIME`, with its value, at its place among the other keys and not reported",
+   "summary": "an authored kbd attribute on kbd is kept as the key KBD",
+   "kind": "import",
+   "html": "<p><kbd kbd=\"z\">k</kbd></p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "k"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "kbd",
+           ""
+          ],
+          [
+           "KBD",
+           "z"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "carve": "[k]{kbd KBD=z}\n",
+    "notReported": [
+     "import-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2232",
+   "clauses": [
+    "C2-M-047",
+    "C2-M-052"
+   ],
+   "why": "C2-M-047: An authored attribute of the span's element with the name of that key, as `abbr` on `<abbr>`, is the key in upper case, `ABBR`, `KBD` or `TIME`, with its value, at its place among the other keys and not reported",
+   "summary": "the key TIME stands at the place of the authored time attribute among the other keys",
+   "kind": "import",
+   "html": "<p><time data-x=\"1\" time=\"t\" datetime=\"d\" data-y=\"2\">x</time></p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "time",
+           "d"
+          ],
+          [
+           "data-x",
+           "1"
+          ],
+          [
+           "TIME",
+           "t"
+          ],
+          [
+           "data-y",
+           "2"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "carve": "[x]{time=d data-x=1 TIME=t data-y=2}\n",
+    "notReported": [
+     "import-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2233",
+   "clauses": [
+    "C2-M-047"
+   ],
+   "why": "C2-M-047: An authored attribute of the span's element with the name of that key, as `abbr` on `<abbr>`, is the key in upper case, `ABBR`, `KBD` or `TIME`, with its value, at its place among the other keys and not reported",
+   "summary": "an abbr without a title keeps its authored abbr attribute as the key ABBR",
+   "kind": "import",
+   "html": "<p><abbr abbr=\"b\">y</abbr></p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "abbr",
+           ""
+          ],
+          [
+           "ABBR",
+           "b"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "carve": "[y]{abbr ABBR=b}\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2234",
+   "clauses": [
+    "C2-M-109",
+    "C2-M-110",
+    "C2-M-065"
+   ],
+   "why": "C2-M-109: The comments of a dropped element take its place, in their order.",
+   "summary": "with rawHtml on, a comment of the wrapper the note pass drops is a raw block in its place",
+   "kind": "import",
+   "html": "<p>Ref<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> x.</p>\n<div class=\"footnotes\"><!-- keep -->\n<hr />\n<ol>\n<li id=\"fn1\"><p>Note.<a href=\"#fnref1\">back</a></p></li>\n</ol>\n</div>\n<p>after</p>",
+   "options": {
+    "adapter": "word",
+    "rawHtml": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Ref"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " x."
+       }
+      ]
+     },
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "<!-- keep -->\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "after"
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Note."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Ref[^1] x.\n\n```=html\n<!-- keep -->\n```\n\nafter\n\n[^1]: Note.\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2235",
+   "clauses": [
+    "C2-M-109",
+    "C2-M-110",
+    "C2-M-066"
+   ],
+   "why": "C2-M-109: The comments of a dropped element take its place, in their order.",
+   "summary": "with rawHtml off, a comment of the wrapper the note pass drops is reported as dropped",
+   "kind": "import",
+   "html": "<p>Ref<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> x.</p>\n<div class=\"footnotes\"><!-- keep -->\n<hr />\n<ol>\n<li id=\"fn1\"><p>Note.<a href=\"#fnref1\">back</a></p></li>\n</ol>\n</div>\n<p>after</p>",
+   "options": {
+    "adapter": "word"
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Ref"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " x."
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "after"
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Note."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Ref[^1] x.\n\nafter\n\n[^1]: Note.\n",
+    "diagnostics": [
+     "import-element-dropped"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2236",
+   "clauses": [
+    "C2-M-109",
+    "C2-M-065"
+   ],
+   "why": "C2-M-109: The comments of a dropped element take its place, in their order.",
+   "summary": "the comments of nested wrappers the note pass drops keep their order",
+   "kind": "import",
+   "html": "<p>Ref<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> x.</p>\n<section><!-- a -->\n<div class=\"footnotes\"><!-- b -->\n<hr />\n<ol>\n<li id=\"fn1\"><p>Note.<a href=\"#fnref1\">back</a></p></li>\n</ol>\n</div>\n</section>",
+   "options": {
+    "adapter": "google-docs",
+    "rawHtml": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Ref"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " x."
+       }
+      ]
+     },
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "<!-- a -->\n"
+     },
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "<!-- b -->\n"
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Note."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Ref[^1] x.\n\n```=html\n<!-- a -->\n```\n\n```=html\n<!-- b -->\n```\n\n[^1]: Note.\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }
