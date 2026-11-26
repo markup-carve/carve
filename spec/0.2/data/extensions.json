@@ -17,6 +17,7 @@
     {
       "name": "carve.cite",
       "version": "1",
+      "ids": true,
       "matcher": {
         "form": "inline",
         "name": "cite"
@@ -58,6 +59,7 @@
     {
       "name": "carve.codeGroup",
       "version": "1",
+      "ids": true,
       "matcher": {
         "form": "div",
         "name": "code-group"
@@ -329,6 +331,7 @@
     {
       "name": "carve.glossary",
       "version": "1",
+      "ids": true,
       "transform": true,
       "props": {},
       "slots": {
@@ -421,6 +424,7 @@
     {
       "name": "carve.index",
       "version": "1",
+      "ids": true,
       "transform": true,
       "props": {},
       "slots": {
@@ -439,6 +443,7 @@
     {
       "name": "carve.indexTerm",
       "version": "1",
+      "ids": true,
       "matcher": {
         "form": "inline",
         "name": "index"
@@ -652,6 +657,7 @@
     {
       "name": "carve.tabs",
       "version": "1",
+      "ids": true,
       "matcher": {
         "form": "div",
         "name": "tabs"

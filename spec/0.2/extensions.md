@@ -98,6 +98,8 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-055** The host checks ids in the transformed view in document order after each transform. An inserted or replacement node with an authored id already used by a preceding node fails that transform; the first node keeps its id. A duplicate authored id that the view held before the transform ran, which C2-A-039 reports, fails no transform: only the nodes a transform inserted, replaced or edited are checked. Generated ids, including heading and extension control ids, are allocated again over the final view by their ordinary rules, avoiding every authored id and earlier generated id. References in that view resolve against the final ids before HTML is written. A failed document transform leaves its input view intact and reports a diagnostic naming the extension, as in C2-X-050. The checks of C2-X-054 and of this clause are observable only in their result: a view that fails one fails that transform as this clause says, and a view that passes all of them is rendered. An engine may check only the nodes a transform inserted, replaced or edited, since every node it kept passed the same checks before it ran; the result is the one a check of the whole view gives. A render with document transforms therefore resolves twice: once before the first transform, and once over the final view for the generated ids and references of this clause.
 
+**C2-X-079** An extension *generates ids* when its renderer or transform writes an id or an anchor name that the tree does not carry, as the tab controls of C2-X-048 do. A row of `data/extensions.json` marked `ids` generates ids: `carve.cite`, `carve.codeGroup`, `carve.glossary`, `carve.index`, `carve.indexTerm` and `carve.tabs`. An extension that is no row of that file counts as one that generates ids, since its renderer returns HTML that the engine does not read (C2-X-034). While an extension that generates ids is registered, `broken-fragment-link` reports nothing (C2-W-150).
+
 ## Standard extension: tabs
 
 The standard extensions are a catalog that follows the core: this section is not part of the freeze candidate, and the clauses of the sections before and after it are, with the provisional status of the head of this document.
@@ -339,9 +341,9 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | --- | ---: |
 | Registration and matching | 14 |
 | Transformation and carriage | 17 |
-| Resolution, rendering and equality | 13 |
+| Resolution, rendering and equality | 14 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
 | Standard extensions of the 0.1 catalog | 18 |
 | Writing consistency | 1 |
-| **Total** | **78** |
+| **Total** | **79** |

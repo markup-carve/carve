@@ -218,6 +218,11 @@ function diagnosticProblems(entry) {
       const lines = text.split('\n')
       if (line > lines.length || column > [...lines[line - 1]].length + 1) problems.push(`places ${diagnostic.code} at ${line}:${column}, outside its text`)
     }
+    for (const link of diagnostic.includedBy ?? []) {
+      if (link.file !== undefined && !entry.files?.[link.file]) problems.push(`names the include file ${link.file}, which files does not hold`)
+      const lines = textOf(entry, link.file)?.split('\n')
+      if (lines && (link.line > lines.length || link.column > [...lines[link.line - 1]].length + 1)) problems.push(`places an include of ${diagnostic.code} at ${link.line}:${link.column}, outside its text`)
+    }
   }
   for (const code of entry.expected.notReported ?? []) {
     if (!ruleOf.has(code)) problems.push(`notReported names ${code}, which data/lint-rules.json does not list`)

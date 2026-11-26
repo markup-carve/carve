@@ -92645,6 +92645,436 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-2325",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: the range is the first heading of the document, from its start to its end, so an attribute line above it is included; a heading counts by the marker that opens it, behind any attribute lines above it C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an attributed equals heading and a hash heading: the finding covers the first heading with its attribute line",
+   "kind": "lint",
+   "input": "{#a}\n= A\n\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 1,
+      "endLine": 2,
+      "endColumn": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2326",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: a heading counts by the marker that opens it, behind any attribute lines above it C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an equals heading and an attributed hash heading are mixed markers",
+   "kind": "lint",
+   "input": "= A\n\n{#b}\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 1,
+      "endLine": 1,
+      "endColumn": 4,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2327",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: a heading counts by the marker that opens it, behind any attribute lines above it C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an attributed equals heading in a quote and a hash heading are mixed markers",
+   "kind": "lint",
+   "input": "> {#a}\n> = A\n\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 3,
+      "endLine": 2,
+      "endColumn": 6,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2328",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "near miss: two attributed equals headings",
+   "kind": "lint",
+   "input": "{#a}\n= A\n\n{#b}\n= B\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "heading-marker-mixed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2329",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block glued to no host on a line of a line block is reported",
+   "kind": "lint",
+   "input": "::: |\nx {#id} y\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 3,
+      "endLine": 2,
+      "endColumn": 8,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2330",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "a line block in a list item: the attribute block on its line is reported",
+   "kind": "lint",
+   "input": "- ::: |\n  a {.c}\n  :::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 5,
+      "endLine": 2,
+      "endColumn": 9,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2331",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a run at the start of a paragraph or of a line of a line block that `block-marker-as-text` reports C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "a line of a line block that starts with an attribute block is left to block-marker-as-text",
+   "kind": "lint",
+   "input": "::: |\n{#id} b\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-marker-as-text",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ],
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2332",
+   "clauses": [
+    "C2-I-036"
+   ],
+   "why": "C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host",
+   "summary": "near miss: an attribute block glued to a span on a line of a line block",
+   "kind": "lint",
+   "input": "::: |\nx [s]{#id} y\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2333",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block glued to no host in a caption paragraph is reported",
+   "kind": "lint",
+   "input": "| a |\n^ cap {#x} more\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 7,
+      "endLine": 2,
+      "endColumn": 11,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2334",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a line of a line block is such an inline content too C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block glued to no host in a description paragraph is reported",
+   "kind": "lint",
+   "input": ":: term\n: desc {#x} more\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 2,
+      "column": 8,
+      "endLine": 2,
+      "endColumn": 12,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2335",
+   "clauses": [
+    "C2-T-020",
+    "C2-N-087"
+   ],
+   "why": "C2-T-020: `includedBy` is the 0.1 field of that name, and every entry with `file` carries it; where one position is reached more than once, it is the chain of the first reach, the one that supplies the path (C2-N-087). C2-N-087: where one position is reached more than once, the first reach in document order supplies the path.",
+   "summary": "a lint finding in a file included twice, and one a level deeper, carry the include chain of their first reach",
+   "kind": "lint",
+   "input": "{{ b.crv }}\n\n{{ b.crv }}\n",
+   "files": {
+    "b.crv": {
+     "text": "See [x][missing].\n\n{{ c.crv }}\n"
+    },
+    "c.crv": {
+     "text": "Go [y](#nope).\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unresolved-reference-link",
+      "file": "b.crv",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning",
+      "includedBy": [
+       {
+        "line": 1,
+        "column": 1
+       }
+      ]
+     },
+     {
+      "code": "broken-fragment-link",
+      "file": "c.crv",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "includedBy": [
+       {
+        "line": 1,
+        "column": 1
+       },
+       {
+        "file": "b.crv",
+        "line": 3,
+        "column": 1
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2336",
+   "clauses": [
+    "C2-T-020",
+    "C2-N-063"
+   ],
+   "why": "C2-T-020: `includedBy` is the 0.1 field of that name, and every entry with `file` carries it C2-N-063: A failure in an included file is reported at the include node in that file.",
+   "summary": "a parse entry for an include that fails inside an included file carries the include chain",
+   "kind": "lint",
+   "input": "{{ b.crv }}\n",
+   "files": {
+    "b.crv": {
+     "text": "x\n\n{{ nothere.crv }}\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-not-found",
+      "file": "b.crv",
+      "line": 3,
+      "column": 1,
+      "channel": "parse",
+      "severity": "warning",
+      "includedBy": [
+       {
+        "line": 1,
+        "column": 1
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2337",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "Catalog broken-fragment-link: an extension that generates no ids changes nothing",
+   "summary": "a registered extension that generates no ids keeps the missing fragment reported",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.colorSwatch"
+    ]
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2338",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "Catalog broken-fragment-link: an extension that generates no ids changes nothing",
+   "summary": "a registered extension that writes links but no ids keeps the missing fragment reported",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.wiki"
+    ]
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2339",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "C2-X-079: While an extension that generates ids is registered, `broken-fragment-link` reports nothing (C2-W-150).",
+   "summary": "a registered code group, whose row is marked ids, suppresses the missing fragment",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.codeGroup"
+    ]
+   },
+   "expected": {
+    "notReported": [
+     "broken-fragment-link"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2340",
+   "clauses": [
+    "C2-X-079"
+   ],
+   "why": "C2-X-079: While an extension that generates ids is registered, `broken-fragment-link` reports nothing (C2-W-150).",
+   "summary": "a registered cite extension, whose row is marked ids, suppresses the missing fragment",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.cite"
+    ]
+   },
+   "expected": {
+    "notReported": [
+     "broken-fragment-link"
+    ]
+   },
+   "from": []
   }
  ]
 }
