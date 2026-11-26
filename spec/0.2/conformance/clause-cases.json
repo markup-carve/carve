@@ -91601,6 +91601,216 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2265",
+   "clauses": [
+    "C2-W-123",
+    "C2-W-034"
+   ],
+   "why": "C2-W-123: A region marker line closes the container by itself (C2-B-137), so before it the fence keeps its closer and one blank line stands between them (C2-W-034).",
+   "summary": "a region marker after a list keeps the closer of its last fence",
+   "kind": "format",
+   "input": "- a\n  ```\n\n  ```\n%%#endregion\n",
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  ```\n\n  ```\n\n%% #endregion\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2266",
+   "clauses": [
+    "C2-W-123",
+    "C2-W-034"
+   ],
+   "why": "C2-W-123: A region marker line closes the container by itself (C2-B-137), so before it the fence keeps its closer and one blank line stands between them (C2-W-034).",
+   "summary": "a supplied region marker after a list keeps the closer of its last fence",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "code_block",
+          "value": "x\n"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#endregion"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  ```\n  x\n  ```\n\n%% #endregion\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2267",
+   "clauses": [
+    "C2-W-123",
+    "C2-W-034"
+   ],
+   "why": "C2-W-123: A region marker line closes the container by itself (C2-B-137), so before it the fence keeps its closer and one blank line stands between them (C2-W-034).",
+   "summary": "a region marker after a description list keeps the closer of its last fence",
+   "kind": "format",
+   "input": ":: t\n: ```\n  x\n  ```\n%% #endregion\n",
+   "options": {},
+   "expected": {
+    "carve": ":: t\n: ```\n  x\n  ```\n\n%% #endregion\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2268",
+   "clauses": [
+    "C2-W-123",
+    "C2-B-113",
+    "C2-W-117"
+   ],
+   "why": "C2-W-123: An open fence keeps no empty line at the end of its value (C2-B-113): where the value ends in one, the writer reports `field-unspellable` at `value` (C2-W-117).",
+   "summary": "an open fence before a sibling line comment loses the empty line that ends its value",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "code_block",
+          "value": "x\n\n"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  ```\n  x\n\n%% c\n",
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/0/children/1/value",
+      "channel": "render-loss"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2269",
+   "clauses": [
+    "C2-W-123"
+   ],
+   "why": "C2-W-123: One fence is written without its closer: the last block of a list, a description list or a footnote body, when a line comment other than a region marker follows that container as its sibling.",
+   "summary": "an open fence before a sibling line comment whose value ends in a code line is no loss",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "code_block",
+          "value": "x\n"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "c"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  ```\n  x\n%% c\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }

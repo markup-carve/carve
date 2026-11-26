@@ -779,3 +779,8 @@ The ruling audit of 26 November replaced the ruling on #6465: C2-B-029 strips th
 #3598: the writer reports root `metadata.fields` with `field-unspellable` also beside a leading frontmatter node, which it still writes unchanged (C2-W-011, C2-A-193); C2-W-002 and C2-W-117 drop that exception. CC-501 now expects the loss. Measured on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`): all three write the source and report nothing.
 
 - `carve-js`, `carve-php` and `carve-rs`: report `/metadata/fields` beside frontmatter too (CC-501).
+
+#6727: the open fence of C2-W-123 is written only before a line comment other than a region marker. A region marker closes the container itself (C2-B-137), so the fence keeps its closer and one blank line stands before the marker (C2-W-034). Where the open fence is written and the value ends in an empty line, the writer reports `field-unspellable` at `value`. Clause cases CC-2265 to CC-2269. Measured on the same heads: all three write the open fence before a marker (CC-2265 to CC-2267 fail); for CC-2268 `carve-js` and `carve-rs` report the loss and `carve-php` reports `writer-refused`; CC-2269 passes everywhere.
+
+- `carve-js`, `carve-php` and `carve-rs`: close the fence before a region marker (CC-2265 to CC-2267).
+- `carve-php`: report `field-unspellable` for the lost empty line instead of `writer-refused` (CC-2268).
