@@ -784,3 +784,7 @@ The ruling audit of 26 November replaced the ruling on #6465: C2-B-029 strips th
 
 - `carve-js`, `carve-php` and `carve-rs`: close the fence before a region marker (CC-2265 to CC-2267).
 - `carve-php`: report `field-unspellable` for the lost empty line instead of `writer-refused` (CC-2268).
+
+## Ruling audit group 5 of 26 November: ids, tables of contents, numbering (#6812)
+
+C2-H-103 and C2-H-105 make a streaming renderer wait for every generated id before it writes a note mark (#6055). C2-X-077 counts the top-level headings for `carve.headingNumbers`, `carve.toc` and `carve.tocPlacement` whether `sections` is on or off, and leaves a cross-reference to a heading without a number to the core (#6531, EXT-113 to EXT-116). C2-H-123 reads `renderers` in both modes, and `mode` selects the channel (carve-js#5309, EXT-117 to EXT-119). Measured on `carve-js` `next2` `d4331d7`, `carve-php` `next2` `8fd0c4a` and `carve-rs` `next2` `afed9a7`: all seven cases pass in all three engines.

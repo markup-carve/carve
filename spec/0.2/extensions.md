@@ -271,6 +271,8 @@ These extensions follow the catalog status of the tabs section. Each with a matc
 
 **C2-X-070** In the `number-title` style, `carve.headingNumbers` replaces a heading cross-reference with a link that holds the number and a copy of the target's title. A heading cross-reference inside that copy is not expanded again: it stays a reference and renders as a plain link with its target's title, so copies do not nest and a title that refers to itself ends. With `{#a}` on `= A </#b>`, `{#b}` on `== B </#c>` and `{#c}` on `== C`, the reference in `A` writes `Section 1.1 - B C`, not `Section 1.1 - B Section 1.2 - C`.
 
+**C2-X-077** `carve.headingNumbers`, `carve.toc` and `carve.tocPlacement` count the headings that are children of the document, the ones C2-H-026 wraps in a section, whether `sections` is on or off. A heading inside a block quote, a div, a list or a footnote takes no number and no entry, and `carve.headingNumbers` also numbers no heading with the class `unnumbered` or a level below its option `minLevel`. A heading cross-reference whose target has no number is not rewritten: it renders as the core writes it (C2-H-096).
+
 **C2-X-071** The diagram presets are fenced renderers as `carve.fencedRender.mermaid` is, with one row per fence language: `abc`, `chart`, `d2`, `dot`, `graphviz`, `plantuml`, `puml`, `vega-lite` and `wavedrom`. The renderer writes the code text, without its last line break, in a `<pre>` whose class is `graphviz` for `dot` and `graphviz`, `plantuml` for `plantuml` and `puml`, and the language otherwise, with `role="img"` and an `aria-label` of that class, escaping `&` and `<`: `<pre class="d2" role="img" aria-label="d2">a -> b</pre>`. `chart` and `vega-lite` write a `<div>` with that class, role and label around `<script type="application/json">`, which holds the text with each `</` written as `<\/`. An authored `role`, `aria-label` or `aria-labelledby` replaces the generated one.
 
 **C2-X-072** A row of `data/extensions.json` marked `transform` has no matcher: its extension is a document transform (C2-X-053), or it sets what the core renderer writes, as `carve.semanticSpan` (C2-X-066) and `carve.smartQuotes` (C2-X-075) do. `--extensions` registers such a row as it registers any other, with its standard renderer on `render` and the default of each host option it takes (C2-T-010). The rows are `carve.autolink`, `carve.codeCallouts`, `carve.externalLinks`, `carve.glossary`, `carve.headingNumbers`, `carve.headingPermalinks`, `carve.headingReference`, `carve.index`, `carve.semanticSpan`, `carve.smartQuotes`, `carve.tabNormalize`, `carve.toc` and `carve.tocPlacement`. Registering `carve.glossary` registers `carve.term` with it, and `carve.index` registers `carve.indexTerm`; the transforms of `carve.glossary`, `carve.index` and `carve.tocPlacement` claim the directive of that name, and the transform of `carve.toc` inserts its table before the first block. `carve.codeCallouts` makes the nodes `carve.codeCallouts.code` and `carve.codeCallouts.list`, which have no row of their own.
@@ -338,6 +340,6 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | Resolution, rendering and equality | 13 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
-| Standard extensions of the 0.1 catalog | 16 |
+| Standard extensions of the 0.1 catalog | 17 |
 | Writing consistency | 1 |
-| **Total** | **76** |
+| **Total** | **77** |
