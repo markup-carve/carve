@@ -97179,6 +97179,208 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2455",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: A cell's `align` and `valign` are read as C2-H-015 reads an authored `align`: ASCII whitespace at the ends of the value is removed and its ASCII letters are folded to lower case. C2-X-078: Another value has no effect and is not written, and the cell takes that axis from its column's `aligns` or `valigns` entry, where there is one.",
+  "summary": "an invalid cell align or valign takes its column's entry, and a valid one is trimmed and folded (carve#6858)",
+  "kind": "render",
+  "input": "{aligns=right valigns=top}\n::: list-table\n- -{align=bogus valign=bogus} a\n  -{align=RIGHT} b\n  -{align=\" Left \"} c\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td style=\"text-align: right; vertical-align: top;\">a</td><td style=\"text-align: right;\">b</td><td style=\"text-align: left;\">c</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2456",
+  "clauses": [
+   "C2-X-078",
+   "C2-H-057"
+  ],
+  "why": "C2-X-078: A valid `align` is `left`, `right` or `center`, and a valid `valign` is `top`, `middle`, `bottom` or `baseline` (C2-A-092); a valid value, folded, is the cell's own mark for that axis (C2-B-213). C2-H-057: A resolved vertical alignment adds `vertical-align: VALUE;` after it, one space apart, and stands alone where the cell has no horizontal alignment: `style=\"vertical-align: top;\"`.",
+  "summary": "baseline is a valid valign of a cell (carve#6858)",
+  "kind": "render",
+  "input": "::: list-table\n- -{valign=baseline} a\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td style=\"vertical-align: baseline;\">a</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2457",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: Another value has no effect and is not written, and the cell takes that axis from its column's `aligns` or `valigns` entry, where there is one. C2-X-078: A cell's `align` and `valign` are read as C2-H-015 reads an authored `align`: ASCII whitespace at the ends of the value is removed and its ASCII letters are folded to lower case.",
+  "summary": "an invalid cell align without a column entry has no effect and is not written (carve#6858)",
+  "kind": "render",
+  "input": "::: list-table\n- -{align=justify valign=\" BOTTOM \"} a\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td style=\"vertical-align: bottom;\">a</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2458",
+  "clauses": [
+   "C2-X-078",
+   "C2-B-213"
+  ],
+  "why": "C2-X-078: A valid `align` is `left`, `right` or `center`, and a valid `valign` is `top`, `middle`, `bottom` or `baseline` (C2-A-092); a valid value, folded, is the cell's own mark for that axis (C2-B-213). C2-B-213: The cell's own mark for that axis (C2-B-182) wins.",
+  "summary": "a valid cell align and valign win over the column entries (carve#6858)",
+  "kind": "render",
+  "input": "{aligns=right,right valigns=top,top}\n::: list-table\n- -{align=center valign=Bottom} a\n  - b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td style=\"text-align: center; vertical-align: bottom;\">a</td><td style=\"text-align: right; vertical-align: top;\">b</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2459",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: `aligns`, `valigns` and `widths` set the columns as on a pipe table (C2-B-211, C2-B-212): the whole value is checked before any entry is applied and entries are compared as written, so `right,x` and `Right` set no column. A value that is not valid has no effect (C2-B-227), and none of the three is written on `<table>`, valid or not (C2-H-153).",
+  "summary": "an aligns list with one malformed entry sets no column and is not written (carve#6858)",
+  "kind": "render",
+  "input": "{aligns=right,x}\n::: list-table\n- - a\n  - b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2460",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: `aligns`, `valigns` and `widths` set the columns as on a pipe table (C2-B-211, C2-B-212): the whole value is checked before any entry is applied and entries are compared as written, so `right,x` and `Right` set no column. A value that is not valid has no effect (C2-B-227), and none of the three is written on `<table>`, valid or not (C2-H-153).",
+  "summary": "aligns entries are compared as written, so Right sets no column (carve#6858)",
+  "kind": "render",
+  "input": "{aligns=Right}\n::: list-table\n- - a\n  - b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2461",
+  "clauses": [
+   "C2-X-078",
+   "C2-B-211"
+  ],
+  "why": "C2-X-078: `aligns`, `valigns` and `widths` set the columns as on a pipe table (C2-B-211, C2-B-212): the whole value is checked before any entry is applied and entries are compared as written, so `right,x` and `Right` set no column. A value that is not valid has no effect (C2-B-227), and none of the three is written on `<table>`, valid or not (C2-H-153). C2-B-211: `valigns` is the same list for the vertical axis: an entry is `top`, `middle` or `bottom` and sets `valign` of that `table_column`.",
+  "summary": "baseline is no valigns entry, so the list sets no column (carve#6858)",
+  "kind": "render",
+  "input": "{valigns=baseline}\n::: list-table\n- - a\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2462",
+  "clauses": [
+   "C2-X-078",
+   "C2-B-212"
+  ],
+  "why": "C2-X-078: `aligns`, `valigns` and `widths` set the columns as on a pipe table (C2-B-211, C2-B-212): the whole value is checked before any entry is applied and entries are compared as written, so `right,x` and `Right` set no column. A value that is not valid has no effect (C2-B-227), and none of the three is written on `<table>`, valid or not (C2-H-153). C2-B-212: An empty entry or any other entry makes the whole value invalid, so that it sets no column.",
+  "summary": "a widths list with one malformed entry sets no width and is not written (carve#6858)",
+  "kind": "render",
+  "input": "{widths=30,x}\n::: list-table\n- - a\n  - b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2463",
+  "clauses": [
+   "C2-X-078"
+  ],
+  "why": "C2-X-078: `aligns`, `valigns` and `widths` set the columns as on a pipe table (C2-B-211, C2-B-212): the whole value is checked before any entry is applied and entries are compared as written, so `right,x` and `Right` set no column. A value that is not valid has no effect (C2-B-227), and none of the three is written on `<table>`, valid or not (C2-H-153).",
+  "summary": "valid aligns, valigns and widths set the columns and are not written (carve#6858)",
+  "kind": "render",
+  "input": "{aligns=\" right , center\" valigns=top,bottom widths=25,75}\n::: list-table\n- - a\n  - b\n:::\n",
+  "options": {
+   "extensions": [
+    "carve.listTable"
+   ],
+   "renderers": {
+    "carve.listTable": "standard"
+   }
+  },
+  "expected": {
+   "html": "<table>\n  <colgroup>\n    <col style=\"width: 25%;\">\n    <col style=\"width: 75%;\">\n  </colgroup>\n  <tbody>\n    <tr><td style=\"text-align: right; vertical-align: top;\">a</td><td style=\"text-align: center; vertical-align: bottom;\">b</td></tr>\n  </tbody>\n</table>"
+  },
+  "from": []
  }
  ]
 }
