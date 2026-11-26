@@ -1089,7 +1089,7 @@ Example 52 (unverified)
 
 **C2-M-046** `<br>` is a `hard_break`. `<wbr>` is dropped and reported with `import-element-dropped`: it marks a place where a line may break and renders nothing.
 
-**C2-M-047** `<kbd>` is a `span` with the key `kbd` and an empty value, and `<time>` a span with the key `time` and the value of `datetime`, or an empty value when it has none (C2-H-075). `<abbr>` is an `abbreviation` when an abbreviation template (C2-H-187) defines its text with its `title` as the expansion and it holds no element; otherwise it is a span with the key `abbr` and the value of `title`, or an empty value when it has none.
+**C2-M-047** `<kbd>` is a `span` with the key `kbd` and an empty value, and `<time>` a span with the key `time` and the value of `datetime`, or an empty value when it has none (C2-H-075). `<abbr>` is an `abbreviation` when an abbreviation template (C2-H-187) defines its text with its `title` as the expansion and it holds no element; otherwise it is a span with the key `abbr` and the value of `title`, or an empty value when it has none. An authored attribute of the span's element with the name of that key, as `abbr` on `<abbr>`, is the key in upper case, `ABBR`, `KBD` or `TIME`, with its value, at its place among the other keys and not reported: a span keeps that spelling apart from the key the element gives (C2-A-035), and a render writes it as an attribute that reads back the same way (C2-H-075).
 
 Example 46 (verified)
 
@@ -1233,7 +1233,7 @@ Inline ![I](/i.png){width=10} and gone
 
 ## Attributes
 
-**C2-M-052** Each attribute of an element is read by the row of `attributes` that matches its name: a row whose match is `name`, `prefix` or `reserved`, and only when none does, the row `*`. Where the row says `key`, the attribute is a key of `attrs` with its name and its value as they stand, in the order the parser gives.
+**C2-M-052** Each attribute of an element is read by the row of `attributes` that matches its name: a row whose match is `name`, `prefix` or `reserved`, and only when none does, the row `*`. Where the row says `key`, the attribute is a key of `attrs` with its name and its value as they stand, in the order the parser gives, except the attribute that C2-M-047 spells in upper case.
 
 **C2-M-053** The attributes that a clause of this document reads for an element, such as `href` on `<a>` or `start` on `<ol>`, are fields of its node and are not kept as keys. A `class` that a convention reads is not kept (C2-M-035).
 
