@@ -97807,6 +97807,117 @@
    "diagnosticsOrdered": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2480",
+  "clauses": [
+   "C2-A-214",
+   "C2-A-029"
+  ],
+  "why": "C2-A-214: A range may carry `data` under C2-A-029, declared on the root or envelope of the tree, and a reader keeps unknown optional `data` on a range. C2-A-029: Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON.",
+  "summary": "a tree reader accepts an annotation range with declared data",
+  "kind": "tree",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "extensions": [
+    {
+     "name": "x.note",
+     "version": "1",
+     "required": false,
+     "slots": []
+    }
+   ],
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "hello"
+      }
+     ]
+    }
+   ]
+  },
+  "annotations": {
+   "ranges": [
+    {
+     "id": "r1",
+     "start": {
+      "path": "/children/0",
+      "offset": 0
+     },
+     "end": {
+      "path": "/children/0",
+      "offset": 5
+     },
+     "data": {
+      "x.note": {
+       "by": "a"
+      }
+     }
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "accepted": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2481",
+  "clauses": [
+   "C2-A-029",
+   "C2-A-214"
+  ],
+  "why": "C2-A-029: Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. C2-A-214: A range may carry `data` under C2-A-029, declared on the root or envelope of the tree, and a reader keeps unknown optional `data` on a range.",
+  "summary": "a tree reader refuses an annotation range whose data key has no declaration",
+  "kind": "tree",
+  "tree": {
+   "type": "document",
+   "astVersion": "2.0",
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "hello"
+      }
+     ]
+    }
+   ]
+  },
+  "annotations": {
+   "ranges": [
+    {
+     "id": "r1",
+     "start": {
+      "path": "/children/0",
+      "offset": 0
+     },
+     "end": {
+      "path": "/children/0",
+      "offset": 5
+     },
+     "data": {
+      "x.note": {
+       "by": "a"
+      }
+     }
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "refusal": {
+    "error": "CarveTreeError",
+    "path": "/ranges/0/data"
+   }
+  },
+  "from": []
  }
  ]
 }

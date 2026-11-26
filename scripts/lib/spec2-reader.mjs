@@ -277,6 +277,11 @@ export function readerChecks (spec) {
       for (const [index, range] of (annotations.ranges ?? []).entries()) {
         if (ranges.has(range.id)) add(`/ranges/${index}/id`, 'C2-A-203', `range id ${range.id} occurs twice`)
         ranges.set(range.id, range)
+        // C2-A-214: range data follows C2-A-029 and C2-A-189.
+        for (const [name, value] of Object.entries(isObject(range.data) ? range.data : {})) {
+          if (!declared.has(name)) add(`/ranges/${index}/data`, 'C2-A-029', `the data key ${name} has no declaration`)
+          if (nodeShaped(value)) add(`/ranges/${index}/data/${name}`, 'C2-A-189', 'a node-shaped object inside data')
+        }
         for (const side of ['start', 'end']) {
           const endpoint = range[side]
           const path = `/ranges/${index}/${side}`
