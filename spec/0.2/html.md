@@ -1868,11 +1868,11 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 **C2-H-102** *Definitions.* Link, footnote and abbreviation definitions stand anywhere at the top level, also after their uses. A streaming renderer buffers every leaf that holds a reference or, for abbreviations, every leaf, until the end of the document, unless the caller supplies the definitions in advance.
 
-**C2-H-103** *Id collision counter.* The set of authored ids of the whole document is needed before the first generated id is final (C2-H-024). A streaming renderer buffers from the first heading without an authored id to the end of the document, or runs a first pass that collects the authored ids.
+**C2-H-103** *Id collision counter.* The set of authored ids of the whole document is needed before the first generated id is final (C2-H-024), and every other generated id of the document before the first note id is final (C2-H-202). A streaming renderer buffers from the first heading without an authored id, or the first note mark, to the end of the document, or runs a first pass that collects the authored ids and allocates the generated ids.
 
 **C2-H-104** *Forward references.* A heading reference, a cross-reference and a caption number in a cross-reference can point at a block further down. They resolve only at the end of the document.
 
-**C2-H-105** *Footnotes.* The number of a note is known at its first reference (C2-H-087), so a reference outside link text can be written at once when the definitions are known. A reference inside link text waits for the link's closing tag (C2-H-088). The note bodies and their backlinks are buffered to the place of the section, and a `::: footnotes` div above the last reference has to wait for the end.
+**C2-H-105** *Footnotes.* The number of a note is known at its first reference (C2-H-087), but the ids of its mark and its `href` are final only when every id of C2-H-103 is known, so a reference outside link text can be written at once only when the definitions are known and a first pass has allocated the ids. A reference inside link text waits for the link's closing tag (C2-H-088). The note bodies and their backlinks are buffered to the place of the section, and a `::: footnotes` div above the last reference has to wait for the end.
 
 **C2-H-106** *Tightness.* Whether a list is loose is known only when the list closes (C2-B-191). A streaming renderer buffers each top-level list as a whole, because the first item's `<p>` depends on a blank line that may follow the last item but one.
 
