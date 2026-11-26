@@ -235,7 +235,7 @@ function positionFailures(tree, source, files = {}) {
   }, (nodes, path, ancestors) => {
     const positioned = nodes.filter(node => isNode(node) && node.pos)
     const owner = ancestors.at(-1)
-    if (path.endsWith('/children') && isSelection(owner) && appendedSplit(positioned, owner)) return
+    if (path.endsWith('/children') && isSelection(owner) && appendedSplit(positioned, owner, tables.get(owner.file)?.bytes)) return
     found.push(...orderFailures(positioned, path))
   })
   return found
@@ -260,6 +260,9 @@ function orderFailures(nodes, path) {
   return found
 }
 
+const contiguous = (nodes, bytes) => !bytes || nodes.every((node, at) => at === 0 ||
+  /^[ \t\r\n]*$/.test(bytes.subarray(nodes[at - 1].pos.endOffset, node.pos.startOffset).toString('utf8')))
+
 // C2-N-020, C2-N-031: the definitions a line, region or section selection appends after the selected blocks.
 const DEFINITIONS = new Set(['link_reference_definition', 'footnote', 'abbreviation_def', 'citation_definition', 'snippet_definition'])
 const isSelection = (node) => node?.type === 'include' && (node.section !== undefined || node.options?.lines !== undefined || node.options?.region !== undefined)
@@ -268,9 +271,10 @@ const isSelection = (node) => node?.type === 'include' && (node.section !== unde
  * C2-A-145: a selected block and an appended definition are not compared. The list passes when it splits into
  * the selected blocks and a tail of definitions, each part ordered, with every definition of the tail outside
  * the span of the selected blocks, since an appended definition's first line is not selected. Under `lines` the
- * selected blocks start on a selected line and the definitions do not.
+ * selected blocks start on a selected line and the definitions do not. Under a section the selected blocks are
+ * one run of the file, so only blank space stands between two of them.
  */
-function appendedSplit(nodes, include) {
+function appendedSplit(nodes, include, bytes) {
   const [first, last] = include.options?.lines?.split('-').map(Number) ?? []
   const picked = (node) => node.pos.startLine >= first && node.pos.startLine <= last
   for (let split = nodes.length - 1; split >= 0 && DEFINITIONS.has(nodes[split].type); split--) {
@@ -280,6 +284,7 @@ function appendedSplit(nodes, include) {
     const start = selected[0]?.pos.startOffset
     const end = selected.at(-1)?.pos.endOffset
     if (first !== undefined && (!selected.every(picked) || appended.some(picked))) continue
+    if (include.section !== undefined && !contiguous(selected, bytes)) continue
     if (appended.every(node => !selected.length || node.pos.endOffset <= start || node.pos.startOffset >= end)) return true
   }
   return false
