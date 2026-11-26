@@ -142,7 +142,11 @@ fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
 }
 
 fn invoke(req: Value) -> Result<Value, Value> {
-    let out = decode(&carve::api::json::call(&req.to_string()))?;
+    invoke_text(&req.to_string())
+}
+
+fn invoke_text(req: &str) -> Result<Value, Value> {
+    let out = decode(&carve::api::json::call(req))?;
     match out.get("ok") {
         Some(ok) => Ok(ok.clone()),
         None => {
@@ -176,6 +180,10 @@ fn tree_from(source: &str) -> Result<Value, Value> {
 fn patch_case(c: &Value, kind: &str) -> Result<Value, Value> {
     let source = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
     if kind == "fingerprint" {
+        // The JSON text goes to the engine as written, so its numbers keep their spelling (C2-A-219).
+        if let Some(text) = c["json"].as_str() {
+            return invoke_text(&format!(r#"{{"call":"treeFingerprint","tree":{text}}}"#));
+        }
         return if c["of"] == "tree" {
             invoke(json!({"call":"treeFingerprint","tree":tree_from(source)?}))
         } else { call(c, "sourceFingerprint", json!({})) };

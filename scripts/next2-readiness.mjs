@@ -321,6 +321,7 @@ function jsRun(c) {
     if (kind === 'diff' || kind === 'patch' || kind === 'fingerprint') {
       if (!treePatch) return { unsupported: 'diffTree, applyPatch and the fingerprints are not offered' }
       const tree = source => js.parse(source, { positions: false })
+      if (kind === 'fingerprint' && c.json !== undefined) return { fingerprint: treePatch.treeFingerprint(js.decodeTree(c.json)) }
       if (kind === 'fingerprint') return { fingerprint: c.of === 'tree' ? treePatch.treeFingerprint(tree(input)) : treePatch.sourceFingerprint(input) }
       if (kind === 'diff') {
         const patch = treePatch.diffTree(tree(input), tree(c.inputAfter))

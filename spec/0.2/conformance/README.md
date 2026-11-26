@@ -64,7 +64,7 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `position` | `input` or `inputBytes`, `offset` | `positionOf` | `line`, `column`, `refusal` |
 | `diff` | `input` and `inputAfter`, both parsed with positions off | `diffTree`, then `applyPatch` | `applies`: the patch applied to the first tree gives the second; `patch` only where C2-T-043 fixes it, the empty list for two equal trees |
 | `patch` | `input`, parsed with positions off, `patch`, and `fingerprintOf`, a source whose tree gives the `fingerprint` | `applyPatch` | `children`, `refusal` |
-| `fingerprint` | `input` or `inputBytes`; `of: "tree"` hashes its tree parsed with positions off | `sourceFingerprint`, or `treeFingerprint` | `fingerprint` |
+| `fingerprint` | `input` or `inputBytes`; `of: "tree"` hashes its tree parsed with positions off; or `json`, JSON text whose tree from `decodeTree` it hashes | `sourceFingerprint`, or `treeFingerprint` | `fingerprint` |
 | `export` | `input`, and `to`: `markdown`, `plain` or `ansi` | the export of `to` (C2-T-003) on the tree of `parse(input)` | `output`, the exported text; diagnostics, `refusal` |
 
 `inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options"). A file entry with `{"error":"outside_root"}` or `{"error":"unreadable"}` makes the resolver return that cause for the path, so include failure cases do not depend on filesystem permissions or the runner's directory.

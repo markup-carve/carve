@@ -32,7 +32,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `lint` | Carve source, `rules`, `platforms`, `upgrade`, `includes`, `extensions`, `headingIds` | the record | C2-W-103, C2-W-109, C2-W-156, C2-N-085, C2-T-042 |
 | `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels`, `adapter`, `listTable` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100, C2-M-102, C2-M-112 |
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
-| `encodeTree` | a tree | its JSON text | C2-A-012, C2-A-217 |
+| `encodeTree` | a tree | its JSON text | C2-A-012, C2-A-217, C2-A-219 |
 | `encodeEnvelope` | a tree | the JSON text of its envelope | C2-A-012 |
 | `decodeTree` | the JSON text of a 2.0 tree or envelope, `extensions`, optionally the annotation-range sidecar | the tree | C2-A-188 |
 | `validateTree` | a tree, `extensions`, optionally the annotation-range sidecar | nothing, or the refusal | C2-A-188 |
