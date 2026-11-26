@@ -258,8 +258,11 @@ function catalogOptions(options) {
   const seen = new Set(options.extensions.filter(name => !catalogNamed(name)).map(name => typeof name === 'string' ? name : name.name))
   const extensions = []
   const transforms = [...(options.transforms ?? [])]
+  const listed = new Set()
   for (const name of options.extensions) {
     if (!catalogNamed(name)) { extensions.push(name); continue }
+    if (listed.has(name)) continue
+    listed.add(name)
     const choice = choices[name]
     if (renderers[name] === choice) delete renderers[name]
     const hostOptions = choice?.standard ?? {}
