@@ -1,6 +1,6 @@
 # Snippets
 
-Carve 0.2 lets you name a short piece of inline text once and repeat it anywhere in the document. Define it on one line with `{$name}:` and use it with `{{ $name }}`.
+Carve 0.2 lets you name a short piece of inline text once and repeat it anywhere in the document. Define it on one line with `{$name}:` and use it with <code v-pre>{{ $name }}</code>.
 
 <!-- carve-sample {"skip":"The pinned engine has not yet implemented snippets."} -->
 ````carve
@@ -27,11 +27,11 @@ The first definition of a name wins. A later one reports `duplicate-snippet`. Sn
 
 ## Use
 
-`{{ $name }}` inside a sentence copies the value in place. Alone on its own line, after a blank line, it becomes its own paragraph. On a line that continues an open paragraph it stays inline. In a table cell a use is always inline.
+<code v-pre>{{ $name }}</code> inside a sentence copies the value in place. Alone on its own line, after a blank line, it becomes its own paragraph. On a line that continues an open paragraph it stays inline. In a table cell a use is always inline.
 
-A use may stand before its definition, and a definition may use another snippet. A use that cannot be expanded is written as its own text `{{ $name }}` and reported: `snippet-unresolved` for an unknown name, `snippet-cycle` for a snippet that reaches itself, `snippet-depth` past 16 nested snippets and `snippet-node-budget` past 100,000 copied nodes.
+A use may stand before its definition, and a definition may use another snippet. A use that cannot be expanded is written as its own text <code v-pre>{{ $name }}</code> and reported: `snippet-unresolved` for an unknown name, `snippet-cycle` for a snippet that reaches itself, `snippet-depth` past 16 nested snippets and `snippet-node-budget` past 100,000 copied nodes.
 
-To write the text `{{ $name }}` literally, escape the first brace: `\{{ $name }}`. `{{$name}}` with no spaces, or with an option such as `@shift:1`, is no use.
+To write the text <code v-pre>{{ $name }}</code> literally, escape the first brace: <code v-pre>\{{ $name }}</code>. <code v-pre>{{$name}}</code> with no spaces, or with an option such as `@shift:1`, is no use.
 
 ## Includes and footnotes
 
@@ -41,7 +41,7 @@ Uses and definitions work across [included files](/include-files). An include th
 
 `unused-snippet` reports, as a hint, a definition no use names. `definition-in-container` reports a definition line inside a list, quote or div, which stays text.
 
-`{{ #id }}`, with `#` in place of `$`, is reserved: it renders as text and lint reports `reserved-syntax`.
+<code v-pre>{{ #id }}</code>, with `#` in place of `$`, is reserved: it renders as text and lint reports `reserved-syntax`.
 
 ## Round trip
 
