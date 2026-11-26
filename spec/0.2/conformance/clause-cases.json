@@ -90688,6 +90688,213 @@
     "diagnosticsComplete": true
    },
    "from": []
+  },
+  {
+   "id": "CC-2234",
+   "clauses": [
+    "C2-M-109",
+    "C2-M-110",
+    "C2-M-065"
+   ],
+   "why": "C2-M-109: The comments of a dropped element take its place, in their order.",
+   "summary": "with rawHtml on, a comment of the wrapper the note pass drops is a raw block in its place",
+   "kind": "import",
+   "html": "<p>Ref<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> x.</p>\n<div class=\"footnotes\"><!-- keep -->\n<hr />\n<ol>\n<li id=\"fn1\"><p>Note.<a href=\"#fnref1\">back</a></p></li>\n</ol>\n</div>\n<p>after</p>",
+   "options": {
+    "adapter": "word",
+    "rawHtml": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Ref"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " x."
+       }
+      ]
+     },
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "<!-- keep -->\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "after"
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Note."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Ref[^1] x.\n\n```=html\n<!-- keep -->\n```\n\nafter\n\n[^1]: Note.\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2235",
+   "clauses": [
+    "C2-M-109",
+    "C2-M-110",
+    "C2-M-066"
+   ],
+   "why": "C2-M-109: The comments of a dropped element take its place, in their order.",
+   "summary": "with rawHtml off, a comment of the wrapper the note pass drops is reported as dropped",
+   "kind": "import",
+   "html": "<p>Ref<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> x.</p>\n<div class=\"footnotes\"><!-- keep -->\n<hr />\n<ol>\n<li id=\"fn1\"><p>Note.<a href=\"#fnref1\">back</a></p></li>\n</ol>\n</div>\n<p>after</p>",
+   "options": {
+    "adapter": "word"
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Ref"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " x."
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "after"
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Note."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Ref[^1] x.\n\nafter\n\n[^1]: Note.\n",
+    "diagnostics": [
+     "import-element-dropped"
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2236",
+   "clauses": [
+    "C2-M-109",
+    "C2-M-065"
+   ],
+   "why": "C2-M-109: The comments of a dropped element take its place, in their order.",
+   "summary": "the comments of nested wrappers the note pass drops keep their order",
+   "kind": "import",
+   "html": "<p>Ref<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> x.</p>\n<section><!-- a -->\n<div class=\"footnotes\"><!-- b -->\n<hr />\n<ol>\n<li id=\"fn1\"><p>Note.<a href=\"#fnref1\">back</a></p></li>\n</ol>\n</div>\n</section>",
+   "options": {
+    "adapter": "google-docs",
+    "rawHtml": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Ref"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " x."
+       }
+      ]
+     },
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "<!-- a -->\n"
+     },
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "<!-- b -->\n"
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Note."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Ref[^1] x.\n\n```=html\n<!-- a -->\n```\n\n```=html\n<!-- b -->\n```\n\n[^1]: Note.\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }

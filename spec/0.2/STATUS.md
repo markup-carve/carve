@@ -752,4 +752,7 @@ The ruling on #6791 documents line numbers and line highlighting as attributes, 
 
 The audit of the ruling on #6605 keeps the value the ruling dropped: an authored attribute of `<abbr>`, `<kbd>` or `<time>` with the name of the key the element gives is the key in upper case, `ABBR`, `KBD` or `TIME`, at its place among the other keys and not reported (C2-M-047, C2-M-052). The span keeps that spelling apart from the lower-case key (C2-A-035), and its render reads back the same way (C2-H-075). Clause cases CC-2230 to CC-2233. Measured on the `next2` heads `carve-js` `3887090a`, `carve-php` `8fd0c4af` and `carve-rs` `afed9a76`: `carve-js` and `carve-rs` drop the attribute and report `import-attribute-dropped`, and `carve-php` refuses the tree with `duplicate-attribute-key`.
 
-- `carve-js`, `carve-php` and `carve-rs`: keep the colliding attribute as the upper-case key.
+
+The audit of #6235 keeps the comments of a wrapper the note pass drops: they take its place (C2-M-109), and the mapping reads them, a raw block with `rawHtml` on and an `import-element-dropped` report with it off (C2-M-110). Clause cases CC-2234 to CC-2236. Measured on the same heads: all three engines drop the comments with the wrapper and report nothing.
+
+- `carve-js`, `carve-php` and `carve-rs`: keep the colliding attribute as the upper-case key, and move the comments of a dropped wrapper to its place.

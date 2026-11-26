@@ -1791,9 +1791,9 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 **C2-M-108** Before the first note that leaves its place, every `<hr>` and `<br>` among its preceding siblings is dropped up to the first that is no whitespace, comment, `<hr>` or `<br>`, and when there is none, the same is done for the preceding siblings of its parent, up to the `<body>`: that is the separator a word processor writes above its notes.
 
-**C2-M-109** An element that holds only whitespace, comments, `<hr>` and `<br>` after the notes have left it is dropped, and so is its parent when that one is left in the same way, up to the `<body>`.
+**C2-M-109** An element that holds only whitespace, comments, `<hr>` and `<br>` after the notes have left it is dropped, and so is its parent when that one is left in the same way, up to the `<body>`. The comments of a dropped element take its place, in their order.
 
-**C2-M-110** The pass reports nothing. The references, the backlinks, the separator and the elements it empties are the navigation and the layout of the export, and the attributes of the notes and of the replaced references are its ids and its styling. Every other element and attribute of the input is read by the mapping and reported as in any import.
+**C2-M-110** The pass reports nothing. The references, the backlinks, the separator and the elements it empties are the navigation and the layout of the export, and the attributes of the notes and of the replaced references are its ids and its styling. Every other element, comment and attribute of the input is read by the mapping and reported as in any import, so a comment the pass moves out of a dropped element is a raw node with `rawHtml` on and is reported with `import-element-dropped` with it off (C2-M-065, C2-M-066).
 
 Example 65 (unverified, import option `adapter` set to `word`)
 
