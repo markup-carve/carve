@@ -799,3 +799,13 @@ The audit of #6499 separates the Djot gate from the 0.1 gate: every `djot-` row 
 
 - `carve-js`: the new defaults arrive with the spec pin.
 - `carve-php` and `carve-rs`: set the thirteen `djot-` rows to `off` in their rule lists.
+
+The audit of #6768 specifies the options that UPGRADING names: the library call of `carve.smartQuotes` takes the four quote glyphs and that of `carve.tabNormalize` a `width` (C2-X-073, C2-X-075). They are no renderer options of the catalog rows, so `--extension-options` refuses them and the command line has no spelling for them. Clause cases CC-2295 to CC-2297. All three engines already behave so; no port.
+
+The audit of carve-rs#4838 settles two conflicts. C2-T-008 refuses an unlisted flag unless the engine offers it as a further flag of C2-T-003, which now names the Rust engine's `--quote-locale`. The renderer option `locale` of `carve.smartQuotes` takes any string (the new schema field `open`), matched as C2-X-075 says: ASCII case ignored, `_` read as `-`, the value, then its language, then `en`. CC-2148 now expects `xx` to render `“a”`; new clause cases CC-2279 to CC-2281. Measured on the same heads: the three CLIs refuse every locale outside the row through `--extension-options`, while the three libraries and carve-rs `--quote-locale` already fall back.
+
+- `carve-js`, `carve-php` and `carve-rs`: take any string for `locale` in `--extension-options` and the `renderers` option, and fall back as the libraries do.
+
+The audit of #6771 asks for the rendering contract of `carve.listTable`, which C2-B-188 left to the extension. C2-X-078 states it: which div the transform claims, the attributes and caption of `<table>`, rows and cells, padding of short rows, head and footer rows, header columns and the key `header`, the cell keys that are read and not written, and block cells. Clause cases CC-2282 to CC-2293. Measured on the same heads: `carve-js`, `carve-php` and `carve-rs` render all twelve alike, except that `carve-rs` writes a second `style` attribute for `align` beside an authored `style` (CC-2289).
+
+- `carve-rs`: append the alignment declaration to an authored `style` of a list-table cell (C2-H-057), as the pipe table does.

@@ -91993,6 +91993,94 @@
    "html": "<img src=\"x\" alt=\"t\">"
   },
   "from": []
- }
+ },
+  {
+   "id": "CC-2295",
+   "clauses": [
+    "C2-X-075",
+    "C2-T-010"
+   ],
+   "why": "C2-X-075: `width` and the four glyphs are no renderer options of the rows, so `--extension-options` refuses them (C2-T-010).",
+   "summary": "a quote glyph is no renderer option of carve.smartQuotes on the command line (carve#6768)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "\"a\" b\n"
+    }
+   },
+   "args": [
+    "render",
+    "--smart-typography",
+    "--extensions",
+    "[\"carve.smartQuotes\"]",
+    "--extension-options",
+    "{\"carve.smartQuotes\":{\"openDoubleQuote\":\"«\"}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2296",
+   "clauses": [
+    "C2-X-075",
+    "C2-X-073",
+    "C2-T-010"
+   ],
+   "why": "C2-X-075: `width` and the four glyphs are no renderer options of the rows, so `--extension-options` refuses them (C2-T-010).",
+   "summary": "width is no renderer option of carve.tabNormalize on the command line (carve#6768)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "```\n\ta\n```\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabNormalize\"]",
+    "--extension-options",
+    "{\"carve.tabNormalize\":{\"width\":4}}",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2297",
+   "clauses": [
+    "C2-X-073",
+    "C2-X-072"
+   ],
+   "why": "C2-X-073: `carve.tabNormalize` replaces each tab in the value of a code block or a code span with two spaces",
+   "summary": "--extensions registers carve.tabNormalize with two spaces (carve#6768)",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "```\n\ta\n```\n"
+    }
+   },
+   "args": [
+    "render",
+    "--extensions",
+    "[\"carve.tabNormalize\"]",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<pre><code>  a\n</code></pre>\n",
+    "stderrCategory": null
+   },
+   "from": []
+  }
  ]
 }
