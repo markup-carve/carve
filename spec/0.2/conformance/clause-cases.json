@@ -88111,6 +88111,340 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2177",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item that holds no block after C2-M-069 holds one line comment with an empty value, as a parse of `- %%` gives, and nothing is reported.",
+   "summary": "an empty cell's item holds an empty line comment",
+   "kind": "import",
+   "html": "<table><tr><td></td><td><ul><li>a</li></ul></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - %%\n  - - a\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2178",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item that holds no block after C2-M-069 holds one line comment with an empty value, as a parse of `- %%` gives, and nothing is reported.",
+   "summary": "a row of empty cells gives an empty line comment in each item",
+   "kind": "import",
+   "html": "<table><tr><td></td><td></td></tr><tr><td><ul><li>a</li></ul></td><td>b</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - %%\n  - %%\n- - - a\n  - b\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2179",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item that holds no block after C2-M-069 holds one line comment with an empty value, as a parse of `- %%` gives, and nothing is reported.",
+   "summary": "an empty first and last cell each hold an empty line comment",
+   "kind": "import",
+   "html": "<table><tr><td></td><td><ul><li>a</li></ul></td><td></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - %%\n  - - a\n  - %%\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }
