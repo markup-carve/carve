@@ -705,6 +705,18 @@ A ruling of 24 November decides #6525: the spaces at the ends of a code span are
 | --- | --- | --- | --- |
 | U-441 | A code span padded on both sides, <code>a &#96; x &#96; b</code> **SILENT** | The spaces stay: `<p>a <code> x </code> b</p>`; 0.1 wrote `<p>a <code>x</code> b</p>`. <code>&#96;&#96; &#96;x&#96; &#96;&#96;</code> still holds <code>&#96;x&#96;</code>, as in 0.1. `carve fmt` writes a padded span as it stands (C2-W-077). | Write the span without the spaces 0.1 removed, <code>a &#96;x&#96; b</code>; a value that starts with a space and a backtick or ends with a backtick and a space has no spelling and is reported. `carve lint --upgrade`, or a document that declares `carve: 0.1`, reports each such span with `code-span-padding-kept` (C2-W-156); rewrite |
 
+### Ruling of 26 November 2026: revision metadata
+
+A ruling of 26 November decides #6788: an editorial comment takes a glued attribute block, and the keys `author` and `datetime` annotate a revision on an insertion, a deletion or an editorial comment (C2-I-063, C2-H-210).
+
+| You write | 0.1 | 0.2 |
+| --- | --- | --- |
+| `{#note#}{.k}` | `{.k}` is text | the block attaches: `<span class="critic-comment k">note</span>` |
+| `{+x+}{author=Ann}` | `<ins author="Ann">x</ins>` | `<ins data-author="Ann">x</ins>`; the HTML import reads `data-author` back as `author` |
+| `{#c#}{author=Ann datetime=2026-11-21}` | the block is text | `data-author` and `data-datetime` on the comment span |
+
+`cite` on an insertion or a deletion stays the URL of a text that explains the change, as in HTML; write the author in `author`.
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.

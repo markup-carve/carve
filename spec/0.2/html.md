@@ -1418,6 +1418,8 @@ Example 80 (unverified)
 
 **C2-H-142** Three shapes reach the renderer only in a supplied tree (C2-A-175). `small_caps` is `<span class="smallcaps">` around its content. `ruby` is `<ruby>` that holds, for each pair, the base, then `<rp>(</rp>`, `<rt>` around the annotation and `<rp>)</rp>`. A `section` node is `<section>` around its blocks, indented like every container.
 
+**C2-H-210** The revision keys `author` and `datetime` (C2-I-063) map on three nodes. On `<ins>` and `<del>`, `author` is written as `data-author`, and `datetime` and `cite`, which are HTML attributes of these elements, are written as they are. On the span of a `critic_comment`, `author` and `datetime` are written as `data-author` and `data-datetime`. Each keeps its place among the attributes. An authored `data-author` or `data-datetime` wins over the derived one, which is then not written (C2-H-013). The keys match in lower case only. On every other node they are ordinary attributes.
+
 ## Links, images and references
 
 **C2-H-079** A link is `<a href="URL">` around its content, with `title` when it has one. An autolink is a link whose content is its body as written. The destination of an email autolink is `mailto:` followed by the address, and its content is the address.
@@ -2793,7 +2795,7 @@ ab
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 3 |
-| Inline elements | 8 | 0 | 1 | 2 |
+| Inline elements | 9 | 0 | 1 | 2 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 9 | 0 | 3 | 4 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 1 |
@@ -2804,6 +2806,6 @@ ab
 | Options | 29 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 3 |
-| **Total** | **201** | **6** | **33** | **53** |
+| **Total** | **202** | **6** | **33** | **53** |
 
-The document has 201 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 202 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.

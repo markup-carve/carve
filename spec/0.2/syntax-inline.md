@@ -499,7 +499,7 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-035** A valid attribute block is one atom wherever it stands. One that attaches to nothing is printed as written: nothing inside it is transformed, smart quotes included.
 
-**C2-I-036** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span without a raw marker (C2-I-021), a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, and every closed emphasis, strong or braced span.
+**C2-I-036** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span without a raw marker (C2-I-021), a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, an editorial comment, and every closed emphasis, strong or braced span.
 
 Example 124 (generated)
 
@@ -997,7 +997,9 @@ A braced form is a mark between braces. It works inside a word. The node names a
 
 **C2-I-062** A replacement is a deletion with an insertion glued to it. It is two nodes. There is no arrow form: `~>` is text, and the braced tilde is always strike.
 
-**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom. The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text.
+**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom and a host: a glued attribute block attaches to it (C2-I-036). The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text.
+
+Revision metadata is a convention, not a rule. A revision is annotated with the keys `author`, a name or an address as written, and `datetime`, a time in ISO 8601, on an insertion, a deletion or an editorial comment: `{+12+}{author=Ann datetime=2026-11-20T10:00Z}`. The key is `datetime`, not `time`, which names a span element (C2-H-075). On an insertion and a deletion, `cite` is the URL of a text that explains the change, as in HTML, and no author. A replacement is two nodes (C2-I-062), so each side carries its own block. HTML output and import map these keys under C2-H-210 and C2-M-044.
 
 A span no longer shields its content: a delimiter inside a braced span can close a span that opened outside it. An author escapes that delimiter.
 

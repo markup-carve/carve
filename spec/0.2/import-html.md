@@ -1081,7 +1081,7 @@ Example 52 (unverified)
 
 ## Inline elements
 
-**C2-M-044** The inline elements with a Carve counterpart map as `elements` gives: `<em>` and `<i>` to `emphasis`, `<strong>` and `<b>` to `strong`, `<s>` and `<strike>` to `strike`, `<del>` to `delete`, `<ins>` to `insert`, `<mark>` to `highlight`, `<u>` to `underline`, `<sub>` to `subscript`, `<sup>` to `superscript`, and `<span>` to `span`. Each takes its attributes.
+**C2-M-044** The inline elements with a Carve counterpart map as `elements` gives: `<em>` and `<i>` to `emphasis`, `<strong>` and `<b>` to `strong`, `<s>` and `<strike>` to `strike`, `<del>` to `delete`, `<ins>` to `insert`, `<mark>` to `highlight`, `<u>` to `underline`, `<sub>` to `subscript`, `<sup>` to `superscript`, and `<span>` to `span`. Each takes its attributes. The revision keys of C2-H-210 read back: `data-author` on `<ins>` and `<del>` is the key `author`, and `data-author` and `data-datetime` on an editorial comment span (C2-M-035) are `author` and `datetime`. `datetime` and `cite` on `<ins>` and `<del>` are kept as written.
 
 **C2-M-045** `<code>` is a `code` node whose value is its text, with the markup inside dropped.
 

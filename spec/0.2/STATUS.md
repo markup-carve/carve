@@ -719,3 +719,9 @@ The ruling on #6794 fills the item of an empty list-table cell with one empty li
 The ruling on #6795 (option D, replacing option C) spells a list-table cell whose blocks are one paragraph holding only the text `<` or `^` as the literal-text span `` !`<` `` or `` !`^` `` (C2-M-112, C2-I-018), with nothing reported, and `carve.listTable` reads a span mark only from a text node (C2-X-076), so the cell renders as text. Clause cases CC-2180 to CC-2182 and CC-2183 to CC-2187. Measured on `carve-js` `next2` `71e03e1`: the importer writes the bare `<` or `^`; the renderer already renders a literal-text span as text, and joins a `<` whose left cell a row span covers from above (CC-2187).
 
 - `carve-js`, `carve-php` and `carve-rs`: spell such a cell as a literal-text span as they implement `listTable`, and join no `<` beside a cell covered from above.
+
+## Engine gaps from the revision metadata ruling of 26 November (#6788)
+
+The ruling on #6788 makes the editorial comment a host (C2-I-036, C2-I-063) and maps the revision keys `author` and `datetime` (C2-H-210): `author` is `data-author` on `<ins>` and `<del>`, both keys are `data-author` and `data-datetime` on the comment span, and the importer reads them back (C2-M-044). Clause cases CC-2183 to CC-2195. Measured on `carve-js` `a5a7bbd2`: the controls CC-2185, CC-2188, CC-2190 and CC-2193 pass; the other nine fail, since the comment takes no block and `author` goes out unchanged.
+
+- `carve-js`, `carve-php` and `carve-rs`: attach the block to the editorial comment, and map the keys in the HTML writer and importer.
