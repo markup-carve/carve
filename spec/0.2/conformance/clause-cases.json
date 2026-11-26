@@ -97511,7 +97511,7 @@
    "C2-W-136",
    "C2-B-230"
   ],
-  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: Where `attrs` keeps a `body-rows`, the writer makes no `body-header-rows` or `body-header-cols`, since those lists take effect only beside a `body-rows` that does (C2-B-230).",
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: Where `attrs` keeps any of `body-rows`, `body-header-rows` or `body-header-cols`, the writer makes none of the three: the lists take effect only beside a `body-rows` that does, and where a value breaks a rule none of the three has an effect (C2-B-230), so a made key would give the kept one an effect or lose its own.",
   "summary": "fmt keeps an empty body-rows from attrs above a body of a header row and makes header-rows=0 after it",
   "kind": "format",
   "input": "{header-rows=0 body-rows}\n|= a |\n",
@@ -97544,7 +97544,7 @@
    "C2-W-136",
    "C2-B-230"
   ],
-  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: Where `attrs` keeps a `body-rows`, the writer makes no `body-header-rows` or `body-header-cols`, since those lists take effect only beside a `body-rows` that does (C2-B-230).",
+  "why": "C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's. C2-W-136: Where `attrs` keeps any of `body-rows`, `body-header-rows` or `body-header-cols`, the writer makes none of the three: the lists take effect only beside a `body-rows` that does, and where a value breaks a rule none of the three has an effect (C2-B-230), so a made key would give the kept one an effect or lose its own.",
   "summary": "fmt keeps an invalid body-rows from attrs, keeps the marks of the body's header row and makes header-rows",
   "kind": "format",
   "input": "{header-rows=1 body-rows=x}\n|= h |\n|= a |\n| 1 |\n",
@@ -97567,6 +97567,57 @@
   "options": {},
   "expected": {
    "carve": "{body-rows=1 body-header-rows=1}\n|= h |\n| a |\n| 1 |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2472",
+  "clauses": [
+   "C2-W-136",
+   "C2-W-066",
+   "C2-B-230"
+  ],
+  "why": "C2-W-136: Where `attrs` keeps any of `body-rows`, `body-header-rows` or `body-header-cols`, the writer makes none of the three: the lists take effect only beside a `body-rows` that does, and where a value breaks a rule none of the three has an effect (C2-B-230), so a made key would give the kept one an effect or lose its own. C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's.",
+  "summary": "fmt keeps a body-header-rows from attrs without body-rows, makes no body-rows and keeps the marks of the body's header row",
+  "kind": "format",
+  "input": "{header-rows=0 body-header-rows=1}\n|= h |\n",
+  "options": {},
+  "expected": {
+   "carve": "{body-header-rows=1 header-rows=0}\n|= h |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2473",
+  "clauses": [
+   "C2-W-136",
+   "C2-W-066",
+   "C2-B-230"
+  ],
+  "why": "C2-W-136: Where `attrs` keeps any of `body-rows`, `body-header-rows` or `body-header-cols`, the writer makes none of the three: the lists take effect only beside a `body-rows` that does, and where a value breaks a rule none of the three has an effect (C2-B-230), so a made key would give the kept one an effect or lose its own. C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's.",
+  "summary": "fmt keeps a body-header-cols from attrs without body-rows and makes no body-rows or body-header-rows",
+  "kind": "format",
+  "input": "{header-rows=0 body-header-cols=1}\n|= h |\n",
+  "options": {},
+  "expected": {
+   "carve": "{body-header-cols=1 header-rows=0}\n|= h |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2474",
+  "clauses": [
+   "C2-W-136",
+   "C2-W-066",
+   "C2-B-230"
+  ],
+  "why": "C2-W-136: Where `attrs` keeps any of `body-rows`, `body-header-rows` or `body-header-cols`, the writer makes none of the three: the lists take effect only beside a `body-rows` that does, and where a value breaks a rule none of the three has an effect (C2-B-230), so a made key would give the kept one an effect or lose its own. C2-W-066: A pipe table takes the attribute, the number of rows of its head, 0 included, wherever the rows and keys the writer writes would give, without it, a head other than the tree's.",
+  "summary": "fmt keeps a body-header-rows from attrs above a head and a foot and makes no empty body-rows",
+  "kind": "format",
+  "input": "{header-rows=1 footer-rows=1 body-header-rows=1}\n|= h | d |\n|= h | < |\n",
+  "options": {},
+  "expected": {
+   "carve": "{body-header-rows=1 header-rows=1 footer-rows=1}\n|= h | d |\n|= h | < |\n"
   },
   "from": []
  }
