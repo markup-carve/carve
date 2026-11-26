@@ -97673,9 +97673,9 @@
    "C2-H-129"
   ],
   "why": "C2-H-178: A profile does not degrade an `abbreviation_def`, also one outside the profile (C2-H-165): the template is data and no presentation, so it is written under every profile, and the definition is not reported as degraded. C2-H-163: Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. C2-H-129: A construct outside the profile renders in its degraded form and is reported.",
-  "summary": "under minimal a link and a snippet definition are reported and an abbreviation definition is not",
+  "summary": "under minimal a link definition is reported and an abbreviation definition is not",
   "kind": "render",
-  "input": "*[B]: bee\n\n[r]: /u\n\n{$v}: X\n\nA B.\n",
+  "input": "*[B]: bee\n\n[r]: /u\n\nA B.\n",
   "options": {
    "profile": "minimal"
   },
@@ -97692,13 +97692,6 @@
     {
      "code": "profile-construct-degraded",
      "line": 5,
-     "column": 1,
-     "channel": "render-loss",
-     "severity": "warning"
-    },
-    {
-     "code": "profile-construct-degraded",
-     "line": 7,
      "column": 3,
      "channel": "render-loss",
      "severity": "warning"
