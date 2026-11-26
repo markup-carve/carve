@@ -825,3 +825,10 @@ The ruling on #6813 adds a sentence to C2-W-075: a reference whose key differs o
 - `carve-js`: defer the key-loss report of the rounds and check the final output (CC-2323, CC-2324).
 - `carve-php`: end the repair cycle and check the final output (CC-2323).
 - `carve-rs`: defer the structure-loss report and check the final output (CC-2323).
+
+## Engine gaps from the lint ruling audit of 26 November (#6812, group 6)
+
+The ruling audit of 26 November amends four lint rulings. `heading-marker-mixed` matches the heading marker in `opener_text`, behind any attribute lines, and keeps the first heading's whole range (#6177). `unattached-inline-attribute` reads the lines of a line block, and leaves a run at the start of one to `block-marker-as-text`; caption and description text is read in their paragraphs (#6176). Every entry that has `file` carries `includedBy`, the chain of its first reach (C2-T-020, C2-N-063, C2-N-087, carve-js#5056), and a clause case may state it. `broken-fragment-link` is suppressed only while an extension that generates ids is registered (C2-X-079): a row of `data/extensions.json` marked `ids`, or any extension that is no row there; the run fact `id_extensions` of C2-W-150 gives the list, and C2-T-042 says that `lint` reads `headingIds` and no other render option (#6104, auto-ruled with a codex high cross-check). Clause cases CC-2325 to CC-2340. Measured on the next2 heads of 26 November (`carve-js` `d4331d7e`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`).
+
+- `carve-js`, `carve-php` and `carve-rs`: report `heading-marker-mixed` for an attributed heading (CC-2325 to CC-2327), `unattached-inline-attribute` on a line of a line block (CC-2329, CC-2330), and `broken-fragment-link` while only extensions that generate no ids are registered (CC-2337, CC-2338).
+- `carve-php` and `carve-rs`: give `includedBy` on every entry that has `file` (CC-2335, CC-2336). `carve-js` already does.

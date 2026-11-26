@@ -728,6 +728,15 @@ A ruling of 26 November decides #6804: an image whose alt text is unknown has ne
 | `<img src="x" alt="">` imported | `![](x)` | the image is decorative; `carve import` writes `![](x)` and reports nothing |
 | an image with no `alt` rendered from a tree | `alt=""` | no `alt` attribute: `<img src="x">` (C2-H-080) |
 
+### Ruling audit of 26 November 2026: lint
+
+The ruling audit of 26 November (#6812, group 6) settles four lint points for 0.2.0:
+
+- `broken-fragment-link` is suppressed only while an extension that generates ids is registered: a row of `data/extensions.json` marked `ids`, or any host extension (C2-X-079). `[x](#missing)` linted with `carve.colorSwatch` registered is reported.
+- `heading-marker-mixed` reads the marker behind the attribute lines of a heading, so `{#a}`, `= A`, then `# B` is reported at the first heading, its attribute line included.
+- `unattached-inline-attribute` reads the lines of a line block: `x {#id} y` there is reported at `{#id}`.
+- Every diagnostic entry that has `file` carries `includedBy`, the include chain of its first reach (C2-T-020), as the 0.1 engine gave it.
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
