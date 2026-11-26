@@ -151,6 +151,8 @@ async function highlight(): Promise<void> {
     lines = hl.codeToTokens(sourceForShiki(text), {
       lang: 'carve',
       themes: { light: 'github-light', dark: 'github-dark' },
+      // Some inline forms tokenize in quadratic time on one very long line; VS Code stops at the same length.
+      tokenizeMaxLineLength: 20000,
     }).tokens
   } catch {
     return
