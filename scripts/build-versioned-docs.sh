@@ -13,6 +13,8 @@ secondary_base="${DOCS_SECONDARY_BASE:-/carve/0.2/}"
 secondary_label="${DOCS_SECONDARY_LABEL:-0.2 (dev)}"
 secondary_edit_branch="${DOCS_SECONDARY_EDIT_BRANCH:-main}"
 secondary_series="${DOCS_SECONDARY_SERIES-dev}"
+# Space-separated version paths that redirect to latest, e.g. the latest series' own /carve/0.2/.
+redirect_bases="${DOCS_REDIRECT_BASES-}"
 combined_dist="$repo_dir/docs/.vitepress/dist-versioned"
 worktrees=()
 
@@ -79,4 +81,8 @@ node -e 'import("node:fs").then(fs => fs.rmSync(process.argv[1], { recursive: tr
 mkdir -p "$combined_dist/$secondary_subpath"
 cp -R "$latest_tree/docs/.vitepress/dist/." "$combined_dist/"
 cp -R "$secondary_tree/docs/.vitepress/dist/." "$combined_dist/$secondary_subpath/"
+if [[ -n "$redirect_bases" ]]; then
+  # shellcheck disable=SC2086 # one argument per base
+  node "$repo_dir/scripts/write-docs-redirects.mjs" "$latest_tree/docs/.vitepress/dist" "$combined_dist" "$latest_base" $redirect_bases
+fi
 echo "Combined docs: $combined_dist"

@@ -48,7 +48,9 @@ A conflict with a clause or a pinned clause case is filed as `needs-decision` wi
 
 The Pages workflow on `main` runs `scripts/build-versioned-docs.sh`. It checks out `origin/0.1` in a separate worktree, installs that ref's own dependencies and builds it at `/carve/` as "0.1 (latest)". It then builds the `main` checkout itself at `/carve/0.2/` as "0.2 (dev)" and combines only the finished site files. A plain `npm run docs:build` still builds one site at `/carve/` without a version menu.
 
-When 0.2 becomes the latest release, change the defaults in the script: build `main` at `/carve/` as "0.2 (latest)" (`DOCS_LATEST_REF` empty, `DOCS_LATEST_EDIT_BRANCH=main`) and `origin/0.1` at `/carve/0.1/` as "0.1 (legacy)" (`DOCS_SECONDARY_REF=origin/0.1`, `DOCS_SECONDARY_EDIT_BRANCH=0.1`, `DOCS_SECONDARY_SERIES` empty). Each ref keeps its own config, theme, playground, WASM files, package files and engine pin.
+When 0.2 becomes the latest release, change the defaults in the script: build `main` at `/carve/` as "0.2 (latest)" (`DOCS_LATEST_REF` empty, `DOCS_LATEST_EDIT_BRANCH=main`) and `origin/0.1` at `/carve/0.1/` as "0.1 (legacy)" (`DOCS_SECONDARY_REF=origin/0.1`, `DOCS_SECONDARY_EDIT_BRANCH=0.1`, `DOCS_SECONDARY_SERIES` empty), and set `DOCS_REDIRECT_BASES=/carve/0.2/`. Each ref keeps its own config, theme, playground, WASM files, package files and engine pin.
+
+A version path stays valid while that version is latest. `DOCS_REDIRECT_BASES` lists those paths, separated by spaces. For each one, `scripts/write-docs-redirects.mjs` writes a stub for every page of the latest build: a canonical link, an instant meta refresh and a script that keeps the query and hash, so playground share links survive. It also patches the root `404.html` to send any other path under those bases to the same page under `/carve/`. GitHub Pages cannot send a real 301, and search engines treat an instant meta refresh as a permanent redirect. When 0.3 ships, `/carve/0.2/` becomes the legacy build and `/carve/0.3/` takes its place in `DOCS_REDIRECT_BASES`. The script refuses a redirect base that already holds a build.
 
 ## Nightly fuzz differential
 
