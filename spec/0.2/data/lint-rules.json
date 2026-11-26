@@ -10,7 +10,7 @@
       "messages": ["image has empty alternative text and is not marked decorative"],
       "message_origin": "engine_0_1",
       "change": "accessibility extension; severity warning, where the 0.1 source sets error",
-      "reports": "an image that is not decorative and whose alt text is empty or unknown, as `![](a.png)`, once per image; an image with any alt text is not reported; a parse of Carve source never marks an image decorative and never leaves its alt unknown, so in source the rule reports exactly the empty alt (C2-I-074, C2-A-115)",
+      "reports": "an image that is neither decorative nor carries alt text, once per image: its alt is empty, as `![](a.png)`, or unknown (C2-A-115 names the three states); an image with alt text or `decorative: true` is not reported; a parse of Carve source never marks an image decorative and never leaves its alt unknown, so in source the rule reports exactly the empty alt (C2-I-074, C2-A-115)",
       "clauses": ["C2-I-074", "C2-A-115"]
     },
     {
@@ -1141,6 +1141,14 @@
       "message_origin": "engine_0_1",
       "reports": "each `<!--` on a paragraph line, when `-->` follows later in the same paragraph, on that line or a later one; once per `<!--` (C2-I-124)",
       "clauses": ["C2-I-124"]
+    },
+    {
+      "id": "image-alt-unknown",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "reports": "an image with neither `alt` nor `decorative`, whose alt text is unknown, which the writer writes with empty brackets; no code of C2-W-134, so a write returns the source and `carve import` does not fail on it (C2-W-011, C2-T-034)",
+      "clauses": ["C2-W-011", "C2-W-104"]
     },
     {
       "id": "import-attribute-dropped",

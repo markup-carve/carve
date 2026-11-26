@@ -606,15 +606,16 @@ The invariants below are written so that a test can check each one on any tree a
 
 ## Shapes that Carve source cannot spell
 
-**C2-A-175** An interchange-only shape is a node, a field or a wrapper that only a format bridge or another consumer supplies. A parser never produces one, JSON encoding and decoding keep it, and a Carve writer does not invent syntax for it and reports what it could not write.
+**C2-A-175** An interchange-only shape is a node, a field or a wrapper that only a format bridge or another consumer supplies. A parser never produces one, JSON encoding and decoding keep it, and a Carve writer does not invent syntax for it and reports what it could not write, except a decorative image (C2-W-011).
 
 | Shape | Carve writer | HTML |
 | --- | --- | --- |
 | `caption.short` | omits the field | renders the full caption once |
 | `table_cell.scope` and `headerIds` | reports each field | writes `scope` and `headers` attributes |
 | `image.longDescription` | reports the field | renders its blocks after the image |
-| `image.decorative` | reports the field | writes empty `alt` |
-| an `image` with neither `alt` nor `decorative` | writes empty brackets and reports the field `alt` at the image | writes no `alt` |
+| `image.decorative: true` | writes empty brackets and reports nothing (C2-W-011) | writes empty `alt` |
+| `image.decorative: false` | reports the field | writes `alt` as given |
+| an `image` with neither `alt` nor `decorative` | writes empty brackets and reports `image-alt-unknown` at the image | writes no `alt` |
 | `xref.display` | reports the field | uses the default core text |
 | blocks in `table_cell.children` | reports the loss | renders the blocks in the cell |
 | `small_caps` | writes the children | `span` with class `smallcaps` |

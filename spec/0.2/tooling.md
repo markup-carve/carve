@@ -272,7 +272,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-033** `import` without `--from` is refused with the category `usage`. The value `html` reads the input as C2-M-001 states; the reference engine also takes `markdown`, `gfm` and `djot` (C2-T-003).
 
-**C2-T-034** `import` applies C2-T-025 to C2-T-029 to the entries of the importer (C2-M-080) and of the writer: with `--strict-losses` a loss of either fails the file with the category `render-loss` and writes no source. Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`.
+**C2-T-034** `import` applies C2-T-025 to C2-T-029 to the entries of the importer (C2-M-080) and of the writer: with `--strict-losses` a loss of either fails the file with the category `render-loss` and writes no source. Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`. Every other loss is written on standard error while the file writes its source, so `image-alt-unknown`, an image whose alt text is unknown (C2-W-011), never fails a file alone.
 
 **C2-T-035** An HTML input the importer refuses ends the run with status 2 and the category `import-input-invalid` (C2-M-006). A tree of the importer that fails the reader checks (C2-A-188) is a defect of the importer, and the file ends with status 1 and the category `import-tree-invalid`.
 
