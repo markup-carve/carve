@@ -704,9 +704,9 @@ The ruling on #6772 makes the escape rounds of C2-W-088 read every reference fro
 
 ## Engine gaps from the line-block hard break ruling of 26 November (#6786)
 
-The ruling on #6786 narrows row 18 of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
+The ruling on #6786 narrows row 18 of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node before the break is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
 
-- `carve-js`, `carve-php` and `carve-rs`: keep the hard break on those lines.
+- `carve-js`, `carve-php` and `carve-rs`: done. The ruling audit of #6812 rewords row 18 to test the last inline node before the break; on the next2 heads of 26 November (`carve-js` `3887090a`, `carve-php` `8fd0c4af`, `carve-rs` `afed9a76`) CC-2167 to CC-2171 pass in all three.
 
 ## Engine gaps from the empty list-table cell ruling of 26 November (#6794)
 
