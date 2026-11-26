@@ -707,3 +707,15 @@ The ruling on #6772 makes the escape rounds of C2-W-088 read every reference fro
 The ruling on #6786 narrows row 18 of C2-H-195: on import, a line-block line keeps the hard break before its `<br>` where it holds nothing else or its last inline node is text ending in a space or tab, so CC-156 and CC-157 render the same HTML again. Clause cases CC-2167 to CC-2171. Measured on `carve-js` `next2` `4aa2407`: CC-2171 passes; CC-2167 to CC-2170 fail, since it drops every such break.
 
 - `carve-js`, `carve-php` and `carve-rs`: keep the hard break on those lines.
+
+## Engine gaps from the empty list-table cell ruling of 26 November (#6794)
+
+The ruling on #6794 fills the item of an empty list-table cell with one empty line comment, the tree of `- %%`, with nothing reported (C2-M-112), so `carve import --list-table` no longer refuses a table with an empty cell. Clause cases CC-2177 to CC-2179.
+
+- `carve-js`, `carve-php` and `carve-rs`: fill the empty cell item as they implement `listTable` (carve-js#5646 for `carve-js`).
+
+## Engine gaps from the list-table span mark ruling of 26 November (#6795)
+
+The ruling on #6795 keeps a cell of the text `<` or `^` as text in a list table and reports `import-structure-repaired` at the cell when its item joins a neighbor as a span mark (C2-B-172); a mark that joins nothing (C2-B-173) is not reported (C2-M-112). The tree does not change. Clause cases CC-2180 to CC-2182.
+
+- `carve-js`, `carve-php` and `carve-rs`: report the joining cell as they implement `listTable` (carve-js#5646 for `carve-js`).

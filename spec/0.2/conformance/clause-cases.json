@@ -88111,6 +88111,788 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2177",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item that holds no block after C2-M-069 holds one line comment with an empty value, as a parse of `- %%` gives, and nothing is reported.",
+   "summary": "an empty cell's item holds an empty line comment",
+   "kind": "import",
+   "html": "<table><tr><td></td><td><ul><li>a</li></ul></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - %%\n  - - a\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2178",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item that holds no block after C2-M-069 holds one line comment with an empty value, as a parse of `- %%` gives, and nothing is reported.",
+   "summary": "a row of empty cells gives an empty line comment in each item",
+   "kind": "import",
+   "html": "<table><tr><td></td><td></td></tr><tr><td><ul><li>a</li></ul></td><td>b</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - %%\n  - %%\n- - - a\n  - b\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2179",
+   "clauses": [
+    "C2-M-112"
+   ],
+   "why": "C2-M-112: A cell's item that holds no block after C2-M-069 holds one line comment with an empty value, as a parse of `- %%` gives, and nothing is reported.",
+   "summary": "an empty first and last cell each hold an empty line comment",
+   "kind": "import",
+   "html": "<table><tr><td></td><td><ul><li>a</li></ul></td><td></td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "a"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "comment",
+                "form": "line",
+                "value": ""
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - %%\n  - - a\n  - %%\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2180",
+   "clauses": [
+    "C2-M-112",
+    "C2-B-172"
+   ],
+   "why": "C2-M-112: A cell whose blocks are one paragraph holding only the text `<` or `^` keeps it; when its item joins a neighbor as a span mark (C2-B-172), the cell is reported with `import-structure-repaired`, and a mark that joins nothing (C2-B-173) is not reported.",
+   "summary": "a cell of the text < that joins its left neighbor is kept and reported",
+   "kind": "import",
+   "html": "<table><tr><td>a</td><td>&lt;</td></tr><tr><td><ul><li>b</li></ul></td><td>w</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "<"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "b"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "w"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - a\n  - <\n- - - b\n  - w\n:::\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "line": 1,
+      "column": 22,
+      "severity": "warning",
+      "channel": "render-loss"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2181",
+   "clauses": [
+    "C2-M-112",
+    "C2-B-173"
+   ],
+   "why": "C2-M-112: A cell whose blocks are one paragraph holding only the text `<` or `^` keeps it; when its item joins a neighbor as a span mark (C2-B-172), the cell is reported with `import-structure-repaired`, and a mark that joins nothing (C2-B-173) is not reported.",
+   "summary": "a cell of the text < in the first column joins nothing and is not reported",
+   "kind": "import",
+   "html": "<table><tr><td>&lt;</td><td>a</td></tr><tr><td><ul><li>b</li></ul></td><td>w</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "<"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "b"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "w"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - <\n  - a\n- - - b\n  - w\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2182",
+   "clauses": [
+    "C2-M-112",
+    "C2-B-172"
+   ],
+   "why": "C2-M-112: A cell whose blocks are one paragraph holding only the text `<` or `^` keeps it; when its item joins a neighbor as a span mark (C2-B-172), the cell is reported with `import-structure-repaired`, and a mark that joins nothing (C2-B-173) is not reported.",
+   "summary": "a cell of the text ^ below a cell of one column is kept and reported",
+   "kind": "import",
+   "html": "<table><tr><td><ul><li>b</li></ul></td><td>a</td></tr><tr><td>w</td><td>^</td></tr></table>",
+   "options": {
+    "listTable": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "bullet",
+         "char": "-"
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "list",
+                "children": [
+                 {
+                  "type": "list_item",
+                  "children": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "b"
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ],
+                "marker": {
+                 "kind": "bullet",
+                 "char": "-"
+                },
+                "spacing": "tight"
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "list",
+            "marker": {
+             "kind": "bullet",
+             "char": "-"
+            },
+            "spacing": "tight",
+            "children": [
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "w"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "list_item",
+              "children": [
+               {
+                "type": "paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "^"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "list-table"
+       ]
+      }
+     }
+    ],
+    "carve": "::: list-table\n- - - b\n  - a\n- - w\n  - ^\n:::\n",
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "line": 1,
+      "column": 69,
+      "severity": "warning",
+      "channel": "render-loss"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
   }
  ]
 }
