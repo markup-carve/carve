@@ -82644,16 +82644,24 @@
   "id": "CC-2063",
   "clauses": [
    "C2-M-037",
-   "C2-M-040"
+   "C2-M-040",
+   "C2-W-011"
   ],
-  "why": "C2-M-037: In a table with no `<thead>`, the leading rows of the first `table_body` whose cells are all `<th>` with no `scope` or with `scope` `col` become the `table_head`, also unreported, and a body they leave empty is dropped. C2-M-040: `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it.",
-  "summary": "a leading th row with one scope row cell stays a body header row",
+  "why": "C2-M-037: In such a table each `<th>` with no `scope` in the leading rows of the first `table_body` whose cells are all `<th>` and that stay in it takes the `scope` `col`, the column header HTML makes it; no source spells a `scope`, so the writer reports it (C2-W-011). C2-M-040: `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it.",
+  "summary": "a leading th row with one scope row cell stays a body header row, and its unscoped cell takes scope col, reported",
   "kind": "import",
   "html": "<table><tr><th>A</th><th scope=\"row\">B</th></tr><tr><td>1</td><td>2</td></tr></table>",
   "options": {},
   "expected": {
    "carve": "{body-rows=1 body-header-rows=1}\n| A | B |\n| 1 | 2 |\n",
-   "diagnostics": [],
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/children/0/children/0/scope",
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
    "diagnosticsComplete": true
   },
   "from": []
@@ -91088,6 +91096,64 @@
   "options": {},
   "expected": {
    "carve": "{footer-rows=2 body-rows}\n|= F |\n| x |\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2250",
+  "clauses": [
+   "C2-M-037",
+   "C2-W-011"
+  ],
+  "why": "C2-M-037: In such a table each `<th>` with no `scope` in the leading rows of the first `table_body` whose cells are all `<th>` and that stay in it takes the `scope` `col`, the column header HTML makes it; no source spells a `scope`, so the writer reports it (C2-W-011).",
+  "summary": "an unscoped th row below a scope row th row stays in the body, and each of its cells takes scope col, reported",
+  "kind": "import",
+  "html": "<table><tr><th scope=\"row\">A</th><th scope=\"row\">B</th></tr><tr><th>C</th><th>D</th></tr><tr><td>1</td><td>2</td></tr></table>",
+  "options": {},
+  "expected": {
+   "carve": "{body-rows=1 body-header-rows=2}\n| A | B |\n| C | D |\n| 1 | 2 |\n",
+   "diagnostics": [
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/children/1/children/0/scope",
+     "channel": "render-loss",
+     "severity": "warning"
+    },
+    {
+     "code": "field-unspellable",
+     "path": "/children/0/children/0/children/1/children/1/scope",
+     "channel": "render-loss",
+     "severity": "warning"
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2251",
+  "clauses": [
+   "C2-M-037",
+   "C2-T-034"
+  ],
+  "why": "C2-M-037: In such a table each `<th>` with no `scope` in the leading rows of the first `table_body` whose cells are all `<th>` and that stay in it takes the `scope` `col`, the column header HTML makes it; no source spells a `scope`, so the writer reports it (C2-W-011). C2-T-034: Without it, a writer loss of C2-W-134 fails the file with the category `writer-refused`.",
+  "summary": "carve import refuses a leading th row whose unscoped cell takes scope col",
+  "kind": "cli",
+  "files": {
+   "t.html": {
+    "text": "<table><tr><th>A</th><th scope=\"row\">B</th></tr><tr><td>1</td><td>2</td></tr></table>\n"
+   }
+  },
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "t.html"
+  ],
+  "options": {},
+  "expected": {
+   "status": 1,
+   "stderrCategory": "writer-refused"
   },
   "from": []
  }
