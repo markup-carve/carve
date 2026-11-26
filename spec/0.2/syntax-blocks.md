@@ -244,7 +244,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-235** Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div; the markers of the containers around the div do not count, as C2-B-020 limits interrupters (b) and (c) for quotes. Below `- ::::` and `  x`, the line ` - y` is indented past the item's marker and is a lazy line of `x`; below `- ::::`, `  :: t` and `  : x` it is a lazy line too, and `   - y`, indented past the description's mark, opens a list in the description.
 
-**C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item.
+**C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item. Where a div in the item holds the quote, the item's marker does not count (C2-B-235): below `- ::::` and `  > x`, the line ` - y` is a lazy line of `x`.
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 

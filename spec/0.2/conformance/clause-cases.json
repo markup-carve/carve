@@ -91365,6 +91365,165 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-2261",
+   "clauses": [
+    "C2-B-021",
+    "C2-B-235"
+   ],
+   "why": "C2-B-021: Where a div in the item holds the quote, the item's marker does not count (C2-B-235): below `- ::::` and `  > x`, the line ` - y` is a lazy line of `x`.",
+   "summary": "a bullet past the item's marker below a quote in a div in the item is a lazy line of the quote's paragraph (carve#6545)",
+   "kind": "render",
+   "input": "- ::::\n  > x\n - y\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div>\n      <blockquote><p>x\n- y</p></blockquote>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "children": [
+             {
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               },
+               {
+                "type": "soft_break"
+               },
+               {
+                "type": "text",
+                "value": "- y"
+               }
+              ],
+              "type": "paragraph"
+             }
+            ],
+            "type": "block_quote"
+           }
+          ],
+          "type": "div"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-2262",
+   "clauses": [
+    "C2-B-021",
+    "C2-B-235"
+   ],
+   "why": "C2-B-021: A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item. C2-B-235: Inside a div, a list marker indented past a marker is interrupter (b) only when that marker is the marker of an item, a description or a footnote body opened inside the div",
+   "summary": "below a quote in an item opened inside a div, a bullet past that item's marker closes the quote and opens a nested list (carve#6545)",
+   "kind": "render",
+   "input": "- ::::\n  - a\n\n    > x\n   - y\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div>\n      <ul>\n        <li>a\n          <blockquote><p>x</p></blockquote>\n          <ul>\n            <li>y</li>\n          </ul>\n        </li>\n      </ul>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "children": [
+       {
+        "children": [
+         {
+          "children": [
+           {
+            "children": [
+             {
+              "children": [
+               {
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ],
+                "type": "paragraph"
+               },
+               {
+                "children": [
+                 {
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "x"
+                   }
+                  ],
+                  "type": "paragraph"
+                 }
+                ],
+                "type": "block_quote"
+               },
+               {
+                "children": [
+                 {
+                  "children": [
+                   {
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "y"
+                     }
+                    ],
+                    "type": "paragraph"
+                   }
+                  ],
+                  "type": "list_item"
+                 }
+                ],
+                "marker": {
+                 "char": "-",
+                 "kind": "bullet"
+                },
+                "spacing": "tight",
+                "type": "list"
+               }
+              ],
+              "type": "list_item"
+             }
+            ],
+            "marker": {
+             "char": "-",
+             "kind": "bullet"
+            },
+            "spacing": "tight",
+            "type": "list"
+           }
+          ],
+          "type": "div"
+         }
+        ],
+        "type": "list_item"
+       }
+      ],
+      "marker": {
+       "char": "-",
+       "kind": "bullet"
+      },
+      "spacing": "tight",
+      "type": "list"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
