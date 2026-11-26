@@ -44,6 +44,12 @@ A bug ticket states its expected result. Before filing it, write each expected r
 
 A conflict with a clause or a pinned clause case is filed as `needs-decision` with both readings, not as a bug with that Expected section.
 
+## Versioned documentation deployment
+
+The Pages workflow on `main` runs `scripts/build-versioned-docs.sh`. It checks out `origin/0.1` in a separate worktree, installs that ref's own dependencies and builds it at `/carve/` as "0.1 (latest)". It then builds the `main` checkout itself at `/carve/0.2/` as "0.2 (dev)" and combines only the finished site files. A plain `npm run docs:build` still builds one site at `/carve/` without a version menu.
+
+When 0.2 becomes the latest release, change the defaults in the script: build `main` at `/carve/` as "0.2 (latest)" (`DOCS_LATEST_REF` empty, `DOCS_LATEST_EDIT_BRANCH=main`) and `origin/0.1` at `/carve/0.1/` as "0.1 (legacy)" (`DOCS_SECONDARY_REF=origin/0.1`, `DOCS_SECONDARY_EDIT_BRANCH=0.1`, `DOCS_SECONDARY_SERIES` empty). Each ref keeps its own config, theme, playground, WASM files, package files and engine pin.
+
 ## Nightly fuzz differential
 
 `.github/workflows/nightly-fuzz.yml` runs every day at 05:45 UTC and on dispatch. It checks out carve-js, carve-php and carve-rs at their `next2` heads and runs `scripts/fuzz-nightly.mjs`: mutants of the 0.2 conformance inputs, random documents, deep nesting around the depth limits (C2-B-190, C2-I-118) and line-ending, tab and control-character noise go through parse, render, format and lint in each engine. The run compares the tree, the HTML, the fmt output and the lint findings across the engines, checks the writer gates C2-W-002 and C2-W-003 in each engine, imports the rendered HTML in every engine, and times long inputs of each construct. A crash, a hang, an error that is not a Carve refusal and superlinear time are reported per engine. There is no spec model on `next2`, so a split where two engines agree is a lead for triage, not a verdict.
