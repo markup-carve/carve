@@ -473,6 +473,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -571,6 +574,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -999,6 +1005,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -1078,6 +1087,9 @@
                   "$ref": "#/$defs/section"
                 },
                 {
+                  "$ref": "#/$defs/snippet_use"
+                },
+                {
                   "$ref": "#/$defs/table"
                 },
                 {
@@ -1091,6 +1103,9 @@
                 },
                 {
                   "$ref": "#/$defs/abbreviation_def"
+                },
+                {
+                  "$ref": "#/$defs/snippet_definition"
                 },
                 {
                   "$ref": "#/$defs/citation_definition"
@@ -1166,6 +1181,9 @@
                 },
                 {
                   "$ref": "#/$defs/smart_punctuation"
+                },
+                {
+                  "$ref": "#/$defs/snippet_use"
                 },
                 {
                   "$ref": "#/$defs/soft_break"
@@ -1255,6 +1273,9 @@
               },
               {
                 "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/table"
@@ -1681,6 +1702,9 @@
                           "$ref": "#/$defs/smart_punctuation"
                         },
                         {
+                          "$ref": "#/$defs/snippet_use"
+                        },
+                        {
                           "$ref": "#/$defs/soft_break"
                         },
                         {
@@ -1767,6 +1791,9 @@
                         },
                         {
                           "$ref": "#/$defs/section"
+                        },
+                        {
+                          "$ref": "#/$defs/snippet_use"
                         },
                         {
                           "$ref": "#/$defs/table"
@@ -1857,6 +1884,9 @@
               },
               {
                 "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/table"
@@ -2087,6 +2117,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -2173,6 +2206,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -2622,6 +2658,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -2904,6 +2943,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -3025,6 +3067,9 @@
                     "$ref": "#/$defs/smart_punctuation"
                   },
                   {
+                    "$ref": "#/$defs/snippet_use"
+                  },
+                  {
                     "$ref": "#/$defs/soft_break"
                   },
                   {
@@ -3144,6 +3189,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -3442,6 +3490,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -4085,6 +4136,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -4682,6 +4736,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -5114,6 +5171,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -5393,6 +5453,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -5645,6 +5708,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -5741,6 +5807,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -6007,6 +6076,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -6093,6 +6165,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -6353,6 +6428,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -6366,6 +6444,9 @@
               },
               {
                 "$ref": "#/$defs/abbreviation_def"
+              },
+              {
+                "$ref": "#/$defs/snippet_definition"
               },
               {
                 "$ref": "#/$defs/citation_definition"
@@ -6702,6 +6783,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -6954,6 +7038,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -7180,6 +7267,9 @@
               },
               {
                 "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/table"
@@ -7952,6 +8042,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -8238,6 +8331,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -8680,6 +8776,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -8889,6 +8988,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -8902,6 +9004,9 @@
               },
               {
                 "$ref": "#/$defs/abbreviation_def"
+              },
+              {
+                "$ref": "#/$defs/snippet_definition"
               },
               {
                 "$ref": "#/$defs/citation_definition"
@@ -9160,6 +9265,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -9290,6 +9398,9 @@
                   "$ref": "#/$defs/smart_punctuation"
                 },
                 {
+                  "$ref": "#/$defs/snippet_use"
+                },
+                {
                   "$ref": "#/$defs/soft_break"
                 },
                 {
@@ -9404,6 +9515,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -9799,6 +9913,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -10083,6 +10200,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -10360,6 +10480,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -10816,6 +10939,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -11531,6 +11657,9 @@
               },
               {
                 "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/table"
@@ -12539,6 +12668,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -13427,6 +13559,9 @@
                 "$ref": "#/$defs/section"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/table"
               },
               {
@@ -13681,6 +13816,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -14069,6 +14207,417 @@
       ],
       "additionalProperties": false
     },
+    "snippet_definition": {
+      "type": "object",
+      "description": "snippet_definition: C2-A-050, C2-A-220",
+      "properties": {
+        "type": {
+          "const": "snippet_definition"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_-]*$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/abbreviation"
+              },
+              {
+                "$ref": "#/$defs/autolink"
+              },
+              {
+                "$ref": "#/$defs/caption_number"
+              },
+              {
+                "$ref": "#/$defs/citation_group"
+              },
+              {
+                "$ref": "#/$defs/code"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/critic_comment"
+              },
+              {
+                "$ref": "#/$defs/delete"
+              },
+              {
+                "$ref": "#/$defs/emphasis"
+              },
+              {
+                "$ref": "#/$defs/footnote_ref"
+              },
+              {
+                "$ref": "#/$defs/hard_break"
+              },
+              {
+                "$ref": "#/$defs/highlight"
+              },
+              {
+                "$ref": "#/$defs/image"
+              },
+              {
+                "$ref": "#/$defs/inline_extension"
+              },
+              {
+                "$ref": "#/$defs/inline_footnote"
+              },
+              {
+                "$ref": "#/$defs/insert"
+              },
+              {
+                "$ref": "#/$defs/link"
+              },
+              {
+                "$ref": "#/$defs/literal_inline"
+              },
+              {
+                "$ref": "#/$defs/math"
+              },
+              {
+                "$ref": "#/$defs/mention"
+              },
+              {
+                "$ref": "#/$defs/non_breaking_space"
+              },
+              {
+                "$ref": "#/$defs/raw_inline"
+              },
+              {
+                "$ref": "#/$defs/ruby"
+              },
+              {
+                "$ref": "#/$defs/small_caps"
+              },
+              {
+                "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
+                "$ref": "#/$defs/soft_break"
+              },
+              {
+                "$ref": "#/$defs/span"
+              },
+              {
+                "$ref": "#/$defs/strike"
+              },
+              {
+                "$ref": "#/$defs/strong"
+              },
+              {
+                "$ref": "#/$defs/subscript"
+              },
+              {
+                "$ref": "#/$defs/superscript"
+              },
+              {
+                "$ref": "#/$defs/symbol"
+              },
+              {
+                "$ref": "#/$defs/tag"
+              },
+              {
+                "$ref": "#/$defs/text"
+              },
+              {
+                "$ref": "#/$defs/underline"
+              },
+              {
+                "$ref": "#/$defs/xref"
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "attrs": {
+          "type": "object",
+          "properties": {
+            "classes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "keyValues": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "string",
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "minItems": 2,
+                "maxItems": 2,
+                "items": false
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "data": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
+          },
+          "additionalProperties": false
+        },
+        "pos": {
+          "type": "object",
+          "properties": {
+            "startLine": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "endLine": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "startColumn": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "endColumn": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "startOffset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "endOffset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "file": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "startLine",
+            "endLine",
+            "startColumn",
+            "endColumn",
+            "startOffset",
+            "endOffset"
+          ],
+          "additionalProperties": false
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "startLine": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "endLine": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "startColumn": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "endColumn": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "startOffset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "endOffset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "file": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "startLine",
+              "endLine",
+              "startColumn",
+              "endColumn",
+              "startOffset",
+              "endOffset"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        },
+        "dir": {
+          "enum": [
+            "ltr",
+            "rtl",
+            "auto"
+          ]
+        },
+        "lang": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "children"
+      ],
+      "additionalProperties": false
+    },
+    "snippet_use": {
+      "type": "object",
+      "description": "snippet_use: C2-A-050, C2-A-221",
+      "properties": {
+        "type": {
+          "const": "snippet_use"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_-]*$"
+        },
+        "mode": {
+          "enum": [
+            "inline",
+            "block"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
+          },
+          "additionalProperties": false
+        },
+        "pos": {
+          "type": "object",
+          "properties": {
+            "startLine": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "endLine": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "startColumn": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "endColumn": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "startOffset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "endOffset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "file": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "startLine",
+            "endLine",
+            "startColumn",
+            "endColumn",
+            "startOffset",
+            "endOffset"
+          ],
+          "additionalProperties": false
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "startLine": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "endLine": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "startColumn": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "endColumn": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "startOffset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "endOffset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "file": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "startLine",
+              "endLine",
+              "startColumn",
+              "endColumn",
+              "startOffset",
+              "endOffset"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "type",
+        "name",
+        "mode"
+      ],
+      "additionalProperties": false
+    },
     "soft_break": {
       "type": "object",
       "description": "soft_break: C2-A-050",
@@ -14317,6 +14866,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -14598,6 +15150,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -14875,6 +15430,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -15156,6 +15714,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -15433,6 +15994,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -16226,6 +16790,9 @@
               },
               {
                 "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/table"
@@ -17757,6 +18324,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -18225,6 +18795,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -18338,6 +18911,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -18618,6 +19194,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -18731,6 +19310,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -18860,6 +19442,9 @@
                     "$ref": "#/$defs/smart_punctuation"
                   },
                   {
+                    "$ref": "#/$defs/snippet_use"
+                  },
+                  {
                     "$ref": "#/$defs/soft_break"
                   },
                   {
@@ -18973,6 +19558,9 @@
                   },
                   {
                     "$ref": "#/$defs/smart_punctuation"
+                  },
+                  {
+                    "$ref": "#/$defs/snippet_use"
                   },
                   {
                     "$ref": "#/$defs/soft_break"
@@ -19371,6 +19959,9 @@
                 "$ref": "#/$defs/smart_punctuation"
               },
               {
+                "$ref": "#/$defs/snippet_use"
+              },
+              {
                 "$ref": "#/$defs/soft_break"
               },
               {
@@ -19484,6 +20075,9 @@
               },
               {
                 "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/soft_break"
@@ -19613,6 +20207,9 @@
                     "$ref": "#/$defs/smart_punctuation"
                   },
                   {
+                    "$ref": "#/$defs/snippet_use"
+                  },
+                  {
                     "$ref": "#/$defs/soft_break"
                   },
                   {
@@ -19726,6 +20323,9 @@
                   },
                   {
                     "$ref": "#/$defs/smart_punctuation"
+                  },
+                  {
+                    "$ref": "#/$defs/snippet_use"
                   },
                   {
                     "$ref": "#/$defs/soft_break"
@@ -19851,6 +20451,9 @@
                       "$ref": "#/$defs/section"
                     },
                     {
+                      "$ref": "#/$defs/snippet_use"
+                    },
+                    {
                       "$ref": "#/$defs/table"
                     },
                     {
@@ -19932,6 +20535,9 @@
                       "$ref": "#/$defs/section"
                     },
                     {
+                      "$ref": "#/$defs/snippet_use"
+                    },
+                    {
                       "$ref": "#/$defs/table"
                     },
                     {
@@ -19994,6 +20600,9 @@
               },
               {
                 "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/snippet_use"
               },
               {
                 "$ref": "#/$defs/table"
@@ -20163,6 +20772,9 @@
                     "$ref": "#/$defs/smart_punctuation"
                   },
                   {
+                    "$ref": "#/$defs/snippet_use"
+                  },
+                  {
                     "$ref": "#/$defs/soft_break"
                   },
                   {
@@ -20262,6 +20874,9 @@
                   },
                   {
                     "$ref": "#/$defs/section"
+                  },
+                  {
+                    "$ref": "#/$defs/snippet_use"
                   },
                   {
                     "$ref": "#/$defs/table"

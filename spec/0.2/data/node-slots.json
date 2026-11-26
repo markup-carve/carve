@@ -381,6 +381,14 @@
       "metadata.bibliography.title",
       "metadata.bibliography.containerTitle"
     ],
+    "snippet_definition": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "snippet_use": [],
     "soft_break": [
       "metadata.title",
       "metadata.subtitle",

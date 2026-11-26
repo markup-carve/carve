@@ -284,6 +284,7 @@ export default defineConfig({
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
             { text: 'File Inclusion Rules', link: '/includes' },
             { text: 'Metadata Blocks', link: '/metadata-blocks' },
+            { text: 'Snippets', link: '/snippets' },
             { text: 'Validation', link: '/validation' },
             { text: 'Optional Features & Extensions', link: '/extensions' },
             { text: 'Write an Extension', link: '/extension-tutorial' },

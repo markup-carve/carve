@@ -178,6 +178,8 @@ The check fails an error that no category of `data/cli.json` names or that the c
 { "rules": { "djot-plus-bullet": "on", "bare-html-tag": "off" }, "platforms": ["github"], "extensions": ["carve.tabs"], "renderers": { "carve.tabs": "standard" } }
 ```
 
+A case may carry `host`, registrations of the conformance harness that are no Carve option and that an engine offers through its test harness, not its public interface. `documentTransforms` lists document transforms (C2-X-053) in registration order, each with a `name` and a pointer `after` into the view it receives: `insert` puts a copy of the given node directly after the node at `after`, `setLevel` sets the `level` of that node, and `setValue` sets its `value`. `limits` lowers limits for the one case: `snippetDepth` and `snippetNodes` replace `snippet_depth` and `snippet_nodes` of `data/limits.json` (C2-N-093), and `derivedTextBytes` replaces the whole derived-text budget of C2-H-201, the floor of `derived_text_bytes` included, so a case can reach the budget with a short input (C2-N-094).
+
 ## Extensions
 
 `extensions.json` (`kind` `extensions`, list `cases`) checks the HTML of the standard extensions. Each extension has cases for its default use, its host options, a use inside a list item and inside a block quote, literal code text, and escaped user text, with its fallback where no renderer is selected. An entry has `id` (`EXT-nnn`), `extension`, `summary`, `clauses`, `expectedFrom`, `kind` (`render`), `input`, `options` and `expected` (`html`, `htmlIncludes`, diagnostics), read as in a clause case.

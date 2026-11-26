@@ -35,14 +35,16 @@ Each construct links to its section of the [upgrade page](https://markup-carve.g
 
 A typed `---yaml`, `---toml` or `---json` opener at column 0 may now introduce an opaque metadata block after a blank line or top-level attribute lines. A bare `---` after line 1 stays text. Later blocks appear as top-level `frontmatter` nodes in source order, may carry an `id` for lookup, and render nothing. An unclosed block consumes the rest of the document and reports `unclosed-frontmatter`. The `carve` and `carve-version` keys still declare a version only in the line-1 block. Hosts that assumed at most one frontmatter node should filter the document's children and use `attrs.id` where needed (C2-B-231 to C2-B-233, C2-A-049).
 
-## Reserved in 0.2.0: two shapes for snippets
+## New in 0.2.0: named snippets
 
-A later 0.2 release adds snippets, content reused from the same document (#6395). Two shapes are reserved for them now, so that release changes no document that a 0.2.0 tool accepted without a finding. In 0.2.0 both stay text, and `reserved-syntax` reports them:
+A line `{$name}: value` at column 0 outside every container defines a snippet, and `{{ $name }}` repeats its value, inside a sentence or alone on a line as its own paragraph (C2-B-236, C2-B-237, C2-I-128, #6395). The tree gains the node types `snippet_definition` and `snippet_use` (C2-A-220, C2-A-221). A snippet name is never an id. Two cases change an existing document:
 
-- `{{ #id }}`, a directive with a section and no path, inside a sentence or on its own line (C2-N-089). Until now `empty-include-path` reported it.
-- A line at column 0 outside every container that starts with `{#id}: ` and content, also with attributes after the id as in `{#id .c}: ` or `{#id}{.c}: ` (C2-B-236), when it is the first line of a paragraph.
+- A line that starts with `{$name}: ` at column 0 was a paragraph. It is now a definition, renders nothing and takes the next line out of the paragraph. To keep it as text, escape the opening brace: `\{$name}: text`.
+- `{{ $name }}` alone on a line was an include of a file named `$name`, and `{{ $name }}` in a sentence was text. Both are now snippet uses. A path such as `{{ $a.crv }}` stays an include. Quote a path that looks like a name: `{{ "$name" }}`.
 
-To keep either as text, escape the opening brace: `\{{ #id }}`, `\{#id}: text`.
+In 0.1 a `{{ path }}` in a sentence was an inline file include. A snippet use is no file include: it copies a definition of the same document, never a file.
+
+`{{ #id }}`, a directive with a section and no path, stays reserved: it is text, and `reserved-syntax` reports it (C2-N-089). The `{#id}: text` line that an earlier 0.2 draft reserved is plain text again, with no finding.
 
 ## Part 1. Authors: your documents
 

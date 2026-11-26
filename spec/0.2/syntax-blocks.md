@@ -248,7 +248,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 
-**C2-B-024** Every line that is not one of the six interrupters and not a region marker line (C2-B-137) is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment other than a region marker (C2-B-137), and a list marker that interrupter (b) does not take (C2-B-015). An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item. A lazy include directive or list marker is a line of text of the stanza (C2-B-123). A lazy `%%` line, one that the container of the line block does not own, is a comment-only line (C2-B-137) and no line of the stanza: its comment is an inline child at the end of the `line` above it, and the stanza goes on below it. A `%%` line that the container owns is a line of the body and is text (C2-B-135).
+**C2-B-024** Every line that is not one of the six interrupters and not a region marker line (C2-B-137) is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a block snippet use (C2-B-237), a `%%` comment other than a region marker (C2-B-137), and a list marker that interrupter (b) does not take (C2-B-015). An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item. A lazy include directive or list marker is a line of text of the stanza (C2-B-123). So is a lazy snippet use, whose use is an inline use (C2-I-128). A lazy `%%` line, one that the container of the line block does not own, is a comment-only line (C2-B-137) and no line of the stanza: its comment is an inline child at the end of the `line` above it, and the stanza goes on below it. A `%%` line that the container owns is a line of the body and is text (C2-B-135).
 
 `b` is not indented, so the item does not own it, but it is a lazy line of the open stanza, and the item stays open (C2-B-024).
 
@@ -2257,7 +2257,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-081** A definition stands at column 0 outside every container, so a definition-shaped line inside a container is text, and `definition-in-container` reports it.
 
-**C2-B-236** A line at column 0 outside every container that starts with a definition marker, one or more spaces and content is reserved for a definition in a later 0.2 release. The marker is `{#`, an id of the section name shape of C2-B-203, optionally a space or tab and characters other than braces and line ends, `}`, then any number of brace groups glued to it, each `{`, characters other than braces and line ends, and `}`, and then `:`. So `{#intro}: text`, `{#intro .lead}: text` and `{#intro}{.lead}: text` are reserved, and so is `{#intro}:  text` with two spaces. A line whose first attribute block holds the id after another entry, as `{.lead #intro}: text`, is not reserved. In 0.2.0 it is no definition: it is a line of text, so it starts a paragraph or continues one, and `reserved-syntax` reports it when it is the first line of a paragraph. `{#intro}` alone on its line stays an attribute line (C2-B-090), and a line that starts with `\{#` is not reported.
+**C2-B-236** A snippet definition is a line at column 0 outside every container that starts with a snippet marker, one space and a value, as `{$ver}: 0.2.3`. The marker is `{$`, a snippet name, optionally one or more spaces and the parts of an attribute block (C2-I-028), `}`, then any number of attribute blocks glued to it, and `:`. A snippet name is an ASCII letter, digit or `_`, then ASCII letters, digits, `_` and `-`. The value is the rest of the line after that space and holds a character other than a space or a tab; it is read once as the inline content of that one line (C2-I-002), and the line below never continues it. The attribute parts and blocks merge as glued blocks do (C2-B-093) and give the definition its attributes, so `{$brand .badge}: x` and `{$brand}{.badge}: x` are one definition with the class `badge`. A marker whose parts are no valid attribute parts makes no definition, and neither does one that holds an id: a definition is no anchor, so `{$v #x}: a` is a line of text and `snippet-definition-id` reports it. `{$v}:` with no value, `{$v}:x` with no space and `{.c #v}: x` are text with no finding. Like the other definitions it is a block of one line, a lazy line of an open paragraph (C2-B-024) and text inside a container (C2-B-081). `{$v}` alone on its line is text, and a line that starts with `\{$` is text. A line that starts with an id in braces and a colon, as `{#intro}: text` or `{#intro .lead}: text`, is a line of text with no finding: an id names no snippet. Snippet names and ids are separate: a name is never compared with an id (C2-N-090).
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line. The label follows the rules of a footnote reference label (C2-I-087): it may hold spaces, and it holds no unescaped bracket.
 
@@ -5262,7 +5262,7 @@ more</p>
 
 :::
 
-**C2-B-201** An include directive is `{{`, one or more spaces, a path, an optional section, zero or more options, one or more spaces and `}}`, with only spaces and tabs after it on the line. Spaces before the section and before each option are optional: `{{ a.crv#s@shift:1 }}` is a directive. A tab is not such a space, so `{{` followed by a tab is text. The closing `}}` is the first one outside a quoted path and a quoted value, so a quoted run may hold `}}`.
+**C2-B-201** An include directive is `{{`, one or more spaces, a path, an optional section, zero or more options, one or more spaces and `}}`, with only spaces and tabs after it on the line. Spaces before the section and before each option are optional: `{{ a.crv#s@shift:1 }}` is a directive. A tab is not such a space, so `{{` followed by a tab is text. The closing `}}` is the first one outside a quoted path and a quoted value, so a quoted run may hold `}}`. A line that is a block snippet use (C2-B-237) is no include directive.
 
 **C2-B-202** A path is bare or quoted. A bare path is one or more characters, none of them a space, `#`, `@`, `}`, `"` or `“` (U+201C), so a bare path ends at the section or at the first option. A double-quoted path is `"`, one or more characters and `"`: a backslash takes the next character with it, and an unescaped `"` and a line end do not occur. Its value is read like a quoted attribute value (C2-I-033): a backslash before an ASCII punctuation character is dropped, and a backslash before any other character stays, so `"a\.crv"` names `a.crv` and `"notes\new.crv"` names `notes\new.crv`. A path in curly quotes, `“`, one or more characters other than `”` and `”`, is read as written, with no escape. An empty path in any form makes the line text (`empty-include-path`).
 
@@ -5371,6 +5371,8 @@ Example 259 (unverified)
 ```json
 { "type": "include", "path": "a.crv", "invalid": ["@code:\"\""] }
 ```
+
+**C2-B-237** A block snippet use is a snippet use (C2-I-128) alone on its line, with only spaces and tabs after it, as `{{ $intro }}`: a block of one line and not an interrupter, a `snippet_use` with `mode` `block` (C2-A-221). It is tested before the include directive, so `{{ $intro }}` names no file `$intro`; a directive whose path starts with `$` and is no snippet name, as `{{ $a.crv }}`, or that has a section or an option, as `{{ $v @shift:1 }}`, stays an include directive (C2-B-201). It stands wherever a block may start, at the top level and in a list item, a quote, a div, a footnote and a description after the prefixes of its containers. A line that an open paragraph or stanza takes as a lazy line (C2-B-024), and a line of a line block, is text, and its use is an inline use. A table row is read as inline content, so a use in a cell of a source table is always an inline use; a block use stands only in a `table_cell` slot of a supplied tree that holds blocks (C2-A-221).
 
 ## Thematic break
 
@@ -6998,15 +7000,15 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Comments | 12 | 2 | 14 | 10 |
 | Captions | 6 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
-| One-line constructs | 11 | 0 | 8 | 5 |
+| One-line constructs | 12 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 8 | 0 | 5 | 2 |
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **215** | **8** | **170** | **126** |
+| **Total** | **216** | **8** | **170** | **126** |
 
-The chapter has 215 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
+The chapter has 216 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
 
 ## Not covered
 

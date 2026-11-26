@@ -639,6 +639,8 @@ Written:
 
 **C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-052). A footnote definition is `[^key]:`, one space and its first block on the marker line, with its later blocks at the content column (C2-W-024, C2-W-027). An abbreviation definition is `*[key]:`, one space and the expansion, whose leading spaces and tabs are written after that space. An expansion of a supplied tree that holds a line break has no spelling: its nearest form writes one space in place of each line break, so the definition stays one line, and the writer reports `field-unspellable` (C2-W-117). The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-080).
 
+**C2-W-159** A snippet definition is written at column 0 at its place among the children of the document, on one line: `{$`, its name, one space and its attributes as the parts of one attribute block where it has any (C2-W-047), `}: ` and its children as the inline content of that line, so `{$brand .badge}: [Carve](https://example.org)`. A line break in its children is written as one space, as for an abbreviation expansion, and reported with `structure-unspellable`. A snippet use is `{{ $name }}`: a block use alone on its line, an inline use where it stands in its inline content. A paragraph whose only child is an inline use has no spelling, since that line reads as a block use (C2-B-237): the writer writes the block use and reports `structure-unspellable` at the paragraph. The writer never expands a use.
+
 A footnote definition has one space between its marker and its first block (C2-W-055).
 
 Example 42 (unverified)
@@ -1385,7 +1387,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Nine findings of the syntax chapters, one of the tree and writer chapters, three differences to 0.1 that stay (U-340, the continuation rulings of 24 November and the code span padding ruling of 24 November, U-441), five Djot constructs that Carve 0.2 reads otherwise with no other finding (the ruling on #6522 of 24 November), and the two shapes reserved for snippets (the ruling on #6395 of 25 November) had no rule. Their ids are new in this document. The five `djot-` rules have no fix.
+Nine findings of the syntax chapters, one of the tree and writer chapters, three differences to 0.1 that stay (U-340, the continuation rulings of 24 November and the code span padding ruling of 24 November, U-441), five Djot constructs that Carve 0.2 reads otherwise with no other finding (the ruling on #6522 of 24 November), the shape reserved by C2-N-089 and the snippet findings (the rulings on #6395 of 25 and 26 November) had no rule. Their ids are new in this document. The five `djot-` rules have no fix.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -1407,7 +1409,9 @@ Nine findings of the syntax chapters, one of the tree and writer chapters, three
 | `djot-ordered-marker` | hint, opt-in Djot check (C2-W-156) | the first line of a paragraph, or a lazy line at or left of the marker column of the list item that holds it, that starts with an ordered marker Djot reads and Carve does not: a marker in parentheses such as `(1)`, or an uppercase marker with a dot and one space such as `A. x` (C2-B-036, C2-B-040) |
 | `djot-tag-mention` | hint, opt-in Djot check (C2-W-156) | a tag `#word` or a mention `@word`, which Djot reads as text (C2-I-090 to C2-I-092) |
 | `code-span-padding-kept` | warning, migration notice (C2-W-156) | a code, literal-text, math or raw inline span whose value differs from the 0.1 value: 0.1 removed one space from each end when both ends held one, and 0.2 removes only a space between a backtick and the run (C2-I-016, U-441) |
-| `reserved-syntax` | warning | a directive with a section and no path, `{{ #id }}`, inside a sentence or on its own line, and the first line of a top-level paragraph that starts with a definition marker such as `{#id}:` or `{#id .c}:` and a space, both reserved for snippets in a later 0.2 release (C2-N-089, C2-B-236, #6395) |
+| `reserved-syntax` | warning | a directive with a section and no path, `{{ #id }}`, inside a sentence or on its own line, which stays text (C2-N-089) |
+| `snippet-definition-id` | warning | a snippet definition line whose marker holds an id, which makes the line text (C2-B-236) |
+| `unused-snippet` | hint | a winning snippet definition that no use names (C2-N-096) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -1444,6 +1448,10 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `extension-transform-failed` | render-loss | warning | a claim source could not be prepared or a host transform threw, and the core node was retained (C2-X-050, C2-X-051) |
 | `extension-renderer-failed` | render-loss | warning | a host renderer threw or returned a value that was not a string (C2-X-050) |
 | `profile-construct-degraded` | render-loss | warning | a construct outside the active `profile` (C2-H-129) |
+| `duplicate-snippet` | parse | warning | a second snippet definition for a name (C2-N-090) |
+| `snippet-unresolved`, `snippet-cycle`, `snippet-depth`, `snippet-node-budget` | render-loss | warning | a snippet use that was not expanded, written as its source spelling (C2-N-093) |
+| `snippet-unexpanded-transform` | render-loss | warning | a snippet node a document transform inserted (C2-N-095) |
+| `snippet-scope-loss` | render-loss | warning | an imported snippet carrier whose include scope is gone (C2-H-217) |
 | `derived-text-budget` | render-loss | warning | the first abbreviation or cross-reference of a render whose derived text no longer fits the budget (C2-H-201) |
 | `import-attribute-dropped`, `import-carrier-ignored`, `import-destination-denied`, `import-element-dropped`, `import-element-mapped`, `import-structure-repaired` | render-loss | warning | a fact of the HTML input that an import dropped or changed (C2-M-080, C2-M-083) |
 | `import-whitespace-normalized` | render-loss | hint | whitespace that an import removed or turned into a space (C2-M-020, C2-M-083) |
@@ -1485,7 +1493,8 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | a `%%%` line with other text inside a comment block | `comment-fence-closer-with-text` |
 | a list marker directly after term or description text | `list-marker-without-blank-line` |
 | a definition inside a container | `definition-in-container` |
-| `{{ #id }}` or a line `{#id}: text`, reserved for snippets | `reserved-syntax` |
+| `{{ #id }}`, reserved | `reserved-syntax` |
+| a snippet definition with an id, an unused snippet | `snippet-definition-id`, `unused-snippet` |
 | an attribute line after a paragraph line | `block-opener-without-blank-line` |
 | an unclosed fence, div or comment block | `unclosed-code-fence`, `unclosed-container-fence`, `unclosed-comment-fence` |
 | unclosed frontmatter | `unclosed-frontmatter` |
@@ -1628,13 +1637,13 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The writer and its two gates | 13 | 2 | 0 | 2 |
 | What the writer cannot spell | 11 | 0 | 0 | 2 |
 | Layout | 23 | 3 | 0 | 4 |
-| Canonical forms: blocks | 24 | 0 | 0 | 22 |
+| Canonical forms: blocks | 25 | 0 | 0 | 22 |
 | Canonical forms: tables | 13 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 2 |
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 17 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 25 | 0 | 0 | 3 |
-| **Total** | **149** | **6** | **6** | **41** |
+| **Total** | **150** | **6** | **6** | **41** |
 
-The document has 149 clauses, 6 of them marked with the word "Exception", and 47 examples, 6 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 150 clauses, 6 of them marked with the word "Exception", and 47 examples, 6 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.

@@ -1723,6 +1723,10 @@ ab
 | `data-carve-ref` | an inline link or image with its `href`, `src` and `title`; no definition is rebuilt |
 | `data-carve-ref-collapsed` | as `data-carve-ref` |
 | `data-carve-ref-shortcut` | as `data-carve-ref` |
+| `data-carve-snippet` | the copied content as ordinary content in place of each use |
+| `data-carve-snippet-mark` | as `data-carve-snippet`: each copy keeps its own note mark |
+| `data-carve-snippet-scope` | nothing |
+| `data-carve-snippets` | nothing: the snippet definitions are gone |
 | `data-carve-source-level` | a heading at its shifted level |
 | `data-carve-src` | nothing |
 | `data-carve-tight` | spacing by C2-M-033: a tight list whose item holds more than one block reads as loose |
@@ -1828,6 +1832,6 @@ The reference names `_ftn1`, the marker anchor of the note, whose nearest block 
 
 ## Counts
 
-**C2-M-099** This document holds 97 clauses: 96 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
+**C2-M-099** This document holds 97 clauses: 96 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 23 loss rows and 7 adapter rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.
