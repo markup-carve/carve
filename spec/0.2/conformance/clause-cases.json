@@ -89733,6 +89733,174 @@
    "carve": "The fee is {-10-}{author=Ann datetime=2026-11-20T10:00Z}{+12+}{author=Ann datetime=2026-11-20T10:00Z} euros.\n"
   },
   "from": []
+ },
+ {
+  "id": "CC-2196",
+  "clauses": [
+   "C2-M-113",
+   "C2-M-082",
+   "C2-H-210"
+  ],
+  "why": "C2-M-113: A ranged comment is read as a point comment. A `span` whose first class is `comment-start`, as Pandoc writes a word processor comment, is a `critic_comment` at its place whose value is its text, with the markup inside dropped. Its `data-author` is the key `author` and its `data-date` the key `datetime` (C2-H-210), the class `comment-start` and `data-comment-id` are not kept, and its other attributes are the comment's attributes. ... Those inlines are the range the comment covers, and a `critic_comment` is a point (C2-I-063), so the range is lost: the comment is reported with one `import-structure-repaired` entry at its `comment-start` (C2-M-082).",
+  "summary": "a Pandoc ranged comment imports as a point comment before its range, and the lost range is reported",
+  "kind": "import",
+  "html": "<p>The fee is 12 <span class=\"comment-start\" data-comment-id=\"3\" data-author=\"bob@example.org\" data-date=\"2026-11-21T09:30:00Z\">check with finance</span>euros<span class=\"comment-end\" data-comment-id=\"3\"></span>.</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "The fee is 12 "
+      },
+      {
+       "type": "critic_comment",
+       "value": "check with finance",
+       "attrs": {
+        "keyValues": [
+         [
+          "author",
+          "bob@example.org"
+         ],
+         [
+          "datetime",
+          "2026-11-21T09:30:00Z"
+         ]
+        ]
+       }
+      },
+      {
+       "type": "text",
+       "value": "euros."
+      }
+     ]
+    }
+   ],
+   "carve": "The fee is 12 {#check with finance#}{author=bob@example.org datetime=2026-11-21T09:30:00Z}euros.\n",
+   "diagnostics": [
+    {
+     "code": "import-structure-repaired",
+     "channel": "render-loss",
+     "severity": "warning",
+     "line": 1,
+     "column": 18
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2197",
+  "clauses": [
+   "C2-M-113"
+  ],
+  "why": "C2-M-113: Where no inline stands between the two, or no `comment-end` follows, no range is lost and nothing is reported.",
+  "summary": "a ranged comment whose range is empty loses nothing and is not reported",
+  "kind": "import",
+  "html": "<p>a <span class=\"comment-start\" data-comment-id=\"1\">note</span><span class=\"comment-end\" data-comment-id=\"1\"></span> b</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a "
+      },
+      {
+       "type": "critic_comment",
+       "value": "note"
+      },
+      {
+       "type": "text",
+       "value": " b"
+      }
+     ]
+    }
+   ],
+   "carve": "a {#note#} b\n",
+   "notReported": [
+    "import-structure-repaired"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2198",
+  "clauses": [
+   "C2-M-113",
+   "C2-I-063"
+  ],
+  "why": "C2-M-113: A `comment-start` with no text gives no comment, since a comment holds at least one character: it and its `comment-end` are dropped and reported with one `import-element-dropped` entry at the `comment-start`.",
+  "summary": "a ranged comment with no text is dropped with its end, and its range stays as text",
+  "kind": "import",
+  "html": "<p>a <span class=\"comment-start\" data-comment-id=\"2\"></span>b<span class=\"comment-end\" data-comment-id=\"2\"></span> c</p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "a b c"
+      }
+     ]
+    }
+   ],
+   "carve": "a b c\n",
+   "diagnostics": [
+    {
+     "code": "import-element-dropped",
+     "channel": "render-loss",
+     "severity": "warning",
+     "line": 1,
+     "column": 6
+    }
+   ],
+   "diagnosticsComplete": true
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2199",
+  "clauses": [
+   "C2-M-113"
+  ],
+  "why": "C2-M-113: A `comment-end` that ends no comment is an ordinary span.",
+  "summary": "a comment-end span that ends no comment is an ordinary span",
+  "kind": "import",
+  "html": "<p><span class=\"comment-end\">x</span></p>",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "span",
+       "children": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ],
+       "attrs": {
+        "classes": [
+         "comment-end"
+        ]
+       }
+      }
+     ]
+    }
+   ],
+   "carve": "[x]{.comment-end}\n"
+  },
+  "from": []
  }
  ]
 }

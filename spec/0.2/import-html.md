@@ -1079,6 +1079,8 @@ Example 52 (unverified)
 
 `1` is no inline extension name, so the class is an ordinary class.
 
+**C2-M-113** A ranged comment is read as a point comment. A `span` whose first class is `comment-start`, as Pandoc writes a word processor comment, is a `critic_comment` at its place whose value is its text, with the markup inside dropped. Its `data-author` is the key `author` and its `data-date` the key `datetime` (C2-H-210), the class `comment-start` and `data-comment-id` are not kept, and its other attributes are the comment's attributes. The first later `span` whose first class is `comment-end` and whose `data-comment-id` is the same is dropped, and the inlines between the two stay where they stand. Those inlines are the range the comment covers, and a `critic_comment` is a point (C2-I-063), so the range is lost: the comment is reported with one `import-structure-repaired` entry at its `comment-start` (C2-M-082). Where no inline stands between the two, or no `comment-end` follows, no range is lost and nothing is reported. A `comment-start` with no text gives no comment, since a comment holds at least one character: it and its `comment-end` are dropped and reported with one `import-element-dropped` entry at the `comment-start`. A `comment-end` that ends no comment is an ordinary span.
+
 ## Inline elements
 
 **C2-M-044** The inline elements with a Carve counterpart map as `elements` gives: `<em>` and `<i>` to `emphasis`, `<strong>` and `<b>` to `strong`, `<s>` and `<strike>` to `strike`, `<del>` to `delete`, `<ins>` to `insert`, `<mark>` to `highlight`, `<u>` to `underline`, `<sub>` to `subscript`, `<sup>` to `superscript`, and `<span>` to `span`. Each takes its attributes. The revision keys of C2-H-210 read back: `data-author` on `<ins>` and `<del>` is the key `author`, and `data-author` and `data-datetime` on an editorial comment span (C2-M-035) are `author` and `datetime`. `datetime` and `cite` on `<ins>` and `<del>` are kept as written.
@@ -1826,6 +1828,6 @@ The reference names `_ftn1`, the marker anchor of the note, whose nearest block 
 
 ## Counts
 
-**C2-M-099** This document holds 96 clauses: 95 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
+**C2-M-099** This document holds 97 clauses: 96 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 19 loss rows and 7 adapter rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.
