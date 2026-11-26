@@ -36023,7 +36023,7 @@
    "input": "{header-rows=1}\n| a |\n| b |",
    "options": {},
    "expected": {
-    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
+    "html": "<table>\n  <thead>\n    <tr><td>a</td></tr>\n  </thead>\n  <tbody>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -36037,7 +36037,7 @@
        ],
        "children": [
         {
-         "type": "table_body",
+         "type": "table_head",
          "children": [
           {
            "type": "table_row",
@@ -36090,7 +36090,20 @@
             "startOffset": 16,
             "endOffset": 21
            }
-          },
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 16,
+          "endOffset": 21
+         }
+        },
+        {
+         "type": "table_body",
+         "children": [
           {
            "type": "table_row",
            "children": [
@@ -36145,23 +36158,15 @@
           }
          ],
          "pos": {
-          "startLine": 2,
+          "startLine": 3,
           "endLine": 3,
           "startColumn": 1,
           "endColumn": 6,
-          "startOffset": 16,
+          "startOffset": 22,
           "endOffset": 27
          }
         }
        ],
-       "attrs": {
-        "keyValues": [
-         [
-          "header-rows",
-          "1"
-         ]
-        ]
-       },
        "pos": {
         "startLine": 1,
         "endLine": 3,

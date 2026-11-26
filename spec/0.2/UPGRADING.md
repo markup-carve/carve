@@ -259,7 +259,7 @@ The replay of the 0.1 conformance pack found unclosed runs whose 0.1 value no 0.
 | U-055 | GFM separator row **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;/td&gt;&lt… | \|= a \|={&gt;} b \| ⏎ \| 1 \| 2 \| ⏎ ; rewrite |
 | U-056 | Glued alignment marks **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;&lt; a&lt;/th&gt;&lt;th s… | \|={&lt;} a \|={&gt;} b \|={~} c \| ⏎ \| 1 \| 2 \| 3 \| ⏎ ; rewrite |
 | U-057 | Escaped last pipe **SILENT** | &lt;p&gt;\| a \| b \|&lt;/p&gt; | \| a \| b \\| \| ⏎ ; rewrite |
-| U-058 | &#96;header-rows&#96; on a pipe table **SILENT** | &lt;table&gt; ⏎ &lt;tbody&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;/td&gt;&lt… | \|= a \|= b \| ⏎ \| 1 \| 2 \| ⏎ ; rewrite |
+| U-058 | &#96;header-rows&#96; on a pipe table **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;td&gt;a&lt;/td&gt;&lt;td&gt;b&lt;/td&gt;&lt… | \|= a \|= b \| ⏎ \| 1 \| 2 \| ⏎ ; rewrite |
 | U-059 | &#96;footer-rows&#96; on a table with only a header row **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;a&lt;/th&gt;&lt;th scope=… | Review by hand; report |
 | U-060 | Row span into the head **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;a&lt;/th&gt;&lt;th scope=… | Review by hand; report |
 | U-061 | Delimited table with bad quoting **SILENT** | &lt;table&gt; ⏎ &lt;thead&gt; ⏎ &lt;tr&gt;&lt;th scope="col"&gt;a&lt;/th&gt;&lt;th scope=… | Review by hand; report |
@@ -623,7 +623,7 @@ A second ruling of 24 November extends #6499 to every rule whose only job is hel
 | `deprecated-separator-row` | a row of hyphens below the first row, which is a body row | the end of a Markdown head |
 | `deprecated-spaced-thematic-break` | `* * *`, `- - -` or `_ _ _`, which are list items or text | a thematic break |
 | `deprecated-substitution-arrow` | `~>` in a braced strike, which is text | a substitution |
-| `deprecated-table-attribute` | `header-rows` on a pipe table, which does not apply | the head rows of the table |
+| `deprecated-table-attribute` | `header-rows` on a pipe table, whose head keeps its data cells | a head of header cells |
 | `thematic-break-spelling` | a line of `---` or `___`, which is text | a thematic break |
 | the `djot-` rules except `djot-highlight-braces` | a Djot spelling that Carve reads otherwise | Djot emphasis, subscript, superscript, a `+` bullet, a folded heading line, a definition list, an ordered list, or text where Carve makes a sign, a tag or a mention |
 

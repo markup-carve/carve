@@ -106,8 +106,7 @@
     },
     {
       "name": "header-rows",
-      "applies_to": ["delimited_table"],
-      "no_effect_on": ["pipe_table"],
+      "applies_to": ["delimited_table", "pipe_table"],
       "value": "count",
       "written_to_html": false,
       "report": "deprecated-table-attribute",
