@@ -62489,8 +62489,11 @@
     }
    ],
    "carve": "{.MsoNormal}\nStatic typing[^1] matters.\n\n[^1]: {.MsoFootnoteText}\n  Static Object Orient Languages\n",
-   "notReported": [
+   "diagnostics": [
     "import-element-dropped",
+    "import-element-dropped"
+   ],
+   "notReported": [
     "import-attribute-dropped"
    ]
   },
