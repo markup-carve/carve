@@ -98681,6 +98681,81 @@
   "options": {},
   "expected": {"diagnostics": [], "diagnosticsComplete": true},
   "from": []
+ },
+ {
+  "id": "CC-2505",
+  "clauses": ["C2-B-165", "C2-A-141"],
+  "why": "C2-B-165: It is no code point of line 1, so the first character behind it has the column it would have without the mark.",
+  "summary": "a leading BOM keeps byte offsets but takes no AST column",
+  "kind": "parse",
+  "input": "\ufeff# é",
+  "options": {},
+  "expected": {
+   "children": [
+    {
+     "type": "heading",
+     "level": 1,
+     "children": [
+      {
+       "type": "text",
+       "value": "é",
+       "pos": {"startLine":1,"endLine":1,"startColumn":3,"endColumn":4,"startOffset":5,"endOffset":7}
+      }
+     ],
+     "pos": {"startLine":1,"endLine":1,"startColumn":1,"endColumn":4,"startOffset":3,"endOffset":7},
+     "generatedId": "é"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2506",
+  "clauses": ["C2-T-041", "C2-B-165"],
+  "why": "C2-T-041: On line 1, counting starts after a leading byte-order mark (C2-B-165), and offset zero still gives column 1.",
+  "summary": "positionOf at offset zero before a leading BOM gives line 1 column 1",
+  "kind": "position",
+  "input": "\ufeff# é",
+  "offset": 0,
+  "options": {},
+  "expected": {"line":1,"column":1},
+  "from": []
+ },
+ {
+  "id": "CC-2507",
+  "clauses": ["C2-T-041", "C2-B-165"],
+  "why": "C2-T-041: On line 1, counting starts after a leading byte-order mark (C2-B-165), and offset zero still gives column 1.",
+  "summary": "positionOf after a leading BOM gives line 1 column 1",
+  "kind": "position",
+  "input": "\ufeff# é",
+  "offset": 3,
+  "options": {},
+  "expected": {"line":1,"column":1},
+  "from": []
+ },
+ {
+  "id": "CC-2508",
+  "clauses": ["C2-T-041", "C2-B-165"],
+  "why": "C2-T-041: On line 1, counting starts after a leading byte-order mark (C2-B-165), and offset zero still gives column 1.",
+  "summary": "positionOf at the text after a leading BOM gives line 1 column 3",
+  "kind": "position",
+  "input": "\ufeff# é",
+  "offset": 5,
+  "options": {},
+  "expected": {"line":1,"column":3},
+  "from": []
+ },
+ {
+  "id": "CC-2509",
+  "clauses": ["C2-T-019", "C2-B-165"],
+  "why": "C2-T-019: On line 1, a leading byte-order mark is no code point of that line (C2-B-165), so it adds no column.",
+  "summary": "a line-1 lint diagnostic after a leading BOM skips it in the column",
+  "kind": "cli",
+  "files": {"a.crv":{"text":"\ufeffa **b**\n"}},
+  "args": ["lint", "a.crv"],
+  "options": {},
+  "expected": {"status":1,"stdoutDiagnostics":[{"code":"markdown-strong-double-star","file":"a.crv","line":1,"column":3,"severity":"warning"}],"stderrCategory":null},
+  "from": []
  }
  ]
 }

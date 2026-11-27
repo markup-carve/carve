@@ -82,7 +82,9 @@ function resolver(files) {
 function point(source, offset) {
   const prefix = Buffer.from(source).subarray(0, offset).toString('utf8')
   const lines = prefix.split('\n')
-  return { line: lines.length, column: [...(lines.at(-1) ?? '')].length + 1 }
+  const line = lines.length
+  const text = line === 1 ? lines[0].replace(/^\uFEFF/u, '') : lines.at(-1)
+  return { line, column: [...text].length + 1 }
 }
 function diagPlace(d, source) {
   if (d.range && source !== undefined) return { ...point(source, d.range.startOffset), endLine: point(source, d.range.endOffset).line, endColumn: point(source, d.range.endOffset).column }
