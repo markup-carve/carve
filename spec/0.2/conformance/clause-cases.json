@@ -98648,6 +98648,39 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2502",
+  "clauses": ["C2-B-122", "C2-I-002"],
+  "why": "C2-B-122: A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported. C2-I-002: Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others; a space that a backslash escapes is not such a space (C2-I-011).",
+  "summary": "two spaces after a bare code fence run are no further words (carve#6915)",
+  "kind": "parse",
+  "input": "```  \nx\n```\n",
+  "options": {},
+  "expected": {"diagnostics": [], "diagnosticsComplete": true},
+  "from": []
+ },
+ {
+  "id": "CC-2503",
+  "clauses": ["C2-B-122", "C2-I-002"],
+  "why": "C2-B-122: A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported. C2-I-002: Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others; a space that a backslash escapes is not such a space (C2-I-011).",
+  "summary": "three spaces after a bare code fence run are no further words (carve#6915)",
+  "kind": "parse",
+  "input": "```   \nx\n```\n",
+  "options": {},
+  "expected": {"diagnostics": [], "diagnosticsComplete": true},
+  "from": []
+ },
+ {
+  "id": "CC-2504",
+  "clauses": ["C2-B-122", "C2-I-002"],
+  "why": "C2-B-122: A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported. C2-I-002: Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others; a space that a backslash escapes is not such a space (C2-I-011).",
+  "summary": "space then tab after a bare code fence run are no further words (carve#6915)",
+  "kind": "parse",
+  "input": "``` \t\nx\n```\n",
+  "options": {},
+  "expected": {"diagnostics": [], "diagnosticsComplete": true},
+  "from": []
  }
  ]
 }
