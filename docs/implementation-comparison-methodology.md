@@ -8,11 +8,11 @@ This page describes a reproducible 0.2 comparison. The [implementation compariso
 
 ## Pin the contract
 
-Record the spec commit from `next2`, each engine commit, runtime version and enabled options. Compare an engine only against the [0.2 corpus](https://github.com/markup-carve/carve/blob/next2/spec/0.2/conformance/README.md) at that same spec pin. A case marked unverified has hand-written expected output from the clause, so a disagreement calls for reading its cited clause before assigning a defect.
+Record the spec commit from `main`, each engine commit, runtime version and enabled options. Compare an engine only against the [0.2 corpus](https://github.com/markup-carve/carve/blob/main/spec/0.2/conformance/README.md) at that same spec pin. A case marked unverified has hand-written expected output from the clause, so a disagreement calls for reading its cited clause before assigning a defect.
 
 ## Count by operation
 
-Report the number attempted, passed, mismatched and refused for each operation: render, write, lint, parse, include, import, tree reading and CLI. A single total hides missing surfaces. Compare HTML and canonical source byte for byte. Compare trees under [AST equality](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#equality), and compare positions separately when claimed. Compare diagnostic codes, channels, severities, ranges and paths according to the [tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#diagnostics-and-reports). The wording of a diagnostic message is not a cross-engine equality claim.
+Report the number attempted, passed, mismatched and refused for each operation: render, write, lint, parse, include, import, tree reading and CLI. A single total hides missing surfaces. Compare HTML and canonical source byte for byte. Compare trees under [AST equality](https://github.com/markup-carve/carve/blob/main/spec/0.2/ast.md#equality), and compare positions separately when claimed. Compare diagnostic codes, channels, severities, ranges and paths according to the [tooling contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#diagnostics-and-reports). The wording of a diagnostic message is not a cross-engine equality claim.
 
 ## Classify differences
 

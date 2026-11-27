@@ -757,6 +757,10 @@
   color: var(--vp-c-brand-1);
   font-weight: 600;
 }
+/* The flyout's own .text rule sets --vp-c-text-1 and would leave the label gray inside the colored pill. */
+.VPNavBarMenu > .VPFlyout:last-child > .button .text {
+  color: inherit;
+}
 .VPNavBarMenu > .VPFlyout:last-child > .button::before {
   content: "Version";
   margin-right: 6px;

@@ -4,7 +4,7 @@ description: The render, import, AST and format paths of the Carve 0.2 command l
 
 # Supported CLI paths
 
-The Carve 0.2 command line has one specified render target, HTML, and one specified import source, HTML. It also reads and writes versioned AST JSON and canonical Carve source through separate commands. The reference engine calls the program `carve`. See [commands](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands).
+The Carve 0.2 command line has one specified render target, HTML, and one specified import source, HTML. It also reads and writes versioned AST JSON and canonical Carve source through separate commands. The reference engine calls the program `carve`. See [commands](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#commands).
 
 | Input | Command | Output |
 | --- | --- | --- |
@@ -16,4 +16,4 @@ The Carve 0.2 command line has one specified render target, HTML, and one specif
 | HTML | `carve import --from html` | Carve source, with reported losses |
 | 1.x or draft AST JSON | `carve migrate-ast` | 2.0 tree or envelope JSON |
 
-The 0.2 specification does not require BBCode, Djot, or PDF routes. Every engine offers Markdown, plain text, and ANSI export, but their output is outside the specification (C2-T-003). The JavaScript reference engine may have extra import adapters; their behavior is outside the specified path inventory. A target or bridge owned by another application should report any fields it cannot carry. See [format conversion](./format-bridges.md), [tooling scope](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#scope), and [the upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#command-line-and-missing-features).
+The 0.2 specification does not require BBCode, Djot, or PDF routes. Every engine offers Markdown, plain text, and ANSI export, but their output is outside the specification (C2-T-003). The JavaScript reference engine may have extra import adapters; their behavior is outside the specified path inventory. A target or bridge owned by another application should report any fields it cannot carry. See [format conversion](./format-bridges.md), [tooling scope](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#scope), and [the upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).

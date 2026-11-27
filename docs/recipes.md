@@ -4,7 +4,7 @@ description: Use CSS to style Carve containers as trees, cards, columns, and oth
 
 # Styling Recipes
 
-Carve's core containers and attributes give CSS hooks without changing the document language. The [block chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks) defines container names and [HTML rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#quotes-divs-and-their-sigil-forms) defines their output. Use a named div for grouping and a class for styling.
+Carve's core containers and attributes give CSS hooks without changing the document language. The [block chapter](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks) defines container names and [HTML rendering](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md#quotes-divs-and-their-sigil-forms) defines their output. Use a named div for grouping and a class for styling.
 
 ## Cards
 
@@ -34,7 +34,7 @@ The ordered list retains its meaning without the `steps` style. For a tree, use 
 
 ## Boundaries
 
-CSS can change presentation, but it cannot create a missing heading, alternate text, or a link target. An application extension can transform a node when it needs new semantics. It must keep a valid core fallback. See [extensions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md) and [SVG images](./svg-images).
+CSS can change presentation, but it cannot create a missing heading, alternate text, or a link target. An application extension can transform a node when it needs new semantics. It must keep a valid core fallback. See [extensions](https://github.com/markup-carve/carve/blob/main/spec/0.2/extensions.md) and [SVG images](./svg-images).
 
 ## Trees
 
@@ -86,8 +86,8 @@ It renders as `<hr class="page-break">`. A print stylesheet can start a new page
 @media print { hr.page-break { break-after: page; border: 0; } }
 ```
 
-On screen it stays a normal rule, so the break is still visible. See [page breaks](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#page-breaks).
+On screen it stays a normal rule, so the break is still visible. See [page breaks](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md#page-breaks).
 
 ## Why this stays in CSS
 
-Carve source states the document structure. A class or named div gives a styling hook. If the host needs a new semantic node, use the [extension contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md), which requires a valid core fallback.
+Carve source states the document structure. A class or named div gives a styling hook. If the host needs a new semantic node, use the [extension contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/extensions.md), which requires a valid core fallback.

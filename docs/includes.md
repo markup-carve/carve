@@ -9,15 +9,15 @@ For the authoring workflow, start with [Include files](./include-files). This
 page explains the processor rules with examples.
 
 The normative text is the
-[0.2 includes specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md)
+[0.2 includes specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/includes.md)
 (clauses `C2-N-001` to `C2-N-088`). The shape of the directive is defined by the
-[block chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md)
+[block chapter](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md)
 (`C2-B-156`, `C2-B-201` to `C2-B-206`). This page cites those clauses and does
 not add to them; where the two differ, the specification wins. The table of
 failure causes, the option list and the limits are data files:
-[`data/includes.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/includes.json),
-[`data/include-options.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/include-options.json)
-and [`data/limits.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/limits.json).
+[`data/includes.json`](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/includes.json),
+[`data/include-options.json`](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/include-options.json)
+and [`data/limits.json`](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/limits.json).
 
 ## What an include is
 
@@ -379,9 +379,9 @@ written as its directive text (`C2-N-077`).
 Expansion merges every file into one tree, and ids and definitions follow the
 rules of a single document over that tree. Nothing is renamed: Carve 0.1
 renamed a repeated id or footnote label to `-2` with a Warning, and 0.2 dropped
-that rename (see the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md)).
+that rename (see the [upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md)).
 The clauses are `C2-N-053` to `C2-N-060` in the
-[includes specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md#references-across-files).
+[includes specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/includes.md#references-across-files).
 
 ### Authored ids are never renamed
 

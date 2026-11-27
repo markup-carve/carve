@@ -47,4 +47,4 @@ Uses and definitions work across [included files](/include-files). An include th
 
 With the render option `roundtrip`, each copy carries `data-carve-snippet` and the definitions are written into a `<template data-carve-snippets>`. Importing that HTML gives back the definitions and the uses rather than the copied text.
 
-[Block syntax](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#definitions) defines the definition line, [the includes document](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md#snippets) the expansion and its limits, and [the HTML document](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#roundtrip-carriers) the carriers.
+[Block syntax](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md#definitions) defines the definition line, [the includes document](https://github.com/markup-carve/carve/blob/main/spec/0.2/includes.md#snippets) the expansion and its limits, and [the HTML document](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md#roundtrip-carriers) the carriers.

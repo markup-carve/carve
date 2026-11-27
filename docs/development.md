@@ -4,7 +4,7 @@ description: Work with the Carve 0.2 specification and documentation.
 
 # Development
 
-The `next2` branch contains the 0.2 specification in [`spec/0.2/`](https://github.com/markup-carve/carve/tree/next2/spec/0.2) and this documentation source. The [status page](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) identifies the freeze candidate and its open points.
+The `main` branch contains the 0.2 specification in [`spec/0.2/`](https://github.com/markup-carve/carve/tree/main/spec/0.2) and this documentation source. The [status page](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) identifies the freeze candidate and its open points.
 
 ## Set up the repository
 
@@ -12,9 +12,9 @@ Use the Node version in `.nvmrc`, install dependencies with `npm ci`, and run `n
 
 ## Check the 0.2 spec
 
-Run `npm run spec2:data` after changing a 0.2 document, data row, example or conformance case. It checks schemas, clause references, generated examples and tree fixtures. See [Conformance](./conformance) for what an engine must run. When changing a clause, add or adjust the case that demonstrates it and update the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) when 0.1 source changes meaning.
+Run `npm run spec2:data` after changing a 0.2 document, data row, example or conformance case. It checks schemas, clause references, generated examples and tree fixtures. See [Conformance](./conformance) for what an engine must run. When changing a clause, add or adjust the case that demonstrates it and update the [upgrade map](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/upgrade-map.json) when 0.1 source changes meaning.
 
-The reference implementation lives in [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2). Its `carve` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the [tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands); its `upgrade` command is specific to the JavaScript reference engine.
+The reference implementation lives in [`carve-js` on `main`](https://github.com/markup-carve/carve-js/tree/main). Its `carve` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the [tooling specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#commands); its `upgrade` command is specific to the JavaScript reference engine.
 
 ## Investigate a mismatch
 
@@ -22,7 +22,7 @@ Record the spec pin, engine pin, case ID, input, options, expected and actual re
 
 ## Check an Expected section before filing
 
-A bug ticket states its expected result. Before filing it, write each expected result as a case and run `npm run expected:check -- <cases.crv>` with a carve-js `next2` checkout in `engines/carve-js` (or `CARVE_JS_DIR`, or `--js <dir>`). The case file is Carve 0.1: a `##` heading per case (a 0.2 `==` heading works too), an `operation` of `fmt`, `html`, `ast` or `lint`, optional `clauses` and `options`, then the input block and the expected block (the language after a fence is free).
+A bug ticket states its expected result. Before filing it, write each expected result as a case and run `npm run expected:check -- <cases.crv>` with a carve-js `main` checkout in `engines/carve-js` (or `CARVE_JS_DIR`, or `--js <dir>`). The case file is Carve 0.1: a `##` heading per case (a 0.2 `==` heading works too), an `operation` of `fmt`, `html`, `ast` or `lint`, optional `clauses` and `options`, then the input block and the expected block (the language after a fence is free).
 
 ````text
 ## 6569 editorial comment across a comment line
@@ -56,7 +56,7 @@ A version path stays valid while that version is latest. `DOCS_REDIRECT_BASES` l
 
 `.github/workflows/nightly-fuzz.yml` runs every day at 05:45 UTC and on dispatch. It checks out carve-js, carve-php and carve-rs at their `next2` heads and runs `scripts/fuzz-nightly.mjs`: mutants of the 0.2 conformance inputs, random documents, deep nesting around the depth limits (C2-B-190, C2-I-118) and line-ending, tab and control-character noise go through parse, render, format and lint in each engine. The run compares the tree, the HTML, the fmt output and the lint findings across the engines, checks the writer gates C2-W-002 and C2-W-003 in each engine, imports the rendered HTML in every engine, and times long inputs of each construct. A crash, a hang, an error that is not a Carve refusal and superlinear time are reported per engine. There is no spec model on `next2`, so a split where two engines agree is a lead for triage, not a verdict.
 
-Every finding is reduced while it holds and grouped by a signature: the target, the agreement pattern and the input with each word replaced by `x`. `scripts/fuzz-file-issues.mjs` files one issue per new signature, crashes, hangs and superlinear time first, at most five a night; it comments on an open issue with the same signature and skips a closed one. Lint splits are not filed: [`scripts/lint-parity.mjs`](https://github.com/markup-carve/carve/blob/next2/scripts/lint-parity.md) covers lint. A dispatch files only with `file-issues` set.
+Every finding is reduced while it holds and grouped by a signature: the target, the agreement pattern and the input with each word replaced by `x`. `scripts/fuzz-file-issues.mjs` files one issue per new signature, crashes, hangs and superlinear time first, at most five a night; it comments on an open issue with the same signature and skips a closed one. Lint splits are not filed: [`scripts/lint-parity.mjs`](https://github.com/markup-carve/carve/blob/main/scripts/lint-parity.md) covers lint. A dispatch files only with `file-issues` set.
 
 Run it locally with the engines built in `engines/` (as for the readiness run):
 

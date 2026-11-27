@@ -7,22 +7,22 @@ description: Retired readings and compatibility evidence kept outside the curren
 
 ## Carve 0.2 freeze candidate
 
-Carve 0.2 starts a new specification on `next2`. Its [status page](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) records freeze candidates 1 through 14 and their content commits. Candidate 14 is the current candidate at this page's update; it is not a release. The ten documents replace the 0.1 `CARVE-P` clause namespace with distinct identifiers:
+Carve 0.2 starts a new specification on `next2`. Its [status page](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) records freeze candidates 1 through 14 and their content commits. Candidate 14 is the current candidate at this page's update; it is not a release. The ten documents replace the 0.1 `CARVE-P` clause namespace with distinct identifiers:
 
 | Document | Clause prefix | Subject |
 |---|---|---|
-| [Syntax blocks](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md) | `C2-B` | Lines, containers and tables |
-| [Syntax inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md) | `C2-I` | Inline parsing and resolution |
-| [AST](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md) | `C2-A` | Tree contract 2.0 |
-| [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md) | `C2-H` | Rendering |
-| [Writer](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md) | `C2-W` | Canonical source, fmt and lint |
-| [Source layout](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md) | `C2-L` | Layout sidecar |
-| [Includes](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md) | `C2-N` | Expansion and dependencies |
-| [Extensions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md) | `C2-X` | Extension mechanism and tabs |
-| [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) | `C2-M` | Import mapping |
-| [Tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md) | `C2-T` | Library calls and CLI |
+| [Syntax blocks](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md) | `C2-B` | Lines, containers and tables |
+| [Syntax inline](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md) | `C2-I` | Inline parsing and resolution |
+| [AST](https://github.com/markup-carve/carve/blob/main/spec/0.2/ast.md) | `C2-A` | Tree contract 2.0 |
+| [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md) | `C2-H` | Rendering |
+| [Writer](https://github.com/markup-carve/carve/blob/main/spec/0.2/writer.md) | `C2-W` | Canonical source, fmt and lint |
+| [Source layout](https://github.com/markup-carve/carve/blob/main/spec/0.2/source-layout.md) | `C2-L` | Layout sidecar |
+| [Includes](https://github.com/markup-carve/carve/blob/main/spec/0.2/includes.md) | `C2-N` | Expansion and dependencies |
+| [Extensions](https://github.com/markup-carve/carve/blob/main/spec/0.2/extensions.md) | `C2-X` | Extension mechanism and tabs |
+| [HTML import](https://github.com/markup-carve/carve/blob/main/spec/0.2/import-html.md) | `C2-M` | Import mapping |
+| [Tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md) | `C2-T` | Library calls and CLI |
 
-Tooling became the tenth document in candidate 7. Later candidates recorded review corrections, restored 0.1 behaviors where no change was intended, and added case evidence. Candidate 14 records measured include and table corrections, catalog findings and engine differences. The [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md) tracks 0.1 to 0.2 changes. The extension mechanism remains provisional; the other documents are frozen subject to recorded rulings. The [conformance corpus](https://github.com/markup-carve/carve/blob/next2/spec/0.2/conformance/README.md) holds examples, clause cases and refused trees for these clauses.
+Tooling became the tenth document in candidate 7. Later candidates recorded review corrections, restored 0.1 behaviors where no change was intended, and added case evidence. Candidate 14 records measured include and table corrections, catalog findings and engine differences. The [upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md) tracks 0.1 to 0.2 changes. The extension mechanism remains provisional; the other documents are frozen subject to recorded rulings. The [conformance corpus](https://github.com/markup-carve/carve/blob/main/spec/0.2/conformance/README.md) holds examples, clause cases and refused trees for these clauses.
 
 ## Earlier 0.1 decisions
 

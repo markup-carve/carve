@@ -31,4 +31,4 @@ console.log(chapter?.format, chapter?.value)
 
 A key is for lookup in the tree. It creates no HTML id or link target; a cross-reference to it is a lint error. Duplicate ids are reported as usual. `carve ast` exposes the same nodes. The `carve` and `carve-version` keys are read from the line-1 block only. The core does not parse, merge, or render metadata payloads.
 
-[Block syntax](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#frontmatter) defines the opener and [the AST contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md) defines the node.
+[Block syntax](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md#frontmatter) defines the opener and [the AST contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/ast.md) defines the node.

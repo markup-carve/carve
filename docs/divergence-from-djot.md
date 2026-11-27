@@ -4,7 +4,7 @@ description: Every place Carve 0.2 reads or renders a Djot document differently 
 
 # Divergence from Djot
 
-Carve shares much of its syntax with [Djot](https://djot.net): the paragraph and quote model, `:::` divs, `[text]{.attrs}` spans, `{+ins+}`, `{-del-}` and `{=mark=}`, footnotes, math, raw passthrough and smart typography. This page lists every place where the same bytes mean something else in Carve 0.2. Each row names the clause of the [0.2 specification](https://github.com/markup-carve/carve/tree/next2/spec/0.2) that decides it.
+Carve shares much of its syntax with [Djot](https://djot.net): the paragraph and quote model, `:::` divs, `[text]{.attrs}` spans, `{+ins+}`, `{-del-}` and `{=mark=}`, footnotes, math, raw passthrough and smart typography. This page lists every place where the same bytes mean something else in Carve 0.2. Each row names the clause of the [0.2 specification](https://github.com/markup-carve/carve/tree/main/spec/0.2) that decides it.
 
 Outputs were measured against djot.js 0.3.2 and the `carve-js` reference engine. HTML is shortened to the part that differs; `⏎` marks a line break in a one-line input.
 
