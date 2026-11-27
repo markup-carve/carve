@@ -11,13 +11,13 @@ on:
     inputs:
       js_ref:
         description: carve-js ref to replay (branch, tag, SHA or refs/pull/N/head)
-        default: next2
+        default: main
       php_ref:
         description: carve-php ref to replay
-        default: next2
+        default: main
       rs_ref:
         description: carve-rs ref to replay
-        default: next2
+        default: main
 
 permissions:
   contents: read
@@ -25,7 +25,7 @@ permissions:
 jobs:
   engine-readiness:
     # baseline: the engine commits the baseline names, so a red run means the spec data, generator or runner regressed.
-    # heads: the engine next2 heads or the dispatched refs; a red run means an engine regressed.
+    # heads: the engine main heads or the dispatched refs; a red run means an engine regressed.
     name: ${{ matrix.mode == 'baseline' && 'Engine readiness parity and upgrade replay' || 'Engine heads readiness replay' }}
     strategy:
       fail-fast: false
@@ -50,9 +50,9 @@ jobs:
         id: refs
         env:
           MODE: ${{ matrix.mode }}
-          JS_REF: ${{ inputs.js_ref || 'next2' }}
-          PHP_REF: ${{ inputs.php_ref || 'next2' }}
-          RS_REF: ${{ inputs.rs_ref || 'next2' }}
+          JS_REF: ${{ inputs.js_ref || 'main' }}
+          PHP_REF: ${{ inputs.php_ref || 'main' }}
+          RS_REF: ${{ inputs.rs_ref || 'main' }}
         run: |
           if test "$MODE" = baseline; then
             node -e 'const h = require("./scripts/next2-readiness-baseline.json").engineHeads; for (const [k, v] of Object.entries(h)) console.log(`${k}=${v}`)' >> "$GITHUB_OUTPUT"
@@ -111,7 +111,7 @@ jobs:
         run: |
           flags=(--prepared --json=_readiness.json --markdown=_readiness.md --baseline-out=_readiness-baseline.json)
           if test "$MODE" = baseline; then flags+=(--baseline-heads); fi
-          # next2 pushes and the schedule report engine regressions; a dispatched engine ref fails on them.
+          # main pushes and the schedule report engine regressions; a dispatched engine ref fails on them.
           if test "$MODE" = heads && test "$EVENT" != workflow_dispatch; then flags+=(--report-only); fi
           npm --prefix scripts run readiness:next2 -- "${flags[@]}"
       - name: Write job summary

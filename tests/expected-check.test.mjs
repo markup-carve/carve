@@ -34,7 +34,7 @@ test('a malformed case file is a tool error, exit 2', async () => {
 
 const jsDir = resolve(process.env.CARVE_JS_DIR ?? resolve(root, 'engines/carve-js'))
 const engine = existsSync(resolve(jsDir, 'src/index.ts')) || existsSync(resolve(jsDir, 'v2/src/index.ts'))
-const skip = engine ? false : `needs a carve-js next2 checkout at CARVE_JS_DIR or engines/carve-js (the readiness workflow has one)`
+const skip = engine ? false : `needs a carve-js main checkout at CARVE_JS_DIR or engines/carve-js (the readiness workflow has one)`
 
 async function setup(clauseCases = readJson('spec/0.2/conformance/clause-cases.json').cases) {
   const model = await loadModel(jsDir)

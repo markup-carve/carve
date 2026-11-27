@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Replay the 0.2 corpus against the live next2 engine checkouts, including unsupported operations.
+// Replay the 0.2 corpus against the live engine main checkouts, including unsupported operations.
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve, dirname, join } from 'node:path'
