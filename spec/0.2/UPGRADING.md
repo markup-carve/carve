@@ -110,7 +110,7 @@ The explicit extension forms preserve their core fallback when no renderer is re
 | ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
 | --- | --- | --- | --- |
 | U-408 | See [Page][]. **SILENT** | A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A reference may instead be a core reference, so report and choose from its resolved target. | Review by hand; report |
-| U-409 | See [Page](#Page). **SILENT** | A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label. | Review by hand; report |
+| U-409 | `See [Page](#Page).` **SILENT** | A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label. | Review by hand; report |
 | U-410 | Visit https://example.test. **SILENT** | Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and the original link target before rewriting. | Review by hand; report |
 | U-411 | See [cite doe, p. 4]. **SILENT** | A citation uses `:cite[doe]{locator="p. 4"}` and its definition belongs in a named bibliography or references directive (C2-X-058). Report because the old integration may have interpreted the locator differently. | Review by hand; report |
 | U-412 | :::: tabs ⏎ ::: tab [Install] ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | The bracket label becomes the only tab label when moved to a nonempty quoted title (C2-X-040, C2-X-056); this source has no other tab label. | Use the quoted-title spelling; rewrite |

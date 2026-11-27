@@ -189,7 +189,7 @@ carve#1532, carve#1533, carve#1549).
 
 The ticket numbers below used to sit inside the active clauses of
 `21-writer-carve-markdown.ebnf`. The design reasons moved to
-[Technical rationale](./technical-rationale.md#carve-writer).
+[Technical rationale](./technical-rationale.md#make-the-tree-portable).
 
 - §6 two spaces after a letter or roman-numeral ordered marker: carve#4811.
 - §6 an italic holding a word-flanked `/` is written braced: carve#4810.
@@ -288,7 +288,7 @@ entries named nothing, and a host writing `denyBlock(['definition_term'])` got
 silence, which profiles.md calls the specific failure a normative vocabulary
 exists to prevent. The design reasons for the rest of
 `24-ast-contract.ebnf` are in
-[Technical rationale](./technical-rationale.md#ast-contract).
+[Technical rationale](./technical-rationale.md#make-the-tree-portable).
 
 ## AST position implementation history
 
@@ -315,7 +315,7 @@ conformance reports, not the normative grammar.
   The position was not a consequence of Markdown having no caption syntax.
 
 The design reasons for `22-writer-targets.ebnf` are in
-[Technical rationale](./technical-rationale.md#writer-targets).
+[Technical rationale](./technical-rationale.md#keep-a-single-output-contract).
 
 ## NUL values at AST ingest
 
@@ -339,7 +339,7 @@ removed from PART 9 and PART 12 (carve#494, carve#533).
 
 The ticket numbers below used to sit inside the active clauses of
 `19-html-serialization.ebnf`. The design reasons moved to
-[Technical rationale](./technical-rationale.md#html-serialization).
+[Technical rationale](./technical-rationale.md#keep-a-single-output-contract).
 
 - R4, a marker-derived class appended after authored classes
   (`class="verse line-block"`): carve#2328 and carve#2338.
@@ -494,7 +494,7 @@ not taken.
 The ticket numbers and comparisons below used to sit inside the active clauses
 of `14-semantics-blocks.ebnf`. The clauses now state only the rule; this list
 keeps where each one came from. The design reasons moved to
-[Technical rationale](./technical-rationale.md#block-semantics).
+[Technical rationale](./technical-rationale.md#separate-the-stages).
 
 Provenance:
 

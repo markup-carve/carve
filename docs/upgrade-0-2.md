@@ -4933,7 +4933,7 @@ A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A refe
 ```
 :::
 
-**[U-409](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [Page](#Page).
+**[U-409](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> `See [Page](#Page).`
 Tool: Review by hand.
 
 ::: compare no-render
