@@ -289,6 +289,7 @@ export default defineConfig({
             { text: 'Validation', link: '/validation' },
             { text: 'Optional Features & Extensions', link: '/extensions' },
             { text: 'Write an Extension', link: '/extension-tutorial' },
+            { text: 'Extension Example: Acronyms', link: '/extension-acronyms' },
             { text: 'Content Profiles', link: '/profiles' },
             { text: 'Import HTML', link: '/html-import' },
             { text: 'Format Conversion', link: '/format-bridges' },
