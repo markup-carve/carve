@@ -125,6 +125,8 @@ Measured at 08:44 UTC with `npm --prefix scripts run readiness:next2 -- --write-
 
 Lint message wording may change in a 0.2.x release when its id, severity and meaning stay the same. A lint finding range that contradicts its clause may be corrected in a 0.2.x release. Tooling may add library calls, command options and commands in a 0.2.x release without changing existing behavior. New upgrade-map rows and corrections may be added.
 
+A 0.2.x release may change the canonical form `carve fmt` writes, when the new output reads back to the same tree and the change is listed in `UPGRADING.md`. A 0.2.x release may add lint ids, each off by default or at warning severity, and never changes the meaning of an existing id.
+
 The extension mechanism and the standard extensions: `extensions.md` as a whole. The mechanism is part of the candidate and is provisional: its interfaces (registration, matchers, transforms, the node fields and slots, resolution, renderers and the source record) may change in a 0.2.x release together with the extension catalog. The reason is the interface points still open for that work: O12 (a renderer returns an HTML string the host cannot inspect for C2-X-034, the slot walk order of C2-X-020, and the reader of annotation ids), and two rulings of 17 November that the catalog may revisit, the element that carries the attributes of a fallback (O15, C2-X-035) and the fallback written unresolved after a renderer throws (O17, C2-X-050). A change to the mechanism is recorded in `UPGRADING.md` with the release that makes it. Today the catalog is one extension, tabs (C2-X-039 to C2-X-048).
 
 ## Engine gaps from the 18 November rulings
