@@ -975,6 +975,25 @@ lazy
 ```
 :::
 
+**[U-444](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#ruling-of-26-november-2026-a-kept-image-paragraph)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> The first paragraph of a tight item or of a one-block description that holds only images, `- ![a](a.png)` ⏎ `  ![b](b.png)` ⏎ `- c`, or `: ![a](a.png) ![b](b.png)` below a term; or the first paragraph of a tight item that a bare block image follows, `- a` ⏎ `+` ⏎ `![x](i.png)` ⏎ `- b`, which U-014 rewrites to a blank line
+Tool: Review by hand: no 0.2 source writes the paragraph bare, so a style or script that expects the `<img>` directly in `<li>` or `<dd>` finds a `<p>` around it.
+
+::: compare no-render
+```text
+- ![a](a.png)
+  ![b](b.png)
+- c
+```
+```text
+<ul>
+  <li><p><img src="a.png" alt="a">
+<img src="b.png" alt="b"></p></li>
+  <li>c</li>
+</ul> A paragraph that C2-H-034 writes bare as the first block of a tight list item, or C2-H-040 as the one visible block of a description, keeps its <p> when its bare form would not import as that one paragraph (C2-H-018, #6832): its content is only images, whitespace and comments, which would import as one image paragraph per <img> (Exception C2-M-013), or a bare block image of the same item follows it and would join its run (C2-M-012). 0.1 wrote such a paragraph bare: <li><img src="a.png" alt="a">
+<img src="b.png" alt="b"></li>. The second shape comes from a `+` line before a block image, `- a`, `+`, `![x](i.png)`, `- b`, which U-014 rewrites to a blank line: 0.2 writes <li><p>a</p> and the bare <img>, 0.1 <li>a and the bare <img>. No 0.2 source writes the paragraph bare. The source stays; the tool compares the 0.1 HTML with the <p> added at these paragraphs only and reports each one. A first paragraph with text and no following block image stays bare in both.
+```
+:::
+
 ## Description lists {#descriptions}
 
 Terms and descriptions own lines by column, like list items. A term follows the continuation rule of every block but the paragraph: after `:: term` only a line indented past the column of the `::` continues it, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).
