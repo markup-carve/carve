@@ -98479,6 +98479,175 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2495",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: a cell that holds only the alignment run followed by a space (and nothing else) must be reported; the pattern now matches trailing whitespace via (?:[ \\t]\\s*\\S|[ \\t]\\s*$)",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run |?v | (carve#6911)",
+  "kind": "lint",
+  "input": "|?v |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2496",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: a cell holding only > followed by a space is reported",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run |> | (carve#6911)",
+  "kind": "lint",
+  "input": "|> |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2497",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: a cell holding only ~ followed by a space is reported",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run |~ | (carve#6911)",
+  "kind": "lint",
+  "input": "|~ |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2498",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: a cell holding only an alignment run with a glued brace block followed by a space is reported",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run with brace block |>{.c} | (carve#6911)",
+  "kind": "lint",
+  "input": "|>{.c} |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2499",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: a header cell holding only an alignment run followed by a space is reported",
+  "summary": "deprecated-cell-alignment: empty header cell after alignment run |=?v | (carve#6911)",
+  "kind": "lint",
+  "input": "|=?v |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 3,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2500",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: a cell that holds only < followed by whitespace is not reported; the when guard excludes it",
+  "summary": "near miss: deprecated-cell-alignment does not fire for lone < cell |< | (carve#6911)",
+  "kind": "lint",
+  "input": "|< |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "notReported": [
+    "deprecated-cell-alignment"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2501",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "C2-B-182: the first cell of a row is also checked; the empty aligned first cell fires",
+  "summary": "deprecated-cell-alignment: empty first cell in a multi-cell row |?v | x | (carve#6911)",
+  "kind": "lint",
+  "input": "|?v | x |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
