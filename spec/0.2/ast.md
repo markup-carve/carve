@@ -57,7 +57,7 @@ Conventions:
 
 **C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve ast` without `--envelope` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-028).
 
-**C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
+**C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. `decodeTree` of an envelope returns its `document` with each envelope declaration whose name the root lacks appended to the root's `extensions`, after the root's own, in envelope order.
 
 **C2-A-217** `encodeTree` writes the JSON text of the JSON Canonicalization Scheme (RFC 8785): no whitespace, the members of every object in ascending order of their names compared as UTF-16 code units, and each string and number in the one spelling that scheme gives. So one tree has one encoding in every engine, and its `treeFingerprint` (C2-T-046) agrees across engines. A reader does not depend on that order: `decodeTree` reads the members of an object in any order (C2-A-188). The numbers it writes are those of C2-A-219.
 

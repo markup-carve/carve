@@ -97918,6 +97918,193 @@
    }
   },
   "from": []
+ },
+ {
+  "id": "CC-2482",
+  "clauses": [
+   "C2-A-013",
+   "C2-A-029",
+   "C2-A-214"
+  ],
+  "why": "C2-A-013: `decodeTree` of an envelope returns its `document` with each envelope declaration whose name the root lacks appended to the root's `extensions`, after the root's own, in envelope order. C2-A-029: Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON.",
+  "summary": "decodeTree of an envelope lifts an envelope-only declaration onto the root, so node and range data under it stay declared",
+  "kind": "tree",
+  "json": "{\"astVersion\":\"2.0\",\"extensions\":[{\"name\":\"x.note\",\"version\":\"1\",\"required\":false,\"slots\":[]}],\"document\":{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[{\"type\":\"paragraph\",\"data\":{\"x.note\":{\"by\":\"a\"}},\"children\":[{\"type\":\"text\",\"value\":\"Hello\"}]}]}}",
+  "annotations": {
+   "ranges": [
+    {
+     "id": "r1",
+     "start": {
+      "path": "/children/0/children/0",
+      "offset": 0
+     },
+     "end": {
+      "path": "/children/0/children/0",
+      "offset": 5
+     },
+     "data": {
+      "x.note": {
+       "by": "b"
+      }
+     }
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "accepted": true,
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "data": {
+       "x.note": {
+        "by": "a"
+       }
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "Hello"
+       }
+      ]
+     }
+    ],
+    "extensions": [
+     {
+      "name": "x.note",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ]
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2483",
+  "clauses": [
+   "C2-A-013",
+   "C2-A-012",
+   "C2-A-029"
+  ],
+  "why": "C2-A-013: `decodeTree` of an envelope returns its `document` with each envelope declaration whose name the root lacks appended to the root's `extensions`, after the root's own, in envelope order. C2-A-012: An in-memory handoff and `carve ast` without `--envelope` use the bare tree. C2-A-029: Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON.",
+  "summary": "the encodeTree text of a tree decoded from an envelope decodes again with its lifted declaration",
+  "kind": "tree",
+  "json": "{\"astVersion\":\"2.0\",\"children\":[{\"children\":[{\"type\":\"text\",\"value\":\"Hello\"}],\"data\":{\"x.note\":{\"by\":\"a\"}},\"type\":\"paragraph\"}],\"extensions\":[{\"name\":\"x.note\",\"required\":false,\"slots\":[],\"version\":\"1\"}],\"type\":\"document\"}",
+  "annotations": {
+   "ranges": [
+    {
+     "id": "r1",
+     "start": {
+      "path": "/children/0/children/0",
+      "offset": 0
+     },
+     "end": {
+      "path": "/children/0/children/0",
+      "offset": 5
+     },
+     "data": {
+      "x.note": {
+       "by": "b"
+      }
+     }
+    }
+   ]
+  },
+  "options": {},
+  "expected": {
+   "accepted": true,
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "data": {
+       "x.note": {
+        "by": "a"
+       }
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "Hello"
+       }
+      ]
+     }
+    ],
+    "extensions": [
+     {
+      "name": "x.note",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ]
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2484",
+  "clauses": [
+   "C2-A-013",
+   "C2-A-017"
+  ],
+  "why": "C2-A-013: `decodeTree` of an envelope returns its `document` with each envelope declaration whose name the root lacks appended to the root's `extensions`, after the root's own, in envelope order. C2-A-017: If both the root and envelope declare one name, their version, required flag and ordered slots agree.",
+  "summary": "decodeTree of an envelope keeps the root declarations first and appends only the envelope names the root lacks, in envelope order",
+  "kind": "tree",
+  "json": "{\"astVersion\":\"2.0\",\"extensions\":[{\"name\":\"x.b\",\"version\":\"1\",\"required\":false,\"slots\":[]},{\"name\":\"x.a\",\"version\":\"1\",\"required\":false,\"slots\":[]},{\"name\":\"x.d\",\"version\":\"1\",\"required\":false,\"slots\":[]}],\"document\":{\"type\":\"document\",\"astVersion\":\"2.0\",\"extensions\":[{\"name\":\"x.c\",\"version\":\"1\",\"required\":false,\"slots\":[]},{\"name\":\"x.a\",\"version\":\"1\",\"required\":false,\"slots\":[]}],\"children\":[{\"type\":\"paragraph\",\"children\":[{\"type\":\"text\",\"value\":\"a\"}]}]}}",
+  "options": {},
+  "expected": {
+   "accepted": true,
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "x.c",
+      "version": "1",
+      "required": false,
+      "slots": []
+     },
+     {
+      "name": "x.a",
+      "version": "1",
+      "required": false,
+      "slots": []
+     },
+     {
+      "name": "x.b",
+      "version": "1",
+      "required": false,
+      "slots": []
+     },
+     {
+      "name": "x.d",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "from": []
  }
  ]
 }
