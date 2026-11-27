@@ -1,6 +1,6 @@
 name: Nightly fuzz differential (0.2)
 
-# Fuzzes the Carve 0.2 engines at their next2 heads (scripts/fuzz-nightly.mjs): mutants of the 0.2 conformance
+# Fuzzes the Carve 0.2 engines at their main heads (scripts/fuzz-nightly.mjs): mutants of the 0.2 conformance
 # inputs, random documents, deep nesting and line-ending noise go through parse, render, format and lint in
 # carve-js, carve-php and carve-rs. The run compares the tree, the HTML, the fmt output and the lint findings across
 # the engines, checks the writer gates C2-W-002 and C2-W-003 per engine, imports the rendered HTML in every engine,
@@ -56,18 +56,18 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-js
-          ref: next2
+          ref: main
           path: engines/carve-js
           submodules: recursive
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-php
-          ref: next2
+          ref: main
           path: engines/carve-php
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-rs
-          ref: next2
+          ref: main
           path: engines/carve-rs
       - uses: actions/setup-node@v4
         with:

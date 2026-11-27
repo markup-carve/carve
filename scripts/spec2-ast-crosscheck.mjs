@@ -8,7 +8,7 @@ import { Ajv2020 } from 'ajv/dist/2020.js'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const engineRoot = resolve(process.argv[2] ?? '')
-if (!process.argv[2]) throw new Error('pass the path of a carve-js next2 checkout')
+if (!process.argv[2]) throw new Error('pass the path of a carve-js main checkout')
 // Checkouts from before the 0.2 rename keep the engine under v2/.
 const engineBase = existsSync(join(engineRoot, 'v2/src/index.ts')) ? join(engineRoot, 'v2') : engineRoot
 const engine = await import(pathToFileURL(join(engineBase, 'src/index.ts')).href)

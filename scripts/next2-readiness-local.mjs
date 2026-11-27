@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// One local command to fetch the three next2 heads, build them, and run the readiness gate.
+// One local command to fetch the three engine main heads, build them, and run the readiness gate.
 import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -32,12 +32,12 @@ if (!prepared) {
     const dir = dirs[name]
     if (!existsSync(resolve(dir, '.git'))) {
       mkdirSync(dirname(dir), { recursive: true })
-      run('git', ['clone', '--depth', '1', '--branch', 'next2', `https://github.com/markup-carve/${repository}.git`, dir])
+      run('git', ['clone', '--depth', '1', '--branch', 'main', `https://github.com/markup-carve/${repository}.git`, dir])
     }
     const dirty = output('git', ['-C', dir, 'status', '--porcelain'])
     if (dirty) throw new Error(`${dir} has local changes; use a clean checkout or set its CARVE_*_DIR variable`)
     // --baseline-heads replays the engine commits the baseline was measured on, as pull requests do.
-    run('git', ['-C', dir, 'fetch', '--depth', '1', 'origin', pinned ? baselineHeads[name] : 'next2'])
+    run('git', ['-C', dir, 'fetch', '--depth', '1', 'origin', pinned ? baselineHeads[name] : 'main'])
     const head = output('git', ['-C', dir, 'rev-parse', 'HEAD'])
     const next = output('git', ['-C', dir, 'rev-parse', 'FETCH_HEAD'])
     if (head !== next) run('git', ['-C', dir, 'switch', '--detach', next])

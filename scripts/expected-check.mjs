@@ -11,7 +11,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const HELP = `Usage: npm run expected:check -- <cases.crv> [--js <carve-js dir>] [--top <n>] [--clause-cases <file>]
 
 Checks the Expected results a lane is about to file against the 0.2 reference
-model, carve-js next2 (src/index.ts of a checkout: --js, else CARVE_JS_DIR, else
+model, carve-js main (src/index.ts of a checkout: --js, else CARVE_JS_DIR, else
 engines/carve-js), and against the pinned clause cases of
 spec/0.2/conformance/clause-cases.json.
 
@@ -182,7 +182,7 @@ export function show(operation, value) {
 
 export async function loadModel(dir) {
   const entry = [resolve(dir, 'src/index.ts'), resolve(dir, 'v2/src/index.ts')].find(path => existsSync(path))
-  if (!entry) throw new Error(`no carve-js next2 checkout at ${dir} (src/index.ts); pass --js or set CARVE_JS_DIR`)
+  if (!entry) throw new Error(`no carve-js main checkout at ${dir} (src/index.ts); pass --js or set CARVE_JS_DIR`)
   const js = await import(pathToFileURL(entry))
   const catalogPath = resolve(dir, 'cli/standard-extensions.ts')
   const catalog = existsSync(catalogPath) ? await import(pathToFileURL(catalogPath)) : null
