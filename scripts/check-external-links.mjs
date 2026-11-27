@@ -24,6 +24,8 @@ const repoRoot = resolve(__dirname, '..')
  */
 const NEVER_FETCH = [
   /^https?:\/\/(www\.)?example\.(com|org|net)/,
+  /^https?:\/\/[^/]*\.test(?:[/:]|$)/,
+  /^https?:\/\/[^/\s]*…/,
   /^https?:\/\/localhost/,
   /^https?:\/\/127\.0\.0\.1/,
   /^https?:\/\/[^/]*\.invalid/,

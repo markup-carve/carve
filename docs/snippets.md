@@ -3,9 +3,9 @@
 Carve 0.2 lets you name a short piece of inline text once and repeat it anywhere in the document. Define it on one line with `{$name}:` and use it with <code v-pre>{{ $name }}</code>.
 
 ````carve
-{$ver}: 0.2.3
+{$ver}: 0.2.0
 
-{$rel .badge}: [release notes](https://github.com/markup-carve/carve/releases/v0.2.3)
+{$rel .badge}: [0.2 overview](https://github.com/markup-carve/carve/blob/main/docs/whats-new-0-2.md)
 
 Install {{ $ver }} today. Read the {{ $rel }}.
 
@@ -13,8 +13,8 @@ Install {{ $ver }} today. Read the {{ $rel }}.
 ````
 
 ```html
-<p>Install 0.2.3 today. Read the <span class="badge"><a href="https://github.com/markup-carve/carve/releases/v0.2.3">release notes</a></span>.</p>
-<p class="badge"><a href="https://github.com/markup-carve/carve/releases/v0.2.3">release notes</a></p>
+<p>Install 0.2.0 today. Read the <span class="badge"><a href="https://github.com/markup-carve/carve/blob/main/docs/whats-new-0-2.md">0.2 overview</a></span>.</p>
+<p class="badge"><a href="https://github.com/markup-carve/carve/blob/main/docs/whats-new-0-2.md">0.2 overview</a></p>
 ```
 
 ## Define

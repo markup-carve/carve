@@ -44,7 +44,7 @@ Highlighting, language servers and editor features may recognize only 0.1 spelli
 - [pygments-carve](https://github.com/markup-carve/pygments-carve)
 - [rouge-carve](https://github.com/markup-carve/rouge-carve)
 - [tempest-highlight-carve](https://github.com/markup-carve/tempest-highlight-carve)
-- [Prettier plugin](https://github.com/markup-carve/carve-js/blob/main/docs/integrations.md#prettier)
+- [Prettier plugin](https://github.com/markup-carve/carve-js/blob/main/docs/api.md#prettier)
 - [carve-lsp](https://github.com/markup-carve/carve-lsp)
 
 ## Framework integrations
