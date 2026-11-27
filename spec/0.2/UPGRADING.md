@@ -26,6 +26,8 @@ Each construct links to its section of the [upgrade page](https://markup-carve.g
 - [Raw HTML and render options](https://markup-carve.github.io/carve/0.2/upgrade-0-2#html): 11 rows: [HTML](#html) (3), [Host options](#host-options) (2), [Remaining measured source changes](#remaining-measured-source-changes) (2), [Differences to 0.1 that stay, 17 November 2026](#differences-to-01-that-stay-17-november-2026) (3), [Kept and recorded](#kept-and-recorded) (1).
 - [Extensions and tabs](https://markup-carve.github.io/carve/0.2/upgrade-0-2#extensions): 17 rows: [Extension rulings of 18 November](#extension-rulings-of-18-november) (14), [Extension rulings of 19 November](#extension-rulings-of-19-november) (3).
 - [JavaScript API](https://markup-carve.github.io/carve/0.2/upgrade-0-2#api): no source rows; see the section for the host changes.
+- [PHP API](https://markup-carve.github.io/carve/0.2/upgrade-0-2#api-php): no source rows; see the section for the host changes.
+- [Rust API](https://markup-carve.github.io/carve/0.2/upgrade-0-2#api-rust): no source rows; see the section for the host changes.
 - [Command line and lint](https://markup-carve.github.io/carve/0.2/upgrade-0-2#cli): 4 rows: [Rulings of 17 November 2026, 13:55](#rulings-of-17-november-2026-1355) (2), [Host options](#host-options) (2).
 - [The AST 2.0 tree](https://markup-carve.github.io/carve/0.2/upgrade-0-2#ast): no source rows; see the section for the tree rows.
 
@@ -1148,7 +1150,7 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `compareSpecVersions` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
 | `createReversibleAstPatch` | Removed: "There is no reversible patch and no three-way merge" (C2-T-044). Keep the old tree to undo a change; `diffTree` and `applyPatch` give a JSON Patch (C2-T-043). |
 | `d2` | The `d2` fenced-render preset in `@markup-carve/carve/extensions`. |
-| `decisionTraceJsonLines` | No 0.2 counterpart and no `trace` command; whether a trace returns is open in markup-carve/carve#6264. |
+| `decisionTraceJsonLines` | No 0.2 counterpart and no `trace` command; the portable trace was dropped (markup-carve/carve#6264). |
 | `defaultAttributes` | The `defaultAttributes` factory in `@markup-carve/carve/extensions`. |
 | `details` | The `details` factory in `@markup-carve/carve/extensions`. |
 | `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids; they are off by default, and neither `upgrade` nor a 0.1 declaration turns them on (C2-W-109, C2-W-156). The `markdown-` rules report the Markdown habits. |
@@ -1223,6 +1225,14 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | 0.1 lint options | `lint` reads `rules`, `platforms` and `upgrade`; `carve lint` takes them as `--rules` and `--platforms` with JSON values and the switch `--upgrade` (C2-T-010, C2-W-156). |
 
 0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `renderTree` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
+
+### PHP API
+
+0.2 replaces 0.1 in the same Composer package and namespace: `MarkupCarve\Carve` holds the 0.2 engine, and the 0.1 classes are gone. The configured `CarveConverter` object gives way to static calls on `MarkupCarve\Carve\Carve`, each taking one validated options array, so `$converter->convert($source)` becomes `Carve::render($source, $options)`. The command line stays `vendor/bin/carve` with the 0.2 commands. [Moving a PHP host from Carve 0.1 to 0.2](https://github.com/markup-carve/carve-php/blob/main/docs/migration.md) maps the 0.1 calls of the PHP integrations to their 0.2 calls: rendering, Carve and other output formats, the ProseMirror bridge, includes, lint, import, trees, extensions and errors.
+
+### Rust API
+
+The `carve` crate drops its 0.1 engine, and the 0.2 calls live in `carve::api`: `to_html` becomes `api::render`, `parse` becomes `api::parse`, `to_json` becomes `api::parse` then `api::encode_tree`, and `carve::Options::new()` becomes `api::Options::default()`. The 0.2 `carve` command replaces the 0.1 one. [Migrating from 0.1](https://github.com/markup-carve/carve-rs/blob/main/README.md#migrating-from-01) in the carve-rs README maps the 0.1 calls the bindings (carve-py, carve-rb, carve-wasm) use and marks the ones 0.2 drops, such as `merge_ast` and `decision_trace`.
 
 ### Markdown import is GFM import
 
@@ -1341,6 +1351,7 @@ The Rust engine keeps its directory migration helpers `try_migrate_markdown_for_
 
 Not carried over:
 
+- The `merge` and `trace` commands. 0.2 has no three-way merge (C2-T-044) and no portable decision trace (markup-carve/carve#6264), so neither command has a 0.2 replacement. `migrate` is not lost: it maps to `carve import`, as the table above shows.
 - The PHP engine's `PlusBulletExtension`, which read `+` as a bullet. An extension adds no line shape in 0.2.0 (C2-X-013), and a line that starts with `+ ` is a paragraph. `carve lint --fix --rules '{"djot-plus-bullet":"on"}'` rewrites each such line to a `-` item (C2-T-049).
 - The `icons` argument of the PHP engine's `AdmonitionExtension`, which wrote `<span class="admonition-icon">` into the title. The admonition HTML is core output and an extension does not change it; the class of the admonition, as `admonition note`, carries the kind, so a stylesheet rule such as `.admonition.note > .admonition-title::before` gives the icon.
 - The `./editor` web component of carve-grammars, which edited the 0.1 tree (carve-grammars#903). It is dropped for good; an editor builds on the 0.2 Tiptap kit, `@markup-carve/carve-grammars/tiptap` (carve-grammars#913).

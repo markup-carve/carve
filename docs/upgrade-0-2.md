@@ -5190,11 +5190,23 @@ Move `carveToHtml` callers to `render`, and consumers of old report objects to `
 
 The full replacement table is in [JavaScript API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#javascript-api); HTML and selector changes are in [HTML and page selectors](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html-and-page-selectors), and Markdown import in [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).
 
+## PHP API {#api-php}
+
+0.2 replaces 0.1 in the same Composer package and namespace, `MarkupCarve\Carve`, and the 0.1 classes are gone. The configured `CarveConverter` object gives way to static calls on `MarkupCarve\Carve\Carve` that each take one validated options array.
+
+Move `$converter->convert($source)` to `Carve::render($source, $options)` and keep the options array where you kept the converter. The command line stays `vendor/bin/carve` with the 0.2 commands. The call-by-call table is [Moving a PHP host from Carve 0.1 to 0.2](https://github.com/markup-carve/carve-php/blob/main/docs/migration.md) in carve-php; the summary is in [PHP API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#php-api).
+
+## Rust API {#api-rust}
+
+The `carve` crate drops its 0.1 engine, and the 0.2 calls live in `carve::api`. The 0.2 `carve` command replaces the 0.1 one.
+
+Move `to_html` to `api::render`, `parse` to `api::parse`, `to_json` to `api::parse` then `api::encode_tree`, and `carve::Options::new()` to `api::Options::default()`. Some calls have no 0.2 counterpart, such as `merge_ast` and `decision_trace`. The call-by-call table is [Migrating from 0.1](https://github.com/markup-carve/carve-rs/blob/main/README.md#migrating-from-01) in the carve-rs README; the summary is in [Rust API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rust-api).
+
 ## Command line and lint {#cli}
 
 [Tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md) specifies the 0.2 commands every engine offers: `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`. The reference engine adds `upgrade`.
 
-Most 0.1 flags keep their names. The ones that move: `--json` and `--ast` become `carve ast`; `migrate --from html` becomes `carve import --from html`, and `migrate --from markdown` becomes `carve import --from gfm`; `--no-raw-html` and `--safe` are the default, and `--raw-html` turns raw HTML on; `fmt --migrate` becomes `carve upgrade --migrate`. `carve lint` exits with 1 only for a warning or an error, so a hint never fails a CI job; `--strict` restores the 0.1 status (C2-T-031, C2-T-051). The full flag table is in [Command line and missing features](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).
+Most 0.1 flags keep their names. The ones that move: `--json` and `--ast` become `carve ast`; `migrate --from html` becomes `carve import --from html`, and `migrate --from markdown` becomes `carve import --from gfm`; `--no-raw-html` and `--safe` are the default, and `--raw-html` turns raw HTML on; `fmt --migrate` becomes `carve upgrade --migrate`. The 0.1 `merge` and `trace` commands have no 0.2 replacement: 0.2 has no three-way merge (C2-T-044) and no portable decision trace. `carve lint` exits with 1 only for a warning or an error, so a hint never fails a CI job; `--strict` restores the 0.1 status (C2-T-031, C2-T-051). The full flag table is in [Command line and missing features](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).
 
 **[U-372](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> Consecutive marker-shaped paragraph lines: `a` then `- b` then `- c`
 Tool: Each marker-shaped line reports; HTML is unchanged.
