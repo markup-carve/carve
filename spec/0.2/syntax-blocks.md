@@ -2702,7 +2702,7 @@ Glued attribute blocks after an inline host merge as C2-I-039 says.
 
 **C2-B-095** Every block takes an attribute line, a definition and a `%%%` comment block included.
 
-**Exception C2-B-096** A caption takes no attribute line.
+**Exception C2-B-096** A caption and a block snippet use (C2-B-237) take no attribute line.
 
 **C2-B-097** An attribute line is a line like any other for ownership, so one that its container does not own closes that container (C2-B-026). It is neither a blank line nor a comment-only line, so two lists with an attribute line between them are not one list (C2-B-053).
 

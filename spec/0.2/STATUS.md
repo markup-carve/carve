@@ -893,6 +893,13 @@ The ruling on #6865 (option B) applies C2-B-095 to a snippet definition: it take
 - `carve-php`: refuse the definition under an attribute line with an id, as it ports snippets.
 - `carve-rs`: both, as it implements snippets.
 
+## Engine gaps from the block snippet use attribute line ruling of 27 November (#6896)
+
+The ruling on #6896 (option A) names the block snippet use in C2-B-096: it takes no attribute line, because C2-A-221 and C2-I-128 give a use no attributes and the `snippet_use` schema has no `attrs`, `lang`, `dir` or `metadata`. The line above a block use stays a closed paragraph (C2-B-092), and the use below it is still a block use. A snippet definition still takes its line (#6865). Clause cases CC-2487 to CC-2490. Measured on `carve-js` `main` `04fbb8ab`: all four fail; it attaches the line to the use, renders no paragraph for it and drops it on a round trip. `carve-php` and `carve-rs` run the cases in their snippet ports.
+
+- `carve-js`: leave the line above a block use to the paragraph.
+- `carve-php` and `carve-rs`: the same, as they port snippets.
+
 ## Engine gaps from the appended definition ruling of 26 November (#6866)
 
 The ruling on #6866 (option A, narrowed) adds a fourth exemption to C2-A-145: in the children of an include with a line, region or section selection, a selected block and a definition appended under C2-N-020 or C2-N-031 are not compared, since the definition keeps its file position; the selected blocks stay ordered among themselves, and so do the appended definitions. No tree changes. The tree gate takes the exemption (`scripts/spec2-trees.mjs`), with the positioned trees of CC-2373 and of a section selection and a refused tree whose appended definitions stand out of file order (`trees/positions.json`). Clause case CC-2467 renders the section selection; `carve-js` `next2` `b770d62d` passes it.

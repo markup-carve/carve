@@ -98148,6 +98148,161 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2487",
+  "clauses": [
+   "C2-B-096",
+   "C2-B-092",
+   "C2-B-237"
+  ],
+  "why": "C2-B-096: A caption and a block snippet use (C2-B-237) take no attribute line. C2-B-092: An attribute line is held pending until the next line: a block takes it, and otherwise it becomes a closed paragraph before the next line is classified.",
+  "summary": "an attribute line above a block snippet use is a paragraph of its own, and the use below it stays a block use with no attributes",
+  "kind": "render",
+  "input": "{$v}: X\n\n{.k :en}\n{{ $v }}\n",
+  "options": {},
+  "expected": {
+   "html": "<p>{.k :en}</p>\n<p>X</p>",
+   "children": [
+    {
+     "type": "snippet_definition",
+     "name": "v",
+     "children": [
+      {
+       "type": "text",
+       "value": "X"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "{.k :en}"
+      }
+     ]
+    },
+    {
+     "type": "snippet_use",
+     "name": "v",
+     "mode": "block"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2488",
+  "clauses": [
+   "C2-B-096",
+   "C2-B-092"
+  ],
+  "why": "C2-B-096: A caption and a block snippet use (C2-B-237) take no attribute line. C2-B-092: An attribute line is held pending until the next line: a block takes it, and otherwise it becomes a closed paragraph before the next line is classified.",
+  "summary": "format keeps the attribute line above a block snippet use as a paragraph and the use as a block use",
+  "kind": "format",
+  "input": "{$v}: X\n\n{.k :en}\n{{ $v }}\n",
+  "options": {},
+  "expected": {
+   "carve": "{$v}: X\n\n{.k :en}\n\n{{ $v }}\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2489",
+  "clauses": [
+   "C2-B-096",
+   "C2-B-095",
+   "C2-B-236"
+  ],
+  "why": "C2-B-095: Every block takes an attribute line, a definition and a `%%%` comment block included. C2-B-096: A caption and a block snippet use (C2-B-237) take no attribute line.",
+  "summary": "the definition takes the attribute line above it and the block use does not",
+  "kind": "render",
+  "input": "{.k}\n{$v}: X\n\n{.m}\n{{ $v }}\n",
+  "options": {},
+  "expected": {
+   "html": "<p>{.m}</p>\n<p class=\"k\">X</p>",
+   "children": [
+    {
+     "type": "snippet_definition",
+     "name": "v",
+     "children": [
+      {
+       "type": "text",
+       "value": "X"
+      }
+     ],
+     "attrs": {
+      "classes": [
+       "k"
+      ]
+     }
+    },
+    {
+     "type": "paragraph",
+     "children": [
+      {
+       "type": "text",
+       "value": "{.m}"
+      }
+     ]
+    },
+    {
+     "type": "snippet_use",
+     "name": "v",
+     "mode": "block"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2490",
+  "clauses": [
+   "C2-B-096",
+   "C2-B-092",
+   "C2-B-237"
+  ],
+  "why": "C2-B-096: A caption and a block snippet use (C2-B-237) take no attribute line. C2-B-092: An attribute line is held pending until the next line: a block takes it, and otherwise it becomes a closed paragraph before the next line is classified.",
+  "summary": "inside a quote the attribute line above a block snippet use is a paragraph too",
+  "kind": "render",
+  "input": "{$v}: X\n\n> {.k}\n> {{ $v }}\n",
+  "options": {},
+  "expected": {
+   "html": "<blockquote>\n  <p>{.k}</p>\n  <p>X</p>\n</blockquote>",
+   "children": [
+    {
+     "type": "snippet_definition",
+     "name": "v",
+     "children": [
+      {
+       "type": "text",
+       "value": "X"
+      }
+     ]
+    },
+    {
+     "type": "block_quote",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "{.k}"
+        }
+       ]
+      },
+      {
+       "type": "snippet_use",
+       "name": "v",
+       "mode": "block"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
