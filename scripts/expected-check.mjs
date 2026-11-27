@@ -140,7 +140,9 @@ const sameTree = (a, b) => isDeepStrictEqual(normalize(a), normalize(b))
 
 function point(source, offset) {
   const lines = Buffer.from(source).subarray(0, offset).toString('utf8').split('\n')
-  return { line: lines.length, column: [...lines.at(-1)].length + 1 }
+  const line = lines.length
+  const text = line === 1 ? lines[0].replace(/^\uFEFF/u, '') : lines.at(-1)
+  return { line, column: [...text].length + 1 }
 }
 const lintEntries = (diagnostics, source) => diagnostics.map(d => {
   const base = { code: d.code, severity: d.severity, channel: d.channel, ...(d.path !== undefined ? { path: d.path } : {}) }
