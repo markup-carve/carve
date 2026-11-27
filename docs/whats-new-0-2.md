@@ -13,9 +13,9 @@ Carve 0.2 adds snippets, `=` headings, multi-line headings, terms and definition
 Name a short piece of inline text once and repeat it anywhere in the document. A definition is one line at column 0, `{$name}: value`, and <code v-pre>{{ $name }}</code> copies the value in place. Alone on its own line, a use becomes its own paragraph.
 
 ````carve
-{$ver}: 0.2.3
+{$ver}: 0.2.0
 
-{$rel .badge}: [release notes](https://github.com/markup-carve/carve/releases/v0.2.3)
+{$rel .badge}: [0.2 overview](https://github.com/markup-carve/carve/blob/main/docs/whats-new-0-2.md)
 
 Install {{ $ver }} today. Read the {{ $rel }}.
 
@@ -23,8 +23,8 @@ Install {{ $ver }} today. Read the {{ $rel }}.
 ````
 
 ```html
-<p>Install 0.2.3 today. Read the <span class="badge"><a href="https://github.com/markup-carve/carve/releases/v0.2.3">release notes</a></span>.</p>
-<p class="badge"><a href="https://github.com/markup-carve/carve/releases/v0.2.3">release notes</a></p>
+<p>Install 0.2.0 today. Read the <span class="badge"><a href="https://github.com/markup-carve/carve/blob/main/docs/whats-new-0-2.md">0.2 overview</a></span>.</p>
+<p class="badge"><a href="https://github.com/markup-carve/carve/blob/main/docs/whats-new-0-2.md">0.2 overview</a></p>
 ```
 
 Snippets work across included files, and lint reports unknown, unused and duplicate names. See [Snippets](./snippets).

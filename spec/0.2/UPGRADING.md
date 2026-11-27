@@ -1102,9 +1102,9 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | 0.1 public function | 0.2 counterpart or action |
 | --- | --- |
 | `carveToHtml(source, options)` | `render(source, options)`; pass only 0.2 options. |
-| `parse(source, options)` | `parseTree(source, options)` for syntax only, or `parse(source, options)` for a resolved document. |
-| `resolve(document, options)` | `resolveTree(parsedOrDocument, options)`; use its result with `renderTree`. |
-| `renderHtml(document, options)` | `render(document, options)`, or `renderTree(resolveTree(document, options))`. |
+| `parse(source, options)` | `parse(source, options)` returns a resolved tree; `parseWithDiagnostics` also returns parser and resolution findings. |
+| `resolve(document, options)` | `parse(source, options)` returns a resolved 2.0 tree. There is no separate public `resolve` call for an existing tree; reparse the original source when you need a resolved tree. |
+| `renderHtml(document, options)` | `render(sourceOrTree, options)`; use `renderWithDiagnostics` when you need findings. |
 | `renderDocument`, `renderDocumentWithReport` | `render` or `renderWithDiagnostics`; the old grouped entry points are absent. |
 | `carveToHtmlWithReport`, `renderHtmlWithReport` | `renderWithDiagnostics`; inspect `html` and `diagnostics`. |
 | `carveToAstJson`, `toAstJson`, `toAstEnvelope` | `parse` plus `encodeTree` or `encodeEnvelope`; the 2.0 schema differs. |
@@ -1224,7 +1224,7 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
 | 0.1 lint options | `lint` reads `rules`, `platforms` and `upgrade`; `carve lint` takes them as `--rules` and `--platforms` with JSON values and the switch `--upgrade` (C2-T-010, C2-W-156). |
 
-0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `renderTree` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
+0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `render` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
 
 ### PHP API
 

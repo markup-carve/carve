@@ -5192,7 +5192,7 @@ stray
 
 0.2 replaces the one large 0.1 package API with the functions of the `carve-js` package root, and each stage (parse, resolve, render) has its own call.
 
-Move `carveToHtml` callers to `render`, and consumers of old report objects to `renderWithDiagnostics`. `parse` becomes `parseTree` for syntax only, or `parse` for a resolved document; `resolve` becomes `resolveTree`, whose result goes to `renderTree`. Pass only 0.2 options. Compare site CSS and scripts against the 0.2 section, list and table HTML.
+Move `carveToHtml` callers to `render`, and consumers of old report objects to `renderWithDiagnostics`. `parse` returns a resolved 2.0 tree, and `parseWithDiagnostics` also returns findings; no separate public `resolve` call exists. `render` accepts source or a 2.0 tree for HTML. Pass only 0.2 options. Compare site CSS and scripts against the 0.2 section, list and table HTML.
 
 The full replacement table is in [JavaScript API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#javascript-api); HTML and selector changes are in [HTML and page selectors](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html-and-page-selectors), and Markdown import in [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).
 

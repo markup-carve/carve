@@ -71,7 +71,7 @@ Containers hold admonitions and application-defined blocks.
 | Attributes | `{#id .class key=value}` on the line above a block |
 | Definition | `:: Term` then `: Definition` |
 | Admonition | `::: note` |
-| Snippet | `{$ver}: 0.2.3`, then <code v-pre>{{ $ver }}</code> |
+| Snippet | `{$ver}: 0.2.0`, then <code v-pre>{{ $ver }}</code> |
 | Inline extension | `:name[content]` |
 
 The [cheat sheet](./cheatsheet) lists every construct. [Examples](./examples) show Carve source beside its HTML output. Try any of it in the [playground](./playground).
