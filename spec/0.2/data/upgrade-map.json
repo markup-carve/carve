@@ -3380,6 +3380,16 @@
       "meaning02": "<p>x</p> An abbreviation definition continues on every text line directly below it that is indented past column 0, and each such line joins its expansion (C2-B-084); 0.1 ended the definition at its line and read the indented lines as a paragraph. Write a blank line between the definition and the first line 0.2 would join to it, so the lines stay the paragraph 0.1 read. A line that ends the definition even when indented, such as a fence line, a table row, a thematic break, a region marker line or a comment line, is not rewritten. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
       "toolEntry": "U-443",
       "silent": true
+    },
+    {
+      "id": "U-444",
+      "kind": "report",
+      "group": "rulings of 26 November",
+      "from": "- ![a](a.png)\n  ![b](b.png)\n- c\n",
+      "to": "- ![a](a.png)\n  ![b](b.png)\n- c\n",
+      "meaning02": "<ul>\n  <li><p><img src=\"a.png\" alt=\"a\">\n<img src=\"b.png\" alt=\"b\"></p></li>\n  <li>c</li>\n</ul> A paragraph that C2-H-034 writes bare as the first block of a tight list item, or C2-H-040 as the one visible block of a description, keeps its <p> when its bare form would not import as that one paragraph (C2-H-018, #6832): its content is only images, whitespace and comments, which would import as one image paragraph per <img> (Exception C2-M-013), or a bare block image of the same item follows it and would join its run (C2-M-012). 0.1 wrote such a paragraph bare: <li><img src=\"a.png\" alt=\"a\">\n<img src=\"b.png\" alt=\"b\"></li>. The second shape comes from a `+` line before a block image, `- a`, `+`, `![x](i.png)`, `- b`, which U-014 rewrites to a blank line: 0.2 writes <li><p>a</p> and the bare <img>, 0.1 <li>a and the bare <img>. No 0.2 source writes the paragraph bare. The source stays; the tool compares the 0.1 HTML with the <p> added at these paragraphs only and reports each one. A first paragraph with text and no following block image stays bare in both.",
+      "toolEntry": "U-444",
+      "silent": true
     }
   ],
   "tree": [

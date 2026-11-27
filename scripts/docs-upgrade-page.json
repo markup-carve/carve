@@ -26,7 +26,7 @@
       "key": "lists",
       "title": "Lists and task items",
       "why": "0.1 shaped lists with `+` continuation lines, `{loose}`, marker columns and task boxes. In 0.2 blank lines and content columns decide the shape: there is no list continuation marker, and a line past the marker column stays in the item (writer, [rules of 0.1 that become obsolete](https://github.com/markup-carve/carve/blob/main/spec/0.2/writer.md#rules-of-01-that-become-obsolete)). The 18 November ruling D1 lets the first marker fix the style of an ordered list ([#6074](https://github.com/markup-carve/carve/pull/6074), C2-B-042).",
-      "rows": ["U-014", "U-015", "U-017", "U-018", "U-019", "U-020", "U-021", "U-023", "U-025", "U-026", "U-027", "U-028", "U-029", "U-030", "U-117", "U-118", "U-119", "U-122", "U-133", "U-153", "U-159", "U-163", "U-169", "U-230", "U-237", "U-397", "U-398", "U-403", "U-404", "U-434", "U-436", "U-438"]
+      "rows": ["U-014", "U-015", "U-017", "U-018", "U-019", "U-020", "U-021", "U-023", "U-025", "U-026", "U-027", "U-028", "U-029", "U-030", "U-117", "U-118", "U-119", "U-122", "U-133", "U-153", "U-159", "U-163", "U-169", "U-230", "U-237", "U-397", "U-398", "U-403", "U-404", "U-434", "U-436", "U-438", "U-444"]
     },
     {
       "key": "descriptions",
