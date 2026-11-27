@@ -4,7 +4,7 @@ description: Projects that work with Carve, with their version boundaries.
 
 # Ecosystem
 
-This directory links projects that parse, display, edit or convert Carve. Most existing integrations target released 0.1 engines. A link here does not claim 0.2 support. Check each project's branch and engine pin before using it with 0.2 documents. The 0.2 reference implementation is [carve-js on `next2`](https://github.com/markup-carve/carve-js/tree/next2), and its portable contract is in the [0.2 specification](./grammar).
+This directory links projects that parse, display, edit or convert Carve. Most existing integrations target released 0.1 engines. A link here does not claim 0.2 support. Check each project's branch and engine pin before using it with 0.2 documents. The 0.2 reference implementation is [carve-js on `main`](https://github.com/markup-carve/carve-js/tree/main), and its portable contract is in the [0.2 specification](./grammar).
 
 ## Parsers
 
@@ -127,4 +127,4 @@ Lists, installation helpers and sandboxes. Check which Carve version each uses.
 - [homebrew-carve](https://github.com/markup-carve/homebrew-carve)
 - [PHP Sandbox](https://sandbox.dereuromark.de/sandbox/carve)
 
-For 0.2 document transport, the media type remains `text/x-carve; charset=utf-8`. The [AST contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md) and [tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md) define what an integration should exchange.
+For 0.2 document transport, the media type remains `text/x-carve; charset=utf-8`. The [AST contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/ast.md) and [tooling contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md) define what an integration should exchange.

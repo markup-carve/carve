@@ -186,7 +186,7 @@ The 0.2 specification defines the library calls and the `carve` program that eve
 | `carve fix` | applies the lint fixes |
 | `carve migrate-ast` | converts a stored 1.x tree to AST 2.0 |
 
-The JavaScript engine also ships `carve upgrade`, which rewrites a 0.1 document and checks each rewrite against the 0.1 HTML. See the [tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
+The JavaScript engine also ships `carve upgrade`, which rewrites a 0.1 document and checks each rewrite against the 0.1 HTML. See the [tooling specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md).
 
 ### Lint
 
@@ -198,7 +198,7 @@ Trees move to AST 2.0. Lists and tables use `children` like every other containe
 
 ## A rewritten specification
 
-The 0.2 specification was written fresh in ten documents: block and inline syntax, HTML rendering, the AST, extensions, source layout, writer and fmt, includes, HTML import and tooling. Every example in it is also a case of the conformance corpus that the JavaScript, PHP and Rust engines test against. Start at the [0.2 specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/README.md).
+The 0.2 specification was written fresh in ten documents: block and inline syntax, HTML rendering, the AST, extensions, source layout, writer and fmt, includes, HTML import and tooling. Every example in it is also a case of the conformance corpus that the JavaScript, PHP and Rust engines test against. Start at the [0.2 specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/README.md).
 
 ## Next
 

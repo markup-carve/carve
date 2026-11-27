@@ -12,7 +12,7 @@ pageClass: playground-page
 
 Type Carve on the left. The rendered result and generated HTML appear on the right.\
 Processing happens in your browser; the document is not sent to a server.\
-The playground uses the pinned [Carve 0.2 JavaScript engine](https://github.com/markup-carve/carve-js/tree/next2).
+The playground uses the pinned [Carve 0.2 JavaScript engine](https://github.com/markup-carve/carve-js/tree/main).
 
 <div class="playground-notes">
 

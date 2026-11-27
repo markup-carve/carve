@@ -3,23 +3,23 @@ layout: home
 
 hero:
   name: Carve 0.2
-  text: Markup for real documents
+  text: Plain text documents
   tagline: Headings, tables, captions, references, snippets, and includes in plain text, with one specification and three engines.
   image:
     src: /logo.svg
     alt: Carve logo
   actions:
     - theme: brand
-      text: Open Playground
+      text: Playground
       link: /playground
     - theme: alt
       text: Get Started
       link: /get-started
     - theme: alt
-      text: Full Cheat Sheet
+      text: Cheat Sheet
       link: /cheatsheet
     - theme: alt
-      text: What's new in 0.2
+      text: What's new
       link: /whats-new-0-2
 
 features:
@@ -92,9 +92,9 @@ Carve 0.2 is a source break: some 0.1 documents render differently. [What's new 
 
 ## Scope
 
-Carve 0.2 is a development version. Its [freeze status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) identifies the current candidate. The [block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md) and [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md) chapters define source syntax. The [HTML chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md) defines output.
+Carve 0.2 is a development version. Its [freeze status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) identifies the current candidate. The [block](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md) and [inline](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md) chapters define source syntax. The [HTML chapter](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md) defines output.
 
-A `.crv` file is Carve source. The 0.2 output contract is HTML. Every engine also exports Markdown, plain text, and ANSI, but that output is engine behavior outside the specification. See [security](./security) and [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
+A `.crv` file is Carve source. The 0.2 output contract is HTML. Every engine also exports Markdown, plain text, and ANSI, but that output is engine behavior outside the specification. See [security](./security) and [tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md).
 
 ## Influences
 

@@ -17,7 +17,7 @@ The largest changes:
 
 ## Run the rewrite tool {#tool}
 
-Start with a copy of each 0.1 `.crv` file. Build `carve-js` on `next2` with `npm ci` and `npm run build`. Its CLI is `node dist/cli.js` (installed as `carve`). In a working copy of a 0.1 document:
+Start with a copy of each 0.1 `.crv` file. Build `carve-js` on `main` with `npm ci` and `npm run build`. Its CLI is `node dist/cli.js` (installed as `carve`). In a working copy of a 0.1 document:
 
 ```sh
 node dist/cli.js upgrade --check page.crv
@@ -26,13 +26,13 @@ node dist/cli.js upgrade --write page.crv
 node dist/cli.js fmt --write page.crv
 ```
 
-`--check` writes nothing and exits 1 when a change or human review is needed. `--json` writes a structured report. Without `--write`, upgraded source goes to standard output and the report to standard error. `--write` replaces the input after checking the old and proposed HTML. A usage error exits 2. `--force` does not bypass an HTML mismatch. Run the tool **once per 0.1 file**: it is not idempotent on already upgraded source. This `upgrade` command is specific to the JavaScript reference engine; the shared [0.2 tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#scope) does not require it.
+`--check` writes nothing and exits 1 when a change or human review is needed. `--json` writes a structured report. Without `--write`, upgraded source goes to standard output and the report to standard error. `--write` replaces the input after checking the old and proposed HTML. A usage error exits 2. `--force` does not bypass an HTML mismatch. Run the tool **once per 0.1 file**: it is not idempotent on already upgraded source. This `upgrade` command is specific to the JavaScript reference engine; the shared [0.2 tooling contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#scope) does not require it.
 
-Read the `rewrite`, `escape`, `report`, `upgrade-conflict` and `upgrade-mismatch` records. A mismatch prevents writing. Even a passing rewrite needs review: the tool's HTML comparison normalizes attribute order, whitespace between tags, and a leading line feed in list item text. Then compare representative pages rendered by both engines: headings and generated ids, list tightness and task items, table headers, footnotes, links, captions and raw HTML. The 0.2 output contract is [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md). Markdown, plain text and ANSI output come from export renderers (`carve render --to markdown`, `--to plain`, `--to ansi`); their output is engine behavior, not part of the specification (C2-T-003). Keep the JSON upgrade report with the source change for review.
+Read the `rewrite`, `escape`, `report`, `upgrade-conflict` and `upgrade-mismatch` records. A mismatch prevents writing. Even a passing rewrite needs review: the tool's HTML comparison normalizes attribute order, whitespace between tags, and a leading line feed in list item text. Then compare representative pages rendered by both engines: headings and generated ids, list tightness and task items, table headers, footnotes, links, captions and raw HTML. The 0.2 output contract is [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md). Markdown, plain text and ANSI output come from export renderers (`carve render --to markdown`, `--to plain`, `--to ansi`); their output is engine behavior, not part of the specification (C2-T-003). Keep the JSON upgrade report with the source change for review.
 
 ## Reading this page {#reading}
 
-Each section below opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) for that construct. The row id links to its detail in the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md), which stays the normative record.
+Each section below opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/upgrade-map.json) for that construct. The row id links to its detail in the [upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md), which stays the normative record.
 
 - The left block is the 0.1 source. The right block is the 0.2 source the tool writes, as `carve fmt` writes it in turn (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).
 - <Badge type="tip" text="rewrite" /> the tool changes the spelling. <Badge type="warning" text="escape" /> it escapes text that 0.2 would read as syntax. <Badge type="danger" text="report" /> a person has to decide. <Badge type="info" text="none" /> no source edit is needed.
@@ -43,7 +43,7 @@ Each section below opens with what 0.2 changed for one construct and why, then l
 
 In 0.1 every block kind had its own answer to whether it could interrupt a paragraph, so a wrapped line that only looked like a heading or quote marker restructured the block above it. 0.2 has one rule: an open paragraph takes the next nonblank line, and only fence lines, table rows, `***`, a caption under an image or display math, and markers that continue an open list or description list end it without a blank line ([#315](https://github.com/markup-carve/carve/issues/315), C2-B-013 to C2-B-020). Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, except a fenced block, whose body runs to its closing fence or the end of its container (C2-B-111). A line that repeats a marker, such as `>` or a table row, is read by that marker. A blank line ends every block but a fenced one; after it, only a list item, a description or a footnote goes on, and only with blocks indented to its content (C2-B-009, C2-B-234). Most rows here need one inserted blank line.
 
-**[U-001](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Heading directly under text
+**[U-001](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Heading directly under text
 
 ::: compare no-render
 ```text
@@ -57,7 +57,7 @@ Some text
 ```
 :::
 
-**[U-002](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Quote directly under text
+**[U-002](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Quote directly under text
 
 ::: compare no-render
 ```text
@@ -71,7 +71,7 @@ Some text
 ```
 :::
 
-**[U-003](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line directly under text
+**[U-003](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line directly under text
 
 ::: compare no-render
 ```text
@@ -87,7 +87,7 @@ Next block
 ```
 :::
 
-**[U-004](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Description list directly under text
+**[U-004](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Description list directly under text
 
 ::: compare no-render
 ```text
@@ -103,7 +103,7 @@ Some text
 ```
 :::
 
-**[U-005](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Definition directly under text
+**[U-005](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Definition directly under text
 
 ::: compare no-render
 ```text
@@ -121,7 +121,7 @@ See [ref][].
 ```
 :::
 
-**[U-006](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Heading or quote at column 0 directly under item text
+**[U-006](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Heading or quote at column 0 directly under item text
 
 ::: compare no-render
 ```text
@@ -135,7 +135,7 @@ See [ref][].
 ```
 :::
 
-**[U-007](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> List marker without the quote mark under a list in a quote
+**[U-007](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> List marker without the quote mark under a list in a quote
 
 ::: compare no-render
 ```text
@@ -149,7 +149,7 @@ See [ref][].
 ```
 :::
 
-**[U-008](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> List marker directly after description text
+**[U-008](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> List marker directly after description text
 
 ::: compare no-render
 ```text
@@ -165,7 +165,7 @@ See [ref][].
 ```
 :::
 
-**[U-009](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Term mark directly under item text
+**[U-009](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Term mark directly under item text
 
 ::: compare no-render
 ```text
@@ -181,7 +181,7 @@ See [ref][].
 ```
 :::
 
-**[U-010](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> Block directly under a caption line
+**[U-010](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> Block directly under a caption line
 
 ::: compare no-render
 ```text
@@ -197,7 +197,7 @@ See [ref][].
 ```
 :::
 
-**[U-012](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="info" text="none" /> List marker directly under text at the top level
+**[U-012](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="info" text="none" /> List marker directly under text at the top level
 
 ::: compare no-render
 ```text
@@ -210,7 +210,7 @@ Some text
 ```
 :::
 
-**[U-013](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="info" text="none" /> Table row, fence line or `***` directly under text
+**[U-013](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="info" text="none" /> Table row, fence line or `***` directly under text
 
 ::: compare no-render
 ````text
@@ -242,7 +242,7 @@ more
 ```
 :::
 
-**[U-126](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-quote-boundary-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `y` then `>`
+**[U-126](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-quote-boundary-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `y` then `>`
 
 ::: compare no-render
 ```text
@@ -260,7 +260,7 @@ y
 
 `#` headings read as in 0.1 (U-043). 0.2 also accepts `=` headings, and `carve fmt` writes them; the roadmap ties this to one heading character in prose and in `|=` header cells, with `#` left to tags ([#1092](https://github.com/markup-carve/carve/issues/1092)). The remaining rows are tabs, comments and line endings inside a heading line.
 
-**[U-043](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#headings)** <Badge type="info" text="none" /> `#` headings, closing hashes, brace text, seven markers
+**[U-043](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#headings)** <Badge type="info" text="none" /> `#` headings, closing hashes, brace text, seven markers
 
 ::: compare no-render
 ```text
@@ -277,7 +277,7 @@ y
 ```
 :::
 
-**[U-148](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-081,C2-I-084: in 0.1, `# 	%%h` writes `<section id="h"> ⏎   <h1>	%%h</h1> ⏎ </section>`.
+**[U-148](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-081,C2-I-084: in 0.1, `# 	%%h` writes `<section id="h"> ⏎   <h1>	%%h</h1> ⏎ </section>`.
 Tool: Review.
 
 ::: compare no-render
@@ -291,7 +291,7 @@ Tool: Review.
 ```
 :::
 
-**[U-174](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-027,C2-B-014: in 0.1, `# 	x` writes `<section id="x"> ⏎   <h1>	x</h1> ⏎ </section>`.
+**[U-174](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-027,C2-B-014: in 0.1, `# 	x` writes `<section id="x"> ⏎   <h1>	x</h1> ⏎ </section>`.
 Tool: Review.
 
 ::: compare no-render
@@ -305,7 +305,7 @@ Tool: Review.
 ```
 :::
 
-**[U-176](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-001,C2-I-084: in 0.1, `# T ␍ b` writes `<section id="T"> ⏎   <h1>T</h1> ⏎   <p>b</p> ⏎ </section>`.
+**[U-176](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-001,C2-I-084: in 0.1, `# T ␍ b` writes `<section id="T"> ⏎   <h1>T</h1> ⏎   <p>b</p> ⏎ </section>`.
 Tool: Review.
 
 ::: compare no-render
@@ -319,7 +319,7 @@ Tool: Review.
 ```
 :::
 
-**[U-366](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-H-096 and C2-H-143, a heading that holds a cross-reference to itself: `# A </#A>`
+**[U-366](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-H-096 and C2-H-143, a heading that holds a cross-reference to itself: `# A </#A>`
 
 ::: compare no-render
 ```text
@@ -335,7 +335,7 @@ Tool: Review.
 
 A line of hyphens could be a thematic break, a heading underline or text in 0.1. 0.2 has one break spelling, `***`, so a hyphen run is read by the dash rule alone ([technical rationale](./technical-rationale#reduce-punctuation-collisions), C2-B-159, C2-I-111). Smart quotes follow one opening rule (C2-I-104).
 
-**[U-044](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#breaks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Hyphen or underscore run
+**[U-044](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#breaks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Hyphen or underscore run
 
 ::: compare no-render
 ```text
@@ -362,7 +362,7 @@ next
 ```
 :::
 
-**[U-045](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#breaks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Spaced breaks
+**[U-045](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#breaks)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Spaced breaks
 
 ::: compare no-render
 ```text
@@ -377,7 +377,7 @@ next
 ```
 :::
 
-**[U-046](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#breaks)** <Badge type="info" text="none" /> Spaced underscores, stars under an item
+**[U-046](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#breaks)** <Badge type="info" text="none" /> Spaced underscores, stars under an item
 
 ::: compare no-render
 ```text
@@ -388,7 +388,7 @@ _ _ _
 ```
 :::
 
-**[U-071](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Single opening quote with no closer
+**[U-071](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Single opening quote with no closer
 
 ::: compare no-render
 ```text
@@ -399,7 +399,7 @@ said ’Bob and left.
 ```
 :::
 
-**[U-190](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-035, `-"` before a hard break writes a closing smart quote, and <code>x{.k title="&#96;"} y</code> reads its backtick as code to the end in 0.1.
+**[U-190](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-035, `-"` before a hard break writes a closing smart quote, and <code>x{.k title="&#96;"} y</code> reads its backtick as code to the end in 0.1.
 
 ::: compare no-render
 ```text
@@ -410,7 +410,7 @@ x{.k title=“`"} y`
 ```
 :::
 
-**[U-233](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-035 and C2-I-104, `:a:"q"` then `:long-name:'q'` writes `:a:“q”` and `:long-name:‘q’` in 0.1.
+**[U-233](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-035 and C2-I-104, `:a:"q"` then `:long-name:'q'` writes `:a:“q”` and `:long-name:‘q’` in 0.1.
 
 ::: compare no-render
 ```text
@@ -423,7 +423,7 @@ x{.k title=“`"} y`
 ```
 :::
 
-**[U-363](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-026 and C2-I-104, a single quote directly behind a braced comment that follows a space: `a {%%}'word`; also `a{%%} 'word`
+**[U-363](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-026 and C2-I-104, a single quote directly behind a braced comment that follows a space: `a {%%}'word`; also `a{%%} 'word`
 
 ::: compare no-render
 ```text
@@ -434,7 +434,7 @@ a {%%}’word
 ```
 :::
 
-**[U-375](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An ASCII double quote right after `-` or `/` opens a curly quote in 0.1: `-"q"` gives `-“q”`; 0.2 closes it.
+**[U-375](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An ASCII double quote right after `-` or `/` opens a curly quote in 0.1: `-"q"` gives `-“q”`; 0.2 closes it.
 
 ::: compare no-render
 ```text
@@ -453,7 +453,7 @@ a="b"
 ```
 :::
 
-**[U-431](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> a ----------- b
+**[U-431](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> a ----------- b
 
 ::: compare no-render
 ```text
@@ -466,9 +466,9 @@ a ———– b
 
 ## Lists and task items {#lists}
 
-0.1 shaped lists with `+` continuation lines, `{loose}`, marker columns and task boxes. In 0.2 blank lines and content columns decide the shape: there is no list continuation marker, and a line past the marker column stays in the item (writer, [rules of 0.1 that become obsolete](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#rules-of-01-that-become-obsolete)). The 18 November ruling D1 lets the first marker fix the style of an ordered list ([#6074](https://github.com/markup-carve/carve/pull/6074), C2-B-042).
+0.1 shaped lists with `+` continuation lines, `{loose}`, marker columns and task boxes. In 0.2 blank lines and content columns decide the shape: there is no list continuation marker, and a line past the marker column stays in the item (writer, [rules of 0.1 that become obsolete](https://github.com/markup-carve/carve/blob/main/spec/0.2/writer.md#rules-of-01-that-become-obsolete)). The 18 November ruling D1 lets the first marker fix the style of an ordered list ([#6074](https://github.com/markup-carve/carve/pull/6074), C2-B-042).
 
-**[U-014](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `+` line before a block in an item
+**[U-014](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `+` line before a block in an item
 
 ::: compare no-render
 ```text
@@ -485,7 +485,7 @@ a ———– b
 ```
 :::
 
-**[U-015](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> `+` line before a paragraph in an item
+**[U-015](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> `+` line before a paragraph in an item
 Tool: Review by hand: `- a`, a blank line, `  second`, `- b` keeps `second` in the item, but as `<p>second</p>` where 0.1 wrote it bare (C2-H-034, U-019).
 
 ::: compare no-render
@@ -503,7 +503,7 @@ second
 ```
 :::
 
-**[U-017](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `+` as the first block of an item
+**[U-017](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `+` as the first block of an item
 
 ::: compare no-render
 ````text
@@ -521,7 +521,7 @@ second
 ````
 :::
 
-**[U-018](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Blank line inside an item makes the list loose
+**[U-018](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Blank line inside an item makes the list loose
 
 ::: compare no-render
 ```text
@@ -539,7 +539,7 @@ second
 ```
 :::
 
-**[U-019](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Later paragraph of a tight item
+**[U-019](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Later paragraph of a tight item
 Tool: Review by hand.
 
 ::: compare no-render
@@ -559,7 +559,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-020](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `{loose}` on a list with several items
+**[U-020](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `{loose}` on a list with several items
 
 ::: compare no-render
 ```text
@@ -574,7 +574,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-021](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Loose list with one item
+**[U-021](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Loose list with one item
 Tool: Review by hand.
 
 ::: compare no-render
@@ -587,7 +587,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-023](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Marker indented less than the content column of the item above
+**[U-023](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Marker indented less than the content column of the item above
 
 ::: compare no-render
 ```text
@@ -601,7 +601,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-025](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Ordered marker of ten or more digits
+**[U-025](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Ordered marker of ten or more digits
 Tool: Review by hand: `{start=1234567890}` above `. x` keeps the number only as an HTML attribute, since the tree starts at 1 (C2-B-219).
 
 ::: compare no-render
@@ -614,7 +614,7 @@ Tool: Review by hand: `{start=1234567890}` above `. x` keeps the number only as 
 ```
 :::
 
-**[U-026](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Comment block at column 0 between two items
+**[U-026](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Comment block at column 0 between two items
 
 ::: compare no-render
 ```text
@@ -634,7 +634,7 @@ x
 ```
 :::
 
-**[U-027](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> Three blank lines between two lists
+**[U-027](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> Three blank lines between two lists
 
 ::: compare no-render
 ```text
@@ -654,7 +654,7 @@ x
 ```
 :::
 
-**[U-028](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> `-` and `*` items
+**[U-028](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> `-` and `*` items
 
 ::: compare no-render
 ```text
@@ -671,7 +671,7 @@ x
 ```
 :::
 
-**[U-029](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> Comment-only line between items, empty task box, `- -`
+**[U-029](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> Comment-only line between items, empty task box, `- -`
 
 ::: compare no-render
 ```text
@@ -687,7 +687,7 @@ x
 ```
 :::
 
-**[U-030](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> Uppercase letter marker
+**[U-030](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="info" text="none" /> Uppercase letter marker
 
 ::: compare no-render
 ```text
@@ -705,7 +705,7 @@ B.  two
 ```
 :::
 
-**[U-117](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> List of task items next to a list of plain items
+**[U-117](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> List of task items next to a list of plain items
 
 ::: compare no-render
 ```text
@@ -721,7 +721,7 @@ B.  two
 ```
 :::
 
-**[U-118](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="info" text="none" /> Uppercase marker with a dot and one space
+**[U-118](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="info" text="none" /> Uppercase marker with a dot and one space
 
 ::: compare no-render
 ```text
@@ -732,7 +732,7 @@ II. Background
 ```
 :::
 
-**[U-119](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="info" text="none" /> List marker left of every open list under item text
+**[U-119](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="info" text="none" /> List marker left of every open list under item text
 
 ::: compare no-render
 ```text
@@ -747,7 +747,7 @@ II. Background
 ```
 :::
 
-**[U-122](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Plus continuation in a list item
+**[U-122](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Plus continuation in a list item
 
 ::: compare no-render
 ```text
@@ -758,7 +758,7 @@ II. Background
 ```
 :::
 
-**[U-133](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. For `-{#k} [x] bare` followed by `  # inside`, 0.1 uses `aria-label="bare"`.
+**[U-133](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. For `-{#k} [x] bare` followed by `  # inside`, 0.1 uses `aria-label="bare"`.
 Tool: Review task HTML.
 
 ::: compare no-render
@@ -772,7 +772,7 @@ Tool: Review task HTML.
 ```
 :::
 
-**[U-153](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-027,C2-B-033: in 0.1, `- 	e` writes `<ul> ⏎   <li>	e</li> ⏎ </ul>`.
+**[U-153](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-027,C2-B-033: in 0.1, `- 	e` writes `<ul> ⏎   <li>	e</li> ⏎ </ul>`.
 Tool: The tool checks removal of the marker-padding tab against the complete HTML.
 
 ::: compare no-render
@@ -786,7 +786,7 @@ Tool: The tool checks removal of the marker-padding tab against the complete HTM
 ```
 :::
 
-**[U-159](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046,C2-H-032: in 0.1, `- [x] a  h` writes `<ul class="task-list"> ⏎   <li data-task-state="x"><input type="checkbox" checked disabled aria-label="a h"> a  h</li> ⏎ </ul>`.
+**[U-159](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046,C2-H-032: in 0.1, `- [x] a  h` writes `<ul class="task-list"> ⏎   <li data-task-state="x"><input type="checkbox" checked disabled aria-label="a h"> a  h</li> ⏎ </ul>`.
 Tool: Review.
 
 ::: compare no-render
@@ -800,7 +800,7 @@ Tool: Review.
 ```
 :::
 
-**[U-163](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046: in 0.1, `-  [ ] q` writes `<ul class="task-list"> ⏎   <li><input type="checkbox" disabled aria-label="q"> q</li> ⏎ </ul>`.
+**[U-163](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046: in 0.1, `-  [ ] q` writes `<ul class="task-list"> ⏎   <li><input type="checkbox" disabled aria-label="q"> q</li> ⏎ </ul>`.
 Tool: Review; where one space after the bullet keeps the complete 0.1 HTML, U-434 writes it.
 
 ::: compare no-render
@@ -814,7 +814,7 @@ Tool: Review; where one space after the bullet keeps the complete 0.1 HTML, U-43
 ```
 :::
 
-**[U-169](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-100,C2-B-101: in 0.1, `-{k} {#h}` writes `<ul> ⏎   <li k=""></li> ⏎ </ul>`.
+**[U-169](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-100,C2-B-101: in 0.1, `-{k} {#h}` writes `<ul> ⏎   <li k=""></li> ⏎ </ul>`.
 Tool: Review.
 
 ::: compare no-render
@@ -828,7 +828,7 @@ Tool: Review.
 ```
 :::
 
-**[U-230](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-041 and C2-B-045, `{start=9}` before `3. x` writes `<ol start="3">` in 0.1.
+**[U-230](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-041 and C2-B-045, `{start=9}` before `3. x` writes `<ol start="3">` in 0.1.
 
 ::: compare no-render
 ```text
@@ -840,7 +840,7 @@ Tool: Review.
 ```
 :::
 
-**[U-237](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-015 and C2-B-076, `- a` then `  * w` then `  1. v` then a four-space `- u` writes the last list beside the ordered list inside the outer item in 0.1. Text after a nested div can also stand at that outer item level.
+**[U-237](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-015 and C2-B-076, `- a` then `  * w` then `  1. v` then a four-space `- u` writes the last list beside the ordered list inside the outer item in 0.1. Text after a nested div can also stand at that outer item level.
 
 ::: compare no-render
 ```text
@@ -859,7 +859,7 @@ Tool: Review.
 ```
 :::
 
-**[U-397](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `v.` followed by `vi.`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list.
+**[U-397](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `v.` followed by `vi.`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list.
 Tool: Report both lists for review.
 
 ::: compare no-render
@@ -877,7 +877,7 @@ vi.  y
 ```
 :::
 
-**[U-398](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `i.` followed by `j.`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list.
+**[U-398](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `i.` followed by `j.`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list.
 Tool: Report both lists for review.
 
 ::: compare no-render
@@ -895,7 +895,7 @@ j.  y
 ```
 :::
 
-**[U-403](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `i)` followed by `j)`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list.
+**[U-403](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `i)` followed by `j)`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list.
 Tool: Report both lists for review.
 
 ::: compare no-render
@@ -913,7 +913,7 @@ j) two
 ```
 :::
 
-**[U-404](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `v)` followed by `vi)`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list.
+**[U-404](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> `v)` followed by `vi)`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list.
 Tool: Report both lists for review.
 
 ::: compare no-render
@@ -931,7 +931,7 @@ vi) two
 ```
 :::
 
-**[U-434](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> -   [ ] a
+**[U-434](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> -   [ ] a
 
 ::: compare no-render
 ```text
@@ -942,7 +942,7 @@ vi) two
 ```
 :::
 
-**[U-436](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> - + ⏎   %% c ⏎ after
+**[U-436](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> - + ⏎   %% c ⏎ after
 
 ::: compare no-render
 ```text
@@ -957,7 +957,7 @@ after
 ```
 :::
 
-**[U-438](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> 1. outer ⏎ lazy ⏎    2. sibling
+**[U-438](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> 1. outer ⏎ lazy ⏎    2. sibling
 
 ::: compare no-render
 ```text
@@ -979,7 +979,7 @@ lazy
 
 Terms and descriptions own lines by column, like list items. A term follows the continuation rule of every block but the paragraph: after `:: term` only a line indented past the column of the `::` continues it, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).
 
-**[U-123](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-059 and C2-B-076, `:: term` then `:  intro` then `+` then `  more` writes `more` outside the description in 0.1.
+**[U-123](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-059 and C2-B-076, `:: term` then `:  intro` then `+` then `  more` writes `more` outside the description in 0.1.
 
 ::: compare no-render
 ```text
@@ -992,7 +992,7 @@ Terms and descriptions own lines by column, like list items. A term follows the 
 ```
 :::
 
-**[U-128](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-description-ownership-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> ` :: t` then `: x`
+**[U-128](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-description-ownership-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> ` :: t` then `: x`
 
 ::: compare no-render
 ```text
@@ -1005,7 +1005,7 @@ Terms and descriptions own lines by column, like list items. A term follows the 
 ```
 :::
 
-**[U-172](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-066,C2-H-040: in 0.1, `{loose} ⏎ :: T` writes `<dl> ⏎   <dt>T</dt> ⏎ </dl>`.
+**[U-172](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-066,C2-H-040: in 0.1, `{loose} ⏎ :: T` writes `<dl> ⏎   <dt>T</dt> ⏎ </dl>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1020,7 +1020,7 @@ Tool: Review.
 ```
 :::
 
-**[U-179](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A fence after a description mark ends at the description boundary under C2-B-072,C2-B-078,C2-B-109
+**[U-179](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A fence after a description mark ends at the description boundary under C2-B-072,C2-B-078,C2-B-109
 
 ::: compare no-render
 ````text
@@ -1037,7 +1037,7 @@ y
 ````
 :::
 
-**[U-180](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An indented description mark below a term is term text under C2-B-067,C2-B-069
+**[U-180](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An indented description mark below a term is term text under C2-B-067,C2-B-069
 
 ::: compare no-render
 ```text
@@ -1050,7 +1050,7 @@ y
 ```
 :::
 
-**[U-193](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-067 and C2-B-069, `:: ` followed by a tab and `x` writes the tab in the term.
+**[U-193](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-067 and C2-B-069, `:: ` followed by a tab and `x` writes the tab in the term.
 Tool: Review the term.
 
 ::: compare no-render
@@ -1062,7 +1062,7 @@ C2-B-069 starts the term at its content column, so the marker tab is dropped and
 ```
 :::
 
-**[U-199](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-076 and C2-B-078, `:: t` then `:  d` then `   {.k}` then `tail` consumes the attribute and leaves `tail` outside the description in 0.1. After `:  %% c`, an indented `flush` also stands outside.
+**[U-199](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-076 and C2-B-078, `:: t` then `:  d` then `   {.k}` then `tail` consumes the attribute and leaves `tail` outside the description in 0.1. After `:  %% c`, an indented `flush` also stands outside.
 
 ::: compare no-render
 ```text
@@ -1079,7 +1079,7 @@ tail
 ```
 :::
 
-**[U-210](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-069, C2-B-076, and C2-B-081, `:: term` then `:  [r]: /u` leaves an empty description body and defines `r` for a later link in 0.1. A definition indented below a term, `:: t` then `  [r]: /u`, also defines `r` in 0.1.
+**[U-210](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-069, C2-B-076, and C2-B-081, `:: term` then `:  [r]: /u` leaves an empty description body and defines `r` for a later link in 0.1. A definition indented below a term, `:: t` then `  [r]: /u`, also defines `r` in 0.1.
 
 ::: compare no-render
 ```text
@@ -1098,7 +1098,7 @@ see [t][r]
 ```
 :::
 
-**[U-215](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108, C2-B-110, and C2-B-112, `:: t` then `%%%` then `a` then `%%%` then `: body` writes one description list whose body is `body` in 0.1.
+**[U-215](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108, C2-B-110, and C2-B-112, `:: t` then `%%%` then `a` then `%%%` then `: body` writes one description list whose body is `body` in 0.1.
 
 ::: compare no-render
 ```text
@@ -1114,7 +1114,7 @@ a
 ```
 :::
 
-**[U-228](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-069 and C2-B-076, `:: term` then `: - a` then a blank line and a three-space `> c` writes the quote as a sibling of the list inside the description body in 0.1.
+**[U-228](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-069 and C2-B-076, `:: term` then `: - a` then a blank line and a three-space `> c` writes the quote as a sibling of the list inside the description body in 0.1.
 
 ::: compare no-render
 ```text
@@ -1131,7 +1131,7 @@ a
 ```
 :::
 
-**[U-232](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-069 and C2-B-076, `:: t` then `: para` then a one-space `
+**[U-232](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-069 and C2-B-076, `:: t` then `: para` then a one-space `
 
 ::: compare no-render
 ```text
@@ -1147,7 +1147,7 @@ a
 ```
 :::
 
-**[U-236](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-067, C2-B-069, and C2-B-076, `:: t` then ` :: u` then `: d` then ` : e` writes two terms and two descriptions in 0.1. A quote after a note-hosted description can likewise stand beside the description.
+**[U-236](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-067, C2-B-069, and C2-B-076, `:: t` then ` :: u` then `: d` then ` : e` writes two terms and two descriptions in 0.1. A quote after a note-hosted description can likewise stand beside the description.
 
 ::: compare no-render
 ```text
@@ -1164,7 +1164,7 @@ a
 ```
 :::
 
-**[U-239](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-072 and C2-B-078, `:: t`, `: a`, a tab-indented code fence, and a one-space code fence write two code blocks in 0.1.
+**[U-239](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-072 and C2-B-078, `:: t`, `: a`, a tab-indented code fence, and a one-space code fence write two code blocks in 0.1.
 
 ::: compare no-render
 ````text
@@ -1185,7 +1185,7 @@ a
 ````
 :::
 
-**[U-252](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046, C2-B-067, and C2-H-032, `- [x]   - :: term` followed by indented description lines writes the description at the older list boundary and writes the task item without 0.2 task HTML in 0.1.
+**[U-252](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046, C2-B-067, and C2-H-032, `- [x]   - :: term` followed by indented description lines writes the description at the older list boundary and writes the task item without 0.2 task HTML in 0.1.
 Tool: Review the changed description and task HTML.
 
 ::: compare no-render
@@ -1200,7 +1200,7 @@ C2-B-046, C2-B-067, and C2-H-032 change ownership of the nested description and 
 ```
 :::
 
-**[U-361](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-025, C2-B-026 and C2-B-108, a comment block at column 0 inside a description list or a list: `:: t`, `: d`, `%%%`, `%%%`, `: d2`; `- a`, `%%%`, `%%%`, `  b`
+**[U-361](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-025, C2-B-026 and C2-B-108, a comment block at column 0 inside a description list or a list: `:: t`, `: d`, `%%%`, `%%%`, `: d2`; `- a`, `%%%`, `%%%`, `  b`
 
 ::: compare no-render
 ```text
@@ -1220,7 +1220,7 @@ C2-B-046, C2-B-067, and C2-H-032 change ownership of the nested description and 
 ```
 :::
 
-**[U-378](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A footnote definition inside a definition description, then an indented and an unindented line: `:: t`, `:  [^f]: note`, `     cont`, `tail`. 0.1 writes an empty description; 0.2 keeps the three lines as description text.
+**[U-378](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A footnote definition inside a definition description, then an indented and an unindented line: `:: t`, `:  [^f]: note`, `     cont`, `tail`. 0.1 writes an empty description; 0.2 keeps the three lines as description text.
 Tool: Report from the nested definition opener through the following unprefixed line.
 
 ::: compare no-render
@@ -1240,7 +1240,7 @@ tail</dd>
 ```
 :::
 
-**[U-379](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 skips the comment-only line (C2-B-137), and `more`, which is not indented past the term mark, is a paragraph, as in 0.1 (C2-B-234).
+**[U-379](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 skips the comment-only line (C2-B-137), and `more`, which is not indented past the term mark, is a paragraph, as in 0.1 (C2-B-234).
 Tool: Report from the comment line through the following retained line.
 
 ::: compare no-render
@@ -1257,7 +1257,7 @@ more
 ```
 :::
 
-**[U-387](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A list indented one column past a definition description in a list item: `- :: t`, `  : para`, `   - li`. 0.1 puts the list in the item after the definition list; 0.2 puts it in the description.
+**[U-387](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A list indented one column past a definition description in a list item: `- :: t`, `  : para`, `   - li`. 0.1 puts the list in the item after the definition list; 0.2 puts it in the description.
 Tool: Report from the description marker through the shifted list line.
 
 ::: compare no-render
@@ -1283,7 +1283,7 @@ Tool: Report from the description marker through the shifted list line.
 ```
 :::
 
-**[U-433](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> :: t ⏎  %% c ⏎    more
+**[U-433](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> :: t ⏎  %% c ⏎    more
 
 ::: compare no-render
 ```text
@@ -1300,7 +1300,7 @@ more
 ```
 :::
 
-**[U-435](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> [^n]: a ⏎ ⏎    :: t ⏎    :  d ⏎     > q
+**[U-435](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> [^n]: a ⏎ ⏎    :: t ⏎    :  d ⏎     > q
 
 ::: compare no-render
 ```text
@@ -1328,7 +1328,7 @@ see[^n]
 
 The GFM separator row mixed the choice of header row with column alignment. In 0.2 every pipe row is a row of cells: header cells start with `|=`, and alignment sits on the cell as `|={<}`, `|={~}` or `|={>}` ([#5091](https://github.com/markup-carve/carve/issues/5091), C2-B-171, C2-B-182). A caption line must stand directly below its table or image (C2-B-146).
 
-**[U-055](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> GFM separator row
+**[U-055](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> GFM separator row
 
 ::: compare no-render
 ```text
@@ -1342,7 +1342,7 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 ```
 :::
 
-**[U-056](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Glued alignment marks
+**[U-056](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Glued alignment marks
 
 ::: compare no-render
 ```text
@@ -1355,7 +1355,7 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 ```
 :::
 
-**[U-057](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Escaped last pipe
+**[U-057](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Escaped last pipe
 
 ::: compare no-render
 ```text
@@ -1366,7 +1366,7 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 ```
 :::
 
-**[U-058](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `header-rows` on a pipe table
+**[U-058](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `header-rows` on a pipe table
 
 ::: compare no-render
 ```text
@@ -1380,7 +1380,7 @@ The GFM separator row mixed the choice of header row with column alignment. In 0
 ```
 :::
 
-**[U-059](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> `footer-rows` on a table with only a header row
+**[U-059](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> `footer-rows` on a table with only a header row
 Tool: Review by hand.
 
 ::: compare no-render
@@ -1397,7 +1397,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-060](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Row span into the head
+**[U-060](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Row span into the head
 Tool: Review by hand.
 
 ::: compare no-render
@@ -1419,7 +1419,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-061](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Delimited table with bad quoting
+**[U-061](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Delimited table with bad quoting
 Tool: Review by hand.
 
 ::: compare no-render
@@ -1440,7 +1440,7 @@ c,d</th></tr>
 ```
 :::
 
-**[U-062](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tables)** <Badge type="info" text="none" /> Table forms that read the same
+**[U-062](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tables)** <Badge type="info" text="none" /> Table forms that read the same
 
 ::: compare no-render
 ```text
@@ -1453,7 +1453,7 @@ c,d</th></tr>
 ```
 :::
 
-**[U-063](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#captions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Caption after a blank line
+**[U-063](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#captions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Caption after a blank line
 
 ::: compare no-render
 ```text
@@ -1467,7 +1467,7 @@ c,d</th></tr>
 ```
 :::
 
-**[U-064](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#captions)** <Badge type="info" text="none" /> Captions that read the same
+**[U-064](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#captions)** <Badge type="info" text="none" /> Captions that read the same
 
 ::: compare no-render
 ````text
@@ -1485,7 +1485,7 @@ let x = 1
 ```
 :::
 
-**[U-138](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-149, `>` followed by `^ p` writes an empty quote and a paragraph in 0.1.
+**[U-138](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-149, `>` followed by `^ p` writes an empty quote and a paragraph in 0.1.
 
 ::: compare no-render
 ```text
@@ -1499,7 +1499,7 @@ let x = 1
 ```
 :::
 
-**[U-140](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-cell-and-attribute-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171, a tab between two table pipes is cell text in 0.1.
+**[U-140](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-cell-and-attribute-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171, a tab between two table pipes is cell text in 0.1.
 Tool: Review the cell.
 
 ::: compare no-render
@@ -1515,7 +1515,7 @@ Tool: Review the cell.
 ```
 :::
 
-**[U-147](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-175,C2-B-184: in 0.1, `|| ⏎ +||` writes `<table> ⏎   <tbody> ⏎     <tr><td></td></tr> ⏎   </tbody> ⏎ </table>`.
+**[U-147](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-175,C2-B-184: in 0.1, `|| ⏎ +||` writes `<table> ⏎   <tbody> ⏎     <tr><td></td></tr> ⏎   </tbody> ⏎ </table>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1532,7 +1532,7 @@ Tool: Review.
 ```
 :::
 
-**[U-150](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-180,C2-B-185: in 0.1, `{widths=5} ⏎ |||` writes `<table> ⏎   <colgroup> ⏎     <col style="width: 5%;"> ⏎   </colgroup> ⏎   <tbody> ⏎     <tr><td></td><td></td></tr> ⏎   </tbody> ⏎ </table>`.
+**[U-150](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-180,C2-B-185: in 0.1, `{widths=5} ⏎ |||` writes `<table> ⏎   <colgroup> ⏎     <col style="width: 5%;"> ⏎   </colgroup> ⏎   <tbody> ⏎     <tr><td></td><td></td></tr> ⏎   </tbody> ⏎ </table>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1553,7 +1553,7 @@ Tool: Review.
 ```
 :::
 
-**[U-152](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-169,C2-B-172: in 0.1, `||	<|` writes `<table> ⏎   <tbody> ⏎     <tr><td></td><td>	&lt;</td></tr> ⏎   </tbody> ⏎ </table>`.
+**[U-152](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-169,C2-B-172: in 0.1, `||	<|` writes `<table> ⏎   <tbody> ⏎     <tr><td></td><td>	&lt;</td></tr> ⏎   </tbody> ⏎ </table>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1569,7 +1569,7 @@ Tool: Review.
 ```
 :::
 
-**[U-162](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-171,C2-B-180: in 0.1, `|?v |` writes `<table> ⏎   <tbody> ⏎     <tr><td style="vertical-align: bottom;"></td></tr> ⏎   </tbody> ⏎ </table>`.
+**[U-162](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-171,C2-B-180: in 0.1, `|?v |` writes `<table> ⏎   <tbody> ⏎     <tr><td style="vertical-align: bottom;"></td></tr> ⏎   </tbody> ⏎ </table>`.
 
 ::: compare no-render
 ```text
@@ -1580,7 +1580,7 @@ Tool: Review.
 ```
 :::
 
-**[U-165](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171,C2-B-167: in 0.1, `|{#x}|` writes `<table> ⏎   <tbody> ⏎     <tr><td>{<span class="tag"><strong>#x</strong></span>}</td></tr> ⏎   </tbody> ⏎ </table>`.
+**[U-165](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171,C2-B-167: in 0.1, `|{#x}|` writes `<table> ⏎   <tbody> ⏎     <tr><td>{<span class="tag"><strong>#x</strong></span>}</td></tr> ⏎   </tbody> ⏎ </table>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1596,7 +1596,7 @@ Tool: Review.
 ```
 :::
 
-**[U-167](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-182,C2-B-185: in 0.1, `|=| ⏎ |:-|` writes `<table> ⏎   <thead> ⏎     <tr><th scope="col" style="text-align: left;">=</th></tr> ⏎   </thead> ⏎ </table>`.
+**[U-167](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-182,C2-B-185: in 0.1, `|=| ⏎ |:-|` writes `<table> ⏎   <thead> ⏎     <tr><th scope="col" style="text-align: left;">=</th></tr> ⏎   </thead> ⏎ </table>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1616,7 +1616,7 @@ Tool: Review.
 ```
 :::
 
-**[U-168](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-179,C2-B-182: in 0.1, `|=||` writes `<table> ⏎   <tbody> ⏎     <tr><td>=</td><td></td></tr> ⏎   </tbody> ⏎ </table>`.
+**[U-168](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-179,C2-B-182: in 0.1, `|=||` writes `<table> ⏎   <tbody> ⏎     <tr><td>=</td><td></td></tr> ⏎   </tbody> ⏎ </table>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1632,7 +1632,7 @@ Tool: Review.
 ```
 :::
 
-**[U-194](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash.
+**[U-194](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash.
 Tool: Review the cell.
 
 ::: compare no-render
@@ -1644,7 +1644,7 @@ C2-B-171 trims the cell tab, so its HTML text changes.
 ```
 :::
 
-**[U-214](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-169, \| a &#96;b \| c d \| keeps the middle pipe inside one code cell in 0.1.
+**[U-214](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-169, \| a &#96;b \| c d \| keeps the middle pipe inside one code cell in 0.1.
 
 ::: compare no-render
 ```text
@@ -1655,7 +1655,7 @@ C2-B-171 trims the cell tab, so its HTML text changes.
 ```
 :::
 
-**[U-226](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-198, `$$` followed by an unclosed backtick span and then `^ p` writes a math figure with caption `p` in 0.1.
+**[U-226](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-198, `$$` followed by an unclosed backtick span and then `^ p` writes a math figure with caption `p` in 0.1.
 
 ::: compare no-render
 ```text
@@ -1668,7 +1668,7 @@ $$`x`
 ```
 :::
 
-**[U-259](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> Under C2-B-173 and C2-B-174, a span mark that cannot join, `\|= ^\|`, is an empty cell in 0.1.
+**[U-259](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> Under C2-B-173 and C2-B-174, a span mark that cannot join, `\|= ^\|`, is an empty cell in 0.1.
 
 ::: compare no-render
 ```text
@@ -1679,7 +1679,7 @@ $$`x`
 ```
 :::
 
-**[U-269](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> Under C2-B-174, an alignment block on a span mark that joins, `\|= A \|={>^} < \|` above `\| a \| b \|`, set the default of the column the mark covers in 0.1: `b` was right and top.
+**[U-269](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> Under C2-B-174, an alignment block on a span mark that joins, `\|= A \|={>^} < \|` above `\| a \| b \|`, set the default of the column the mark covers in 0.1: `b` was right and top.
 
 ::: compare no-render
 ```text
@@ -1692,7 +1692,7 @@ $$`x`
 ```
 :::
 
-**[U-271](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-230, a header row inside a body, `{body-rows=1 body-header-rows=1}` above `\| a \|` and `\| b \|`, wrote `<th scope="col">a</th>` in 0.1; and with `body-rows` a pipe table had no head unless `header-rows` gave one.
+**[U-271](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-230, a header row inside a body, `{body-rows=1 body-header-rows=1}` above `\| a \|` and `\| b \|`, wrote `<th scope="col">a</th>` in 0.1; and with `body-rows` a pipe table had no head unless `header-rows` gave one.
 Tool: Review the scope; write a head with header marks in place of `header-rows` (U-058).
 
 ::: compare no-render
@@ -1711,7 +1711,7 @@ Tool: Review the scope; write a head with header marks in place of `header-rows`
 ```
 :::
 
-**[U-279](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-146 and C2-I-002, the indent of a continuation line of a caption, `\|x\|`, `^ a`, `  - b`; and a tab behind the space of the caption mark, `^ `, a tab, `second`
+**[U-279](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-146 and C2-I-002, the indent of a continuation line of a caption, `\|x\|`, `^ a`, `  - b`; and a tab behind the space of the caption mark, `^ `, a tab, `second`
 Tool: The caption text starts at its first character that is not a space or a tab, on each line: `- b`, `second`. Escaped spaces give no-break spaces and a tab has no escape, so no spelling keeps the 0.1 text.
 
 ::: compare no-render
@@ -1731,7 +1731,7 @@ Tool: The caption text starts at its first character that is not a space or a ta
 ```
 :::
 
-**[U-303](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171, a tab directly after the header mark, `\|=` and a tab before `a\|`, was a data cell whose text started with `=` and the tab in 0.1.
+**[U-303](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-171, a tab directly after the header mark, `\|=` and a tab before `a\|`, was a data cell whose text started with `=` and the tab in 0.1.
 Tool: Review the cell.
 
 ::: compare no-render
@@ -1751,7 +1751,7 @@ Tool: Review the cell.
 ```
 :::
 
-**[U-369](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-174, a row span mark behind an attribute block in the cell prefix: `\| a \|` above `\|{.x} ^ \|`
+**[U-369](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-174, a row span mark behind an attribute block in the cell prefix: `\| a \|` above `\|{.x} ^ \|`
 
 ::: compare no-render
 ```text
@@ -1764,7 +1764,7 @@ Tool: Review the cell.
 ```
 :::
 
-**[U-377](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A table attribute `aligns="right,,center"` aligns each column in 0.1; 0.2 has no `aligns` attribute.
+**[U-377](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A table attribute `aligns="right,,center"` aligns each column in 0.1; 0.2 has no `aligns` attribute.
 
 ::: compare no-render
 ```text
@@ -1779,7 +1779,7 @@ Tool: Review the cell.
 ```
 :::
 
-**[U-442](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#ruling-of-24-november-2026-labels-continue-only-on-indented-lines)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A caption with an unindented second line, `^ cap one`, then `continued`
+**[U-442](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#ruling-of-24-november-2026-labels-continue-only-on-indented-lines)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A caption with an unindented second line, `^ cap one`, then `continued`
 
 ::: compare no-render
 ```text
@@ -1798,7 +1798,7 @@ continued
 
 Bare `_`, `~` and `=` pairs collided with prose and identifiers such as `snake_case`, `~/config` and `x =1, y= 2`. In 0.2 only `/` and `*` pair bare; underline, strike and highlight use the braced forms `{_x_}`, `{~x~}` and `{=x=}` ([technical rationale](./technical-rationale#reduce-punctuation-collisions), C2-I-043, C2-I-046).
 
-**[U-065](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> In 0.1, `_underlined_` writes an underline, and `_z_/y/` writes an underline followed by literal `/y/`.
+**[U-065](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> In 0.1, `_underlined_` writes an underline, and `_z_/y/` writes an underline followed by literal `/y/`.
 
 ::: compare no-render
 ```text
@@ -1809,7 +1809,7 @@ an {_underlined_} word and snake_case and _id
 ```
 :::
 
-**[U-066](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Bare strike
+**[U-066](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Bare strike
 
 ::: compare no-render
 ```text
@@ -1820,7 +1820,7 @@ a {~struck~} word and ~/config
 ```
 :::
 
-**[U-067](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Bare highlight
+**[U-067](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Bare highlight
 
 ::: compare no-render
 ```text
@@ -1831,7 +1831,7 @@ a {=marked=} word and x {=1, y=} 2
 ```
 :::
 
-**[U-068](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Emphasis outside strong
+**[U-068](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Emphasis outside strong
 
 ::: compare no-render
 ```text
@@ -1843,7 +1843,7 @@ a {=marked=} word and x {=1, y=} 2
 ```
 :::
 
-**[U-069](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Substitution arrow
+**[U-069](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Substitution arrow
 
 ::: compare no-render
 ```text
@@ -1854,7 +1854,7 @@ a {=marked=} word and x {=1, y=} 2
 ```
 :::
 
-**[U-070](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Delimiter inside a braced span that closes an outer span
+**[U-070](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Delimiter inside a braced span that closes an outer span
 
 ::: compare no-render
 ```text
@@ -1866,7 +1866,7 @@ a {=marked=} word and x {=1, y=} 2
 ```
 :::
 
-**[U-073](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Sigil after a letter or number
+**[U-073](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Sigil after a letter or number
 Tool: Review by hand.
 
 ::: compare no-render
@@ -1878,7 +1878,7 @@ see config:items[0] and :smile: and x:smile:
 ```
 :::
 
-**[U-074](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="info" text="none" /> Inline spellings that read the same
+**[U-074](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="info" text="none" /> Inline spellings that read the same
 
 ::: compare no-render
 ```text
@@ -1889,7 +1889,7 @@ see config:items[0] and :smile: and x:smile:
 ```
 :::
 
-**[U-143](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-047,C2-I-051: in 0.1, `/{/` writes `<p><em>{</em></p>`.
+**[U-143](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-047,C2-I-051: in 0.1, `/{/` writes `<p><em>{</em></p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1901,7 +1901,7 @@ Tool: Review.
 ```
 :::
 
-**[U-145](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-047,C2-I-048,C2-I-051: in 0.1, `/*//` writes `<p><em>*</em>/</p>`. The 0.1 reading of `/***/` nests strong and emphasis around a star.
+**[U-145](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-047,C2-I-048,C2-I-051: in 0.1, `/*//` writes `<p><em>*</em>/</p>`. The 0.1 reading of `/***/` nests strong and emphasis around a star.
 Tool: The tool writes `{*{/*/}*}` or `{/a /b/}` for the checked shapes. Review other pairings.
 
 ::: compare no-render
@@ -1913,7 +1913,7 @@ Tool: The tool writes `{*{/*/}*}` or `{/a /b/}` for the checked shapes. Review o
 ```
 :::
 
-**[U-151](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-050,C2-I-052: in 0.1, `_{_` writes `<p><u>{</u></p>`.
+**[U-151](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-050,C2-I-052: in 0.1, `_{_` writes `<p><u>{</u></p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1925,7 +1925,7 @@ _{_
 ```
 :::
 
-**[U-170](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-092: in 0.1, `@a-` (and the tag #x-) writes `<p><span class="mention"><strong>@a-</strong></span></p>`.
+**[U-170](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-092: in 0.1, `@a-` (and the tag #x-) writes `<p><span class="mention"><strong>@a-</strong></span></p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -1937,7 +1937,7 @@ Tool: Review.
 ```
 :::
 
-**[U-198](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-062, `{~a~>~}` writes `&lt;del&gt;a&lt;/del&gt;&lt;ins&gt;&lt;/ins&gt;` in 0.1.
+**[U-198](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-062, `{~a~>~}` writes `&lt;del&gt;a&lt;/del&gt;&lt;ins&gt;&lt;/ins&gt;` in 0.1.
 Tool: Review the replacement.
 
 ::: compare no-render
@@ -1949,7 +1949,7 @@ C2-I-062 has no arrow replacement, and C2-W-116 gives an empty insertion or dele
 ```
 :::
 
-**[U-200](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-062 and C2-I-043, `{~a~>b~}{.k} c` writes a deletion, an insertion, and literal `{.k}` in 0.1.
+**[U-200](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-062 and C2-I-043, `{~a~>b~}{.k} c` writes a deletion, an insertion, and literal `{.k}` in 0.1.
 
 ::: compare no-render
 ```text
@@ -1960,7 +1960,7 @@ C2-I-062 has no arrow replacement, and C2-W-116 gives an empty insertion or dele
 ```
 :::
 
-**[U-240](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-030, `[a]{:abcdefgh} [b]{:abcdefghi}` writes a language span for `a` and literal `[b]{:abcdefghi}` in 0.1.
+**[U-240](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-030, `[a]{:abcdefgh} [b]{:abcdefghi}` writes a language span for `a` and literal `[b]{:abcdefghi}` in 0.1.
 Tool: Review the new language span.
 
 ::: compare no-render
@@ -1972,7 +1972,7 @@ C2-I-030 accepts the nine-character tag and writes lang="abcdefghi" on the secon
 ```
 :::
 
-**[U-254](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-023, C2-I-043, and C2-I-047, `/{+a/{k=b+}` writes a literal slash and an insertion, while `/x /*a %% b*/{.c} y` writes nested emphasis and strong text in 0.1.
+**[U-254](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-023, C2-I-043, and C2-I-047, `/{+a/{k=b+}` writes a literal slash and an insertion, while `/x /*a %% b*/{.c} y` writes nested emphasis and strong text in 0.1.
 Tool: Review delimiter and comment ownership.
 
 ::: compare no-render
@@ -1985,7 +1985,7 @@ C2-I-023, C2-I-043, and C2-I-047 change delimiter pairing when an attribute open
 ```
 :::
 
-**[U-255](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-047, two escaped HTML tags containing `http://` and `fetch("//evil/?")` pair slash delimiters around the text from `iframe` to `fetch` in 0.1.
+**[U-255](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-047, two escaped HTML tags containing `http://` and `fetch("//evil/?")` pair slash delimiters around the text from `iframe` to `fetch` in 0.1.
 Tool: Review the escaped text emphasis boundary.
 
 ::: compare no-render
@@ -1998,7 +1998,7 @@ C2-I-047 pairs slash delimiters at a different boundary after raw HTML is escape
 ```
 :::
 
-**[U-267](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-043, the U-065 rewrite fails for an underline whose text starts with `name=`: `{_a=b_}` is an attribute block.
+**[U-267](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-043, the U-065 rewrite fails for an underline whose text starts with `name=`: `{_a=b_}` is an attribute block.
 
 ::: compare no-render
 ```text
@@ -2009,7 +2009,7 @@ an {_a\=b_} word
 ```
 :::
 
-**[U-273](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-051, a bare delimiter of a kind that is already open: `/This /does not/ nest/`, `*a *b* c*`
+**[U-273](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-051, a bare delimiter of a kind that is already open: `/This /does not/ nest/`, `*a *b* c*`
 
 ::: compare no-render
 ```text
@@ -2020,7 +2020,7 @@ an {_a\=b_} word
 ```
 :::
 
-**[U-274](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-051 and C2-I-059, a bare pair of the kind of an open braced span: `{*a *b* c*}`, `{/a /b/ c/}`
+**[U-274](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-051 and C2-I-059, a bare pair of the kind of an open braced span: `{*a *b* c*}`, `{/a /b/ c/}`
 
 ::: compare no-render
 ```text
@@ -2031,7 +2031,7 @@ an {_a\=b_} word
 ```
 :::
 
-**[U-365](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-005, C2-I-035 and C2-I-119, a valid attribute block inside a braced span that holds the span's closer: `{-{#x-}`; the underline `{_{#x_}`
+**[U-365](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-005, C2-I-035 and C2-I-119, a valid attribute block inside a braced span that holds the span's closer: `{-{#x-}`; the underline `{_{#x_}`
 
 ::: compare no-render
 ```text
@@ -2042,7 +2042,7 @@ an {_a\=b_} word
 ```
 :::
 
-**[U-374](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Nested braced boundaries: `{-{_a-}_} b-}` and `{-a-}{+{+b~}+}+}`
+**[U-374](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Nested braced boundaries: `{-{_a-}_} b-}` and `{-a-}{+{+b~}+}+}`
 Tool: C2-I-058 and C2-I-059 pair the first matching closer and remove later openers, changing the nesting and HTML. Review the nested marks.
 
 ::: compare no-render
@@ -2054,7 +2054,7 @@ At nested braced boundaries, C2-I-058 and C2-I-059 pair the first matching close
 ```
 :::
 
-**[U-389](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A braced underline right after an equals sign: `={_a=b_}`. 0.1 writes `=<u>a=b</u>`; 0.2 writes the whole run as text.
+**[U-389](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A braced underline right after an equals sign: `={_a=b_}`. 0.1 writes `=<u>a=b</u>`; 0.2 writes the whole run as text.
 Tool: Report from the outer equals sign through the final closing brace.
 
 ::: compare no-render
@@ -2074,7 +2074,7 @@ Tool: Report from the outer equals sign through the final closing brace.
 The writer escape rules get one data-driven procedure after 0.2.0 ([#6579](https://github.com/markup-carve/carve/issues/6579)). The escaped spellings below may change with it.
 :::
 
-**[U-101](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> `=` at the start of a paragraph, an item or a quote
+**[U-101](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> `=` at the start of a paragraph, an item or a quote
 
 ::: compare no-render
 ```text
@@ -2087,7 +2087,7 @@ and more.
 ```
 :::
 
-**[U-102](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Indented line directly under a heading
+**[U-102](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Indented line directly under a heading
 
 ::: compare no-render
 ```text
@@ -2101,7 +2101,7 @@ indented text
 ```
 :::
 
-**[U-103](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Letter marker with one space
+**[U-103](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Letter marker with one space
 
 ::: compare no-render
 ```text
@@ -2114,7 +2114,7 @@ b\. two
 ```
 :::
 
-**[U-104](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Quote fence or line block with a title
+**[U-104](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Quote fence or line block with a title
 
 :::: compare no-render
 ```text
@@ -2132,7 +2132,7 @@ quoted
 ```
 ::::
 
-**[U-105](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Raw fence with a title
+**[U-105](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Raw fence with a title
 
 ::: compare no-render
 ````text
@@ -2149,7 +2149,7 @@ quoted
 ````
 :::
 
-**[U-106](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Text line directly under a term
+**[U-106](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Text line directly under a term
 
 ::: compare no-render
 ```text
@@ -2166,7 +2166,7 @@ more term text
 ```
 :::
 
-**[U-107](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Second caret line under a caption
+**[U-107](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Second caret line under a caption
 
 ::: compare no-render
 ```text
@@ -2182,7 +2182,7 @@ more term text
 ```
 :::
 
-**[U-108](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Row attribute one space after the closing pipe
+**[U-108](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Row attribute one space after the closing pipe
 
 ::: compare no-render
 ```text
@@ -2194,7 +2194,7 @@ more term text
 ```
 :::
 
-**[U-109](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Line indented short of the content column after a blank line
+**[U-109](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Line indented short of the content column after a blank line
 
 ::: compare no-render
 ```text
@@ -2209,7 +2209,7 @@ second paragraph
 ```
 :::
 
-**[U-110](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Full reference whose label is a heading
+**[U-110](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Full reference whose label is a heading
 
 ::: compare no-render
 ```text
@@ -2224,7 +2224,7 @@ See [My Heading][] and \[the text]\[My Heading].
 ```
 :::
 
-**[U-111](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Reference label that wraps
+**[U-111](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Reference label that wraps
 
 ::: compare no-render
 ```text
@@ -2242,7 +2242,7 @@ label] here.
 ```
 :::
 
-**[U-112](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Reference label that starts with a caret
+**[U-112](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Reference label that starts with a caret
 
 ::: compare no-render
 ```text
@@ -2258,7 +2258,7 @@ See \[x]\[^n].
 ```
 :::
 
-**[U-113](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Markup inside an unresolved reference
+**[U-113](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Markup inside an unresolved reference
 
 ::: compare no-render
 ```text
@@ -2270,7 +2270,7 @@ See [\*b\* and \/i\/][nope] and [\`c\`][].
 ```
 :::
 
-**[U-114](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="info" text="none" /> New spellings that 0.1 already had
+**[U-114](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="info" text="none" /> New spellings that 0.1 already had
 
 ::: compare no-render
 ```text
@@ -2285,7 +2285,7 @@ See [\*b\* and \/i\/][nope] and [\`c\`][].
 ```
 :::
 
-**[U-115](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Hyphen run 0.1 kept as typed, and the braced en dash
+**[U-115](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-inline-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Hyphen run 0.1 kept as typed, and the braced en dash
 
 ::: compare no-render
 ```text
@@ -2296,7 +2296,7 @@ a--b and -\-flag
 ```
 :::
 
-**[U-120](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Ordered marker followed by task box text
+**[U-120](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Ordered marker followed by task box text
 
 ::: compare no-render
 ```text
@@ -2307,7 +2307,7 @@ a--b and -\-flag
 ```
 :::
 
-**[U-121](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Defined shortcut that was text
+**[U-121](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Defined shortcut that was text
 
 ::: compare no-render
 ```text
@@ -2323,7 +2323,7 @@ a--b and -\-flag
 ```
 :::
 
-**[U-136](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-I-036, `{%` followed by a newline and `%}x` prints literally in 0.1.
+**[U-136](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-I-036, `{%` followed by a newline and `%}x` prints literally in 0.1.
 
 ::: compare no-render
 ```text
@@ -2336,7 +2336,7 @@ a--b and -\-flag
 ```
 :::
 
-**[U-139](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-I-089, `x^[]` prints literally in 0.1.
+**[U-139](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-I-089, `x^[]` prints literally in 0.1.
 
 ::: compare no-render
 ```text
@@ -2347,7 +2347,7 @@ x^\[]
 ```
 :::
 
-**[U-181](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092
+**[U-181](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092
 
 ::: compare no-render
 ```text
@@ -2358,7 +2358,7 @@ x^\[]
 ```
 :::
 
-**[U-182](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-I-119 and C2-I-050, `[{*a]*}` writes literal text in 0.1.
+**[U-182](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-I-119 and C2-I-050, `[{*a]*}` writes literal text in 0.1.
 
 ::: compare no-render
 ```text
@@ -2369,7 +2369,7 @@ x^\[]
 ```
 :::
 
-**[U-183](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1.
+**[U-183](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1.
 
 ::: compare no-render
 ```text
@@ -2383,7 +2383,7 @@ x^\[]
 ```
 :::
 
-**[U-188](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> A plus-minus shorthand is recognized inside a colon pair under C2-I-117
+**[U-188](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> A plus-minus shorthand is recognized inside a colon pair under C2-I-117
 
 ::: compare no-render
 ```text
@@ -2394,7 +2394,7 @@ x^\[]
 ```
 :::
 
-**[U-189](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> An empty footnote label followed by braces changes inline ownership under C2-I-087,C2-I-089
+**[U-189](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> An empty footnote label followed by braces changes inline ownership under C2-I-087,C2-I-089
 
 ::: compare no-render
 ```text
@@ -2405,7 +2405,7 @@ d[\^]{}
 ```
 :::
 
-**[U-212](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-149, `> a` then an indented `^ cap` line keeps `^ cap` as quote text in 0.1.
+**[U-212](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-149, `> a` then an indented `^ cap` line keeps `^ cap` as quote text in 0.1.
 
 ::: compare no-render
 ```text
@@ -2418,7 +2418,7 @@ d[\^]{}
 ```
 :::
 
-**[U-225](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-197, `![alt](u)` followed by `^ %% hidden` keeps the caret as literal paragraph text in 0.1.
+**[U-225](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-147 and C2-B-197, `![alt](u)` followed by `^ %% hidden` keeps the caret as literal paragraph text in 0.1.
 
 ::: compare no-render
 ```text
@@ -2431,7 +2431,7 @@ d[\^]{}
 ```
 :::
 
-**[U-304](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-182, a part glued to the alignment marks of a cell prefix, `\|{>.c} a \|`, `\|{>^.c} a \|` or `\|{>vx} a \|`, was cell text in 0.1: `<td>{>.c} a</td>`.
+**[U-304](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-182, a part glued to the alignment marks of a cell prefix, `\|{>.c} a \|`, `\|{>^.c} a \|` or `\|{>vx} a \|`, was cell text in 0.1: `<td>{>.c} a</td>`.
 
 ::: compare no-render
 ```text
@@ -2442,7 +2442,7 @@ d[\^]{}
 ```
 :::
 
-**[U-305](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-171 and C2-B-182, glued brace blocks in a cell prefix, `\|{>}{^} a \|` or `\|{.a}{.b} a \|`, were cell text in 0.1.
+**[U-305](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Under C2-B-171 and C2-B-182, glued brace blocks in a cell prefix, `\|{>}{^} a \|` or `\|{.a}{.b} a \|`, were cell text in 0.1.
 
 ::: compare no-render
 ```text
@@ -2453,7 +2453,7 @@ d[\^]{}
 ```
 :::
 
-**[U-430](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> a /b {+c/ d+}
+**[U-430](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> a /b {+c/ d+}
 
 ::: compare no-render
 ```text
@@ -2468,7 +2468,7 @@ a \/b {+c/ d+}
 
 A code or math span now needs its closer: an unclosed backtick run is text where 0.1 read it as code to the end of the paragraph (C2-I-017). Backticks are the only code fence; `~~~` is text (C2-B-108).
 
-**[U-037](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> Brace suffix after a fence language
+**[U-037](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> Brace suffix after a fence language
 
 ::: compare no-render
 ````text
@@ -2483,7 +2483,7 @@ a
 ````
 :::
 
-**[U-049](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Fence closer at another indent
+**[U-049](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Fence closer at another indent
 
 ::: compare no-render
 ````text
@@ -2501,7 +2501,7 @@ after
 `````
 :::
 
-**[U-053](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Tab in code under a container
+**[U-053](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Tab in code under a container
 Tool: Review by hand: four spaces for the tab keep the 0.1 code text, but 0.1 made the one-item list loose, `<li><p>item</p>`, and a one-item list is tight in 0.2 (C2-B-062).
 
 ::: compare no-render
@@ -2523,7 +2523,7 @@ Tool: Review by hand: four spaces for the tab keep the 0.1 code text, but 0.1 ma
 ````
 :::
 
-**[U-054](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="info" text="none" /> Fence and div spellings that read the same
+**[U-054](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="info" text="none" /> Fence and div spellings that read the same
 
 ::: compare no-render
 ````text
@@ -2538,7 +2538,7 @@ code
 ```
 :::
 
-**[U-116](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Tilde fence
+**[U-116](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#later-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Tilde fence
 
 ::: compare no-render
 ```text
@@ -2553,7 +2553,7 @@ x
 ````
 :::
 
-**[U-127](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-list-fence-boundary-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `- ````, a blank line, then `+`
+**[U-127](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-list-fence-boundary-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `- ````, a blank line, then `+`
 
 ::: compare no-render
 ````text
@@ -2568,7 +2568,7 @@ x
 ````
 :::
 
-**[U-135](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-113, an unclosed ` ``` ` fence with one trailing blank line writes one code line; `- q` then an indented fence and a blank line before `tail` keeps that blank code line in 0.1.
+**[U-135](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-113, an unclosed ` ``` ` fence with one trailing blank line writes one code line; `- q` then an indented fence and a blank line before `tail` keeps that blank code line in 0.1.
 
 ::: compare no-render
 ````text
@@ -2582,7 +2582,7 @@ x
 ````
 :::
 
-**[U-157](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-108,C2-B-110,C2-B-122: in 0.1, ```` ```s ""u ```` writes `<pre><code class="language-s"></code></pre>`.
+**[U-157](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-108,C2-B-110,C2-B-122: in 0.1, ```` ```s ""u ```` writes `<pre><code class="language-s"></code></pre>`.
 Tool: Review.
 
 ::: compare no-render
@@ -2594,7 +2594,7 @@ Tool: Review.
 ```
 :::
 
-**[U-204](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-059 and C2-B-113, `:: t` then `:  d` then `+` then an open code fence with `a`, a blank line, and `b` keeps only `a` and the blank line inside the description fence in 0.1.
+**[U-204](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-059 and C2-B-113, `:: t` then `:  d` then `+` then an open code fence with `a`, a blank line, and `b` keeps only `a` and the blank line inside the description fence in 0.1.
 
 ::: compare no-render
 ````text
@@ -2623,7 +2623,7 @@ b
 ````
 :::
 
-**[U-238](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-057 and C2-B-111, <code>- &#96;&#96;&#96;</code>, `  x`, a blank line, `+`, and `tail` write one list item whose code holds the blank line and whose text is `tail` in 0.1.
+**[U-238](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-057 and C2-B-111, <code>- &#96;&#96;&#96;</code>, `  x`, a blank line, `+`, and `tail` write one list item whose code holds the blank line and whose text is `tail` in 0.1.
 Tool: Write a matching fence closer and indent `tail` under the item: the structure is the 0.1 one, but `tail` is `<p>tail</p>` where 0.1 wrote it bare (C2-H-034, U-019).
 
 ::: compare no-render
@@ -2644,7 +2644,7 @@ tail
 ````
 :::
 
-**[U-242](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108 and C2-B-110, a three-backtick fence containing an indented three-backtick line can keep that line as code content in 0.1.
+**[U-242](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108 and C2-B-110, a three-backtick fence containing an indented three-backtick line can keep that line as code content in 0.1.
 
 ::: compare no-render
 ````text
@@ -2668,7 +2668,7 @@ wa
 `````
 :::
 
-**[U-245](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108 and C2-B-110, a quoted ordered item can open a code fence whose blank line is written as a bare `>` before the next quoted paragraph. In 0.1, that line remains a blank code line.
+**[U-245](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108 and C2-B-110, a quoted ordered item can open a code fence whose blank line is written as a bare `>` before the next quoted paragraph. In 0.1, that line remains a blank code line.
 
 ::: compare no-render
 ````text
@@ -2691,7 +2691,7 @@ wa
 ````
 :::
 
-**[U-249](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-009 and C2-H-013, inline math with `{CLASS=c}` writes the attribute name `CLASS` in 0.1 HTML.
+**[U-249](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-009 and C2-H-013, inline math with `{CLASS=c}` writes the attribute name `CLASS` in 0.1 HTML.
 Tool: Review the canonical attribute name.
 
 ::: compare no-render
@@ -2703,7 +2703,7 @@ C2-H-009 and C2-H-013 write the structural class attribute with its canonical lo
 ```
 :::
 
-**[U-258](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-017, a backtick run with no closing run of its length, <code>a &#96;b c</code>, is code to the end of the content in 0.1.
+**[U-258](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-017, a backtick run with no closing run of its length, <code>a &#96;b c</code>, is code to the end of the content in 0.1.
 
 ::: compare no-render
 ```text
@@ -2714,7 +2714,7 @@ a `b c`
 ```
 :::
 
-**[U-277](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-117, C2-B-120 and C2-B-122, a code fence title before a tab or before a further word: ```` ```js "T" ````, a tab, `[L]`; ```` ```js "T" junk ````
+**[U-277](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-117, C2-B-120 and C2-B-122, a code fence title before a tab or before a further word: ```` ```js "T" ````, a tab, `[L]`; ```` ```js "T" junk ````
 
 ::: compare no-render
 ````text
@@ -2729,7 +2729,7 @@ x
 ````
 :::
 
-**[U-278](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108 and C2-B-122, a backtick fence run followed by a tab, by two spaces, by a brace block or by a language with a character outside the language word: ```` ```<TAB>js ````, ```` ```  x ````, ```` ``` {.c} ````, ```` ```j$s ````; and a colon fence run followed by a brace block, `::: {.c}`
+**[U-278](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108 and C2-B-122, a backtick fence run followed by a tab, by two spaces, by a brace block or by a language with a character outside the language word: ```` ```<TAB>js ````, ```` ```  x ````, ```` ``` {.c} ````, ```` ```j$s ````; and a colon fence run followed by a brace block, `::: {.c}`
 
 ::: compare no-render
 ````text
@@ -2746,7 +2746,7 @@ x`
 ````
 :::
 
-**[U-300](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-138, a comment-only line inside a code span, a math span or an editorial comment that closes on a later line, <code>&#96;a</code>, `%% b` and <code>c&#96;</code>, was dropped in 0.1, and the span formed: <code>&lt;code&gt;a ⏎ c&lt;/code&gt;</code>.
+**[U-300](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-138, a comment-only line inside a code span, a math span or an editorial comment that closes on a later line, <code>&#96;a</code>, `%% b` and <code>c&#96;</code>, was dropped in 0.1, and the span formed: <code>&lt;code&gt;a ⏎ c&lt;/code&gt;</code>.
 
 ::: compare no-render
 ```text
@@ -2761,7 +2761,7 @@ c`
 ```
 :::
 
-**[U-368](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-118, a backtick in the info string of a backtick fence: ```` ```js ` ```` above ```` ``` ````
+**[U-368](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-118, a backtick in the info string of a backtick fence: ```` ```js ` ```` above ```` ``` ````
 
 ::: compare no-render
 ````text
@@ -2774,7 +2774,7 @@ c`
 ````
 :::
 
-**[U-370](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-222, an unclosed code fence whose last line has no line feed at the end of input: ```` ``` ````, `code` and no line feed; also in a quote or a list item
+**[U-370](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-222, an unclosed code fence whose last line has no line feed at the end of input: ```` ``` ````, `code` and no line feed; also in a quote or a list item
 Tool: A line feed after the last line: `<pre><code>code` and a line feed `</code></pre>`. A code value always ends with a line feed, so no source keeps the 0.1 HTML.
 
 ::: compare no-render
@@ -2788,7 +2788,7 @@ code
 ```
 :::
 
-**[U-396](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> An empty unclosed math run at the end of inline content: <code>a $&#96;</code> or <code>$$&#96;&#96;</code>. 0.1 writes an empty math span; 0.2 writes the run as text (C2-I-017).
+**[U-396](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> An empty unclosed math run at the end of inline content: <code>a $&#96;</code> or <code>$$&#96;&#96;</code>. 0.1 writes an empty math span; 0.2 writes the run as text (C2-I-017).
 Tool: Report at the parsed math range.
 
 ::: compare no-render
@@ -2800,7 +2800,7 @@ a $`
 ```
 :::
 
-**[U-439](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-23-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> An unclosed run whose 0.1 output no 0.2 source spells: an empty code value at the end of inline content, <code>a &#96;</code>; a code, literal-text or math value that starts with a space and a backtick or ends with a backtick and a space, <code>a &#96;&#96; &#96;b</code>; an empty literal-text run that U-440 cannot remove, <code>a !&#96;&#96;</code>.
+**[U-439](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-23-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> An unclosed run whose 0.1 output no 0.2 source spells: an empty code value at the end of inline content, <code>a &#96;</code>; a code, literal-text or math value that starts with a space and a backtick or ends with a backtick and a space, <code>a &#96;&#96; &#96;b</code>; an empty literal-text run that U-440 cannot remove, <code>a !&#96;&#96;</code>.
 Tool: Report at the parsed range of the run.
 
 ::: compare no-render
@@ -2812,7 +2812,7 @@ a `
 ```
 :::
 
-**[U-440](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-23-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An empty unclosed literal-text run at the end of inline content, <code>x!&#96;&#96;</code>
+**[U-440](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-23-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An empty unclosed literal-text run at the end of inline content, <code>x!&#96;&#96;</code>
 
 ::: compare no-render
 ```text
@@ -2823,7 +2823,7 @@ x
 ```
 :::
 
-**[U-441](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#ruling-of-24-november-2026-code-span-padding-is-kept)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A code span padded on both sides, <code>a &#96; x &#96; b</code>
+**[U-441](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#ruling-of-24-november-2026-code-span-padding-is-kept)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A code span padded on both sides, <code>a &#96; x &#96; b</code>
 
 ::: compare no-render
 ```text
@@ -2838,7 +2838,7 @@ a `x` b
 
 Quotes, divs and line blocks follow the same paragraph and column rules as the top level, so a `+` line no longer joins blocks inside a quote, and a line belongs to the container whose column it reaches. Div labels and titles are read only in their metadata slot (C2-B-119, C2-B-121).
 
-**[U-016](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `+` line in a quote
+**[U-016](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#lists)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `+` line in a quote
 
 ::: compare no-render
 ```text
@@ -2853,7 +2853,7 @@ Quotes, divs and line blocks follow the same paragraph and column rules as the t
 ```
 :::
 
-**[U-052](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `%%` line inside a line block
+**[U-052](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `%%` line inside a line block
 
 :::: compare no-render
 ```text
@@ -2872,7 +2872,7 @@ two
 ```
 ::::
 
-**[U-125](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-032, C2-B-059, and C2-I-015, a quote `+` can attach the next line or leave a code-span paragraph before it in 0.1.
+**[U-125](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-032, C2-B-059, and C2-I-015, a quote `+` can attach the next line or leave a code-span paragraph before it in 0.1.
 
 ::: compare no-render
 ```text
@@ -2884,7 +2884,7 @@ two
 ```
 :::
 
-**[U-130](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes four `&amp;nbsp;` before `x`, and 0.2 writes the same since the ruling on #6762 (C2-H-043). An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1.
+**[U-130](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes four `&amp;nbsp;` before `x`, and 0.2 writes the same since the ruling on #6762 (C2-H-043). An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1.
 Tool: The tool checks removal of trailing no-break spaces in plain line-block lines under C2-H-043. Other ownership differences need review.
 
 :::: compare no-render
@@ -2899,7 +2899,7 @@ Tool: The tool checks removal of trailing no-break spaces in plain line-block li
 ```
 ::::
 
-**[U-178](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A div label or title is recognized only in its metadata slot under C2-B-119,C2-B-121
+**[U-178](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A div label or title is recognized only in its metadata slot under C2-B-119,C2-B-121
 
 :::: compare no-render
 ```text
@@ -2912,7 +2912,7 @@ Tool: The tool checks removal of trailing no-break spaces in plain line-block li
 ```
 ::::
 
-**[U-186](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An empty div label needs a space after the colon fence under C2-B-119
+**[U-186](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An empty div label needs a space after the colon fence under C2-B-119
 
 :::: compare no-render
 ```text
@@ -2925,7 +2925,7 @@ Tool: The tool checks removal of trailing no-break spaces in plain line-block li
 ```
 ::::
 
-**[U-195](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-119 and C2-B-121, `:::[`x`]` writes a div label containing a code span.
+**[U-195](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-119 and C2-B-121, `:::[`x`]` writes a div label containing a code span.
 Tool: Review the div label.
 
 :::: compare no-render
@@ -2939,7 +2939,7 @@ C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline
 ```
 ::::
 
-**[U-209](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1.
+**[U-209](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1.
 Tool: Review the container boundary; no preserving rewrite was verified for this source.
 
 ::: compare no-render
@@ -2957,7 +2957,7 @@ Tool: Review the container boundary; no preserving rewrite was verified for this
 ```
 :::
 
-**[U-219](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1, including when both lines have a quote prefix.
+**[U-219](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1, including when both lines have a quote prefix.
 Tool: Review the div structure; no preserving spelling has been verified for this shape.
 
 ::::: compare no-render
@@ -2970,7 +2970,7 @@ C2-B-109 closes the shorter div with the longer bare colon run. The old source o
 ```
 :::::
 
-**[U-222](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-014, C2-B-025 and C2-B-076, `- one` then an indented `::: note` leaves the div outside the item in 0.1. A single-space line after a closed div in a description can likewise stand outside the description.
+**[U-222](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-014, C2-B-025 and C2-B-076, `- one` then an indented `::: note` leaves the div outside the item in 0.1. A single-space line after a closed div in a description can likewise stand outside the description.
 
 :::: compare no-render
 ```text
@@ -2988,7 +2988,7 @@ b
 ```
 ::::
 
-**[U-241](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-A-068, `::: \\` then `[a` then `b][missing]` writes an unresolved reference fallback with a line feed in 0.1.
+**[U-241](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-A-068, `::: \\` then `[a` then `b][missing]` writes an unresolved reference fallback with a line feed in 0.1.
 Tool: Review the fallback in the hardbreak div.
 
 :::: compare no-render
@@ -3003,7 +3003,7 @@ C2-A-068 writes the line ending inside the unresolved reference fallback as a ha
 ```
 ::::
 
-**[U-247](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-025 and C2-B-026, an ordered item followed by an indented table row inside an admonition writes the table outside the item in 0.1.
+**[U-247](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-025 and C2-B-026, an ordered item followed by an indented table row inside an admonition writes the table outside the item in 0.1.
 
 ::::: compare no-render
 ````text
@@ -3032,7 +3032,7 @@ after *b*
 ````
 :::::
 
-**[U-263](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-A-068, a quote inside `::: \` kept its soft line breaks in 0.1, as did an item, a description, an admonition and a caption inside it, and a div with the class `hardbreaks`.
+**[U-263](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-A-068, a quote inside `::: \` kept its soft line breaks in 0.1, as did an item, a description, an admonition and a caption inside it, and a div with the class `hardbreaks`.
 Tool: Review nested blocks; no preserving 0.2 spelling exists.
 
 :::: compare no-render
@@ -3050,7 +3050,7 @@ b</p></blockquote>
 ```
 ::::
 
-**[U-264](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under the inline Preliminaries, a strong span across two lines of a line block, `*Roses are red` then `Violets are blue*`, was one `<strong>` around the `<br>` in 0.1.
+**[U-264](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under the inline Preliminaries, a strong span across two lines of a line block, `*Roses are red` then `Violets are blue*`, was one `<strong>` around the `<br>` in 0.1.
 Tool: Close and reopen the span on each line, `*Roses are red*` then `*Violets are blue*`, which gives one `<strong>` per line.
 
 :::: compare no-render
@@ -3068,7 +3068,7 @@ Violets are blue*
 ```
 ::::
 
-**[U-265](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="info" text="none" /> Under C2-H-043, a run of spaces inside a line of a line block, `Roses  are red`, is written as `&amp;nbsp;`, one per space, in 0.1.
+**[U-265](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="info" text="none" /> Under C2-H-043, a run of spaces inside a line of a line block, `Roses  are red`, is written as `&amp;nbsp;`, one per space, in 0.1.
 
 :::: compare no-render
 ```text
@@ -3083,7 +3083,7 @@ Roses  are red
 ```
 ::::
 
-**[U-276](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-119 and C2-B-122, a tab between the title and the label of a colon fence: `::: note "Title"`, a tab, `[First]`
+**[U-276](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-119 and C2-B-122, a tab between the title and the label of a colon fence: `::: note "Title"`, a tab, `[First]`
 
 :::: compare no-render
 ```text
@@ -3098,7 +3098,7 @@ x
 ```
 ::::
 
-**[U-380](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment in a div label: `::: note [%% hidden]`. 0.1 hides it and writes an empty label; 0.2 writes `%% hidden` as the label.
+**[U-380](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment in a div label: `::: note [%% hidden]`. 0.1 hides it and writes an empty label; 0.2 writes `%% hidden` as the label.
 Tool: Report from the bracketed label on the div opener.
 
 :::: compare no-render
@@ -3115,7 +3115,7 @@ body
 ```
 ::::
 
-**[U-381](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Inline markup in a div label: `::: note [/i/]`. 0.1 writes `<em>i</em>`; 0.2 writes the label as plain text.
+**[U-381](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Inline markup in a div label: `::: note [/i/]`. 0.1 writes `<em>i</em>`; 0.2 writes the label as plain text.
 Tool: Report from the bracketed label on the div opener.
 
 :::: compare no-render
@@ -3132,7 +3132,7 @@ body
 ```
 ::::
 
-**[U-382](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment line in a div that opens on a list item: `- ::: inner`, ` %% c`, ` text`. 0.1 ends the div and the list at the comment and `text` is a paragraph after the list; 0.2 keeps `text` in the div.
+**[U-382](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment line in a div that opens on a list item: `- ::: inner`, ` %% c`, ` text`. 0.1 ends the div and the list at the comment and `text` is a paragraph after the list; 0.2 keeps `text` in the div.
 Tool: Report from the comment line through the next retained line.
 
 ::: compare no-render
@@ -3152,7 +3152,7 @@ Tool: Report from the comment line through the next retained line.
 ```
 :::
 
-**[U-383](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence in a nested list inside a div in a quote, followed by a fence indented less than the inner item: 0.1 puts the code block in the div after the inner list; 0.2 puts it in the inner item.
+**[U-383](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence in a nested list inside a div in a quote, followed by a fence indented less than the inner item: 0.1 puts the code block in the div after the inner list; 0.2 puts it in the inner item.
 Tool: Report from the comment fence through the shifted code opener.
 
 ::: compare no-render
@@ -3187,7 +3187,7 @@ Tool: Report from the comment fence through the shifted code opener.
 ```
 :::
 
-**[U-384](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment line in a div nested in a div in a quote: 0.1 ends the inner div at the comment and the next line joins the outer div; 0.2 keeps it in the inner div.
+**[U-384](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment line in a div nested in a div in a quote: 0.1 ends the inner div at the comment and the next line joins the outer div; 0.2 keeps it in the inner div.
 Tool: Report from the comment-only line through the next retained line.
 
 ::: compare no-render
@@ -3218,7 +3218,7 @@ tail</p>
 ```
 :::
 
-**[U-385](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment line in a nested list inside a div in a double quote, followed by a fence indented less than the inner item: 0.1 puts the code block in the div after the inner list; 0.2 puts it in the inner item.
+**[U-385](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment line in a nested list inside a div in a double quote, followed by a fence indented less than the inner item: 0.1 puts the code block in the div after the inner list; 0.2 puts it in the inner item.
 Tool: Report from the comment line through the shifted code opener.
 
 ::: compare no-render
@@ -3253,7 +3253,7 @@ Tool: Report from the comment line through the shifted code opener.
 ```
 :::
 
-**[U-386](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line block that closes inside a nested item, followed by a fence indented less than that item: 0.1 puts the code block in the outer div; 0.2 puts it in the item.
+**[U-386](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line block that closes inside a nested item, followed by a fence indented less than that item: 0.1 puts the code block in the outer div; 0.2 puts it in the item.
 Tool: Report from the line-block closer through the shifted code opener.
 
 :::: compare no-render
@@ -3292,7 +3292,7 @@ Tool: Report from the line-block closer through the shifted code opener.
 ```
 ::::
 
-**[U-437](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> > a ⏎ + ⏎ - b ⏎ > c
+**[U-437](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> > a ⏎ + ⏎ - b ⏎ > c
 
 ::: compare no-render
 ```text
@@ -3314,7 +3314,7 @@ Tool: Report from the line-block closer through the shifted code opener.
 
 An attribute line applies only to the block on the next line, and an attribute block in running text attaches only to a span, link, image, code span, math, footnote reference, symbol or closed emphasis (C2-B-091, C2-I-036). Attribute text that 0.1 dropped without a trace now stays visible.
 
-**[U-031](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line above a blank line
+**[U-031](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line above a blank line
 
 ::: compare no-render
 ```text
@@ -3328,7 +3328,7 @@ Paragraph.
 ```
 :::
 
-**[U-032](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute block over several lines
+**[U-032](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute block over several lines
 
 ::: compare no-render
 ```text
@@ -3342,7 +3342,7 @@ Paragraph.
 ```
 :::
 
-**[U-033](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line between two items
+**[U-033](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line between two items
 
 ::: compare no-render
 ```text
@@ -3360,7 +3360,7 @@ Paragraph.
 ```
 :::
 
-**[U-034](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line that reaches no block
+**[U-034](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Attribute line that reaches no block
 
 ::: compare no-render
 ```text
@@ -3373,7 +3373,7 @@ Paragraph.
 ```
 :::
 
-**[U-035](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="info" text="none" /> <Badge type="warning" text="silent" /> Glued and stacked attribute blocks, empty braces
+**[U-035](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="info" text="none" /> <Badge type="warning" text="silent" /> Glued and stacked attribute blocks, empty braces
 
 ::: compare no-render
 ```text
@@ -3385,7 +3385,7 @@ Paragraph.
 ```
 :::
 
-**[U-036](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#attributes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Order of attributes in HTML
+**[U-036](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#attributes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Order of attributes in HTML
 Tool: Review by hand.
 
 ::: compare no-render
@@ -3401,7 +3401,7 @@ Paragraph.
 ```
 :::
 
-**[U-137](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` writes an empty item in 0.1; `- {.k}` then `tail` leaves `tail` outside that item.
+**[U-137](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-block-and-inline-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` writes an empty item in 0.1; `- {.k}` then `tail` leaves `tail` outside that item.
 
 ::: compare no-render
 ```text
@@ -3412,7 +3412,7 @@ Paragraph.
 ```
 :::
 
-**[U-141](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-cell-and-attribute-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. The multiline `{.x` then `.y}` form under `- >` is also consumed. In a doubly quoted item, `> > - {.x` then `> >    .y}` leaves an empty item and a following paragraph in 0.1.
+**[U-141](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-cell-and-attribute-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. The multiline `{.x` then `.y}` form under `- >` is also consumed. In a doubly quoted item, `> > - {.x` then `> >    .y}` leaves an empty item and a following paragraph in 0.1.
 
 ::: compare no-render
 ```text
@@ -3426,7 +3426,7 @@ t
 ```
 :::
 
-**[U-142](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-cell-and-attribute-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1.
+**[U-142](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-cell-and-attribute-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1.
 
 ::: compare no-render
 ```text
@@ -3439,7 +3439,7 @@ t
 ```
 :::
 
-**[U-192](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-A-037, `[]{:r lang}` writes an empty `lang` attribute.
+**[U-192](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-A-037, `[]{:r lang}` writes an empty `lang` attribute.
 
 ::: compare no-render
 ```text
@@ -3450,7 +3450,7 @@ t
 ```
 :::
 
-**[U-197](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-095, and C2-B-101, `- a` then `  {.k}` then `# H` consumes the attribute without attaching it.
+**[U-197](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090, C2-B-095, and C2-B-101, `- a` then `  {.k}` then `# H` consumes the attribute without attaching it.
 
 ::: compare no-render
 ```text
@@ -3465,7 +3465,7 @@ t
 ```
 :::
 
-**[U-211](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090 and C2-B-095, `{.a` then `.b}` then a blank line and `paragraph` attaches both classes to the paragraph in 0.1.
+**[U-211](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-090 and C2-B-095, `{.a` then `.b}` then a blank line and `paragraph` attaches both classes to the paragraph in 0.1.
 
 ::: compare no-render
 ```text
@@ -3480,7 +3480,7 @@ paragraph
 ```
 :::
 
-**[U-256](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-119 and C2-I-090, `# H {#id .cls}` and `{%~{#i}` expose a tag inside a failed brace attribute in 0.1.
+**[U-256](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-119 and C2-I-090, `# H {#id .cls}` and `{%~{#i}` expose a tag inside a failed brace attribute in 0.1.
 
 ::: compare no-render
 ```text
@@ -3491,7 +3491,7 @@ paragraph
 ```
 :::
 
-**[U-275](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-035 and C2-I-036, a valid attribute block that attaches to nothing in running text: `a {#id} b`, `x {.c #id} y`; with straight quotes, `{k=""}x`; with a bracket in a value, `{title="[a"}](u)`
+**[U-275](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-035 and C2-I-036, a valid attribute block that attaches to nothing in running text: `a {#id} b`, `x {.c #id} y`; with straight quotes, `{k=""}x`; with a bracket in a value, `{title="[a"}](u)`
 
 ::: compare no-render
 ```text
@@ -3502,7 +3502,7 @@ a \{#id} b
 ```
 :::
 
-**[U-282](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-042, an empty or blank `class` value: `{class=""}` above `p`, `{class=" "}`
+**[U-282](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-042, an empty or blank `class` value: `{class=""}` above `p`, `{class=" "}`
 Tool: An empty value adds no class, so no element carries `class=""`: `<p>p</p>`. No 0.2 source writes the empty attribute.
 
 ::: compare no-render
@@ -3515,7 +3515,7 @@ p
 ```
 :::
 
-**[U-283](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-167, an empty `rel` on a link: `[x](/u){rel=""}`
+**[U-283](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-167, an empty `rel` on a link: `[x](/u){rel=""}`
 Tool: A link carries no `rel` when nobody gives a word: `<a href="/u">x</a>`. No 0.2 source writes the empty attribute.
 
 ::: compare no-render
@@ -3527,7 +3527,7 @@ Tool: A link carries no `rel` when nobody gives a word: `<a href="/u">x</a>`. No
 ```
 :::
 
-**[U-392](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="info" text="none" /> <Badge type="warning" text="silent" /> An uppercase attribute name: `{CLASS=z}` on a line block. 0.1 writes `CLASS="z line-block"`; 0.2 writes `class="z line-block"`, the same HTML attribute.
+**[U-392](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="info" text="none" /> <Badge type="warning" text="silent" /> An uppercase attribute name: `{CLASS=z}` on a line block. 0.1 writes `CLASS="z line-block"`; 0.2 writes `class="z line-block"`, the same HTML attribute.
 
 :::: compare no-render
 ```text
@@ -3547,7 +3547,7 @@ verse
 
 Definitions stand at column 0 outside quotes and items (C2-B-081), and a duplicate definition no longer replaces the first one. Reference labels may wrap across a line break, so hard-wrapping prose no longer turns a reference into literal brackets ([#1092](https://github.com/markup-carve/carve/issues/1092)).
 
-**[U-038](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Definition inside a quote or an item
+**[U-038](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Definition inside a quote or an item
 
 ::: compare no-render
 ```text
@@ -3566,7 +3566,7 @@ Outside [ref][].
 ```
 :::
 
-**[U-039](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Indented definition at the top level
+**[U-039](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Indented definition at the top level
 
 ::: compare no-render
 ```text
@@ -3581,7 +3581,7 @@ Text [a][].
 ```
 :::
 
-**[U-040](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Duplicate link definition
+**[U-040](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Duplicate link definition
 
 ::: compare no-render
 ```text
@@ -3597,7 +3597,7 @@ Text [a][].
 ```
 :::
 
-**[U-041](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Duplicate abbreviation definition
+**[U-041](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#definitions)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Duplicate abbreviation definition
 
 ::: compare no-render
 ```text
@@ -3613,7 +3613,7 @@ HTML here.
 ```
 :::
 
-**[U-075](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#references-and-footnotes)** <Badge type="info" text="none" /> References that read the same
+**[U-075](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#references-and-footnotes)** <Badge type="info" text="none" /> References that read the same
 
 ::: compare no-render
 ```text
@@ -3634,7 +3634,7 @@ See [^n](/u).
 ```
 :::
 
-**[U-131](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. A nested item with a definition can also leave a following colon line outside the list.
+**[U-131](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. A nested item with a definition can also leave a following colon line outside the list.
 Tool: The tool replaces a consumed definition with `{% %}` and releases a following colon when the complete HTML check passes. Review other shapes.
 
 ::: compare no-render
@@ -3648,7 +3648,7 @@ Tool: The tool replaces a consumed definition with `{% %}` and releases a follow
 ```
 :::
 
-**[U-132](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `[r]:` writes no HTML.
+**[U-132](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `[r]:` writes no HTML.
 Tool: Review the definition.
 
 ::: compare no-render
@@ -3660,7 +3660,7 @@ Tool: Review the definition.
 ```
 :::
 
-**[U-134](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-032 and C2-B-081, `> [f]:` writes one empty block quote.
+**[U-134](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-032 and C2-B-081, `> [f]:` writes one empty block quote.
 Tool: Review the quote.
 
 ::: compare no-render
@@ -3672,7 +3672,7 @@ Tool: Review the quote.
 ```
 :::
 
-**[U-158](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-085, the unresolved reference `[\[][]` is written as typed, backslash included, in 0.1.
+**[U-158](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-085, the unresolved reference `[\[][]` is written as typed, backslash included, in 0.1.
 Tool: Review the unresolved reference.
 
 ::: compare no-render
@@ -3684,7 +3684,7 @@ Tool: Review the unresolved reference.
 ```
 :::
 
-**[U-161](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-067,C2-B-083: in 0.1, `![][a ⏎ b]` writes `<p>![][a ⏎ b]</p>`.
+**[U-161](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-067,C2-B-083: in 0.1, `![][a ⏎ b]` writes `<p>![][a ⏎ b]</p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -3697,7 +3697,7 @@ b]
 ```
 :::
 
-**[U-164](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-101 and C2-H-161: in 0.1, `[](⟨U+202E⟩javascript:)` writes `<p><a href="⟨U+202E⟩javascript:"></a></p>`. An authored attribute that is no URL sink, `*x*{k="..."}` with U+202E before `javascript:x`, kept its value in 0.1 too.
+**[U-164](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-101 and C2-H-161: in 0.1, `[](⟨U+202E⟩javascript:)` writes `<p><a href="⟨U+202E⟩javascript:"></a></p>`. An authored attribute that is no URL sink, `*x*{k="..."}` with U+202E before `javascript:x`, kept its value in 0.1 too.
 Tool: Review.
 
 ::: compare no-render
@@ -3709,7 +3709,7 @@ Tool: Review.
 ```
 :::
 
-**[U-166](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-078: in 0.1, `[][@a]` writes `<p>[][@a]</p>`.
+**[U-166](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-078: in 0.1, `[][@a]` writes `<p>[][@a]</p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -3721,7 +3721,7 @@ Tool: Review.
 ```
 :::
 
-**[U-171](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-157,C2-B-197: in 0.1, `![ ⏎ ]()` writes `<img src="" alt=" ⏎ ">`.
+**[U-171](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-157,C2-B-197: in 0.1, `![ ⏎ ]()` writes `<img src="" alt=" ⏎ ">`.
 Tool: Review.
 
 ::: compare no-render
@@ -3735,7 +3735,7 @@ Tool: Review.
 ```
 :::
 
-**[U-175](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-067,C2-I-068: in 0.1, `[]( )` writes `<p><a href=""></a></p>`.
+**[U-175](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-067,C2-I-068: in 0.1, `[]( )` writes `<p><a href=""></a></p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -3747,7 +3747,7 @@ Tool: Review.
 ```
 :::
 
-**[U-187](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091
+**[U-187](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091
 
 ::: compare no-render
 ```text
@@ -3758,7 +3758,7 @@ Tool: Review.
 ```
 :::
 
-**[U-206](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-095 and C2-H-096, `# *Setup*` then `See </#Setup>.` writes a link with a bold `Setup` label in 0.1.
+**[U-206](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-095 and C2-H-096, `# *Setup*` then `See </#Setup>.` writes a link with a bold `Setup` label in 0.1.
 Tool: Review the cross-reference display.
 
 ::: compare no-render
@@ -3772,7 +3772,7 @@ C2-H-095 and C2-H-096 render a resolved cross-reference with the heading plain t
 ```
 :::
 
-**[U-221](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-069, a link with a quoted title crossing a line break writes a link whose HTML title contains that line break in 0.1.
+**[U-221](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-069, a link with a quoted title crossing a line break writes a link whose HTML title contains that line break in 0.1.
 Tool: Review the title; joining it onto one line gives a link whose title holds a space instead of the line break.
 
 ::: compare no-render
@@ -3785,7 +3785,7 @@ The tail holds a line break and is no tail (C2-I-069), so the source is paragrap
 ```
 :::
 
-**[U-234](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-079 and C2-I-085, `[\\^][]` writes a literal backslash and caret in 0.1.
+**[U-234](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-079 and C2-I-085, `[\\^][]` writes a literal backslash and caret in 0.1.
 
 ::: compare no-render
 ```text
@@ -3797,7 +3797,7 @@ The tail holds a line break and is no tail (C2-I-069), so the source is paragrap
 ```
 :::
 
-**[U-235](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `* * [d]: u` then a two-space `:` writes an empty nested item and a colon outside it in 0.1.
+**[U-235](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `* * [d]: u` then a two-space `:` writes an empty nested item and a colon outside it in 0.1.
 Tool: Write an empty comment in the nested item and a blank line before the colon: the structure is the 0.1 one, but the colon is `<p>:</p>` where 0.1 wrote it bare (C2-H-034, U-019).
 
 ::: compare no-render
@@ -3812,7 +3812,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```
 :::
 
-**[U-280](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-079 and C2-I-084, a tab inside a reference label, `[t][a`, a tab, `b]`, with the definition `[a b]: /u`; a tab inside a heading, `# A`, a tab, `B`, with the reference `[A B][]`
+**[U-280](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-079 and C2-I-084, a tab inside a reference label, `[t][a`, a tab, `b]`, with the definition `[a b]: /u`; a tab inside a heading, `# A`, a tab, `B`, with the reference `[A B][]`
 
 ::: compare no-render
 ```text
@@ -3828,7 +3828,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```
 :::
 
-**[U-281](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-084, a reference whose only target is a heading inside a quote: `> # Quoted`, a blank line, `[Quoted][]`
+**[U-281](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-084, a reference whose only target is a heading inside a quote: `> # Quoted`, a blank line, `[Quoted][]`
 
 ::: compare no-render
 ```text
@@ -3843,7 +3843,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```
 :::
 
-**[U-284](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-067, a no-break space inside a link destination: `[t](u`, U+202F, `v)`; U+00A0 the same
+**[U-284](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-067, a no-break space inside a link destination: `[t](u`, U+202F, `v)`; U+00A0 the same
 
 ::: compare no-render
 ```text
@@ -3854,7 +3854,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```
 :::
 
-**[U-285](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-083 and C2-I-067, a narrow no-break space before the destination of a link definition: `[a]: `, U+202F, `/u`, then `[a][]`
+**[U-285](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-083 and C2-I-067, a narrow no-break space before the destination of a link definition: `[a]: `, U+202F, `/u`, then `[a][]`
 
 ::: compare no-render
 ```text
@@ -3870,7 +3870,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```
 :::
 
-**[U-286](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-118, an attributed bracket span around 200 more opening brackets: 201 `[`, `x`, 201 `]`, `{.a}`
+**[U-286](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-118, an attributed bracket span around 200 more opening brackets: 201 `[`, `x`, 201 `]`, `{.a}`
 
 ::: compare no-render
 ```text
@@ -3881,7 +3881,7 @@ Tool: Write an empty comment in the nested item and a blank line before the colo
 ```
 :::
 
-**[U-340](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-079, a footnote label of spaces: `[^ ]: x`, a blank line, `a[^ ]`; a link label of spaces, `[t][ ]` with `[ ]: /u`; three spaces or a tab the same
+**[U-340](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-079, a footnote label of spaces: `[^ ]: x`, a blank line, `a[^ ]`; a link label of spaces, `[t][ ]` with `[ ]: /u`; three spaces or a tab the same
 
 ::: compare no-render
 ```text
@@ -3896,7 +3896,7 @@ a[^blank]
 ```
 :::
 
-**[U-367](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-H-096, a cross-reference to a figure whose caption label is a tag: `{#t}`, `![a](u)`, `^ #y#`, then `</#t>`
+**[U-367](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-H-096, a cross-reference to a figure whose caption label is a tag: `{#t}`, `![a](u)`, `^ #y#`, then `</#t>`
 
 ::: compare no-render
 ```text
@@ -3915,7 +3915,7 @@ a[^blank]
 ```
 :::
 
-**[U-371](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-085 and C2-H-139, attribute blocks glued to an unresolved reference: `[x][no]{.c}{#i}`
+**[U-371](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-085 and C2-H-139, attribute blocks glued to an unresolved reference: `[x][no]{.c}{#i}`
 Tool: Merged and written as one block in the fixed order, `<p>[x][no]{#i .c}</p>`, so the HTML is a function of the tree; candidate 7 had restored the typed form from a sidecar fact, which is gone. Review.
 
 ::: compare no-render
@@ -3927,7 +3927,7 @@ Tool: Merged and written as one block in the fixed order, `<p>[x][no]{#i .c}</p>
 ```
 :::
 
-**[U-376](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Every space after the colon of an abbreviation definition is separator in 0.1: `*[HTML]:  Hyper Text` gives the title `Hyper Text`; 0.2 keeps the second space in the title.
+**[U-376](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Every space after the colon of an abbreviation definition is separator in 0.1: `*[HTML]:  Hyper Text` gives the title `Hyper Text`; 0.2 keeps the second space in the title.
 
 ::: compare no-render
 ```text
@@ -3942,7 +3942,7 @@ HTML
 ```
 :::
 
-**[U-429](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> # Intro ⏎ ⏎ See </#intro>. (`carve upgrade --migrate`)
+**[U-429](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> # Intro ⏎ ⏎ See </#intro>. (`carve upgrade --migrate`)
 
 ::: compare no-render
 ```text
@@ -3957,7 +3957,7 @@ See </#Intro>.
 ```
 :::
 
-**[U-443](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-24-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An indented line below an abbreviation definition, `*[A]: B`, then `  x`
+**[U-443](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-24-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> An indented line below an abbreviation definition, `*[A]: B`, then `  x`
 
 ::: compare no-render
 ```text
@@ -3975,7 +3975,7 @@ x
 
 A footnote body owns only its indented continuation, so an unindented line after it starts a new block (C2-B-081, C2-B-087). A footnote mark inside link text is written after the link anchor (C2-H-088).
 
-**[U-042](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#definitions)** <Badge type="info" text="none" /> Definitions that read the same
+**[U-042](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#definitions)** <Badge type="info" text="none" /> Definitions that read the same
 
 ::: compare no-render
 ```text
@@ -3997,7 +3997,7 @@ Text[^n].
 ```
 :::
 
-**[U-124](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Plus continuation in a footnote body
+**[U-124](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-continuation-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Plus continuation in a footnote body
 
 ::: compare no-render
 ```text
@@ -4012,7 +4012,7 @@ a
 ```
 :::
 
-**[U-154](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-088, a footnote reference in link text, `[see this[^1] page](/u)` with the definition `[^1]: n`, wrote its mark inside the anchor in 0.1: &lt;a href="/u"&gt;see this&lt;sup id="fnref1"&gt;1&lt;/sup&gt; page&lt;/a&gt;.
+**[U-154](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-088, a footnote reference in link text, `[see this[^1] page](/u)` with the definition `[^1]: n`, wrote its mark inside the anchor in 0.1: &lt;a href="/u"&gt;see this&lt;sup id="fnref1"&gt;1&lt;/sup&gt; page&lt;/a&gt;.
 Tool: Review.
 
 ::: compare no-render
@@ -4026,7 +4026,7 @@ Tool: Review.
 ```
 :::
 
-**[U-160](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-087,C2-B-082: in 0.1, `x[^f ⏎ g] ⏎ [^f g]: n` writes `<p>x[^f ⏎ g]</p>`.
+**[U-160](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-087,C2-B-082: in 0.1, `x[^f ⏎ g] ⏎ [^f g]: n` writes `<p>x[^f ⏎ g]</p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -4041,7 +4041,7 @@ g]
 ```
 :::
 
-**[U-177](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A footnote definition body owns only its indented continuation under C2-B-081,C2-B-087
+**[U-177](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A footnote definition body owns only its indented continuation under C2-B-081,C2-B-087
 
 ::: compare no-render
 ```text
@@ -4062,7 +4062,7 @@ s
 ```
 :::
 
-**[U-207](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-088 and C2-H-139, an unresolved footnote reference with glued attribute blocks, `Text[^a]{.c}{#i}.`, writes the blocks as typed in 0.1.
+**[U-207](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-088 and C2-H-139, an unresolved footnote reference with glued attribute blocks, `Text[^a]{.c}{#i}.`, writes the blocks as typed in 0.1.
 Tool: Review.
 
 ::: compare no-render
@@ -4074,7 +4074,7 @@ Text[^a]{.c}{#i}.
 ```
 :::
 
-**[U-213](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `See [^a].` then `- [^a]: note body` writes an empty item and resolves the footnote in 0.1. A definition indented into a footnote body, `[^a]: first` then `  [^b]: second`, also defines `b` in 0.1.
+**[U-213](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-081 and C2-B-083, `See [^a].` then `- [^a]: note body` writes an empty item and resolves the footnote in 0.1. A definition indented into a footnote body, `[^a]: first` then `  [^b]: second`, also defines `b` in 0.1.
 
 ::: compare no-render
 ```text
@@ -4091,7 +4091,7 @@ See [^a].
 ```
 :::
 
-**[U-218](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082 and C2-I-036, `See[^f]` then `[^f]: {empty}` resolves an empty footnote in 0.1.
+**[U-218](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082 and C2-I-036, `See[^f]` then `[^f]: {empty}` resolves an empty footnote in 0.1.
 
 ::: compare no-render
 ```text
@@ -4106,7 +4106,7 @@ See[^f]
 ```
 :::
 
-**[U-223](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-087 and C2-B-076, `[^f]: :: t` then a two-space `:
+**[U-223](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-087 and C2-B-076, `[^f]: :: t` then a two-space `:
 
 ::: compare no-render
 ```text
@@ -4126,7 +4126,7 @@ See[^f]
 ```
 :::
 
-**[U-229](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-076 and C2-B-081, `[^f]: - :::::` then a seven-space `:::::` writes the second div outside the item but inside the note in 0.1. A seven-space caret line after a note-hosted item is likewise outside that item.
+**[U-229](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-076 and C2-B-081, `[^f]: - :::::` then a seven-space `:::::` writes the second div outside the item but inside the note in 0.1. A seven-space caret line after a note-hosted item is likewise outside that item.
 
 :::::: compare no-render
 ```text
@@ -4148,7 +4148,7 @@ See[^f]
 ```
 ::::::
 
-**[U-244](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082, C2-B-091, and C2-B-095, `{.a}` followed by `[^f]: note`, a blank line, and `Visible` writes class `a` on the visible paragraph in 0.1.
+**[U-244](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082, C2-B-091, and C2-B-095, `{.a}` followed by `[^f]: note`, a blank line, and `Visible` writes class `a` on the visible paragraph in 0.1.
 
 ::: compare no-render
 ```text
@@ -4166,7 +4166,7 @@ Visible
 ```
 :::
 
-**[U-246](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-087, C2-I-119, and C2-B-091, `x[^n]{#i}` followed by `## {#i}` writes the unresolved footnote attribute literally and gives the heading id `i` in 0.1.
+**[U-246](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-087, C2-I-119, and C2-B-091, `x[^n]{#i}` followed by `## {#i}` writes the unresolved footnote attribute literally and gives the heading id `i` in 0.1.
 
 ::: compare no-render
 ```text
@@ -4183,7 +4183,7 @@ x[^n]\{\#i}
 ```
 :::
 
-**[U-250](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082, C2-B-108, and C2-B-110, a note definition inside an item with an open code fence writes an empty list item and a resolved note with a trailing blank code line in 0.1.
+**[U-250](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082, C2-B-108, and C2-B-110, a note definition inside an item with an open code fence writes an empty list item and a resolved note with a trailing blank code line in 0.1.
 
 ::: compare no-render
 ````text
@@ -4208,7 +4208,7 @@ after
 ````
 :::
 
-**[U-251](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046, C2-B-082, and C2-H-032, `[^n]: - [ ]  [^f]: x` followed by `r[^n] [^f]` writes the inner note definition separately and writes the task item without 0.2 task HTML in 0.1.
+**[U-251](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-046, C2-B-082, and C2-H-032, `[^n]: - [ ]  [^f]: x` followed by `r[^n] [^f]` writes the inner note definition separately and writes the task item without 0.2 task HTML in 0.1.
 Tool: Review the changed note ownership and task HTML.
 
 ::: compare no-render
@@ -4222,7 +4222,7 @@ C2-B-046, C2-B-082, and C2-H-032 give the task item ownership of the nested defi
 ```
 :::
 
-**[U-253](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082 and C2-B-109, `:::` followed by `b[^1]` and a later `[^1]: c` resolves the note after an implicitly closed div in 0.1.
+**[U-253](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-082 and C2-B-109, `:::` followed by `b[^1]` and a later `[^1]: c` resolves the note after an implicitly closed div in 0.1.
 
 :::: compare no-render
 ```text
@@ -4240,7 +4240,7 @@ b[^1]
 ```
 ::::
 
-**[U-388](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A footnote-shaped run inside an insertion inside an inline note: `^[{+[^[g]+}] b+}]`. 0.1 keeps `[^[g]+}] b` in the insertion; 0.2 closes the insertion at the first `+}`.
+**[U-388](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A footnote-shaped run inside an insertion inside an inline note: `^[{+[^[g]+}] b+}]`. 0.1 keeps `[^[g]+}] b` in the insertion; 0.2 closes the insertion at the first `+}`.
 Tool: Report from the inline footnote opener through its closing bracket.
 
 ::: compare no-render
@@ -4264,7 +4264,7 @@ Tool: Report from the inline footnote opener through its closing bracket.
 
 In 0.1 a `%%` line comment ended at the first closer of its frame, so `[a %% b](/u)` was still a link. The 18 November ruling D2 makes a line comment take every closer on its line, and `%%` directly after the opener of a bracket or braced form is text ([#6074](https://github.com/markup-carve/carve/pull/6074), C2-I-023, C2-I-024). Where the HTML check passes, the tool rewrites such a comment as a braced `{% %}` comment.
 
-**[U-050](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `%%%` closer followed by text
+**[U-050](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#fences-quotes-comments)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `%%%` closer followed by text
 
 ::: compare no-render
 ```text
@@ -4283,7 +4283,7 @@ after
 ```
 :::
 
-**[U-072](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Editorial comment that starts like an id
+**[U-072](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#inline-emphasis-and-typography)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Editorial comment that starts like an id
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4295,7 +4295,7 @@ a*{#b} c #}
 ```
 :::
 
-**[U-129](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#measured-percent-comment-fence-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108, C2-B-110, and C2-B-112, `- a` then ` %%% n`, ` x`, ` %%%`, and ` tail` writes `tail` outside the list in 0.1. In a quoted sequence of three bare percent runs, 0.1 can hide the follower and leave the later line outside the quote.
+**[U-129](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#measured-percent-comment-fence-rewrite)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-108, C2-B-110, and C2-B-112, `- a` then ` %%% n`, ` x`, ` %%%`, and ` tail` writes `tail` outside the list in 0.1. In a quoted sequence of three bare percent runs, 0.1 can hide the follower and leave the later line outside the quote.
 
 ::: compare no-render
 ```text
@@ -4311,7 +4311,7 @@ y
 ```
 :::
 
-**[U-155](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-034,C2-I-039: in 0.1, `a	%%` writes `<p>a	%%</p>`.
+**[U-155](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#other-measured-rendering-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-034,C2-I-039: in 0.1, `a	%%` writes `<p>a	%%</p>`.
 Tool: Review.
 
 ::: compare no-render
@@ -4323,7 +4323,7 @@ a	%%
 ```
 :::
 
-**[U-216](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-036 and C2-B-147, `{%%}![alt](x.png)` writes a block image in 0.1, and `![a](/i) %% c` followed by `^ cap` writes a captioned figure.
+**[U-216](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-I-036 and C2-B-147, `{%%}![alt](x.png)` writes a block image in 0.1, and `![a](/i) %% c` followed by `^ cap` writes a captioned figure.
 
 ::: compare no-render
 ```text
@@ -4334,7 +4334,7 @@ a	%%
 ```
 :::
 
-**[U-224](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-109 and C2-B-111, a comment block in a container with lines after it that the container does not own: `- ::: box`, `  %%%%`, `%% j`, `  x`; `:: t`, `: d`, `%%%`, `c`, `%%%`, ` : d2`; and `[^n]: head`, a blank line, `  %%%`, `%% below`, a blank line, `  tail`.
+**[U-224](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-109 and C2-B-111, a comment block in a container with lines after it that the container does not own: `- ::: box`, `  %%%%`, `%% j`, `  x`; `:: t`, `: d`, `%%%`, `c`, `%%%`, ` : d2`; and `[^n]: head`, a blank line, `  %%%`, `%% below`, a blank line, `  tail`.
 Tool: Review the comment block.
 
 ::: compare no-render
@@ -4356,7 +4356,7 @@ Tool: Review the comment block.
 ```
 :::
 
-**[U-227](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1.
+**[U-227](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1.
 Tool: Escape the percent run inside the brace comment, `\%%%`: the list boundary is the 0.1 one, but 0.1 started the item text with a line feed, which no 0.2 source writes (C2-H-069, U-362).
 
 ::: compare no-render
@@ -4374,7 +4374,7 @@ plain
 ```
 :::
 
-**[U-243](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-036 and C2-B-108, a line containing three backticks inside a multiline `{% ... %}` comment remains comment text in 0.1.
+**[U-243](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-036 and C2-B-108, a line containing three backticks inside a multiline `{% ... %}` comment remains comment text in 0.1.
 Tool: Escape the first backtick inside the brace comment, `` \``` ``: the list boundary is the 0.1 one, but 0.1 started the item text with a line feed, which no 0.2 source writes (C2-H-069, U-362).
 
 ::: compare no-render
@@ -4392,7 +4392,7 @@ plain
 ````
 :::
 
-**[U-362](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-025, C2-B-140 and C2-H-069, a line of braced comments indented short of the content column after a blank line, with a list marker below it: `- a`, a blank line, ` {%%}`, `  - b`
+**[U-362](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-025, C2-B-140 and C2-H-069, a line of braced comments indented short of the content column after a blank line, with a list marker below it: `- a`, a blank line, ` {%%}`, `  - b`
 Tool: The comment line belongs to the item (U-109) and renders nothing, so `- b` is a nested list. With the comment at column 0 the list closes, but a comment line takes its line break with it, so no source writes the leading line feed.
 
 ::: compare no-render
@@ -4411,7 +4411,7 @@ Tool: The comment line belongs to the item (U-109) and renders nothing, so `- b`
 ```
 :::
 
-**[U-364](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-026 and C2-I-090, a sigil directly behind a braced comment that follows a letter: `a{%%}#tag`
+**[U-364](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-I-026 and C2-I-090, a sigil directly behind a braced comment that follows a letter: `a{%%}#tag`
 Tool: The comment counts as nothing, so `#` follows a letter and starts no tag: `<p>a#tag</p>`. A tag glued to a letter has no 0.2 spelling.
 
 ::: compare no-render
@@ -4423,7 +4423,7 @@ a{%%}#tag
 ```
 :::
 
-**[U-390](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="info" text="none" /> A comment marker at the start of a deletion: `{-%% b-}`.
+**[U-390](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="info" text="none" /> A comment marker at the start of a deletion: `{-%% b-}`.
 
 ::: compare no-render
 ```text
@@ -4434,7 +4434,7 @@ a{%%}#tag
 ```
 :::
 
-**[U-391](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence with no closer in a footnote body: `[^n]: head`, then an indented `%%%`. 0.1 hides the rest of the body, including a later indented `tail`; 0.2 ends the footnote and writes `tail` as a paragraph.
+**[U-391](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence with no closer in a footnote body: `[^n]: head`, then an indented `%%%`. 0.1 hides the rest of the body, including a later indented `tail`; 0.2 ends the footnote and writes `tail` as a paragraph.
 Tool: Report from the comment fence opener through the following unhidden line.
 
 ::: compare no-render
@@ -4462,7 +4462,7 @@ r[^n]
 ```
 :::
 
-**[U-393](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line comment inside a substitution, ended in 0.1 at the first raw closer of its frame: `{~a %% b~>c~} d`. 0.1 writes `{~a d`; 0.2 writes `{~a`.
+**[U-393](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line comment inside a substitution, ended in 0.1 at the first raw closer of its frame: `{~a %% b~>c~} d`. 0.1 writes `{~a d`; 0.2 writes `{~a`.
 Tool: Report from the comment marker through the end of its line.
 
 ::: compare no-render
@@ -4474,7 +4474,7 @@ Tool: Report from the comment marker through the end of its line.
 ```
 :::
 
-**[U-394](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence opened in a quote, an unquoted `%%` line, and a quoted closer: `> %%%`, `%%`, `> %%%`, `z`. 0.1 writes one empty quote; 0.2 writes two.
+**[U-394](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence opened in a quote, an unquoted `%%` line, and a quoted closer: `> %%%`, `%%`, `> %%%`, `z`. 0.1 writes one empty quote; 0.2 writes two.
 Tool: Report from the quoted opener through its matching closer.
 
 ::: compare no-render
@@ -4495,7 +4495,7 @@ z
 ```
 :::
 
-**[U-395](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence line inside a braced comment in a list item: `- p`, `  {% a`, `   %%%`, `   z %}`, `plain`. 0.1 hides the braced comment and keeps `plain` in the item; 0.2 writes `{% a` as text and `plain` as a paragraph after the list.
+**[U-395](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A comment fence line inside a braced comment in a list item: `- p`, `  {% a`, `   %%%`, `   z %}`, `plain`. 0.1 hides the braced comment and keeps `plain` in the item; 0.2 writes `{% a` as text and `plain` as a paragraph after the list.
 Tool: Report from the braced comment opener through its closing mark.
 
 ::: compare no-render
@@ -4515,7 +4515,7 @@ plain
 ```
 :::
 
-**[U-399](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes a link closer and tail: `[a %% b](/u) c`.
+**[U-399](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes a link closer and tail: `[a %% b](/u) c`.
 
 ::: compare no-render
 ```text
@@ -4526,7 +4526,7 @@ plain
 ```
 :::
 
-**[U-400](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes an inline footnote closer: `^[a %% c] d`.
+**[U-400](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes an inline footnote closer: `^[a %% c] d`.
 
 ::: compare no-render
 ```text
@@ -4537,7 +4537,7 @@ plain
 ```
 :::
 
-**[U-401](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes a braced span closer: `{_a %% b_} y`.
+**[U-401](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes a braced span closer: `{_a %% b_} y`.
 
 ::: compare no-render
 ```text
@@ -4548,7 +4548,7 @@ plain
 ```
 :::
 
-**[U-402](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes an extension closer: `:foo[a %% c] d`.
+**[U-402](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment takes an extension closer: `:foo[a %% c] d`.
 
 ::: compare no-render
 ```text
@@ -4559,7 +4559,7 @@ plain
 ```
 :::
 
-**[U-405](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment at the start of a bracket: `[%% c] d`. 0.1 hides the comment and writes `[] d`; 0.2 writes `%% c` as text.
+**[U-405](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment at the start of a bracket: `[%% c] d`. 0.1 hides the comment and writes `[] d`; 0.2 writes `%% c` as text.
 
 ::: compare no-render
 ```text
@@ -4570,7 +4570,7 @@ plain
 ```
 :::
 
-**[U-406](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment at the start of an inline footnote: `^[%% c] d`. 0.1 writes an empty note; 0.2 writes `%% c` in the note.
+**[U-406](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment at the start of an inline footnote: `^[%% c] d`. 0.1 writes an empty note; 0.2 writes `%% c` in the note.
 
 ::: compare no-render
 ```text
@@ -4581,7 +4581,7 @@ plain
 ```
 :::
 
-**[U-407](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment at the start of extension content: `:f[%%]`. 0.1 writes an empty extension; 0.2 writes `%%` in it.
+**[U-407](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> A line comment at the start of extension content: `:f[%%]`. 0.1 writes an empty extension; 0.2 writes `%%` in it.
 
 ::: compare no-render
 ```text
@@ -4592,7 +4592,7 @@ plain
 ```
 :::
 
-**[U-426](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line comment directly after the opener of a bracket, an inline note or extension content: `[%% hidden](/u)`. 0.1 hides the comment and writes an empty link; 0.2 writes `%% hidden` as the link text (C2-I-023).
+**[U-426](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#replay-gap-rulings)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line comment directly after the opener of a bracket, an inline note or extension content: `[%% hidden](/u)`. 0.1 hides the comment and writes an empty link; 0.2 writes `%% hidden` as the link text (C2-I-023).
 Tool: Report from the `%%` through the closer of its frame.
 
 ::: compare no-render
@@ -4604,7 +4604,7 @@ Tool: Report from the `%%` through the closer of its frame.
 ```
 :::
 
-**[U-432](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `/*a %% b*/ y`
+**[U-432](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#upgrade-replay-rows-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> `/*a %% b*/ y`
 
 ::: compare no-render
 ```text
@@ -4620,7 +4620,7 @@ Tool: Report from the `%%` through the closer of its frame.
 
 Line-1 frontmatter reads as in 0.1. New in 0.2.0, a typed `---yaml`, `---toml` or `---json` opener may start an opaque metadata block after line 1, following a blank line or top-level attribute lines; a bare `---` after line 1 stays text ([#6324](https://github.com/markup-carve/carve/issues/6324), C2-B-231 to C2-B-233). See [metadata blocks](./metadata-blocks).
 
-**[U-047](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#frontmatter)** <Badge type="info" text="none" /> Format names, the space before them, unclosed frontmatter
+**[U-047](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#frontmatter)** <Badge type="info" text="none" /> Format names, the space before them, unclosed frontmatter
 
 ::: compare no-render
 ```text
@@ -4634,7 +4634,7 @@ text
 ```
 :::
 
-**[U-048](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#frontmatter)** <Badge type="info" text="none" /> Unknown format name
+**[U-048](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#frontmatter)** <Badge type="info" text="none" /> Unknown format name
 
 ::: compare no-render
 ```text
@@ -4652,7 +4652,7 @@ text
 
 An include directive is a block of its own: there is no inline include, and the line below a directive starts a new block (C2-N-002, C2-B-156). Ids are not renamed across files and footnote labels resolve per file (C2-N-055, C2-N-057).
 
-**[U-011](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="danger" text="report" /> Include directive
+**[U-011](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="danger" text="report" /> Include directive
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4666,7 +4666,7 @@ Some text
 ```
 :::
 
-**[U-184](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line below an include directive starts a block of its own under C2-B-156, also a second directive
+**[U-184](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#further-measured-rewrites)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> A line below an include directive starts a block of its own under C2-B-156, also a second directive
 Tool: Review by hand: - <span v-pre>\{{</span> e }} ⏎   b keeps the 0.1 HTML only where no resolver is given.
 
 ::: compare no-render
@@ -4681,7 +4681,7 @@ Tool: Review by hand: - <span v-pre>\{{</span> e }} ⏎   b keeps the 0.1 HTML o
 ```
 :::
 
-**[U-289](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-133 and C2-N-070, a social token inside an unexpanded include: <code v-pre>{{ a.crv @shift:1 }}</code> with no resolver, <code v-pre>{{ part.crv @unknown:foo }}</code> with one
+**[U-289](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-133 and C2-N-070, a social token inside an unexpanded include: <code v-pre>{{ a.crv @shift:1 }}</code> with no resolver, <code v-pre>{{ part.crv @unknown:foo }}</code> with one
 Tool: The directive is text, <code v-pre>&lt;p&gt;{{ a.crv @shift:1 }}&lt;/p&gt;</code>. Escaping the opening brace gives the 0.1 HTML but stops the include from being expanded where a resolver is given.
 
 ::: compare no-render
@@ -4693,7 +4693,7 @@ Tool: The directive is text, <code v-pre>&lt;p&gt;{{ a.crv @shift:1 }}&lt;/p&gt;
 ```
 :::
 
-**[U-290](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-N-002, a directive with an invalid option inside a sentence: <code v-pre>x {{ a.crv @lines:0 }} y</code>
+**[U-290](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-N-002, a directive with an invalid option inside a sentence: <code v-pre>x {{ a.crv @lines:0 }} y</code>
 
 ::: compare no-render
 ```text
@@ -4704,7 +4704,7 @@ x {{ a.crv \@lines:0 }} y
 ```
 :::
 
-**[U-291](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-133 and C2-H-171, an unexpanded include with an option glued to the path or options in another order: <code v-pre>{{ a.crv@code:js }}</code>, `@cols` before `@code`
+**[U-291](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-133 and C2-H-171, an unexpanded include with an option glued to the path or options in another order: <code v-pre>{{ a.crv@code:js }}</code>, `@cols` before `@code`
 Tool: Written from the tree: <code v-pre>{{ a.crv @code:js }}</code>, each option after one space in the order of C2-W-058. No 0.2 source keeps the authored spelling.
 
 ::: compare no-render
@@ -4716,7 +4716,7 @@ Tool: Written from the tree: <code v-pre>{{ a.crv @code:js }}</code>, each optio
 ```
 :::
 
-**[U-292](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-N-072, attributes on an unexpanded include: `{.diff}` above <code v-pre>{{ a.crv @code:js }}</code> with no resolver; `{table}` above a table include rejected for `@rows:0-2`
+**[U-292](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-N-072, attributes on an unexpanded include: `{.diff}` above <code v-pre>{{ a.crv @code:js }}</code> with no resolver; `{table}` above a table include rejected for `@rows:0-2`
 Tool: An include's own attributes are never written: <code v-pre>&lt;p&gt;{{ a.crv @code:js }}&lt;/p&gt;</code>. The caption of a code include is another matter.
 
 ::: compare no-render
@@ -4729,7 +4729,7 @@ Tool: An include's own attributes are never written: <code v-pre>&lt;p&gt;{{ a.c
 ```
 :::
 
-**[U-301](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-N-020, a line or region selection whose first line is a `---` line, <code v-pre>{{ a.crv @lines:3-7 }}</code> on an `a.crv` of `x`, a blank line, `---`, `t: 1`, `---`, a blank line and `para`, opened frontmatter in 0.1: `<p>para</p>`.
+**[U-301](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-N-020, a line or region selection whose first line is a `---` line, <code v-pre>{{ a.crv @lines:3-7 }}</code> on an `a.crv` of `x`, a blank line, `---`, `t: 1`, `---`, a blank line and `para`, opened frontmatter in 0.1: `<p>para</p>`.
 Tool: Start the selection below the closing `---` line.
 
 ::: compare no-render
@@ -4744,7 +4744,7 @@ t: 1
 ```
 :::
 
-**[U-302](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-N-020 and C2-N-054, a line or region selection resolved its references only against the definitions it selected in 0.1: <code v-pre>{{ a.crv @region:k }}</code> on a region that holds `See [s][] and HTML.`, with `[s]: /u` and `*[HTML]: Hyper` below it, wrote `[s][]` and a plain `HTML`.
+**[U-302](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-N-020 and C2-N-054, a line or region selection resolved its references only against the definitions it selected in 0.1: <code v-pre>{{ a.crv @region:k }}</code> on a region that holds `See [s][] and HTML.`, with `[s]: /u` and `*[HTML]: Hyper` below it, wrote `[s][]` and a plain `HTML`.
 Tool: Review references in the selected lines.
 
 ::: compare no-render
@@ -4756,7 +4756,7 @@ Tool: Review references in the selected lines.
 ```
 :::
 
-**[U-360](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-147, C2-N-073 and C2-N-074, a caption line directly below an unexpanded code include: <code v-pre>{{ a.txt @code }}</code>, `^ cap`, also in a quote or a list item
+**[U-360](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-147, C2-N-073 and C2-N-074, a caption line directly below an unexpanded code include: <code v-pre>{{ a.txt @code }}</code>, `^ cap`, also in a quote or a list item
 
 ::: compare no-render
 ```text
@@ -4775,7 +4775,7 @@ Tool: Review references in the selected lines.
 
 Raw HTML passthrough was a trusted-content default in 0.1: a host that rendered user input and forgot the flag shipped an XSS hole. In 0.2 `rawHtml` defaults to false, and raw blocks and spans are escaped unless the host opts in ([#2683](https://github.com/markup-carve/carve/issues/2683), C2-H-050, C2-H-051). Review every render option instead of reusing a 0.1 options object.
 
-**[U-076](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#html)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Raw HTML block
+**[U-076](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Raw HTML block
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4790,7 +4790,7 @@ Tool: Review by hand.
 ```
 :::
 
-**[U-077](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#html)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Raw HTML span
+**[U-077](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Raw HTML span
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4802,7 +4802,7 @@ a `<b>x</b>`{=html} b
 ```
 :::
 
-**[U-078](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#html)** <Badge type="info" text="none" /> Bare HTML tag
+**[U-078](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html)** <Badge type="info" text="none" /> Bare HTML tag
 
 ::: compare no-render
 ```text
@@ -4813,10 +4813,10 @@ a <b>bold</b> tag
 ```
 :::
 
-**[U-079](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#host-options)** <Badge type="danger" text="report" /> Render options of the host
+**[U-079](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#host-options)** <Badge type="danger" text="report" /> Render options of the host
 Tool: Review by hand.
 
-**[U-248](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-176, `c` followed by U+007F and `d` writes the control character itself between `c` and `d` in 0.1 HTML.
+**[U-248](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-176, `c` followed by U+007F and `d` writes the control character itself between `c` and `d` in 0.1 HTML.
 Tool: Review the replacement character.
 
 ::: compare no-render
@@ -4828,7 +4828,7 @@ c⟨U+007F⟩d
 ```
 :::
 
-**[U-262](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-116, an authored attribute with a reserved carrier name, as in `[t]{data-carve-raw=html}`, passed through in 0.1 when `roundtrip` was off.
+**[U-262](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-116, an authored attribute with a reserved carrier name, as in `[t]{data-carve-raw=html}`, passed through in 0.1 when `roundtrip` was off.
 Tool: Rename the attribute.
 
 ::: compare no-render
@@ -4840,7 +4840,7 @@ Tool: Rename the attribute.
 ```
 :::
 
-**[U-287](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-016, `sourceLines` on (0.1: `sourceLine`), with `\| a \| b \|`, a block image `![x](a.png)`, a line block or a footnote
+**[U-287](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-016, `sourceLines` on (0.1: `sourceLine`), with `\| a \| b \|`, a block image `![x](a.png)`, a line block or a footnote
 Tool: Also on `<tbody>` and `<tr>`, and not on the bare `<img>`, the stanza `<p>` or the footnote `<li>`. Update readers of `data-source-line`.
 
 ::: compare no-render
@@ -4856,7 +4856,7 @@ Tool: Also on `<tbody>` and `<tr>`, and not on the bare `<img>`, the stanza `<p>
 ```
 :::
 
-**[U-288](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-016, an authored `data-source-line` with `sourceLines` on: `{data-source-line="99"}` above `p`
+**[U-288](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-016, an authored `data-source-line` with `sourceLines` on: `{data-source-line="99"}` above `p`
 Tool: The generated value replaces it: `<p data-source-line="1">`. Without the option both write 99. Rename the authored key.
 
 ::: compare no-render
@@ -4869,7 +4869,7 @@ p
 ```
 :::
 
-**[U-293](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-165 and C2-H-163, a construct the profile does not admit, under `minimal` or `comment` (0.1: `Profile.minimal()`, `Profile.comment()`) and `article`
+**[U-293](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#differences-to-01-that-stay-17-november-2026)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-H-165 and C2-H-163, a construct the profile does not admit, under `minimal` or `comment` (0.1: `Profile.minimal()`, `Profile.comment()`) and `article`
 Tool: No placeholder word: a construct writes its plain text, behind the mark of its kind (`# `, `> `, `- `, `[img: ALT]`, so `[img: ]` for an empty alt), and an empty one writes nothing. Further degraded forms that differ, by input: A-18 `[](/u)` writes no text, and its paragraph renders nothing (C2-H-019); A-19 `{#note#}` gives no text, where 0.1 wrote `note`; A-22 `#tag` is text without `<span class="tag">`; A-23 a caption is one more paragraph, `<p>[img: x]</p>` and `<p>cap</p>`, where 0.1 wrote `[img: x] cap`; A-24 the lines of a line block are paragraphs, and a hard-break block joins its lines with spaces, where 0.1 wrote `<br>`; A-25 `:: x` and `: y` give `<p>x</p>` and `<p>y</p>`, where 0.1 wrote `x<br>` and `- y`; A-26 `\| a \| < \|` gives `a`, where 0.1 wrote `a \| `; A-30 a code block is one paragraph holding its line breaks, where 0.1 wrote `<br>`; A-31 under `article` an empty div and an empty quote are written, since the profile admits them, where 0.1 wrote nothing; A-32 under `article` a raw block is a paragraph of its value, where 0.1 wrote a code block with the format as its language. Review pages rendered under a profile.
 
 :::: compare no-render
@@ -4884,7 +4884,7 @@ Tool: No placeholder word: a construct writes its plain text, behind the mark of
 ```
 ::::
 
-**[U-341](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> Under C2-H-126, the 0.1 placeholders `{user}` in `mentionUrl` and `{tag}` in `tagUrl`: `social: {mentionUrl: '/u/{user}'}` with `@alice`
+**[U-341](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#kept-and-recorded)** <Badge type="danger" text="report" /> Under C2-H-126, the 0.1 placeholders `{user}` in `mentionUrl` and `{tag}` in `tagUrl`: `social: {mentionUrl: '/u/{user}'}` with `@alice`
 Tool: `{name}` is the only placeholder; a template that holds any other is refused with `CarveOptionError`, so no link goes to a literal `{user}`. Write `{name}`.
 
 ::: compare no-render
@@ -4896,13 +4896,13 @@ With `social: {mentionUrl: '/u/{user}'}` or `{tagUrl: '/t/{tag}'}` the render is
 ```
 :::
 
-**[U-420](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#host-options)** <Badge type="info" text="none" /> The soft break mode of the 0.1 PHP renderer, `SoftBreakMode::Newline`, `::Space` or `::Break`
+**[U-420](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#host-options)** <Badge type="info" text="none" /> The soft break mode of the 0.1 PHP renderer, `SoftBreakMode::Newline`, `::Space` or `::Break`
 
 ## Extensions and tabs {#extensions}
 
 The 18 November rulings D3 to D7 give extensions explicit source forms such as `:wiki[...]` and `:cite[...]`, and a tabs contract with `selected` and static output, in place of host extensions that read core syntax ([#6070](https://github.com/markup-carve/carve/pull/6070)). The extension mechanism is still provisional.
 
-**[U-408](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [Page][].
+**[U-408](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [Page][].
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4914,7 +4914,7 @@ A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A refe
 ```
 :::
 
-**[U-409](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [Page](#Page).
+**[U-409](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [Page](#Page).
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4926,7 +4926,7 @@ A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-0
 ```
 :::
 
-**[U-410](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Visit https://example.test.
+**[U-410](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Visit https://example.test.
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4938,7 +4938,7 @@ Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and
 ```
 :::
 
-**[U-411](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [cite doe, p. 4].
+**[U-411](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> See [cite doe, p. 4].
 Tool: Review by hand.
 
 ::: compare no-render
@@ -4950,7 +4950,7 @@ A citation uses `:cite[doe]{locator="p. 4"}` and its definition belongs in a nam
 ```
 :::
 
-**[U-412](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab [Install] ⏎ Run. ⏎ ::: ⏎ ::::
+**[U-412](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab [Install] ⏎ Run. ⏎ ::: ⏎ ::::
 
 ::::: compare no-render
 ```text
@@ -4969,7 +4969,7 @@ Run.
 ```
 :::::
 
-**[U-413](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ {label=Install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ ::::
+**[U-413](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ {label=Install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ ::::
 
 ::::: compare no-render
 ```text
@@ -4989,7 +4989,7 @@ Run.
 ```
 :::::
 
-**[U-414](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab ⏎ # Install ⏎ Run. ⏎ ::: ⏎ ::::
+**[U-414](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab ⏎ # Install ⏎ Run. ⏎ ::: ⏎ ::::
 Tool: Review by hand.
 
 ::::: compare no-render
@@ -5006,7 +5006,7 @@ A first heading is content, not a tab label (C2-X-056). Report because changing 
 ```
 :::::
 
-**[U-415](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ {.install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ ::::
+**[U-415](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ {.install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ ::::
 Tool: Review by hand.
 
 ::::: compare no-render
@@ -5023,7 +5023,7 @@ A class alone supplies no quoted title (C2-X-056). Report to choose a title with
 ```
 :::::
 
-**[U-416](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="info" text="none" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (0.1 host setting `mode: 'aria'`)
+**[U-416](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="info" text="none" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (0.1 host setting `mode: 'aria'`)
 
 ::::: compare no-render
 ```text
@@ -5038,7 +5038,7 @@ Run.
 ```
 :::::
 
-**[U-417](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> {.custom-tabs} ⏎ :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (former per-instance host class)
+**[U-417](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> {.custom-tabs} ⏎ :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (former per-instance host class)
 Tool: Review by hand.
 
 ::::: compare no-render
@@ -5055,7 +5055,7 @@ A per-instance host class is not a standard tabs mode (C2-X-056). Report so the 
 ```
 :::::
 
-**[U-418](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="info" text="none" /> :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ {selected} ⏎ ::: tab "B" ⏎ b ⏎ ::: ⏎ ::::
+**[U-418](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="info" text="none" /> :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ {selected} ⏎ ::: tab "B" ⏎ b ⏎ ::: ⏎ ::::
 
 ::::: compare no-render
 ```text
@@ -5075,7 +5075,7 @@ b
 ```
 :::::
 
-**[U-419](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (static mode)
+**[U-419](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (static mode)
 Tool: Review the host's static HTML processing.
 
 ::::: compare no-render
@@ -5091,7 +5091,7 @@ Run.
 ```
 :::::
 
-**[U-423](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> See [[Main Page]]. (former wikilinks host extension)
+**[U-423](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> See [[Main Page]]. (former wikilinks host extension)
 
 ::: compare no-render
 ```text
@@ -5102,7 +5102,7 @@ See :wiki[Main Page].
 ```
 :::
 
-**[U-424](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> See [[Main Page\|home]]. (former wikilinks host extension)
+**[U-424](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> See [[Main Page\|home]]. (former wikilinks host extension)
 
 ::: compare no-render
 ```text
@@ -5113,7 +5113,7 @@ See :wiki[Main Page|home].
 ```
 :::
 
-**[U-425](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Type :samp[ls -l]. (former samp host extension)
+**[U-425](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-19-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Type :samp[ls -l]. (former samp host extension)
 
 ::: compare no-render
 ```text
@@ -5124,7 +5124,7 @@ Type [ls -l]{samp}.
 ```
 :::
 
-**[U-427](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> {.tabs} ⏎ :::: ⏎ {.tab} ⏎ ::: [Install] ⏎ Run it. ⏎ ::: ⏎ ::::
+**[U-427](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> {.tabs} ⏎ :::: ⏎ {.tab} ⏎ ::: [Install] ⏎ Run it. ⏎ ::: ⏎ ::::
 
 ::::: compare no-render
 ```text
@@ -5145,7 +5145,7 @@ Run it.
 ```
 :::::
 
-**[U-428](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ stray ⏎ ::::
+**[U-428](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#extension-rulings-of-18-november)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ stray ⏎ ::::
 Tool: Review by hand.
 
 ::::: compare no-render
@@ -5169,15 +5169,15 @@ stray
 
 Move `carveToHtml` callers to `render`, and consumers of old report objects to `renderWithDiagnostics`. `parse` becomes `parseTree` for syntax only, or `parse` for a resolved document; `resolve` becomes `resolveTree`, whose result goes to `renderTree`. Pass only 0.2 options. Compare site CSS and scripts against the 0.2 section, list and table HTML.
 
-The full replacement table is in [JavaScript API](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#javascript-api); HTML and selector changes are in [HTML and page selectors](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#html-and-page-selectors), and Markdown import in [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).
+The full replacement table is in [JavaScript API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#javascript-api); HTML and selector changes are in [HTML and page selectors](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html-and-page-selectors), and Markdown import in [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).
 
 ## Command line and lint {#cli}
 
-[Tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md) specifies the 0.2 commands every engine offers: `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`. The reference engine adds `upgrade`.
+[Tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md) specifies the 0.2 commands every engine offers: `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`. The reference engine adds `upgrade`.
 
-Most 0.1 flags keep their names. The ones that move: `--json` and `--ast` become `carve ast`; `migrate --from html` becomes `carve import --from html`, and `migrate --from markdown` becomes `carve import --from gfm`; `--no-raw-html` and `--safe` are the default, and `--raw-html` turns raw HTML on; `fmt --migrate` becomes `carve upgrade --migrate`. `carve lint` exits with 1 only for a warning or an error, so a hint never fails a CI job; `--strict` restores the 0.1 status (C2-T-031, C2-T-051). The full flag table is in [Command line and missing features](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#command-line-and-missing-features).
+Most 0.1 flags keep their names. The ones that move: `--json` and `--ast` become `carve ast`; `migrate --from html` becomes `carve import --from html`, and `migrate --from markdown` becomes `carve import --from gfm`; `--no-raw-html` and `--safe` are the default, and `--raw-html` turns raw HTML on; `fmt --migrate` becomes `carve upgrade --migrate`. `carve lint` exits with 1 only for a warning or an error, so a hint never fails a CI job; `--strict` restores the 0.1 status (C2-T-031, C2-T-051). The full flag table is in [Command line and missing features](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).
 
-**[U-372](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> Consecutive marker-shaped paragraph lines: `a` then `- b` then `- c`
+**[U-372](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> Consecutive marker-shaped paragraph lines: `a` then `- b` then `- c`
 Tool: Each marker-shaped line reports; HTML is unchanged.
 
 ::: compare no-render
@@ -5191,7 +5191,7 @@ a
 ```
 :::
 
-**[U-373](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> Consecutive table-shaped paragraph lines: `\| a` then `\| b`
+**[U-373](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-1355)** <Badge type="danger" text="report" /> Consecutive table-shaped paragraph lines: `\| a` then `\| b`
 Tool: Each table-shaped line reports; HTML is unchanged.
 
 ::: compare no-render
@@ -5204,15 +5204,15 @@ Tool: Each table-shaped line reports; HTML is unchanged.
 ```
 :::
 
-**[U-421](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#host-options)** <Badge type="info" text="none" /> The loss allow list of the 0.1 command line, `--allow-loss CODE`
+**[U-421](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#host-options)** <Badge type="info" text="none" /> The loss allow list of the 0.1 command line, `--allow-loss CODE`
 
-**[U-422](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#host-options)** <Badge type="info" text="none" /> The 0.1 cap on retained losses, `maxRenderLosses` and `--max-render-losses`, default 100
+**[U-422](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#host-options)** <Badge type="info" text="none" /> The 0.1 cap on retained losses, `maxRenderLosses` and `--max-render-losses`, default 100
 
 ## The AST 2.0 tree {#ast}
 
 An AST 1.x reader refused any higher minor version, so every schema change was a flag day. AST 2.0 gives every node a must-ignore `data` slot, one node grammar and one reference model, so a later minor stays readable ([#3598](https://github.com/markup-carve/carve/issues/3598)).
 
-Stored trees need the 2.0 schema: run `migrateTree` or `carve migrate-ast` before a strict 2.0 decoder reads them, and validate the result. Source spelling moved out of the tree into the [source layout](./ast-source-layout) sidecar. Each row below is a tree change from the [tree and field migration index](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#tree-and-field-migration-index); a field marked dropped does not survive a tree-only migration.
+Stored trees need the 2.0 schema: run `migrateTree` or `carve migrate-ast` before a strict 2.0 decoder reads them, and validate the result. Source spelling moved out of the tree into the [source layout](./ast-source-layout) sidecar. Each row below is a tree change from the [tree and field migration index](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tree-and-field-migration-index); a field marked dropped does not survive a tree-only migration.
 
 | Row | Change | 0.1 tree | 0.2 tree |
 |---|---|---|---|
@@ -5274,21 +5274,21 @@ Stored trees need the 2.0 schema: run `migrateTree` or `carve migrate-ast` befor
 
 These ids were withdrawn after their ruling, in most cases because 0.1 and 0.2 give the same HTML. Each links to the paragraph of the guide that says why.
 
-- [U-024](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-144](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-156](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-173](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-185](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-191](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-196](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-202](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-on-the-open-points-of-candidate-6)
-- [U-208](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-220](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#restored)
-- [U-231](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
-- [U-257](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-on-the-open-points-of-candidate-6)
-- [U-260](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026)
-- [U-261](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026)
-- [U-266](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#01-behaviors-restored-17-november-2026)
-- [U-268](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#01-behaviors-restored-17-november-2026)
-- [U-270](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-open-points)
-- [U-272](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-on-the-open-points-of-candidate-6)
+- [U-024](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-144](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-156](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-173](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-185](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-191](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-196](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-202](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-on-the-open-points-of-candidate-6)
+- [U-208](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-220](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#restored)
+- [U-231](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)
+- [U-257](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-on-the-open-points-of-candidate-6)
+- [U-260](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026)
+- [U-261](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026)
+- [U-266](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#01-behaviors-restored-17-november-2026)
+- [U-268](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#01-behaviors-restored-17-november-2026)
+- [U-270](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-open-points)
+- [U-272](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rulings-of-17-november-2026-on-the-open-points-of-candidate-6)

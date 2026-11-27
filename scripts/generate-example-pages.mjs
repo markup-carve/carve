@@ -50,7 +50,7 @@ function sample(entry, options = entry.options ?? {}) {
   if (findings.length) throw new Error(`${entry.id}: ${findings.length} lint findings in generated source`)
   const html = render(source, options)
   const anchor = entry.section.toLowerCase().replace(/[^\p{L}\p{N} -]/gu, '').trim().replace(/\s+/g, '-')
-  const ref = `https://github.com/markup-carve/carve/blob/next2/spec/0.2/${entry.document}#${anchor}`
+  const ref = `https://github.com/markup-carve/carve/blob/main/spec/0.2/${entry.document}#${anchor}`
   const declaration = JSON.stringify({ id: entry.id, options })
   return [
     `## ${entry.section} (${entry.id})`, '',
@@ -80,9 +80,9 @@ const extensionPage = [
   '---', 'title: Extensions', 'editLink: false', '---', '',
   '# Extensions', '',
   'Carve 0.2 extensions are registered by the host. The standard tabs extension is provisional. Without registration, its source renders as ordinary nested divs. The example below shows that core fallback.', '',
-  'See [the 0.2 extension specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#standard-extension-tabs) for registration and the optional tabs renderer.', '',
+  'See [the 0.2 extension specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/extensions.md#standard-extension-tabs) for registration and the optional tabs renderer.', '',
   '## Admonitions', '',
-  'Admonitions are core containers in 0.2. See the [block syntax chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks).', '',
+  'Admonitions are core containers in 0.2. See the [block syntax chapter](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks).', '',
   '## Tabs fallback', '',
   '<!-- carve-example {"id":"extensions-tabs","options":{}} -->',
   '::: compare', fence('carve', tabSource), '', fence('html', render(tabSource)), ':::', '',
