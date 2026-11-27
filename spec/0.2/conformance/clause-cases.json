@@ -98105,6 +98105,49 @@
    }
   },
   "from": []
+ },
+ {
+  "id": "CC-2485",
+  "clauses": [
+   "C2-B-092",
+   "C2-B-102"
+  ],
+  "why": "C2-B-102: Consecutive attribute lines merge into one.",
+  "summary": "a second stacked attribute line above a paragraph is not reported",
+  "kind": "lint",
+  "input": "{.a}\n{.b}\nplain\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "block-opener-without-blank-line"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2486",
+  "clauses": [
+   "C2-B-012",
+   "C2-B-092",
+   "C2-B-102"
+  ],
+  "why": "C2-B-012: An open paragraph takes every line that is not blank, whatever its indent or prefix, and such a line is a *lazy line*. C2-B-102: Consecutive attribute lines merge into one.",
+  "summary": "an attribute line after the text of an attributed paragraph is reported",
+  "kind": "lint",
+  "input": "{.a}\ntext\n{.b}\nmore\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 3,
+     "column": 1,
+     "endLine": 3,
+     "endColumn": 5
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

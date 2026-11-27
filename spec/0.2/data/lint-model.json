@@ -1931,11 +1931,40 @@
         },
         {
           "when": {
-            "eq": [
+            "all": [
               {
-                "f": "shape"
+                "eq": [
+                  {
+                    "f": "shape"
+                  },
+                  "attribute_line"
+                ]
               },
-              "attribute_line"
+              {
+                "not": {
+                  "lt": [
+                    {
+                      "f": "body_start"
+                    },
+                    {
+                      "lookup": {
+                        "over": "block",
+                        "types": [
+                          "caption",
+                          "paragraph"
+                        ],
+                        "key": {
+                          "f": "item.start"
+                        },
+                        "value": {
+                          "f": "leaf_start"
+                        },
+                        "field": "opener_start"
+                      }
+                    }
+                  ]
+                }
+              }
             ]
           },
           "start": {
