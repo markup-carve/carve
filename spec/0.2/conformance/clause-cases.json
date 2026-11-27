@@ -98479,6 +98479,175 @@
    "diagnosticsComplete": true
   },
   "from": []
+ },
+ {
+  "id": "CC-2495",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: optionally a glued brace block, then a space",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run |?v | (carve#6911)",
+  "kind": "lint",
+  "input": "|?v |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2496",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: optionally a glued brace block, then a space",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run |> | (carve#6911)",
+  "kind": "lint",
+  "input": "|> |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2497",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: optionally a glued brace block, then a space",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run |~ | (carve#6911)",
+  "kind": "lint",
+  "input": "|~ |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2498",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: optionally a glued brace block, then a space",
+  "summary": "deprecated-cell-alignment: empty cell after alignment run with brace block |>{.c} | (carve#6911)",
+  "kind": "lint",
+  "input": "|>{.c} |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2499",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: optionally a glued brace block, then a space",
+  "summary": "deprecated-cell-alignment: empty header cell after alignment run |=?v | (carve#6911)",
+  "kind": "lint",
+  "input": "|=?v |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 3,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2500",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: a cell that holds only `<` or `^` and a cell that starts with a brace block are not reported",
+  "summary": "near miss: deprecated-cell-alignment does not fire for lone < cell |< | (carve#6911)",
+  "kind": "lint",
+  "input": "|< |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "notReported": [
+    "deprecated-cell-alignment"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-2501",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-171",
+   "C2-B-182"
+  ],
+  "why": "Catalog deprecated-cell-alignment: optionally a glued brace block, then a space",
+  "summary": "deprecated-cell-alignment: empty first cell in a multi-cell row |?v | x | (carve#6911)",
+  "kind": "lint",
+  "input": "|?v | x |\n",
+  "options": {"upgrade": true},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-cell-alignment",
+     "line": 1,
+     "column": 2,
+     "channel": "lint",
+     "severity": "warning"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
