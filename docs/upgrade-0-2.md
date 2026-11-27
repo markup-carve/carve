@@ -181,13 +181,13 @@ See [ref][].
 ```
 :::
 
-**[U-010](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> Block directly under a caption line
+**[U-010](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#paragraphs-and-blocks)** <Badge type="tip" text="rewrite" /> Block line indented past the caret directly under a caption line
 
 ::: compare no-render
 ```text
 | a | b |
 ^ Caption
-# Heading
+  # Heading
 ```
 ```crv
 | a | b |
@@ -1890,10 +1890,10 @@ Tool: Review by hand.
 
 ::: compare no-render
 ```text
-see config:items[0] and :smile: and x:smile:
+see config:items[0] and :smile: and x:smile:, and café#tag
 ```
 ```html
-<p>see config:items[0] and :smile: and x:smile:</p>
+<p>see config:items[0] and :smile: and x:smile:, and café#tag</p>
 ```
 :::
 
@@ -1901,10 +1901,10 @@ see config:items[0] and :smile: and x:smile:
 
 ::: compare no-render
 ```text
-***bold italic*** here
+***bold italic*** here and **b** there
 ```
 ```html
-<p>***bold italic*** here</p>
+<p>***bold italic*** here and **b** there</p>
 ```
 :::
 
@@ -2168,12 +2168,12 @@ quoted
 ````
 :::
 
-**[U-106](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Text line directly under a term
+**[U-106](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Text line indented past the mark directly under a term
 
 ::: compare no-render
 ```text
 :: term
-more term text
+  more term text
 : first description
 ```
 <!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
@@ -2185,13 +2185,13 @@ more term text
 ```
 :::
 
-**[U-107](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> Second caret line under a caption
+**[U-107](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#new-block-shapes)** <Badge type="warning" text="escape" /> <Badge type="warning" text="silent" /> Second caret line indented past the caret under a caption
 
 ::: compare no-render
 ```text
 | a | b |
 ^ first
-^ second
+  ^ second
 ```
 ```crv
 | a | b |
@@ -2959,7 +2959,7 @@ C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline
 ::::
 
 **[U-209](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1.
-Tool: Review the container boundary; no preserving rewrite was verified for this source.
+Tool: For this source the tool writes a quoted blank line for the `+`, gives the item the quote mark (U-016) and puts a quoted blank line before `> more` (U-437): `> quoted`, `>`, `> - item`, `>`, `> more`. Review the container boundary where no entry rescues the shape.
 
 ::: compare no-render
 ```text
@@ -2972,20 +2972,26 @@ Tool: Review the container boundary; no preserving rewrite was verified for this
 > quoted
 >
 > - item
->   more
+>
+> more
 ```
 :::
 
 **[U-219](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1, including when both lines have a quote prefix.
-Tool: Review the div structure; no preserving spelling has been verified for this shape.
+Tool: For this source the tool shortens the runs toward the inside, `::::` then `:::` (U-049), which keeps the 0.1 nesting. Review the div structure where it does not.
 
 ::::: compare no-render
 ```text
 :::
 ::::
 ```
-```text
-C2-B-109 closes the shorter div with the longer bare colon run. The old source opened a nested div, and a preserving spelling has not been verified.
+<!-- carve-sample {"lint":"the 0.1 source has the same finding: the sample is a fragment"} -->
+```crv
+::::
+:::
+
+:::
+::::
 ```
 :::::
 
