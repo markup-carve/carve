@@ -111,7 +111,7 @@ A line indented short of an item's content column after a blank line now stays i
 
 ### Nested emphasis and editorial marks
 
-Emphasis of the same kind nests: `/a /b/ c/` gives `<em>a <em>b</em> c</em>`. Editorial comments take attributes, and inserts, deletions and comments take `author` and `datetime`:
+Emphasis of the same kind nests: `/a /b/ c/` gives `<em>a <em>b</em> c</em>`. Editorial comments take attributes, and inserts, deletions and comments take `author` and `datetime` ([Revision metadata](/revision-metadata)):
 
 ````carve
 {+new text+}{author=ann datetime=2026-11-01}
