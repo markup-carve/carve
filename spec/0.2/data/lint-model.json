@@ -15697,9 +15697,35 @@
         "footnote_ref"
       ],
       "when": {
-        "not": {
-          "has": "node.number"
-        }
+        "all": [
+          {
+            "not": {
+              "has": "node.number"
+            }
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "block",
+                    "types": [
+                      "footnote"
+                    ],
+                    "key": {
+                      "f": "item.node.key"
+                    },
+                    "value": {
+                      "f": "node.key"
+                    },
+                    "field": "start"
+                  }
+                },
+                0
+              ]
+            }
+          }
+        ]
       },
       "report": [
         {
