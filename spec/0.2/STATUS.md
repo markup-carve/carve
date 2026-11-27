@@ -908,3 +908,9 @@ The ruling on #6860 (option 1) widens the pipe half of C2-W-066: a pipe table ta
 The ruling on #6874 (option 1) extends the #6860 sentence of C2-W-136: where `attrs` keeps any of `body-rows`, `body-header-rows` or `body-header-cols`, the writer makes none of the three. The leading header rows of the body keep their marks, and C2-W-066 writes `header-rows` to end the head above them. A tree with more than one body, an empty body or a `rowHeadColumns` beside a kept key has no such spelling: it is written from the table fields, and the kept key is reported `field-unspellable`. Clause cases CC-2472 to CC-2474. Measured on `carve-js` `next2` `4e115341`: it fails CC-2472 (`{body-rows=0 body-header-rows=1}` above `| h |`) and CC-2473 (`{body-header-cols=1 body-rows=0 body-header-rows=1}` above `| h |`, which reads back with `rowHeadColumns` 1 and no report), and passes CC-2474.
 
 - `carve-js` first, then `carve-php` and `carve-rs` as they port #6663: make no `body-rows`, `body-header-rows` or `body-header-cols` beside any of the three kept in `attrs`.
+
+## Engine gaps from the envelope decode ruling of 27 November (#6888)
+
+The ruling on #6888 (reading A) replaces the C2-A-013 sentence "The envelope does not change the tree": `decodeTree` of an envelope appends to the root's `extensions` each envelope declaration whose name the root lacks, after the root's own, in envelope order. Clause cases CC-2482 to CC-2484. Measured on `carve-js` `0e36b16b`, the carve pin: it fails CC-2482 (the decoded tree has no `extensions`) and CC-2484 (the envelope-only `x.b` and `x.d` are dropped), and passes CC-2483. The ticket measured `carve-php` and `carve-rs` dropping the envelope declarations the same way.
+
+- `carve-js` first, then `carve-php` and `carve-rs`: lift the envelope-only declarations onto the root in `decodeTree`.
