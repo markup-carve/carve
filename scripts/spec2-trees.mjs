@@ -166,8 +166,10 @@ function sourceTable(source) {
   let column = 1
   let offset = 0
   for (const char of source) {
+    const atStart = offset === 0
     offset += Buffer.byteLength(char, 'utf8')
-    if (char === '\n') { line++; column = 1 } else column++
+    if (char === '\n') { line++; column = 1 }
+    else if (!(atStart && char === '\uFEFF')) column++
     table.set(offset, [line, column])
   }
   return { table, bytes }
