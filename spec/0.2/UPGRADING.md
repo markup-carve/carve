@@ -1103,7 +1103,7 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | --- | --- |
 | `carveToHtml(source, options)` | `render(source, options)`; pass only 0.2 options. |
 | `parse(source, options)` | `parse(source, options)` returns a resolved tree; `parseWithDiagnostics` also returns parser and resolution findings. |
-| `resolve(document, options)` | `parse(source, options)` resolves the source as it parses. For an existing tree, pass it to `render` with the render options. |
+| `resolve(document, options)` | `parse(source, options)` returns a resolved 2.0 tree. There is no separate public `resolve` call for an existing tree; reparse the original source when you need a resolved tree. |
 | `renderHtml(document, options)` | `render(sourceOrTree, options)`; use `renderWithDiagnostics` when you need findings. |
 | `renderDocument`, `renderDocumentWithReport` | `render` or `renderWithDiagnostics`; the old grouped entry points are absent. |
 | `carveToHtmlWithReport`, `renderHtmlWithReport` | `renderWithDiagnostics`; inspect `html` and `diagnostics`. |
