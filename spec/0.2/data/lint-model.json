@@ -1944,22 +1944,45 @@
                 "not": {
                   "lt": [
                     {
-                      "f": "body_start"
+                      "f": "start"
                     },
                     {
                       "lookup": {
-                        "over": "block",
-                        "types": [
-                          "caption",
-                          "paragraph"
-                        ],
+                        "over": "line",
                         "key": {
-                          "f": "item.start"
+                          "if": [
+                            {
+                              "all": [
+                                {
+                                  "ne": [
+                                    {
+                                      "f": "item.shape"
+                                    },
+                                    "attribute_line"
+                                  ]
+                                },
+                                {
+                                  "not": {
+                                    "starts": [
+                                      {
+                                        "f": "item.raw_body"
+                                      },
+                                      "%%"
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "f": "item.leaf_id"
+                            },
+                            false
+                          ]
                         },
                         "value": {
-                          "f": "leaf_start"
+                          "f": "leaf_id"
                         },
-                        "field": "opener_start"
+                        "field": "start"
                       }
                     }
                   ]
