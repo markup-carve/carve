@@ -2958,7 +2958,8 @@ C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline
 ```
 ::::
 
-**[U-209](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1.
+**[U-209](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1.
+Tool: For this source the tool writes a quoted blank line for the `+`, gives the item the quote mark (U-016) and puts a quoted blank line before `> more` (U-437): `> quoted`, `>`, `> - item`, `>`, `> more`. Review the container boundary where no entry rescues the shape.
 
 ::: compare no-render
 ```text
@@ -2976,7 +2977,8 @@ C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline
 ```
 :::
 
-**[U-219](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="tip" text="rewrite" /> <Badge type="warning" text="silent" /> Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1, including when both lines have a quote prefix.
+**[U-219](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#remaining-measured-source-changes)** <Badge type="danger" text="report" /> <Badge type="warning" text="silent" /> Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1, including when both lines have a quote prefix.
+Tool: For this source the tool shortens the runs toward the inside, `::::` then `:::` (U-049), which keeps the 0.1 nesting. Review the div structure where it does not.
 
 ::::: compare no-render
 ```text

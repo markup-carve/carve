@@ -1713,11 +1713,11 @@
     },
     {
       "id": "U-209",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "measured container continuation boundaries",
       "from": "> quoted\n+\n- item\n> more\n",
       "to": "> quoted\n>\n> - item\n>\n> more\n",
-      "meaning02": "C2-B-059 keeps the following quote line inside the quoted list item after the available continuation rewrite. `carve upgrade` writes a quoted blank line for the `+` and gives the item the quote mark (U-016), then puts a quoted blank line before `> more` (U-437), which keeps the 0.1 HTML.",
+      "meaning02": "C2-B-059 keeps the following quote line inside the quoted list item after the available continuation rewrite. For this source `carve upgrade` writes a quoted blank line for the `+` and gives the item the quote mark (U-016), then puts a quoted blank line before `> more` (U-437), which keeps the 0.1 HTML; U-209 reports the shapes no entry rescues.",
       "toolEntry": "U-209",
       "silent": true
     },
@@ -1803,11 +1803,11 @@
     },
     {
       "id": "U-219",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "longer colon run closes shorter div",
       "from": ":::\n::::\n",
       "to": "::::\n:::\n",
-      "meaning02": "C2-B-109 closes the shorter div with the longer bare colon run. The old source opened a nested div; `carve upgrade` shortens the runs toward the inside, `::::` then `:::` (U-049), which keeps the 0.1 nesting.",
+      "meaning02": "C2-B-109 closes the shorter div with the longer bare colon run. The old source opened a nested div; for this source `carve upgrade` shortens the runs toward the inside, `::::` then `:::` (U-049), which keeps the 0.1 nesting; U-219 reports the shapes it does not rewrite.",
       "toolEntry": "U-219",
       "silent": true
     },
