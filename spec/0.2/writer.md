@@ -1454,6 +1454,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `snippet-unexpanded-transform` | render-loss | warning | a snippet node a document transform inserted (C2-N-095) |
 | `snippet-scope-loss` | render-loss | warning | an imported snippet carrier whose include scope is gone (C2-H-217) |
 | `derived-text-budget` | render-loss | warning | the first abbreviation or cross-reference of a render whose derived text no longer fits the budget (C2-H-201) |
+| `heading-shift-above-6` | render-loss | warning | the first heading shifted above level 6 by `headingShift` (C2-H-208, C2-H-209) |
 | `import-attribute-dropped`, `import-carrier-ignored`, `import-destination-denied`, `import-element-dropped`, `import-element-mapped`, `import-structure-repaired` | render-loss | warning | a fact of the HTML input that an import dropped or changed (C2-M-080, C2-M-083) |
 | `import-whitespace-normalized` | render-loss | hint | whitespace that an import removed or turned into a space (C2-M-020, C2-M-083) |
 
