@@ -98399,6 +98399,86 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-2494",
+  "clauses": [
+   "C2-M-112",
+   "C2-B-062"
+  ],
+  "why": "C2-M-112: each item holds a bullet list with one item per cell, loose when it has two or more items and one of them holds more than one block. C2-B-062: A list is loose only when a blank line stands between two of its items, so a list with one item is tight.",
+  "summary": "a row of one cell of two paragraphs gives a tight cell list",
+  "kind": "import",
+  "html": "<table><tr><td><p>x</p><p>y</p></td></tr></table>",
+  "options": {
+   "listTable": true
+  },
+  "expected": {
+   "children": [
+    {
+     "type": "div",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "list",
+           "marker": {
+            "kind": "bullet",
+            "char": "-"
+           },
+           "spacing": "tight",
+           "children": [
+            {
+             "type": "list_item",
+             "children": [
+              {
+               "type": "paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "x"
+                }
+               ]
+              },
+              {
+               "type": "paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "y"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "attrs": {
+      "classes": [
+       "list-table"
+      ]
+     }
+    }
+   ],
+   "carve": "::: list-table\n- - x\n\n    y\n:::\n",
+   "diagnostics": [],
+   "diagnosticsComplete": true
+  },
+  "from": []
  }
  ]
 }
