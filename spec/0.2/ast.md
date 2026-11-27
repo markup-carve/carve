@@ -674,7 +674,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-179** A 1.2 tree is first upgraded to the draft shape by the upgrade the draft defines (flat rows to table groups, `items` and `rows` to `children`, `ref` to `key`, `checked` and `taskState` to `task`, and so on; a 1.2 unordered list with no stored bullet character takes `marker: {kind: "bullet", char: "-"}`, and `checked: true` becomes `task: {mark: "x"}` while `checked: false` becomes `task: {mark: " "}`) and then migrated as above.
 
-**C2-A-180** The migration is lossy for spelling by design and reports nothing for it.
+**C2-A-180** The migration is lossy for spelling by design and reports nothing for it. A `migration-loss` entry for a stored fact other than spelling that migration could not preserve has the render-loss channel and severity warning. Its path names that fact in the input tree or envelope.
 
 ## Further clauses
 

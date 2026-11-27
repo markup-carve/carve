@@ -1443,6 +1443,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `structure-unspellable` | render-loss | warning | a node or wrapper the writer could not write (C2-W-011) |
 | `field-unspellable` | render-loss | warning | a field the writer could not write (C2-W-011) |
 | `image-alt-unknown` | render-loss | warning | an image whose alt text is unknown, written with empty brackets (C2-W-011) |
+| `migration-loss` | render-loss | warning | a stored fact other than spelling that AST migration could not preserve (C2-A-180) |
 | `writer-refused` | render-loss | warning | the writer reached a repeated repair state or its repair limit (C2-W-133) |
 | `extension-fallback-rendered` | render-loss | warning | an extension node written through its fallback because no renderer matches it in the selected channel, whether or not its definition is registered (C2-X-035, C2-X-004, C2-H-076) |
 | `extension-transform-failed` | render-loss | warning | a claim source could not be prepared or a host transform threw, and the core node was retained (C2-X-050, C2-X-051) |

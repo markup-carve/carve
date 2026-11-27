@@ -1649,6 +1649,16 @@
       "clauses": ["C2-I-049"]
     },
     {
+      "id": "migration-loss",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["Migration could not preserve ${what}."],
+      "message_origin": "data_file",
+      "reports": "a stored fact other than spelling that `migrateTree` reports as lost while moving a 1.x or draft tree to 2.0, at its path in the input tree or envelope; spelling loss alone is not reported (C2-A-180)",
+      "clauses": ["C2-A-180"]
+    },
+    {
       "id": "non-descriptive-link-text",
       "severity": "warning",
       "channel": "lint",
