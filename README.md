@@ -3,7 +3,7 @@
 Carve is a lightweight markup language for documents and the web. Its file extension is `.crv`.
 
 ```carve
-# Release notes
+= Release notes
 
 This has /italic/, *bold*, {_underline_}, {~strikethrough~}, and {=highlight=}.
 
