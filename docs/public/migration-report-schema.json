@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://markup-carve.github.io/carve/migration-report-schema.json",
   "title": "Carve migration fidelity report",
+  "description": "Migration fidelity reports, including directory import fixups, are outside the shared diagnostic record and its lint-rules.json catalog (C2-T-003, C2-W-106). Their diagnostic fields and fixup codes follow this schema.",
   "type": "object",
   "required": ["schemaVersion", "sourceFormat", "diagnostics"],
   "additionalProperties": true,

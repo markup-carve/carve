@@ -20,7 +20,7 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 123 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
+The following 124 lint-channel rows, every row except the two with status `void`, come from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings; `upgrade` marks a migration notice, off unless the document declares Carve 0.1 or `--upgrade` is given; `platforms` marks a platform rule, off unless the option `platforms` selects its platform (C2-W-109). The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
