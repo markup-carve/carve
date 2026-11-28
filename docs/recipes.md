@@ -318,10 +318,9 @@ Two custom properties tune the height. Set them on the block with a `style` attr
 
 The same class works on a code include, which pulls a file into the page as a listing:
 
-<!-- carve-sample {"skip":"the include target is a placeholder path"} -->
 ```crv
 {.scroll style="--carve-scroll-lines: 20"}
-{{ src/example.js @code:js }}
+{{ src/server.js @code:js }}
 ```
 
 For keyboard scrolling the `<pre>` must be focusable, which depends on the host adding `tabindex="0"`. Do not insert manual line breaks to make code fit a narrow page: they change the code.
