@@ -10,11 +10,40 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-27
+
+Carve 0.2 replaces 0.1 as the current language. The specification is written fresh in ten documents under `spec/0.2/`, every example in it is a conformance case the engines test against, and the docs site describes 0.2. Documents written for 0.1 need `carve upgrade`; the 0.1 text stays on branch `0.1` for 0.1.x patch releases (#6872, #6087).
+
 ### Breaking
 
-- Carve 0.2 replaces 0.1 as the current language: the README, docs and specification name the reference program `carve` (was `carve2`) and the carve-js package root as the 0.2 entry point (was `v2/src/index.ts`). C2-T-002 no longer allows a second program name beside 0.1.
-- Docs highlight `carve` and `crv` fences with the carve-grammars `carve` grammar; the `carve2` grammar alias is gone.
+- 0.2 syntax and processing rules replace 0.1, and some 0.1 documents render differently. A list or quote directly under a paragraph line needs a blank line, `~~~` fences, `+` continuation lines and GFM separator rows are gone, and only `/` and `*` pair as bare emphasis delimiters. Run `carve upgrade` on each 0.1 file; [Upgrading from 0.1](docs/upgrade-0-2.md) lists every change with old and new source (#6040, #6041, #6583, #6586, #6893).
+- Trees move to AST 2.0: lists and tables use `children`, and source spelling and positions move to the layout sidecar (`parseWithLayout`). A 2.0 reader refuses another major version; convert stored trees with `carve migrate-ast` (#6042).
+- Explicit raw HTML is off by default: set `rawHtml: true` or pass `carve render --raw-html`. Bare HTML tags in the source render as text (#6043).
+- The 0.1 `headingLevelShift()` extension is replaced by the core render option `headingShift`, and the 0.1 change format and three-way merge by JSON Patch (`diffTree`, `applyPatch`) (#6325, #6326, #6114).
+- The README, docs and specification name the reference program `carve` (was `carve2`) and the carve-js package root as the 0.2 entry point (was `v2/src/index.ts`). C2-T-002 no longer allows a second program name beside 0.1.
+- Docs highlight `carve` and `crv` fences with the carve-grammars `carve` grammar; the `carve2` grammar alias is gone (#6072).
 - The 0.1 oracle is gone from this line: `resources/` (grammar, clauses, schemas, conformance pack, drift ledgers), the `scripts/spec` model, the 0.1 corpus and fixtures under `tests/`, their scripts and npm scripts, and their CI jobs. The docs no longer publish the 0.1 rule index or the 0.1 JSON schemas. The 0.1 oracle stays on branch `0.1` for 0.1.x patch releases.
+
+### Fixes
+
+- A body header list kept in attrs makes no body keys beside it (C2-W-136, #6874, #6875).
+- `decodeTree` lifts envelope-only declarations onto the root (C2-A-013, #6889).
+- An image whose alt text is unknown has neither `alt` nor a decorative mark (#6804, #6810).
+- The docs reload once when a deploy removed the page's hashed assets, touch hover no longer sticks in the playground, and the playground preview draws no divider under `h2` (#6739, #6365, #6504).
+
+### Improvements
+
+- Snippets: a `{$name}: value` definition and `{{ $name }}` uses, across included files, with lint for unknown, unused and duplicate names (#6395, #6830, #6865, #6866, #6868).
+- `=` headings beside `#`; headings, terms and captions continue on indented lines; link titles, abbreviation expansions and reference labels may wrap (#6881, #6882, #6883, #6589).
+- Shortcut references link when a definition exists, full references reach headings, and references in included files resolve against the including file. Ordered lists take task boxes, and letter and roman markers need one space (#6048, #6882).
+- Same-kind emphasis nests; inserts, deletions and editorial comments take `author` and `datetime` (#6798, #6478).
+- Typed metadata blocks (`---yaml`, `---toml`, `---json`) may start later in a document (#6324, #6366).
+- Render options `softBreak`, `allowLosses`, `maxLosses` and `codeBlockRenderer`, and the library call `positionOf` (#6091). Citations render numbered or author-date (`carve.cite` mode, #6756).
+- One command line and library surface across engines (`tooling.md`): `import --from html` with editor adapters, `flatten`, `diagnostics`, `fix`, `migrate-ast`, and a flag for every render option (#6126, #6527).
+- HTML import: list tables come back through the `listTable` option, page breaks import as `{.page-break}` on `***`, and the table and import rulings are written in (#6771, #6780, #6799, #6816, #6814, #6836).
+- Lint adds 27 rules on by default and 16 migration notices for text 0.1 read differently (`carve lint --upgrade`) (#6211, #6821).
+- Annotation ranges may carry data (C2-A-214, #6886); profile reports cover definitions, comments and frontmatter outside an allow-list profile (#6876, #6877, #6878, #6879).
+- The docs add a What's new in 0.2 page and a full 0.2 home page, and the playground gains a Clear action, upgrade, lint-fix, import and export tabs and the spoiler forms (#6881, #6887, #6890, #6373, #6330, #6476).
 
 ## [0.1.14] - 2026-11-12
 
