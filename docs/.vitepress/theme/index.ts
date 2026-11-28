@@ -1,6 +1,6 @@
 import DefaultTheme from 'vitepress/theme'
 import { h } from 'vue'
-import { getScrollOffset } from 'vitepress'
+import { getScrollOffset, withBase } from 'vitepress'
 import type { Theme } from 'vitepress'
 import { defineAsyncComponent } from 'vue'
 import '@markup-carve/carve-grammars/shiki/carve.css'
@@ -12,6 +12,7 @@ const Playground = defineAsyncComponent(() => import('./components/Playground.vu
 const DogfoodCarve = defineAsyncComponent(() => import('./components/DogfoodCarve.vue'))
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../render-math.js'
+import upgradeAnchors from './upgrade-anchors.json'
 
 /**
  * Upgrade `::: compare` blocks into "Carve source + output tabs (HTML / Rendered)".
@@ -110,6 +111,16 @@ function realignHash(): void {
   const padding = parseInt(getComputedStyle(target).paddingTop, 10) || 0
   const top = window.scrollY + target.getBoundingClientRect().top - getScrollOffset() + padding
   if (Math.abs(top - window.scrollY) > 1) window.scrollTo(0, top)
+}
+
+/**
+ * The upgrade guide was one page; its section anchors now live on area pages.
+ * Send an old `/upgrade-0-2#lists` link to the page that holds that section,
+ * before the app starts so the router never renders the index first.
+ */
+if (typeof window !== 'undefined' && /\/upgrade-0-2(\.html)?$/.test(location.pathname)) {
+  const target = (upgradeAnchors as Record<string, string>)[location.hash.slice(1)]
+  if (target) location.replace(withBase(`/upgrade-0-2/${target}`))
 }
 
 export default {

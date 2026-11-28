@@ -194,7 +194,7 @@ Lint has 27 new rules that are on by default, such as `block-opener-without-blan
 
 ### AST 2.0
 
-Trees move to AST 2.0. Lists and tables use `children` like every other container, and source spelling and positions live in a separate layout sidecar (`parseWithLayout`) instead of in tree fields. A 2.0 reader refuses another major version, and `carve migrate-ast` converts stored 1.x trees. See [AST JSON](./ast-json) and the [AST section of the upgrade guide](./upgrade-0-2#ast).
+Trees move to AST 2.0. Lists and tables use `children` like every other container, and source spelling and positions live in a separate layout sidecar (`parseWithLayout`) instead of in tree fields. A 2.0 reader refuses another major version, and `carve migrate-ast` converts stored 1.x trees. See [AST JSON](./ast-json) and the [AST section of the upgrade guide](./upgrade-0-2/ast).
 
 ## A rewritten specification
 
