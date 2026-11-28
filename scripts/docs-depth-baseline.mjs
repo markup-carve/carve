@@ -19,7 +19,8 @@ export function isDepthPage(path) {
   )
 }
 
-const fenceOpen = /^ {0,3}(`{3,}|~{3,})\s*([^\s`{]*)/
+// Any indent: fences inside list items sit deeper than three spaces.
+const fenceOpen = /^\s*(`{3,}|~{3,})\s*([^\s`{]*)/
 
 // Splits a page into lines tagged with whether they sit inside a code fence.
 export function scanLines(text) {
@@ -27,7 +28,7 @@ export function scanLines(text) {
   let fence = null
   for (const [index, line] of text.split('\n').entries()) {
     if (fence) {
-      const close = line.match(/^ {0,3}(`{3,}|~{3,})\s*$/)
+      const close = line.match(/^\s*(`{3,}|~{3,})\s*$/)
       const isClose = close && close[1][0] === fence[0] && close[1].length >= fence.length
       out.push({ line, number: index + 1, fenced: true, fenceLine: isClose })
       if (isClose) fence = null

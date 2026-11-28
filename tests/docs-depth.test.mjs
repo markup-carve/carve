@@ -16,7 +16,8 @@ const specLinkAllowlist = {
 // 0.1 pages that 0.2 deliberately dropped, with the reason. A page missing from HEAD fails otherwise.
 const removedPages = {}
 
-const specLink = /github\.com\/markup-carve\/carve\/blob\/[^/\s)]+\/spec\//
+// Refs may contain slashes; the 0.1 grammar under resources/spec/ is not the spec/ tree.
+const specLink = /github\.com\/markup-carve\/carve\/blob\/[^\s)]*?(?<!\/resources)\/spec\//i
 const specParagraph = '**Specification (external):**'
 
 // Tracked pages only: `npm run docs:pages` writes generated pages (docs/examples/) that git ignores.
@@ -26,7 +27,7 @@ function docsPages() {
 
 function depthExempt(text) {
   const frontmatter = text.match(/^---\n([\s\S]*?)\n---\n/)
-  return frontmatter?.[1].match(/^depth-exempt:\s*(\S.*)$/m)?.[1] ?? null
+  return frontmatter?.[1].match(/^depth-exempt:[ \t]*(\S.*)$/m)?.[1] ?? null
 }
 
 export function depthFailures(path, text, before) {
@@ -70,7 +71,10 @@ export function specLinkFailures(path, text) {
   const blocks = paragraphs(text)
   const isFootnote = (b) => !b.fenced && /^\[\^[^\]]+\]:/.test(b.text)
   let last = blocks.length - 1
-  while (last >= 0 && isFootnote(blocks[last])) last--
+  // Footnote definitions, and indented continuation paragraphs of a multi-paragraph one, may follow.
+  for (let i = last; i >= 0 && (isFootnote(blocks[i]) || /^(?: {4}|\t)/.test(blocks[i].text)); i--) {
+    if (isFootnote(blocks[i])) last = i - 1
+  }
   const failures = []
   let closing = 0
   for (const [index, block] of blocks.entries()) {
@@ -86,6 +90,10 @@ export function specLinkFailures(path, text) {
   }
   for (const l of scanLines(text).filter((l) => l.fenced && specLink.test(l.line))) {
     failures.push(`${path}:${l.number}: spec link inside a code block`)
+  }
+  const frontmatter = text.match(/^---\n([\s\S]*?)\n---\n/)?.[1] ?? ''
+  for (const [offset, line] of frontmatter.split('\n').entries()) {
+    if (specLink.test(line)) failures.push(`${path}:${offset + 2}: spec link in frontmatter`)
   }
   return failures
 }
@@ -132,4 +140,18 @@ test('the spec-link check fails on a body spec link', () => {
   assert.deepEqual(specLinkFailures('docs/synthetic.md', closing), [])
   const notLast = `# Page\n\n**Specification (external):** [blocks](${url}).\n\nMore text.\n`
   assert.equal(specLinkFailures('docs/synthetic.md', notLast).length, 1)
+})
+
+test('the spec-link check sees slash-named refs, frontmatter, fences and footnote continuations', () => {
+  const url = 'https://github.com/Markup-Carve/carve/blob/release/0.2.0/spec/0.2/blocks.md'
+  assert.equal(specLinkFailures('docs/synthetic.md', `# Page\n\n[x](${url})\n`).length, 1)
+  assert.equal(specLinkFailures('docs/synthetic.md', `---\ndescription: see ${url}\n---\n# Page\n`).length, 1)
+  assert.equal(specLinkFailures('docs/synthetic.md', `# Page\n\n- item\n\n      ~~~~\n      ${url}\n      ~~~~\n`).length, 1)
+  const footnote = `# Page\n\n**Specification (external):** [x](${url}).\n\n[^1]: First.\n\n    Second paragraph.\n`
+  assert.deepEqual(specLinkFailures('docs/synthetic.md', footnote), [])
+})
+
+test('a bare depth-exempt line does not exempt the page', () => {
+  const cut = '---\ndepth-exempt:\ntitle: x\n---\n# Page\n'
+  assert.equal(depthFailures('docs/synthetic.md', cut, syntheticBefore).length, 3)
 })
