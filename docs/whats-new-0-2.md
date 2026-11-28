@@ -125,7 +125,6 @@ Emphasis of the same kind nests: `/a /b/ c/` gives `<em>a <em>b</em> c</em>`. Ed
 
 The first block of a document may still start with bare `---`. Later in the file, a typed opener such as `---yaml`, `---toml` or `---json` at column 0 starts another metadata block, for example one per chapter. Hosts find these blocks in the tree; HTML rendering writes nothing for them.
 
-<!-- carve-sample {"skip":"The pinned engine has not yet implemented typed metadata blocks."} -->
 ````carve
 ---
 title: Book
