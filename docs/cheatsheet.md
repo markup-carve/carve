@@ -476,7 +476,7 @@ One `^` line after an image, a quote, a table, a code fence or display math adds
 ::: compare
 ```crv
 {#fig-sun}
-![A sunset](sun.jpg)
+![A sunset](examples/sun.jpg)
 ^ Figure #: A sunset
 
 See </#fig-sun> for the view.
@@ -484,7 +484,7 @@ See </#fig-sun> for the view.
 
 ```html
 <figure id="fig-sun">
-  <img src="sun.jpg" alt="A sunset">
+  <img src="examples/sun.jpg" alt="A sunset">
   <figcaption>Figure 1: A sunset</figcaption>
 </figure>
 <p>See <a href="#fig-sun">Figure 1</a> for the view.</p>
@@ -496,10 +496,10 @@ A caption after a code fence makes a numbered listing, and after display math a 
 :::: compare
 ````crv
 ::: figure
-![one](a.png)
+![one](examples/a.jpg)
 ^ (a) One
 
-![two](b.png)
+![two](examples/b.jpg)
 ^ (b) Two
 :::
 ^ Figure #: The pair
@@ -508,11 +508,11 @@ A caption after a code fence makes a numbered listing, and after display math a 
 ```html
 <figure class="carve-figure-group">
   <figure class="carve-figure-panel">
-    <img src="a.png" alt="one">
+    <img src="examples/a.jpg" alt="one">
     <figcaption>(a) One</figcaption>
   </figure>
   <figure class="carve-figure-panel">
-    <img src="b.png" alt="two">
+    <img src="examples/b.jpg" alt="two">
     <figcaption>(b) Two</figcaption>
   </figure>
   <figcaption>Figure 1: The pair</figcaption>
