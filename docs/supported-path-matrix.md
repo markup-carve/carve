@@ -1,10 +1,10 @@
 ---
-description: The render, import, AST and format paths of the Carve 0.2 command line.
+description: The render, import, AST and format paths of the Carve 0.2 command line, and the path checks measured on the 0.1 engines.
 ---
 
 # Supported CLI paths
 
-The Carve 0.2 command line has one specified render target, HTML, and one specified import source, HTML. It also reads and writes versioned AST JSON and canonical Carve source through separate commands. The reference engine calls the program `carve`. See [commands](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#commands).
+The Carve 0.2 command line has one specified render target, HTML, and one specified import source, HTML. It also reads and writes versioned AST JSON and canonical Carve source through separate commands. Every engine calls the program `carve`.
 
 | Input | Command | Output |
 | --- | --- | --- |
@@ -13,7 +13,199 @@ The Carve 0.2 command line has one specified render target, HTML, and one specif
 | Carve source | `carve ast` | 2.0 tree JSON |
 | Carve source | `carve fmt` | Canonical Carve source |
 | 2.0 AST JSON | `carve fmt --from-ast` | Canonical Carve source, with reported losses |
+| Carve source with includes | `carve flatten` | One canonical Carve document with every include expanded |
 | HTML | `carve import --from html` | Carve source, with reported losses |
 | 1.x or draft AST JSON | `carve migrate-ast` | 2.0 tree or envelope JSON |
 
-The 0.2 specification does not require BBCode, Djot, or PDF routes. Every engine offers Markdown, plain text, and ANSI export, but their output is outside the specification (C2-T-003). The JavaScript reference engine may have extra import adapters; their behavior is outside the specified path inventory. A target or bridge owned by another application should report any fields it cannot carry. See [format conversion](./format-bridges.md), [tooling scope](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#scope), and [the upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).
+`carve lint`, `carve diagnostics` and `carve fix` read Carve source too; they report on it or apply lint fixes rather than convert it. `carve` with no command is `carve render`.
+
+## Paths outside the specification
+
+The 0.2 specification does not require BBCode, Djot, or PDF routes. Every engine offers Markdown, plain text and ANSI export (`carve render --to markdown`, `--to plain`, `--to ansi`), but their output, options and export-only loss codes are engine behavior outside the specification. The one exception is `headingShift`, which the Markdown export reads and the plain-text and ANSI exports refuse.
+
+The JavaScript reference engine also imports Markdown, GFM and Djot (`carve import --from markdown`, `gfm` or `djot`) and ships `carve upgrade` for 0.1 documents. Their behavior is outside the specified path inventory. A target or bridge owned by another application should report any fields it cannot carry. See [format conversion](./format-bridges) and [Upgrading from 0.1](./upgrade-0-2).
+
+## Measured on 0.1 engines
+
+The tables below are the 0.1 path matrix, as last committed on October 14, 2026, measured against the 0.1 engine commits named below. They cover the 0.1 command line, whose render targets and import sources were wider than the 0.2 specification. They are not 0.2 results. No 0.2 matrix has been measured yet; the 0.2 command-line behavior is covered by the `cli` clause cases of the shared corpus instead.
+
+The tables were generated on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1) by `node scripts/supported-path-matrix.mjs --write`; `main` does not carry that script. Set `CARVE_RS_BIN` to the matching Rust binary when automatic discovery finds another build. Each path checks a marked strong span and an empty input control. `yes` means both commands exit successfully and the target retains the marker with its expected form. `partial` means a command runs but an assertion fails; `no` means a command fails. The inventory, known gaps and focused check counts are audit notes recorded at the pinned commits.
+
+Engine commits: JavaScript `94fd3bb1`, PHP `162f1c69`, Rust `bf67f3c6`. The script checks each engine artifact against the hashes in [the growth data](import-render-growth.json) and refuses other commits until the controls and known gaps are reviewed. The Rust growth measurements used a debug build.
+
+Tracked checkout status: JavaScript `M spec`, PHP `M tests/spec`, Rust `M tests/spec`. Only spec submodule checkouts differ from their pinned gitlinks.
+
+| Source | Target | JavaScript | PHP | Rust |
+|---|---|---|---|---|
+| carve | html | yes | yes | yes |
+| carve | markdown | yes | yes | yes |
+| carve | plain | yes | yes | yes |
+| carve | ansi | yes | yes | yes |
+| carve | carve | yes | yes | yes |
+| carve | json | yes | yes | yes |
+| html | html | yes | yes | yes |
+| html | markdown | yes | yes | yes |
+| html | plain | yes | yes | yes |
+| html | ansi | yes | yes | yes |
+| html | carve | yes | yes | yes |
+| html | json | yes | yes | yes |
+| markdown | html | yes | yes | yes |
+| markdown | markdown | yes | yes | yes |
+| markdown | plain | yes | yes | yes |
+| markdown | ansi | yes | yes | yes |
+| markdown | carve | yes | yes | yes |
+| markdown | json | yes | yes | yes |
+| djot | html | yes | yes | yes |
+| djot | markdown | yes | yes | yes |
+| djot | plain | yes | yes | yes |
+| djot | ansi | yes | yes | yes |
+| djot | carve | yes | yes | yes |
+| djot | json | yes | yes | yes |
+| bbcode | html | yes | yes | yes |
+| bbcode | markdown | yes | yes | yes |
+| bbcode | plain | yes | yes | yes |
+| bbcode | ansi | yes | yes | yes |
+| bbcode | carve | yes | yes | yes |
+| bbcode | json | yes | yes | yes |
+| ast-json | html | yes | yes | yes |
+| ast-json | markdown | yes | yes | yes |
+| ast-json | plain | yes | yes | yes |
+| ast-json | ansi | yes | yes | yes |
+| ast-json | carve | yes | yes | yes |
+| ast-json | json | yes | yes | yes |
+
+### Failing controls
+
+None.
+
+### Render loss control
+
+A raw HTML block renders in HTML, reports `raw-format-dropped` in plain text, and is refused by strict plain text rendering.
+
+| Control | JavaScript | PHP | Rust |
+|---|---|---|---|
+| Raw block and strict loss gate | yes | yes | yes |
+
+### AST controls
+
+| Control | JavaScript | PHP | Rust |
+|---|---|---|---|
+| Heading and paragraph source lines | yes | yes | yes |
+| Malformed AST refusal without output | yes | yes | yes |
+| Excess AST depth refused without output | yes | yes | yes |
+
+### Formatter control
+
+A heading and a malformed link both reach a stable canonical form on the second pass.
+
+| Control | JavaScript | PHP | Rust |
+|---|---|---|---|
+| Canonical fixed point | yes | yes | yes |
+
+### Import confidence controls
+
+A plain Markdown literal reports exact confidence. A marked BBCode construct reports the unsupported assessment as fallback. The shared report schema calls the middle confidence level `inferred`.
+
+| Control | JavaScript | PHP | Rust |
+|---|---|---|---|
+| Exact and fallback report states | yes | yes | yes |
+
+### Roundtrip export controls
+
+A star bullet is exported and imported again. HTML must carry its marker. Empty input is the negative control.
+
+| Target | JavaScript | PHP | Rust |
+|---|---|---|---|
+| HTML | yes | yes | yes |
+| Markdown | yes | yes | yes |
+
+### Render feature controls
+
+Each feature uses a Carve document carrying the marker. The negative control is empty input. These checks establish that the marked content reaches each target; they do not assert target-specific structure.
+
+| Feature | Target | JavaScript | PHP | Rust |
+|---|---|---|---|---|
+| table | html | yes | yes | yes |
+| table | markdown | yes | yes | yes |
+| table | plain | yes | yes | yes |
+| table | ansi | yes | yes | yes |
+| table | carve | yes | yes | yes |
+| table | json | yes | yes | yes |
+| caption | html | yes | yes | yes |
+| caption | markdown | yes | yes | yes |
+| caption | plain | yes | yes | yes |
+| caption | ansi | yes | yes | yes |
+| caption | carve | yes | yes | yes |
+| caption | json | yes | yes | yes |
+| abbreviation | html | yes | yes | yes |
+| abbreviation | markdown | yes | yes | yes |
+| abbreviation | plain | yes | yes | yes |
+| abbreviation | ansi | yes | yes | yes |
+| abbreviation | carve | yes | yes | yes |
+| abbreviation | json | yes | yes | yes |
+| math | html | yes | yes | yes |
+| math | markdown | yes | yes | yes |
+| math | plain | yes | yes | yes |
+| math | ansi | yes | yes | yes |
+| math | carve | yes | yes | yes |
+| math | json | yes | yes | yes |
+| literal | html | yes | yes | yes |
+| literal | markdown | yes | yes | yes |
+| literal | plain | yes | yes | yes |
+| literal | ansi | yes | yes | yes |
+| literal | carve | yes | yes | yes |
+| literal | json | yes | yes | yes |
+
+### Import feature controls
+
+Each case imports the marked source and renders the result to HTML. Empty input is its negative control. A `yes` checks retained text and the relevant attribute, table, quote or denied URL shape. The focused contract checks cover detailed reports.
+
+| Control | JavaScript | PHP | Rust |
+|---|---|---|---|
+| HTML attributes | yes | yes | yes |
+| HTML denied URL | yes | yes | yes |
+| HTML empty mark | yes | yes | yes |
+| HTML table | yes | yes | yes |
+| HTML nested containers | yes | yes | yes |
+| BBCode URL attribute | yes | yes | yes |
+| BBCode URL render denial | yes | yes | yes |
+| BBCode empty mark | yes | yes | yes |
+| BBCode table | yes | yes | yes |
+| BBCode nested quote | yes | yes | yes |
+
+### Public path inventory
+
+| Path or option | JavaScript | PHP | Rust |
+|---|---|---|---|
+| CLI import: HTML, Markdown, Djot, BBCode | yes | yes | yes |
+| CLI input: Carve, AST JSON | yes | yes | yes |
+| CLI output: HTML, Markdown, plain, ANSI, Carve, AST JSON | yes | yes | yes |
+| HTML import modes: safe, semantic, roundtrip | yes | yes | yes |
+| Import fidelity report and loss gate | yes | yes | partial ([source path](https://github.com/markup-carve/carve-rs/issues/2737)) |
+| Render loss report, strict gate and roundtrip export | partial | partial | partial |
+| Canonical formatter | yes | yes | partial at pin ([fixed after pin](https://github.com/markup-carve/carve-rs/pull/2739)) |
+| Library AST ingest and serialization | partial | partial | partial |
+| Library callbacks and streaming render | partial | partial | partial |
+| WASM entry point | no (none advertised) | no (none advertised) | no (none advertised) |
+
+A `partial` inventory cell means an entry point is exposed but these probes cover only part of its contract. The CLI grid above checks every source and target pair; focused checks cover the listed behaviors.
+
+### Construct gaps at the audited commits
+
+| Control | JavaScript | PHP | Rust |
+|---|---|---|---|
+| 128 Markdown native destinations | 128/128 | 67/128, [fixed after pin](https://github.com/markup-carve/carve-php/pull/3399) | [78/128](https://github.com/markup-carve/carve-rs/issues/2735) |
+| Canonical formatter fixtures | passed | passed | 4 table cases differ, [fixed after pin](https://github.com/markup-carve/carve-rs/pull/2739) |
+| Markdown literal report location | passed | passed | [missing `line:1`](https://github.com/markup-carve/carve-rs/issues/2737) |
+
+### Focused checks at these commits
+
+- The import report comparison passed 82 cases across the three engines, including HTML modes and reported loss rows.
+- Seven degradation claims passed across the engines for interactive content, captions and math.
+- AST ingest compared 2,618 documents across the engines with no observed difference.
+- The canonical formatter check passed 88 of 92 fixtures across all three pinned engines. The four Rust table disagreements were [fixed after the pin](https://github.com/markup-carve/carve-rs/pull/2739).
+- Focused streaming, source position and AST depth suites passed: JavaScript 25 tests, PHP 33 tests and Rust streaming 7 tests.
+- The AST and formatter controls above cover one position pair, a malformed root, excess depth and a malformed link.
+- Library callbacks and WASM host behavior remain outside the CLI grid. Streaming is covered by the focused suites.
+
+**Specification (external):** [Tooling, commands](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#commands) (C2-T-003, C2-T-007, C2-T-033, C2-T-047), [Tooling, scope](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#scope), [Upgrade guide, command line and missing features](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).
