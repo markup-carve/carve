@@ -115,12 +115,19 @@ function realignHash(): void {
 
 /**
  * The upgrade guide was one page; its section anchors now live on area pages.
- * Send an old `/upgrade-0-2#lists` link to the page that holds that section,
- * before the app starts so the router never renders the index first.
+ * Map an old `/upgrade-0-2#lists` link to the page that holds that section.
  */
-if (typeof window !== 'undefined' && /\/upgrade-0-2(\.html)?$/.test(location.pathname)) {
-  const target = (upgradeAnchors as Record<string, string>)[location.hash.slice(1)]
-  if (target) location.replace(withBase(`/upgrade-0-2/${target}`))
+function upgradeTarget(href: string): string | null {
+  const url = new URL(href, 'http://x')
+  const key = url.hash.slice(1)
+  if (!/\/upgrade-0-2(\.html)?$/.test(url.pathname) || !Object.hasOwn(upgradeAnchors, key)) return null
+  return withBase(`/upgrade-0-2/${(upgradeAnchors as Record<string, string>)[key]}`)
+}
+
+// A full load redirects before the app starts, so the router never renders the index first.
+if (typeof window !== 'undefined') {
+  const target = upgradeTarget(location.href)
+  if (target) location.replace(target)
 }
 
 export default {
@@ -146,6 +153,16 @@ export default {
       }
       for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown']) {
         window.addEventListener(type, () => { readerScrolled = true }, { passive: true })
+      }
+      // In-site links to an old anchor go to the area page instead.
+      const prevBefore = router.onBeforeRouteChange
+      router.onBeforeRouteChange = async (to) => {
+        const target = upgradeTarget(to)
+        if (target) {
+          void router.go(target)
+          return false
+        }
+        return prevBefore?.(to)
       }
       // Chain rather than clobber, in case another hook is already installed.
       const prevHook = router.onAfterRouteChanged

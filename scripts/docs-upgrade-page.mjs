@@ -280,7 +280,7 @@ export function build(root = repo) {
   for (const page of areas) {
     const links = new Map()
     const grouped = page.sections.length > 1
-    const out = frontmatter(`Upgrading from 0.1: ${page.summary.replace(/`/g, '')}`)
+    const out = frontmatter(`Upgrading from 0.1: ${(page.summary ?? page.title).replace(/`/g, '')}`)
     if (grouped) out.push(`# ${page.title}`, '')
     for (const section of page.sections) {
       const body = []
@@ -340,6 +340,7 @@ export function build(root = repo) {
       if (!files.has(`${AREA_DIR}/${name}`)) errors.push(`${AREA_DIR}/${name} is not an upgrade page; remove it or add its section to ${CONFIG}`)
     }
   }
+  // Test fixtures copy only the inputs, so the sidebar check runs only against a checkout that has one.
   if (existsSync(join(root, SIDEBAR))) {
     const sidebar = read(SIDEBAR, root)
     for (const page of [...areas, withdrawnPage]) {
