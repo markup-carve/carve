@@ -202,7 +202,7 @@ These Carve features have no Markdown equivalent. They do not collide with Markd
 
 ### Admonitions
 
-::: compare
+:::: compare
 ````crv
 ::: note
 This is a note admonition.
@@ -221,7 +221,7 @@ Dangerous operation ahead.
   <p>Dangerous operation ahead.</p>
 </aside>
 ```
-:::
+::::
 
 The built-in callout names are `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote`. They render as `<aside>`. Another `:::` name, such as `important`, renders as a `<div>` with that class unless an enabled extension handles the name.
 
@@ -235,7 +235,7 @@ GitHub alerts become admonitions on import. A top-level blockquote whose first l
 | `> [!WARNING]` | `::: warning` |
 | `> [!CAUTION]` | `::: danger` |
 
-::: compare no-render
+:::: compare no-render
 ```md
 > [!WARNING]
 > Back up first.
@@ -245,13 +245,13 @@ GitHub alerts become admonitions on import. A top-level blockquote whose first l
 Back up first.
 :::
 ````
-:::
+::::
 
 The importer writes no title; the type carries the meaning. A leftover alert label in Carve source is an ordinary quote, and `carve lint` reports it as `github-alert-marker`.
 
 A custom title goes in straight double quotes after the type:
 
-::: compare
+:::: compare
 ````crv
 ::: tip "Custom Title"
 The quoted header renders as the admonition's title.
@@ -264,7 +264,7 @@ The quoted header renders as the admonition's title.
   <p>The quoted header renders as the admonition’s title.</p>
 </aside>
 ```
-:::
+::::
 
 VitePress and Docusaurus accept an unquoted title such as `::: tip Custom Title`. Carve does not take it as a title: the container still opens, `carve lint` reports `fence-title-syntax`, and the words are dropped. Typographic quotation marks such as `“Custom Title”` are not accepted either.
 
@@ -272,7 +272,7 @@ VitePress and Docusaurus accept an unquoted title such as `::: tip Custom Title`
 
 Glue `{#id .class key=value}` to an inline element, and put it on its own line directly **above** a block:
 
-::: compare
+:::: compare
 ````crv
 A [span]{.highlight} with a class, or an attributed [link](/url){.cta}.
 
@@ -288,7 +288,7 @@ This note has an id and a class, set by the line above it.
   <p>This note has an id and a class, set by the line above it.</p>
 </aside>
 ```
-:::
+::::
 
 A `{...}` at the **end of a heading line is not an attribute**. To give a heading its own id, put the attribute on the line above it:
 
@@ -398,7 +398,7 @@ See [the introduction](#intro) or the cross-reference </#intro>.
 
 The `:name[content]` inline form and the `::: name` block form are available for custom extensions without touching the core grammar. Without a registered extension, `:name[content]` renders as a span with the class `ext-name`, and `::: name` as a div with the class `name`, so documents stay readable.
 
-::: compare
+:::: compare
 ````crv
 Watch :video[the intro].
 
@@ -413,7 +413,7 @@ Planned work.
   <p>Planned work.</p>
 </div>
 ```
-:::
+::::
 
 ## Raw HTML
 

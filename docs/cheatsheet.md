@@ -208,7 +208,7 @@ Every task state renders a disabled checkbox; the HTML keeps the state in `data-
 
 A `^` line after the quote is its caption and wraps the quote in a figure. To put more than one paragraph or a list in a quote, repeat the `>` on every line, or use the fenced form, which needs no marker per line:
 
-::: compare
+:::: compare
 ````crv
 ::: >
 Notes:
@@ -227,7 +227,7 @@ Notes:
   </ul>
 </blockquote>
 ```
-:::
+::::
 
 ### Code
 
@@ -265,7 +265,7 @@ The admonition names are `note`, `tip`, `warning`, `danger`, `info`, `success`, 
 
 ### Line blocks
 
-::: compare
+:::: compare
 ````crv
 ::: |
 Roses are red,
@@ -288,7 +288,7 @@ two
 two</p>
 </div>
 ```
-:::
+::::
 
 `::: |` keeps every line break and leading space, for verse and addresses. `::: \` keeps line breaks only.
 
@@ -493,7 +493,7 @@ See </#fig-sun> for the view.
 
 A caption after a code fence makes a numbered listing, and after display math a numbered equation. A bare `::: figure` groups captioned images into one figure with its own caption:
 
-::: compare
+:::: compare
 ````crv
 ::: figure
 ![one](a.png)
@@ -518,7 +518,7 @@ A caption after a code fence makes a numbered listing, and after display math a 
   <figcaption>Figure 1: The pair</figcaption>
 </figure>
 ```
-:::
+::::
 
 A caption continues on lines indented past its `^`; an unindented line starts the next block:
 
