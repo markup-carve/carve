@@ -24,7 +24,7 @@ import { render } from '@markup-carve/carve'
 const html = render(userInput, { profile: 'comment' })
 ```
 
-Any other value is refused with an option error. Profiles are fixed: 0.2 has no custom allow or deny lists, no profile objects and no link policy with domain lists.
+Any other value is refused with an option error. Profiles are fixed: 0.2 has no custom allow or deny lists, no profile objects and no link policy with domain lists in the profile. Host-limited links are the job of the `linkPolicy()` navigation extension.
 
 ## The four profiles
 
@@ -229,7 +229,7 @@ Included files are rendered under the same profile as the including document. Se
 
 ## Changed in 0.2
 
-- The 0.1 profile objects, the custom allow and deny lists, `disallowedAction` (`to_text`, `strip`, `error`), the `LinkPolicy` with scheme and domain lists, and `profileBaseHost` are gone. Pass one of the four profile names.
+- The 0.1 profile objects, the custom allow and deny lists, `disallowedAction` (`to_text`, `strip`, `error`), the `LinkPolicy` with scheme and domain lists, and `profileBaseHost` are gone from the profile. Pass one of the four profile names. A 0.1 `LinkPolicy` or `profileBaseHost` maps to the `linkPolicy()` navigation extension that carve-js ships in `@markup-carve/carve/extensions` (`baseHost`, `allowExternal: false`); the provisional extension catalog does not list it yet.
 - Every refused construct degrades to its plain text. For the 0.1 `error` action, use `strictLosses`. There is no `strip` action.
 - `max_length` refuses an over-long input before parsing instead of truncating.
 - `tag` is no longer counted as a `mention`, so tags degrade under `comment` and `minimal`.

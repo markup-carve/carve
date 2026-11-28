@@ -235,7 +235,7 @@ file, and a document scope ends with the file. Text of this shape inside a
 code span, a code block, raw content, a braced comment or a comment block
 controls nothing. `carve fmt` keeps a `carve-lint-disable-next-line` comment
 directly above the line it names, so formatting never makes it suppress the
-wrong line. A control comment with a blank line under it suppresses nothing.
+wrong line. A `carve-lint-disable-next-line` comment with a blank line under it suppresses nothing.
 
 ## Rules off by default
 
@@ -317,14 +317,15 @@ a letter, digit, `_`, `@`, `.`, `-` or `/`, followed by a name of letters,
 digits, `_`, `-` and interior dots. An email address is not a mention; a
 package scope and a docblock tag are. `platform-issue-reference` reports a
 `#` that is not preceded by a letter, digit, `_`, `#` or `/`, followed by
-digits only and not by a letter, digit, `_` or `-`. A heading id or a version
+digits only and not by a letter, digit, `_`, `#`, `/` or `-`. A heading id or a version
 tag such as `#release-1` is not an issue reference.
 
 Both rules read prose and code spans, for the reason given above. They skip
 what a host never shows as prose: code blocks, raw blocks, comments,
 frontmatter, definitions, an unreferenced footnote, and a link destination or
 URL. Each finding names the host, quotes the token, and suggests moving the
-example into a code block, or stripping the sigil and rephrasing.
+example into a code block. A mention finding also suggests stripping the sigil,
+and an issue-reference finding suggests a rewrite such as "item 1".
 
 ## A rule id is a contract
 
@@ -2432,6 +2433,7 @@ These 0.1 rule ids are not reported by 0.2. Where 0.2 reports the same text unde
 | 0.1 id | 0.2 code |
 | --- | --- |
 | `continuation-marker-refused` | `deprecated-continuation-marker` |
+| `duplicate-heading-id` | `duplicate-id` |
 | `gfm-delimiter-row` | `deprecated-separator-row` |
 | `include-block-in-inline` | none |
 | `include-call-limit` | none |

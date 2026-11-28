@@ -215,7 +215,7 @@ For an explicit input-size ceiling, pick a profile with a length bound or check 
 The include directive `{{ path }}` (see [File inclusion](./includes)) is the one feature that pulls in source the author did not write inline, so it has its own rules.
 
 - **A library call reads no files by itself.** Without a resolver in the `includes` option, every directive stays unexpanded, renders as its own text in a paragraph and is reported as `include-no-resolver`. A browser or sandboxed build is inert here unless the host supplies a resolver.
-- **The command line expands by default** when it reads the entry document from a file and writes HTML or another non-Carve target. The root is the directory of the entry file, as a canonical path. `--no-includes` turns expansion off and `--include-root <path>` names another root. Reading from standard input, the command line expands nothing unless a root is named. `carve fmt` and other commands whose output is Carve source never expand.
+- **The command line expands by default** when it reads the entry document from a file and writes HTML or another non-Carve target. The root is the directory of the entry file, as a canonical path. `--no-includes` turns expansion off and `--include-root <path>` names another root. Reading from standard input, the command line expands nothing unless a root is named. `carve fmt` and the other commands whose output is Carve source never expand; `carve flatten` is the one exception, and its product is the expanded source.
 - **Containment is canonical, not lexical.** The file resolver resolves the path against the including file, takes the canonical form with every symbolic link resolved, and refuses (`outside_root`) any result outside the canonical root. A `..` segment is fine when the result stays inside the root, and an absolute path is allowed only when it canonicalizes inside the root. A lexical `..` check would be too strict (it rejects `../shared/glossary.crv` from `chapters/`) and too weak (symbolic links and absolute paths escape without any `..`).
 - **The answer never reveals files outside the root.** Containment is tested before existence, so a missing file outside the root is reported as `outside_root`, not `not_found`. Messages name the path as the directive wrote it and never repeat a host path.
 - **No remote fetches.** A path that starts with a URI scheme is `outside_root`. The file resolver fetches nothing remote.
@@ -368,7 +368,7 @@ The baseline on this page applies under every setting. A render profile (`articl
 
 - Raw HTML is off by default. The 0.1 `--no-raw-html` and safe-mode behavior is now what you get without flags; use `--raw-html` or `rawHtml: true` only when raw markup is required and allowed.
 - The URL policy is one `urlPolicy` option with a deny list or an allow list. The 0.1 options `sanitizeUrls`, `allowedUrlSchemes` and `deniedUrlSchemes` are gone, and there is no way to turn URL filtering off.
-- The 0.1 profile objects and safe-mode objects with domain lists are replaced by four named profiles.
+- The 0.1 profile objects and safe-mode objects with domain lists are replaced by four named profiles. Host limits for links move to the `linkPolicy()` navigation extension in `@markup-carve/carve/extensions`.
 - The Markdown, plain text and ANSI exports are no longer covered by the specification's security rules (C2-T-003).
 
 See [Upgrading to 0.2](./upgrade-0-2) for the full list.
