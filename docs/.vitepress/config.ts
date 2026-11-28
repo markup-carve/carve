@@ -163,18 +163,18 @@ export default defineConfig({
   ],
 
   themeConfig: {
+    // Four entries plus the version switch. The Guide dropdown mirrors the
+    // Start/Write/Integrate sidebar groups.
     nav: [
-      { text: 'Get Started', link: '/get-started' },
-      { text: 'Playground', link: '/playground' },
       {
-        text: 'Reference',
+        text: 'Guide',
         items: [
           {
-            text: 'Learn',
+            text: 'Start',
             items: [
-              { text: 'Cheat Sheet', link: '/cheatsheet' },
-            { text: 'Community', link: '/community' },
-              { text: 'Examples', link: '/examples' },
+              { text: 'Get Started', link: '/get-started' },
+              { text: "What's new in 0.2", link: '/whats-new-0-2' },
+              { text: 'Upgrade from 0.1', link: '/upgrade-0-2' },
               { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             ],
           },
@@ -182,7 +182,6 @@ export default defineConfig({
             text: 'Write',
             items: [
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
-              { text: 'Include Files', link: '/include-files' },
               { text: 'Diagrams & Charts', link: '/diagrams' },
               { text: 'SVG Images', link: '/svg-images' },
               { text: 'Styling Recipes', link: '/recipes' },
@@ -194,24 +193,23 @@ export default defineConfig({
             items: [
               { text: 'Content Profiles', link: '/profiles' },
               { text: 'Validation', link: '/validation' },
-              { text: 'Parsed Document JSON', link: '/ast-json' },
               { text: 'Import HTML', link: '/html-import' },
               { text: 'Format Conversion', link: '/format-bridges' },
-              { text: 'Output Without JavaScript', link: '/graceful-degradation' },
+              { text: 'Parsed Document JSON', link: '/ast-json' },
             ],
           },
-          {
-            text: 'Understand',
-            items: [
-              { text: 'Technical Rationale', link: '/technical-rationale' },
-              { text: 'Feature Design Notes', link: '/native-features-analysis' },
-              { text: 'Security', link: '/security' },
-              { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
-              { text: 'Compare Implementations', link: '/implementation-comparison' },
-              { text: 'Conformance', link: '/conformance' },
-              { text: 'Syntax Edge Cases', link: '/parsing-ambiguities' },
-            ],
-          },
+        ],
+      },
+      {
+        text: 'Reference',
+        items: [
+          { text: 'Cheat Sheet', link: '/cheatsheet' },
+          { text: 'Examples', link: '/examples' },
+          { text: 'Extension Contract', link: '/extension-contract' },
+          { text: 'HTML Import Contract', link: '/html-import-contract' },
+          { text: 'JSON Contract', link: '/ast-json-contract' },
+          { text: 'Formal Grammar', link: '/grammar' },
+          { text: 'Conformance', link: '/conformance' },
         ],
       },
       {
@@ -219,10 +217,12 @@ export default defineConfig({
         items: [
           { text: 'Implementations & Tooling', link: '/ecosystem' },
           { text: 'Implement Carve', link: '/implementing-carve' },
-          { text: 'Decision Trace', link: '/decision-trace' },
+          { text: 'Community', link: '/community' },
+          { text: 'Case Study', link: '/case-study/' },
         ],
       },
-      { text: 'Community', link: '/community' },
+      // A plain link before the version flyout: custom.css styles the LAST flyout as the version pill.
+      { text: 'Playground', link: '/playground' },
       ...(docsVersionText ? [{
         text: docsVersionText,
         items: [
@@ -234,8 +234,11 @@ export default defineConfig({
 
     // Path-keyed (multi) sidebar so each page's sub-nav lists only its own
     // section, not the whole site. Case Study has many pages, so it gets its
-    // own sidebar and is dropped from the main one — keeping the sidebar on
-    // every other page short enough to avoid overflow/scroll on small screens.
+    // own sidebar and is dropped from the main one. Groups follow the reader
+    // (author, host, implementer), and the two deep groups start collapsed so
+    // the sidebar fits small screens without relying on scroll (a fixed
+    // overflow:auto drawer is unreliable on iOS). VitePress auto-expands the
+    // group of the current page.
     sidebar: {
       // Dismissed Syntax belongs to the case study but lives at a top-level
       // route, so it needs its own sidebar key: VitePress picks a sidebar by
@@ -245,8 +248,8 @@ export default defineConfig({
       '/dismissed-syntax': caseStudySidebar,
       '/': [
         {
-          text: 'Introduction',
-          collapsed: true,
+          text: 'Start',
+          collapsed: false,
           items: [
             { text: 'Get Started', link: '/get-started' },
             { text: "What's new in 0.2", link: '/whats-new-0-2' },
@@ -254,10 +257,10 @@ export default defineConfig({
             { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Playground', link: '/playground' },
             { text: 'Cheat Sheet', link: '/cheatsheet' },
-            { text: 'Include Files', link: '/include-files' },
             {
               text: 'Examples',
               link: '/examples',
+              collapsed: true,
               items: [
                 { text: 'Core', link: '/examples/core' },
                 { text: 'Extensions', link: '/examples/extensions' },
@@ -270,36 +273,49 @@ export default defineConfig({
                 },
               ],
             },
-            { text: 'Diagrams & Charts', link: '/diagrams' },
-            { text: 'Styling Recipes', link: '/recipes' },
-            { text: 'SVG Images', link: '/svg-images' },
           ],
         },
         {
-          text: 'Reference',
-          // Collapsed by default so the sidebar fits on small screens without
-          // relying on scroll (a fixed overflow:auto drawer is unreliable on
-          // iOS). VitePress auto-expands the group of the current page.
+          text: 'Write',
           collapsed: true,
           items: [
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
-            { text: 'File Inclusion Rules', link: '/includes' },
+            {
+              text: 'Include Files',
+              link: '/include-files',
+              collapsed: true,
+              items: [{ text: 'File Inclusion Rules', link: '/includes' }],
+            },
             { text: 'Metadata Blocks', link: '/metadata-blocks' },
             { text: 'Snippets', link: '/snippets' },
             { text: 'Revision Metadata', link: '/revision-metadata' },
-            { text: 'Validation', link: '/validation' },
+            { text: 'Diagrams & Charts', link: '/diagrams' },
+            { text: 'SVG Images', link: '/svg-images' },
+            { text: 'Styling Recipes', link: '/recipes' },
             { text: 'Optional Features & Extensions', link: '/extensions' },
-            { text: 'Write an Extension', link: '/extension-tutorial' },
-            { text: 'Extension Contract', link: '/extension-contract' },
+          ],
+        },
+        {
+          text: 'Integrate',
+          collapsed: true,
+          items: [
             { text: 'Content Profiles', link: '/profiles' },
-            { text: 'Import HTML', link: '/html-import' },
-            { text: 'HTML Import Contract', link: '/html-import-contract' },
+            { text: 'Validation', link: '/validation' },
+            { text: 'Security', link: '/security' },
+            { text: 'Output Without JavaScript', link: '/graceful-degradation' },
+            { text: 'Static Output Recipes', link: '/static-rendering-recipes' },
+            {
+              text: 'Import HTML',
+              link: '/html-import',
+              collapsed: true,
+              items: [{ text: 'HTML Import Contract', link: '/html-import-contract' }],
+            },
             { text: 'Format Conversion', link: '/format-bridges' },
             {
               text: 'Parsed Document JSON',
+              link: '/ast-json',
               collapsed: true,
               items: [
-                { text: 'Overview', link: '/ast-json' },
                 { text: 'JSON Contract', link: '/ast-json-contract' },
                 { text: 'Source Locations', link: '/ast-source-layout' },
                 { text: 'Node Identity', link: '/ast-node-identity' },
@@ -309,54 +325,68 @@ export default defineConfig({
               ],
             },
             {
-              text: 'For Implementers',
+              text: 'Write an Extension',
+              link: '/extension-tutorial',
+              collapsed: true,
+              items: [{ text: 'Extension Contract', link: '/extension-contract' }],
+            },
+          ],
+        },
+        {
+          text: 'Implement',
+          collapsed: true,
+          items: [
+            { text: 'Implement Carve', link: '/implementing-carve' },
+            { text: 'Implementations & Tooling', link: '/ecosystem' },
+            { text: 'Conformance', link: '/conformance' },
+            { text: 'Rule Coverage', link: '/rule-coverage' },
+            { text: 'Formal Grammar', link: '/grammar' },
+            { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
+            { text: 'Container Ownership', link: '/ownership-procedure' },
+            { text: 'Nested Braced Emphasis', link: '/nested-braced-emphasis' },
+            { text: 'Syntax Edge Cases', link: '/parsing-ambiguities' },
+            {
+              text: 'Compare Implementations',
+              link: '/implementation-comparison',
+              collapsed: true,
+              items: [{ text: 'Comparison Methodology', link: '/implementation-comparison-methodology' }],
+            },
+            { text: 'Supported CLI Paths', link: '/supported-path-matrix' },
+            { text: 'Performance', link: '/performance' },
+            { text: 'Development', link: '/development' },
+          ],
+        },
+        {
+          text: 'Background',
+          collapsed: true,
+          items: [
+            { text: 'Technical Rationale', link: '/technical-rationale' },
+            { text: 'Feature Design Notes', link: '/native-features-analysis' },
+            {
+              text: 'Compared to Other Formats',
+              link: '/comparison',
               collapsed: true,
               items: [
-                { text: 'Technical Rationale', link: '/technical-rationale' },
-                { text: 'Development', link: '/development' },
-                { text: 'Rule Coverage', link: '/rule-coverage' },
-                { text: 'Formal Grammar', link: '/grammar' },
-              { text: 'Writer Escaping Strategy', link: '/writer-escaping-strategy' },
+                { text: 'Divergence from Djot', link: '/divergence-from-djot' },
+                { text: 'Markup Language Comparison', link: '/markup-languages' },
+                { text: 'Whitespace Across Formats', link: '/portable-whitespace' },
               ],
             },
-            { text: 'Feature Design Notes', link: '/native-features-analysis' },
-            { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
-            { text: 'Divergence from Djot', link: '/divergence-from-djot' },
-            { text: 'Whitespace Across Formats', link: '/portable-whitespace' },
-            { text: 'Markup Language Comparison', link: '/markup-languages' },
-            { text: 'Compare Implementations', link: '/implementation-comparison' },
-            { text: 'Comparison Methodology', link: '/implementation-comparison-methodology' },
-            { text: 'Conformance', link: '/conformance' },
-            { text: 'Supported CLI Paths', link: '/supported-path-matrix' },
-            { text: 'Security', link: '/security' },
-            { text: 'Output Without JavaScript', link: '/graceful-degradation' },
-            { text: 'Static Output Recipes', link: '/static-rendering-recipes' },
-            { text: 'Performance', link: '/performance' },
-            { text: 'Syntax Edge Cases', link: '/parsing-ambiguities' },
-            { text: 'Nested Braced Emphasis', link: '/nested-braced-emphasis' },
-            { text: 'Container Ownership', link: '/ownership-procedure' },
             { text: 'Specification History', link: '/spec-history' },
-            { text: 'Terms Used Here', link: '/terms' },
-            { text: 'Versioning & Changelog', link: '/versioning' },
-          ],
-        },
-        {
-          text: 'Experiments',
-          collapsed: true,
-          items: [
-            { text: 'Comment Classification', link: '/experiments/comment-classification' },
-            { text: 'Container Ownership', link: '/experiments/container-ownership' },
-            { text: 'Definition and Footnote Bases', link: '/experiments/definition-footnote-authored-bases' },
-          ],
-        },
-        {
-          text: 'Ecosystem',
-          collapsed: true,
-          items: [
-            { text: 'Implementations & Tooling', link: '/ecosystem' },
-            { text: 'Implement Carve', link: '/implementing-carve' },
             { text: 'Decision Trace', link: '/decision-trace' },
             { text: 'Case Study', link: '/case-study/' },
+            {
+              text: 'Experiments',
+              collapsed: true,
+              items: [
+                { text: 'Comment Classification', link: '/experiments/comment-classification' },
+                { text: 'Container Ownership', link: '/experiments/container-ownership' },
+                { text: 'Definition and Footnote Bases', link: '/experiments/definition-footnote-authored-bases' },
+              ],
+            },
+            { text: 'Terms Used Here', link: '/terms' },
+            { text: 'Versioning & Changelog', link: '/versioning' },
+            { text: 'Community', link: '/community' },
           ],
         },
       ],
