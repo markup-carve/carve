@@ -547,19 +547,18 @@ An empty `<dd>` and a `<dd>` before the first `<dt>` are kept in the tree as the
 <dl><dt>term</dt><dd></dd></dl>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
-```crv
+```text
 :: term
 :
 ```
 
-Reported: `structure-unspellable`, `structure-unspellable`.
+Reported: `structure-unspellable`, `structure-unspellable`. This nearest source is not a `carve fmt` fixed point, so it is shown as plain text.
 
 ```html
 <dl><dd>a</dd><dt>t</dt><dd>d</dd></dl>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
+<!-- carve-sample {"lint":"importer output shown verbatim; the finding is part of the example"} -->
 ```crv
 : a
 :: t
@@ -769,15 +768,14 @@ Without the option, this table loses its code block into one line:
 </table>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
-```crv
+```text
 |= Step |= Detail |
 |= 1 | Install.  |
 | \^ | < |
 ^ Steps
 ```
 
-Reported: `structure-unspellable`.
+Reported: `structure-unspellable`. This nearest source is not a `carve fmt` fixed point, so it is shown as plain text.
 
 With it:
 
@@ -875,7 +873,7 @@ A figure around a paragraph, a list, more than one block, or no block at all is 
 <figure id="g"><p>x</p><figcaption>Cap</figcaption></figure><figure class="k"><pre>y</pre></figure>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
+<!-- carve-sample {"lint":"importer output shown verbatim; the finding is part of the example"} -->
 ````crv
 {#g}
 ::: figure
@@ -1161,7 +1159,7 @@ Changed in 0.2: 0.1 reported `encoding-assumed` for an `alttext`, read only line
 <p><a href="/u" title="T">ok</a>, <a href="">empty</a>, <a id="k">no href</a>, <a>plain</a></p>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
+<!-- carve-sample {"lint":"importer output shown verbatim; the finding is part of the example"} -->
 ```crv
 [ok](/u "T"), [empty](), [no href]{#k}, plain
 ```
@@ -1174,7 +1172,7 @@ Reported: nothing.
 <p><img src="/a.png" alt="A"></p><p>Inline <img src="/i.png" alt="I" width="10">, <img src="/d.png" alt="">, <img src="/u.png"></p>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
+<!-- carve-sample {"lint":"importer output shown verbatim; the finding is part of the example"} -->
 ```crv
 ![A](/a.png)
 
@@ -1337,7 +1335,7 @@ A note reference whose `href` names no note and has no usable fragment is a plai
 <p><a href="/u" role="doc-noteref">x</a> and <a href="#fn" role="doc-noteref">y</a></p>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
+<!-- carve-sample {"lint":"importer output shown verbatim; the finding is part of the example"} -->
 ```crv
 [x](/u){role=doc-noteref} and [y](#fn){role=doc-noteref}
 ```
@@ -1520,7 +1518,7 @@ Without the adapter, a Word export keeps its notes as links and containers:
 </div>
 ```
 
-<!-- carve-sample {"skip":"importer output shown verbatim"} -->
+<!-- carve-sample {"lint":"importer output shown verbatim; the finding is part of the example"} -->
 ```crv
 Data[[[1]]{.MsoFootnoteReference}](#_ftn1 ""){name=_ftnref1} centre.
 

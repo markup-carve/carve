@@ -569,9 +569,9 @@ import { render } from '@markup-carve/carve'
 import { mermaid } from '@markup-carve/carve/extensions'
 
 // Filled by a build step that ran the Mermaid CLI over every diagram.
-const prerendered = new Map([['graph TD; A-->B', '<svg viewBox="0 0 80 40"></svg>']])
+const prerendered = new Map([['flowchart TD; A-->B', '<svg viewBox="0 0 80 40"></svg>']])
 const diagrams = mermaid({ build: (source) => prerendered.get(source) })
-render('```mermaid\ngraph TD; A-->B\n```\n', { ...diagrams, mode: 'static' })
+render('```mermaid\nflowchart TD; A-->B\n```\n', { ...diagrams, mode: 'static' })
 ```
 
 The build function receives the fence body without its last line break. Its output is wrapped in an element with the fence's class and accessible name:
@@ -585,7 +585,7 @@ Without one, static mode writes the fallback, the plain code block, and reports 
 ````crv
 {#flow .wide}
 ```mermaid
-graph TD; A-->B
+flowchart TD; A-->B
 ```
 ````
 
@@ -593,7 +593,7 @@ With `--extensions '["carve.fencedRender.mermaid"]' --mode static`:
 
 ```html
 <div id="flow" class="wide">
-  <pre><code class="language-mermaid">graph TD; A--&gt;B
+  <pre><code class="language-mermaid">flowchart TD; A--&gt;B
 </code></pre>
 </div>
 ```
