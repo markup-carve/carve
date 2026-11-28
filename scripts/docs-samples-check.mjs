@@ -3,6 +3,7 @@
 // A marker comment directly above a sample adjusts the check:
 //   <!-- carve-sample {"lint":"reason"} -->      must have a lint finding
 //   <!-- carve-sample {"includes":"name"} -->    include root other than "default"
+//   <!-- carve-example {"extensions":["mermaid"]} -->  render the shown HTML with these standard extensions
 // Includes resolve against tests/fixtures/docs-samples-includes/<name>.
 // There is no opt-out: a "skip" key is reported as stale and the sample is still checked.
 // Usage: docs-samples-check.mjs [--docs <dir>]
@@ -11,6 +12,8 @@ import { resolve, relative, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { format, lint as lintSource, render } from '../docs/.vitepress/engine.js'
+import { render as renderPinned } from '@markup-carve/carve'
+import * as standard from '@markup-carve/carve/extensions'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const docsArg = process.argv.indexOf('--docs')
@@ -53,6 +56,16 @@ function difference(expected, actual) {
   return `shown HTML differs at line ${n + 1}\n  shown: ${JSON.stringify(left[n] ?? '<end>')}\n  render: ${JSON.stringify(right[n] ?? '<end>')}`
 }
 
+// The docs engine bundle has no extension entry, so extension samples render with the pinned package.
+function renderSample(source, options) {
+  if (!options.extensions) return render(source, options.render ?? {})
+  const bundles = options.extensions.map((name) => {
+    if (typeof standard[name] !== 'function') throw new Error(`unknown standard extension ${name}`)
+    return standard[name]()
+  })
+  return renderPinned(source, { ...options.render, ...standard.withExtensions(...bundles) })
+}
+
 function checkSample(page, line, source, options = {}) {
   checked++
   if (Object.hasOwn(options, 'skip')) staleSkips.push(`${relative(root, page)}:${line}`)
@@ -62,6 +75,10 @@ function checkSample(page, line, source, options = {}) {
     return
   }
   const includeFlags = ['--includes', '--include-root', includeRoot]
+  if (options.extensions && (options.includes || source.includes('{{'))) {
+    fail(page, line, 'extension samples cannot use includes')
+    return
+  }
   // The generated pages use this same pinned 0.2 engine. Keep the CLI for file-backed includes.
   if (!options.includes && !source.includes('{{')) {
     try {
@@ -70,7 +87,7 @@ function checkSample(page, line, source, options = {}) {
       if (!findings.length && options.lint) fail(page, line, 'marked as a lint demonstration but has no finding')
       if (!options.fmtSkip && format(source) !== source) fail(page, line, 'fmt --check: source is not canonical')
       if (options.html !== undefined) {
-        const html = render(source, options.render ?? {})
+        const html = renderSample(source, options)
         if (options.html.replace(/\r\n/g, '\n').trimEnd() !== html.replace(/\r\n/g, '\n').trimEnd()) {
           fail(page, line, difference(options.html, html))
         }
@@ -147,7 +164,7 @@ function fences(text, page) {
 function marker(lines, start, name) {
   for (let i = start - 1; i >= 0 && i >= start - 5; i--) {
     const value = lines[i].trim()
-    if (value === '' || value === '::: compare') continue
+    if (value === '' || /^:{3,} compare(?: no-render)?$/.test(value)) continue
     const match = new RegExp(`^<!-- ${name} (\\{.*\\}) -->$`).exec(value)
     if (match) {
       try { return JSON.parse(match[1]) } catch { return { invalid: true } }
@@ -184,7 +201,7 @@ for (const page of pages(docs)) {
     const annotation = marker(lines, block.start, 'carve-sample') ?? {}
     const example = marker(lines, block.start, 'carve-example') ?? {}
     if (annotation.invalid || example.invalid) fail(page, block.line, 'invalid sample marker JSON')
-    checkSample(page, block.line, block.source, { ...annotation, html, render: example.options })
+    checkSample(page, block.line, block.source, { ...annotation, html, render: example.options, extensions: example.extensions })
   }
   componentSamples(page, lines)
 }

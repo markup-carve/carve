@@ -13,6 +13,8 @@ const DogfoodCarve = defineAsyncComponent(() => import('./components/DogfoodCarv
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../render-math.js'
 import upgradeAnchors from './upgrade-anchors.json'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { renderDiagramsIn } from '../render-diagrams.js'
 
 /**
  * Upgrade `::: compare` blocks into "Carve source + output tabs (HTML / Rendered)".
@@ -79,8 +81,9 @@ function enhanceCompareBlocks(root: ParentNode): void {
     btnRendered.addEventListener('click', () => select(true))
     btnHtml.addEventListener('click', () => select(false))
 
-    // Render any Carve math inside the injected result.
+    // Render any Carve math, Mermaid diagram or chart inside the injected result.
     void renderMathIn(result)
+    void renderDiagramsIn(result)
   })
 }
 
