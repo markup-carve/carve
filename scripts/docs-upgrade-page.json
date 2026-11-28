@@ -1,54 +1,66 @@
 {
   "intro": "Carve 0.2 is a source break, and it is still a development version. A 0.1 document can parse in 0.2 without an error and still render different HTML, so anyone who keeps 0.1 files has to act: authors run `carve upgrade` on each file, and hosts review their render options and stored trees. The tool rewrites what has one safe 0.2 spelling, checks each rewrite against the 0.1 HTML, and reports the rest for a person to review.\n\nThe largest changes:\n\n- A block marker directly under a paragraph line no longer starts a block; insert a blank line ([paragraphs](#paragraphs)).\n- `---` and `___` breaks, `~~~` fences, `+` continuation lines, bare `_`, `~` and `=` pairs, and GFM separator rows lose their 0.1 meanings ([breaks](#breaks), [lists](#lists), [inline marks](#inline), [tables](#tables)).\n- Raw HTML is escaped unless the host turns on `rawHtml` ([raw HTML](#html)).\n- Stored trees move to AST 2.0 ([AST](#ast)).",
   "howTo": "## Run the rewrite tool {#tool}\n\nStart with a copy of each 0.1 `.crv` file. Build `carve-js` on `main` with `npm ci` and `npm run build`. Its CLI is `node dist/cli.js` (installed as `carve`). In a working copy of a 0.1 document:\n\n```sh\nnode dist/cli.js upgrade --check page.crv\nnode dist/cli.js upgrade --json page.crv\nnode dist/cli.js upgrade --write page.crv\nnode dist/cli.js fmt --write page.crv\n```\n\n`--check` writes nothing and exits 1 when a change or human review is needed. `--json` writes a structured report. Without `--write`, upgraded source goes to standard output and the report to standard error. `--write` replaces the input after checking the old and proposed HTML. A usage error exits 2. `--force` does not bypass an HTML mismatch. Run the tool **once per 0.1 file**: it is not idempotent on already upgraded source. This `upgrade` command is specific to the JavaScript reference engine; the shared [0.2 tooling contract](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#scope) does not require it.\n\nRead the `rewrite`, `escape`, `report`, `upgrade-conflict` and `upgrade-mismatch` records. A mismatch prevents writing. Even a passing rewrite needs review: the tool's HTML comparison normalizes attribute order, whitespace between tags, and a leading line feed in list item text. Then compare representative pages rendered by both engines: headings and generated ids, list tightness and task items, table headers, footnotes, links, captions and raw HTML. The 0.2 output contract is [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md). Markdown, plain text and ANSI output come from export renderers (`carve render --to markdown`, `--to plain`, `--to ansi`); their output is engine behavior, not part of the specification (C2-T-003). Keep the JSON upgrade report with the source change for review.",
-  "legend": "Each section below opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/upgrade-map.json) for that construct. The row id links to its detail in the [upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md), which stays the normative record.\n\n- The left block is the 0.1 source. The right block is the 0.2 source the tool writes, as `carve fmt` writes it in turn (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).\n- <Badge type=\"tip\" text=\"rewrite\" /> the tool changes the spelling. <Badge type=\"warning\" text=\"escape\" /> it escapes text that 0.2 would read as syntax. <Badge type=\"danger\" text=\"report\" /> a person has to decide. <Badge type=\"info\" text=\"none\" /> no source edit is needed.\n- <Badge type=\"warning\" text=\"silent\" /> the unchanged 0.1 source still parses in 0.2 but renders different HTML. Review these rows even when a document has no syntax error.\n- An invisible character in a sample, such as a tab-like control character or a no-break space, is shown as its code point, for example `⟨U+00A0⟩`. A tab is a real tab.",
+  "legend": "Each area page opens with what 0.2 changed for one construct and why, then lists every row of the [upgrade map](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/upgrade-map.json) for that construct by its row id. The [upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md) holds the detail of each row and stays the normative record; each page closes with links to the guide sections that hold its rows.\n\n- The left block is the 0.1 source. The right block is the 0.2 source the tool writes, as `carve fmt` writes it in turn (`crv`). Where the tool proposes no source, the right block shows what 0.2 makes of the unchanged 0.1 source (`html`, or a description in `text`).\n- <Badge type=\"tip\" text=\"rewrite\" /> the tool changes the spelling. <Badge type=\"warning\" text=\"escape\" /> it escapes text that 0.2 would read as syntax. <Badge type=\"danger\" text=\"report\" /> a person has to decide. <Badge type=\"info\" text=\"none\" /> no source edit is needed.\n- <Badge type=\"warning\" text=\"silent\" /> the unchanged 0.1 source still parses in 0.2 but renders different HTML. Review these rows even when a document has no syntax error.\n- An invisible character in a sample, such as a tab-like control character or a no-break space, is shown as its code point, for example `⟨U+00A0⟩`. A tab is a real tab.",
   "withdrawn": "These ids were withdrawn after their ruling, in most cases because 0.1 and 0.2 give the same HTML. Each links to the paragraph of the guide that says why.",
+  "pages": {
+    "api": { "title": "Engine APIs", "summary": "The JavaScript, PHP and Rust calls that replace the 0.1 engine APIs." },
+    "withdrawn": { "title": "Withdrawn rows", "summary": "Row ids withdrawn after their ruling, mostly because 0.1 and 0.2 give the same HTML." }
+  },
   "sections": [
     {
       "key": "paragraphs",
       "title": "Paragraphs and continuation",
+      "summary": "A paragraph takes the next nonblank line, so a block marker under a paragraph line needs a blank line before it.",
       "why": "In 0.1 every block kind had its own answer to whether it could interrupt a paragraph, so a wrapped line that only looked like a heading or quote marker restructured the block above it. 0.2 has one rule: an open paragraph takes the next nonblank line, and only fence lines, table rows, `***`, a caption under an image or display math, and markers that continue an open list or description list end it without a blank line ([#315](https://github.com/markup-carve/carve/issues/315), C2-B-013 to C2-B-020). Only a paragraph takes unindented lines. Every other block continues only on lines indented past its marker, except a fenced block, whose body runs to its closing fence or the end of its container (C2-B-111). A line that repeats a marker, such as `>` or a table row, is read by that marker. A blank line ends every block but a fenced one; after it, only a list item, a description or a footnote goes on, and only with blocks indented to its content (C2-B-009, C2-B-234). Most rows here need one inserted blank line.",
       "rows": ["U-001", "U-002", "U-003", "U-004", "U-005", "U-006", "U-007", "U-008", "U-009", "U-010", "U-012", "U-013", "U-126"]
     },
     {
       "key": "headings",
       "title": "Headings",
+      "summary": "`#` headings read as before; `=` headings are new, and tabs, comments and line endings in a heading line changed.",
       "why": "`#` headings read as in 0.1 (U-043). 0.2 also accepts `=` headings, and `carve fmt` writes them; the roadmap ties this to one heading character in prose and in `|=` header cells, with `#` left to tags ([#1092](https://github.com/markup-carve/carve/issues/1092)). The remaining rows are tabs, comments and line endings inside a heading line.",
       "rows": ["U-043", "U-148", "U-174", "U-176", "U-366"]
     },
     {
       "key": "breaks",
       "title": "Thematic breaks and typography",
+      "summary": "`***` is the only thematic break; hyphen runs follow the dash rule, and smart quotes follow one opening rule.",
       "why": "A line of hyphens could be a thematic break, a heading underline or text in 0.1. 0.2 has one break spelling, `***`, so a hyphen run is read by the dash rule alone ([technical rationale](./technical-rationale#reduce-punctuation-collisions), C2-B-159, C2-I-111). Smart quotes follow one opening rule (C2-I-104).",
       "rows": ["U-044", "U-045", "U-046", "U-071", "U-190", "U-233", "U-363", "U-375", "U-431"]
     },
     {
       "key": "lists",
       "title": "Lists and task items",
+      "summary": "Blank lines and content columns shape lists: `+` continuation lines and `{loose}` are gone.",
       "why": "0.1 shaped lists with `+` continuation lines, `{loose}`, marker columns and task boxes. In 0.2 blank lines and content columns decide the shape: there is no list continuation marker, and a line past the marker column stays in the item (writer, [rules of 0.1 that become obsolete](https://github.com/markup-carve/carve/blob/main/spec/0.2/writer.md#rules-of-01-that-become-obsolete)). The 18 November ruling D1 lets the first marker fix the style of an ordered list ([#6074](https://github.com/markup-carve/carve/pull/6074), C2-B-042).",
       "rows": ["U-014", "U-015", "U-017", "U-018", "U-019", "U-020", "U-021", "U-023", "U-025", "U-026", "U-027", "U-028", "U-029", "U-030", "U-117", "U-118", "U-119", "U-122", "U-133", "U-153", "U-159", "U-163", "U-169", "U-230", "U-237", "U-397", "U-398", "U-403", "U-404", "U-434", "U-436", "U-438", "U-444"]
     },
     {
       "key": "descriptions",
       "title": "Description lists",
+      "summary": "Terms and descriptions own lines by column; an unindented line after a term ends it.",
       "why": "Terms and descriptions own lines by column, like list items. A term follows the continuation rule of every block but the paragraph: after `:: term` only a line indented past the column of the `::` continues it, and an unindented line ends it (C2-B-069, C2-B-076, C2-B-234).",
       "rows": ["U-123", "U-128", "U-172", "U-179", "U-180", "U-193", "U-199", "U-210", "U-215", "U-228", "U-232", "U-236", "U-239", "U-252", "U-361", "U-378", "U-379", "U-387", "U-433", "U-435"]
     },
     {
       "key": "tables",
       "title": "Tables and captions",
+      "summary": "Header cells start with `|=` and carry their alignment; the GFM separator row is gone.",
       "why": "The GFM separator row mixed the choice of header row with column alignment. In 0.2 every pipe row is a row of cells: header cells start with `|=`, and alignment sits on the cell as `|={<}`, `|={~}` or `|={>}` ([#5091](https://github.com/markup-carve/carve/issues/5091), C2-B-171, C2-B-182). A caption line must stand directly below its table or image (C2-B-146).",
       "rows": ["U-055", "U-056", "U-057", "U-058", "U-059", "U-060", "U-061", "U-062", "U-063", "U-064", "U-138", "U-140", "U-147", "U-150", "U-152", "U-162", "U-165", "U-167", "U-168", "U-194", "U-214", "U-226", "U-259", "U-269", "U-271", "U-279", "U-303", "U-369", "U-377", "U-442"]
     },
     {
       "key": "inline",
       "title": "Emphasis and inline marks",
+      "summary": "Only `/` and `*` pair bare; underline, strike and highlight need the braced forms.",
       "why": "Bare `_`, `~` and `=` pairs collided with prose and identifiers such as `snake_case`, `~/config` and `x =1, y= 2`. In 0.2 only `/` and `*` pair bare; underline, strike and highlight use the braced forms `{_x_}`, `{~x~}` and `{=x=}` ([technical rationale](./technical-rationale#reduce-punctuation-collisions), C2-I-043, C2-I-046).",
       "rows": ["U-065", "U-066", "U-067", "U-068", "U-069", "U-070", "U-073", "U-074", "U-143", "U-145", "U-151", "U-170", "U-198", "U-200", "U-240", "U-254", "U-255", "U-267", "U-273", "U-274", "U-365", "U-374", "U-389"]
     },
     {
       "key": "escapes",
       "title": "Escapes",
+      "summary": "Text that 0.2 would read as syntax is escaped to keep the 0.1 output.",
       "why": "0.2 reads some text as syntax that 0.1 printed as typed: a line that starts with `=`, a letter marker with one space, a shortcut reference with a definition. To keep the 0.1 output, the tool escapes the character that would start the new reading.",
       "note": "::: warning Escapes may still change\nThe writer escape rules get one data-driven procedure after 0.2.0 ([#6579](https://github.com/markup-carve/carve/issues/6579)). The escaped spellings below may change with it.\n:::",
       "rows": ["U-101", "U-102", "U-103", "U-104", "U-105", "U-106", "U-107", "U-108", "U-109", "U-110", "U-111", "U-112", "U-113", "U-114", "U-115", "U-120", "U-121", "U-136", "U-139", "U-181", "U-182", "U-183", "U-188", "U-189", "U-212", "U-225", "U-304", "U-305", "U-430"]
@@ -56,66 +68,77 @@
     {
       "key": "code",
       "title": "Code, math and fences",
+      "summary": "A code or math span needs its closer, and backticks are the only code fence.",
       "why": "A code or math span now needs its closer: an unclosed backtick run is text where 0.1 read it as code to the end of the paragraph (C2-I-017). Backticks are the only code fence; `~~~` is text (C2-B-108).",
       "rows": ["U-037", "U-049", "U-053", "U-054", "U-116", "U-127", "U-135", "U-157", "U-204", "U-238", "U-242", "U-245", "U-249", "U-258", "U-277", "U-278", "U-300", "U-368", "U-370", "U-396", "U-439", "U-440", "U-441"]
     },
     {
       "key": "containers",
       "title": "Quotes, divs and admonitions",
+      "summary": "Quotes, divs and line blocks follow the top-level paragraph and column rules.",
       "why": "Quotes, divs and line blocks follow the same paragraph and column rules as the top level, so a `+` line no longer joins blocks inside a quote, and a line belongs to the container whose column it reaches. Div labels and titles are read only in their metadata slot (C2-B-119, C2-B-121).",
       "rows": ["U-016", "U-052", "U-125", "U-130", "U-178", "U-186", "U-195", "U-209", "U-219", "U-222", "U-241", "U-247", "U-263", "U-264", "U-265", "U-276", "U-380", "U-381", "U-382", "U-383", "U-384", "U-385", "U-386", "U-437"]
     },
     {
       "key": "attributes",
       "title": "Attributes",
+      "summary": "Attribute lines apply to the next block only, and attribute text 0.1 dropped stays visible.",
       "why": "An attribute line applies only to the block on the next line, and an attribute block in running text attaches only to a span, link, image, code span, math, footnote reference, symbol or closed emphasis (C2-B-091, C2-I-036). Attribute text that 0.1 dropped without a trace now stays visible.",
       "rows": ["U-031", "U-032", "U-033", "U-034", "U-035", "U-036", "U-137", "U-141", "U-142", "U-192", "U-197", "U-211", "U-256", "U-275", "U-282", "U-283", "U-392"]
     },
     {
       "key": "links",
       "title": "Links, references and definitions",
+      "summary": "Definitions stand at column 0, the first duplicate wins, and reference labels may wrap.",
       "why": "Definitions stand at column 0 outside quotes and items (C2-B-081), and a duplicate definition no longer replaces the first one. Reference labels may wrap across a line break, so hard-wrapping prose no longer turns a reference into literal brackets ([#1092](https://github.com/markup-carve/carve/issues/1092)).",
       "rows": ["U-038", "U-039", "U-040", "U-041", "U-075", "U-131", "U-132", "U-134", "U-158", "U-161", "U-164", "U-166", "U-171", "U-175", "U-187", "U-206", "U-221", "U-234", "U-235", "U-280", "U-281", "U-284", "U-285", "U-286", "U-445", "U-340", "U-367", "U-371", "U-376", "U-429", "U-443"]
     },
     {
       "key": "footnotes",
       "title": "Footnotes",
+      "summary": "A footnote body owns only its indented continuation.",
       "why": "A footnote body owns only its indented continuation, so an unindented line after it starts a new block (C2-B-081, C2-B-087). A footnote mark inside link text is written after the link anchor (C2-H-088).",
       "rows": ["U-042", "U-124", "U-154", "U-160", "U-177", "U-207", "U-213", "U-218", "U-223", "U-229", "U-244", "U-246", "U-250", "U-251", "U-253", "U-388"]
     },
     {
       "key": "comments",
       "title": "Comments",
+      "summary": "A `%%` comment runs to the end of its line; comment fences and frames changed.",
       "why": "In 0.1 a `%%` line comment ended at the first closer of its frame, so `[a %% b](/u)` was still a link. The 18 November ruling D2 makes a line comment take every closer on its line, and `%%` directly after the opener of a bracket or braced form is text ([#6074](https://github.com/markup-carve/carve/pull/6074), C2-I-023, C2-I-024). Where the HTML check passes, the tool rewrites such a comment as a braced `{% %}` comment.",
       "rows": ["U-050", "U-072", "U-129", "U-155", "U-216", "U-224", "U-227", "U-243", "U-362", "U-364", "U-390", "U-391", "U-393", "U-394", "U-395", "U-399", "U-400", "U-401", "U-402", "U-405", "U-406", "U-407", "U-426", "U-432"]
     },
     {
       "key": "metadata",
       "title": "Metadata and frontmatter",
+      "summary": "Line-1 frontmatter reads as before; typed metadata blocks are new.",
       "why": "Line-1 frontmatter reads as in 0.1. New in 0.2.0, a typed `---yaml`, `---toml` or `---json` opener may start an opaque metadata block after line 1, following a blank line or top-level attribute lines; a bare `---` after line 1 stays text ([#6324](https://github.com/markup-carve/carve/issues/6324), C2-B-231 to C2-B-233). See [metadata blocks](./metadata-blocks).",
       "rows": ["U-047", "U-048"]
     },
     {
       "key": "includes",
       "title": "Includes",
+      "summary": "An include directive is a block of its own, with no inline include.",
       "why": "An include directive is a block of its own: there is no inline include, and the line below a directive starts a new block (C2-N-002, C2-B-156). Ids are not renamed across files and footnote labels resolve per file (C2-N-055, C2-N-057).",
       "rows": ["U-011", "U-184", "U-289", "U-290", "U-291", "U-292", "U-301", "U-302", "U-360"]
     },
     {
       "key": "html",
       "title": "Raw HTML and render options",
+      "summary": "Raw HTML is escaped unless the host turns on `rawHtml`.",
       "why": "Raw HTML passthrough was a trusted-content default in 0.1: a host that rendered user input and forgot the flag shipped an XSS hole. In 0.2 `rawHtml` defaults to false, and raw blocks and spans are escaped unless the host opts in ([#2683](https://github.com/markup-carve/carve/issues/2683), C2-H-050, C2-H-051). Review every render option instead of reusing a 0.1 options object.",
       "rows": ["U-076", "U-077", "U-078", "U-079", "U-248", "U-262", "U-287", "U-288", "U-293", "U-341", "U-420"]
     },
     {
       "key": "extensions",
       "title": "Extensions and tabs",
+      "summary": "Extensions get explicit source forms, and tab groups claim only blocks that are all tabs.",
       "why": "The 18 November rulings D3 to D7 give extensions explicit source forms such as `:wiki[...]` and `:cite[...]`, and a tabs contract with `selected` and static output, in place of host extensions that read core syntax ([#6070](https://github.com/markup-carve/carve/pull/6070)). The extension mechanism is still provisional.",
       "rows": ["U-408", "U-409", "U-410", "U-411", "U-412", "U-413", "U-414", "U-415", "U-416", "U-417", "U-418", "U-419", "U-423", "U-424", "U-425", "U-427", "U-428"]
     },
     {
       "key": "api",
       "title": "JavaScript API",
+      "page": "api",
       "why": "0.2 replaces the one large 0.1 package API with the functions of the `carve-js` package root, and each stage (parse, resolve, render) has its own call.",
       "body": "Move `carveToHtml` callers to `render`, and consumers of old report objects to `renderWithDiagnostics`. `parse` returns a resolved 2.0 tree, and `parseWithDiagnostics` also returns findings; no separate public `resolve` call exists. `render` accepts source or a 2.0 tree for HTML. Pass only 0.2 options. Compare site CSS and scripts against the 0.2 section, list and table HTML.\n\nThe full replacement table is in [JavaScript API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#javascript-api); HTML and selector changes are in [HTML and page selectors](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#html-and-page-selectors), and Markdown import in [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).",
       "rows": []
@@ -123,6 +146,7 @@
     {
       "key": "api-php",
       "title": "PHP API",
+      "page": "api",
       "why": "0.2 replaces 0.1 in the same Composer package and namespace, `MarkupCarve\\Carve`, and the 0.1 classes are gone. The configured `CarveConverter` object gives way to static calls on `MarkupCarve\\Carve\\Carve` that each take one validated options array.",
       "body": "Move `$converter->convert($source)` to `Carve::render($source, $options)` and keep the options array where you kept the converter. The command line stays `vendor/bin/carve` with the 0.2 commands. The call-by-call table is [Moving a PHP host from Carve 0.1 to 0.2](https://github.com/markup-carve/carve-php/blob/main/docs/migration.md) in carve-php; the summary is in [PHP API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#php-api).",
       "rows": []
@@ -130,6 +154,7 @@
     {
       "key": "api-rust",
       "title": "Rust API",
+      "page": "api",
       "why": "The `carve` crate drops its 0.1 engine, and the 0.2 calls live in `carve::api`. The 0.2 `carve` command replaces the 0.1 one.",
       "body": "Move `to_html` to `api::render`, `parse` to `api::parse`, `to_json` to `api::parse` then `api::encode_tree`, and `carve::Options::new()` to `api::Options::default()`. Some calls have no 0.2 counterpart, such as `merge_ast` and `decision_trace`. The call-by-call table is [Migrating from 0.1](https://github.com/markup-carve/carve-rs/blob/main/README.md#migrating-from-01) in the carve-rs README; the summary is in [Rust API](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#rust-api).",
       "rows": []
@@ -137,6 +162,7 @@
     {
       "key": "cli",
       "title": "Command line and lint",
+      "summary": "The shared 0.2 commands, the flags that moved, and the new lint exit status.",
       "why": "[Tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md) specifies the 0.2 commands every engine offers: `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`. The reference engine adds `upgrade`.",
       "body": "Most 0.1 flags keep their names. The ones that move: `--json` and `--ast` become `carve ast`; `migrate --from html` becomes `carve import --from html`, and `migrate --from markdown` becomes `carve import --from gfm`; `--no-raw-html` and `--safe` are the default, and `--raw-html` turns raw HTML on; `fmt --migrate` becomes `carve upgrade --migrate`. The 0.1 `merge` and `trace` commands have no 0.2 replacement: 0.2 has no three-way merge (C2-T-044) and no portable decision trace. `carve lint` exits with 1 only for a warning or an error, so a hint never fails a CI job; `--strict` restores the 0.1 status (C2-T-031, C2-T-051). The full flag table is in [Command line and missing features](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#command-line-and-missing-features).",
       "rows": ["U-372", "U-373", "U-421", "U-422"]
@@ -144,6 +170,7 @@
     {
       "key": "ast",
       "title": "The AST 2.0 tree",
+      "summary": "Stored trees move to AST 2.0; every tree and field change.",
       "why": "An AST 1.x reader refused any higher minor version, so every schema change was a flag day. AST 2.0 gives every node a must-ignore `data` slot, one node grammar and one reference model, so a later minor stays readable ([#3598](https://github.com/markup-carve/carve/issues/3598)).",
       "body": "Stored trees need the 2.0 schema: run `migrateTree` or `carve migrate-ast` before a strict 2.0 decoder reads them, and validate the result. Source spelling moved out of the tree into the [source layout](./ast-source-layout) sidecar. Each row below is a tree change from the [tree and field migration index](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md#tree-and-field-migration-index); a field marked dropped does not survive a tree-only migration."
     }

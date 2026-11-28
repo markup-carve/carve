@@ -1,6 +1,6 @@
 import DefaultTheme from 'vitepress/theme'
 import { h } from 'vue'
-import { getScrollOffset } from 'vitepress'
+import { getScrollOffset, withBase } from 'vitepress'
 import type { Theme } from 'vitepress'
 import { defineAsyncComponent } from 'vue'
 import '@markup-carve/carve-grammars/shiki/carve.css'
@@ -12,6 +12,7 @@ const Playground = defineAsyncComponent(() => import('./components/Playground.vu
 const DogfoodCarve = defineAsyncComponent(() => import('./components/DogfoodCarve.vue'))
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../render-math.js'
+import upgradeAnchors from './upgrade-anchors.json'
 
 /**
  * Upgrade `::: compare` blocks into "Carve source + output tabs (HTML / Rendered)".
@@ -112,6 +113,23 @@ function realignHash(): void {
   if (Math.abs(top - window.scrollY) > 1) window.scrollTo(0, top)
 }
 
+/**
+ * The upgrade guide was one page; its section anchors now live on area pages.
+ * Map an old `/upgrade-0-2#lists` link to the page that holds that section.
+ */
+function upgradeTarget(href: string): string | null {
+  const url = new URL(href, 'http://x')
+  const key = url.hash.slice(1)
+  if (!/\/upgrade-0-2(\.html)?$/.test(url.pathname) || !Object.hasOwn(upgradeAnchors, key)) return null
+  return withBase(`/upgrade-0-2/${(upgradeAnchors as Record<string, string>)[key]}`)
+}
+
+// A full load redirects before the app starts, so the router never renders the index first.
+if (typeof window !== 'undefined') {
+  const target = upgradeTarget(location.href)
+  if (target) location.replace(target)
+}
+
 export default {
   extends: DefaultTheme,
   Layout: () => h(DefaultTheme.Layout, null, {
@@ -135,6 +153,16 @@ export default {
       }
       for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown']) {
         window.addEventListener(type, () => { readerScrolled = true }, { passive: true })
+      }
+      // In-site links to an old anchor go to the area page instead.
+      const prevBefore = router.onBeforeRouteChange
+      router.onBeforeRouteChange = async (to) => {
+        const target = upgradeTarget(to)
+        if (target) {
+          void router.go(target)
+          return false
+        }
+        return prevBefore?.(to)
       }
       // Chain rather than clobber, in case another hook is already installed.
       const prevHook = router.onAfterRouteChanged

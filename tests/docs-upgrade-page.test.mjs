@@ -1,24 +1,42 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { cpSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { build, guideIds } from '../scripts/docs-upgrade-page.mjs'
 
-const page = readFileSync('docs/upgrade-0-2.md', 'utf8')
+const pagePaths = ['docs/upgrade-0-2.md', ...readdirSync('docs/upgrade-0-2').sort().map((name) => `docs/upgrade-0-2/${name}`)]
+const page = pagePaths.map((path) => readFileSync(path, 'utf8')).join('\n')
 const guide = readFileSync('spec/0.2/UPGRADING.md', 'utf8')
 
-test('every U- row the upgrade guide names is on the upgrade page', () => {
-  const linked = new Set(page.match(/\[(U-\d+)\]\(/g)?.map((link) => link.slice(1, -2)))
-  const missing = guideIds(guide).filter((id) => !linked.has(id))
+test('every U- row the upgrade guide names is on the upgrade pages', () => {
+  const listed = new Set(page.match(/^(?:\*\*|- )(U-\d+)\b/gm)?.map((line) => line.replace(/^(?:\*\*|- )/, '')))
+  const missing = guideIds(guide).filter((id) => !listed.has(id))
   assert.deepEqual(missing, [])
 })
 
-test('the upgrade page and the construct index are current', () => {
-  const { page: built, guide: indexed, errors } = build()
+test('the upgrade pages and the construct index are current', () => {
+  const { files, guide: indexed, errors } = build()
   assert.deepEqual(errors, [])
-  assert.equal(page, built, 'run npm run docs:upgrade:write')
+  for (const [path, text] of files) assert.equal(readFileSync(path, 'utf8'), text, `${path}: run npm run docs:upgrade:write`)
   assert.equal(guide, indexed, 'run npm run docs:upgrade:write')
+})
+
+test('the upgrade pages link the spec only from their closing paragraph', () => {
+  for (const path of pagePaths) {
+    const stray = readFileSync(path, 'utf8').split('\n').filter((line) => line.includes('/blob/main/spec/') && !line.startsWith('**Specification (external):**'))
+    assert.deepEqual(stray, [], path)
+  }
+})
+
+test('every old section anchor maps to the page that holds it', () => {
+  const anchors = JSON.parse(readFileSync('docs/.vitepress/theme/upgrade-anchors.json', 'utf8'))
+  const { sections } = JSON.parse(readFileSync('scripts/docs-upgrade-page.json', 'utf8'))
+  assert.deepEqual(Object.keys(anchors).sort(), [...sections.map((section) => section.key), 'withdrawn'].sort())
+  for (const [key, target] of Object.entries(anchors)) {
+    const text = readFileSync(`docs/upgrade-0-2/${target.split('#')[0]}.md`, 'utf8')
+    assert.ok(text.includes(`{#${key}}`), `${key} -> ${target}`)
+  }
 })
 
 test('a map row in no section fails the build', () => {
