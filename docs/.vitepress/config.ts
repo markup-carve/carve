@@ -163,6 +163,8 @@ export default defineConfig({
   ],
 
   themeConfig: {
+    // Mark links that leave the site (GitHub spec files, package registries) with VitePress's arrow.
+    externalLinkIcon: true,
     nav: [
       { text: 'Get Started', link: '/get-started' },
       { text: 'Playground', link: '/playground' },
