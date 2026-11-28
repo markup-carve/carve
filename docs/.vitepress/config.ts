@@ -163,6 +163,8 @@ export default defineConfig({
   ],
 
   themeConfig: {
+    // Mark links that leave the site (GitHub spec files, package registries) with VitePress's arrow.
+    externalLinkIcon: true,
     // Four entries plus the version switch. The Guide dropdown mirrors the
     // Start/Write/Integrate sidebar groups.
     nav: [
