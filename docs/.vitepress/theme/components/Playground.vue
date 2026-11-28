@@ -1747,6 +1747,15 @@ textarea:focus {
   .pane-full {
     grid-column: 1;
   }
+  /* One column holds three panes: the desktop two-row split left the editor at 0px. */
+  .carve-playground.fullscreen {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .carve-playground.fullscreen .pg-grid {
+    flex: none;
+    grid-template-rows: minmax(240px, 55dvh) minmax(200px, 45dvh) minmax(260px, 60dvh);
+  }
 }
 
 .pg-options { display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; border: 1px solid var(--vp-c-divider); border-radius: 8px; margin: 0 0 .6rem; padding: .4rem .7rem .6rem; }
