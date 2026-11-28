@@ -163,7 +163,7 @@ One backslash is therefore enough for a literal `{*` opener, and not enough for 
 
 ## Writing, import, and export
 
-The native writer preserves repeated emphasis nodes and their attributes. Emphasis and strong are written bare where the bare delimiters would open and close at that position, and braced otherwise (C2-W-069). Every emphasis or strong node with an ancestor or descendant of its own kind is written braced, even across intervening kinds (C2-W-070). Both bare-parent and braced-parent strong examples therefore write as `{*outer {*inner*} tail*}`. A strong node inside emphasis inside strong keeps both strong nodes braced, while a lone kind in between stays bare:
+The native writer preserves repeated emphasis nodes and their attributes. Emphasis and strong are written bare where the bare delimiters would open and close at that position, and braced otherwise (C2-W-069). Every emphasis or strong node with an ancestor or descendant of its own kind is written braced, even across intervening kinds (C2-W-070). Both bare-parent and braced-parent strong examples therefore write as `{*outer {*inner*} tail*}`. An emphasis node inside strong inside emphasis keeps both emphasis nodes braced, while the strong between them stays bare:
 
 ::: compare
 ```crv

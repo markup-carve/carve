@@ -17,7 +17,7 @@ Most entries were decided for 0.1, and the reasoning is kept as it was argued. W
 | Proposed spelling | 0.2 form or behavior |
 |---|---|
 | `**strong**` | A repeated bare star is literal; use `*strong*`. |
-| `_emphasis_` | Bare underscore is text; use `/emphasis/`. |
+| `_emphasis_` | Bare underscore is text; use `/emphasis/`. A 0.1 `_x_` was underline and upgrades to `{_x_}`. |
 | `~~strike~~` | Bare tilde is text; use `{~strike~}`. |
 | `---` as a break | Use `***`; a hyphen run is not a thematic break. |
 | Tilde code fences | Use a backtick fence. |
@@ -25,7 +25,7 @@ Most entries were decided for 0.1, and the reasoning is kept as it was argued. W
 | `+` as a list continuation | Indent the following block within its owner. |
 | Implicit raw HTML | Use an explicit raw form and an enabled host policy. |
 
-`carve upgrade` rewrites each of them in a 0.1 document.
+In a 0.1 document, `carve upgrade` rewrites `---` breaks, tilde fences, GFM separator rows, `+` continuation lines and bare `_` and `~` pairs, and reports raw HTML for review. `**` and `~~` were already text in 0.1, so it leaves them as they are.
 
 ---
 

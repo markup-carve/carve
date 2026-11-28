@@ -44,7 +44,6 @@ With `--rules` turning them on by id, the `djot-` hints report items 2, 5, 6 and
 | `~x~` and `{~x~}` are subscript | `~x~` is text, `{~x~}` is strikethrough, `{,x,}` is subscript | C2-I-046, C2-I-062. |
 | `^x^` is superscript | text; `{^x^}` is superscript | C2-I-046. |
 | `{+x+}`, `{-x-}`, `{=x=}` | the same | |
-| `` ` x ` `` keeps both spaces | one space is removed from each end | C2-I-016. |
 | an unclosed `` ` `` runs to the end of the paragraph as code | the backtick is text | A form opens only when its closer is in the same content (C2-I-017). |
 | spaces before a hard break `\` are dropped | they are kept | Pinned by clause case CC-156. |
 
@@ -818,7 +817,7 @@ Press [Tab]{kbd} and see [this]{featured}.
 
 ## Porting checklist
 
-1. Run `carve lint --upgrade` on the Djot file. It reports `_x_`, `~x~`, `^x^`, `{~x~}`, `+` bullets, folded headings and the removed thematic-break spellings; `carve fix` rewrites the ones that have one replacement. The reference engine also offers `carve import --from djot`, which is outside the specification.
+1. Run `carve lint --upgrade` on the Djot file, with the `djot-` rules turned on by id in `--rules` (for example `djot-superscript-caret`, `djot-subscript-tilde`, `djot-subscript-tilde-braced`, `djot-plus-bullet` and `djot-heading-continuation`). `--upgrade` reports bare `_x_` and `~x~` and the removed thematic-break spellings; the `djot-` rules report `^x^`, `{~x~}`, `+` bullets and folded headings. `carve fix` rewrites the ones that have one replacement. The reference engine also offers `carve import --from djot`, which is outside the specification.
 2. Rewrite emphasis: `_italic_` to `/italic/`, `~sub~` to `{,sub,}`, `^sup^` to `{^sup^}`. Djot strong `*...*` stays. Check every `{~x~}`, which is strikethrough in Carve.
 3. Replace `---` breaks with `***`, and check line 1.
 4. Rewrite definition lists as `::` and `:`, and indent every line that continues a term, a caption or a heading. Only a paragraph takes unindented lines; every other block but a fenced one continues only on lines indented past its marker.

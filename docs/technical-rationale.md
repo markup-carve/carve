@@ -611,7 +611,8 @@ editors and converters a clear boundary between meaning and source layout. See
 
 HTML is the specified rendering target. The [HTML import](./html-import)
 mapping defines the path back into a tree, including losses. Markdown, plain
-text and ANSI writers are outside 0.2.0. [Includes](./includes) and
+text and ANSI writers are outside the 0.2 specification; every engine still
+offers them as engine behavior. [Includes](./includes) and
 [extensions](./extensions) have explicit boundaries so a host can decide what
 it permits. The extension interface is still provisional for this candidate.
 
@@ -970,7 +971,7 @@ these notes discuss changed on the way.
   condition does not hold, not a new principle.
 
 The 0.1 note on CARVE-P11-022 M2 explained an escape rule of the Markdown
-writer. That writer is outside 0.2.0, so the note went with it (see "Writer
+writer. That writer is outside the 0.2 specification, so the note went with it (see "Writer
 targets" below).
 
 ### Writer invariants (0.1 PART 11 §1 to §5) {#writer-invariants}

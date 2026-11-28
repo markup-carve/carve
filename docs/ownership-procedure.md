@@ -97,7 +97,8 @@ An open paragraph takes every line that is not blank, whatever its indent or pre
 - a list marker that continues an open list or opens a nested one under the list rules (C2-B-015);
 - a description or term mark at an open description list's column, or a definition line at column 0 while a definition is open (C2-B-016);
 - a caption line below a paragraph that is exactly one block image line or one display math line (C2-B-017, C2-B-018);
-- a table row (C2-B-019).
+- a table row (C2-B-019);
+- a thematic break, `***` (C2-B-200).
 
 List and description interrupters count only on a line that carries the quote mark of every quote the list sits in (C2-B-020). Everything else is a lazy line: a heading, a quote, an attribute line, a definition, an include directive and a `%%` comment that is no region marker (C2-B-024). The test is the same at every depth and in every family. A fold closes nothing.
 
