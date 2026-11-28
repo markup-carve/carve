@@ -1320,6 +1320,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `--json`, `--ast` | `carve ast`, a 2.0 tree |
 | `flatten`, `fix` | `carve flatten` (C2-T-047, C2-T-048) and `carve fix`, which is `carve lint --fix` (C2-T-049, C2-T-050) |
 | `-o FILE`, `--output FILE` of the PHP engine | the same flags on `render`, `fmt`, `import` and `flatten` (C2-T-053) |
+| `-x`, `--xhtml` of the PHP engine | the same flags on PHP `render`: write XHTML-style empty elements such as `<br />` and `<img />` (C2-T-003) |
 | `--from-json` | `--from-ast`, which reads a 2.0 tree; migrate an older tree first with `carve migrate-ast` |
 | `--no-raw-html`, `--safe` | the default; `--raw-html` turns raw HTML on |
 | `--report-losses`, `--allow-loss`, `--max-render-losses`, `--report-includes` | the same names (C2-T-021 to C2-T-029); a loss report holds 0.2 diagnostic entries, and the include report the dependencies of C2-N-083 with `path`, `from`, `file` and `read` |
