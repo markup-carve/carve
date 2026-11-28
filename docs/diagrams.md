@@ -122,13 +122,13 @@ The extension writes the element shown below. The page must load the library tha
 ::: compare no-render
 ````crv
 ```mermaid
-graph LR
+flowchart LR
   A & B --> C
 ```
 ````
 
 ```html
-<pre class="mermaid" role="img" aria-label="mermaid">graph LR
+<pre class="mermaid" role="img" aria-label="mermaid">flowchart LR
   A &amp; B --> C</pre>
 ```
 :::
