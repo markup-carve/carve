@@ -62,17 +62,19 @@ The goals were:
 5. Editor integration (VS Code, Obsidian, etc.)
 6. Documentation and tutorials
 
-The [formal grammar](../grammar), implementations, and documentation are
-available. The implementations use a shared
-[conformance corpus](https://github.com/markup-carve/carve/tree/0.1/tests/corpus).
+A formal grammar, implementations, and documentation followed. The 0.1
+grammar (`resources/grammar.ebnf`) and its shared
+[conformance corpus](https://github.com/markup-carve/carve/tree/0.1/tests/corpus)
+describe the historical 0.1 line; the [Carve 0.2 specification](../grammar)
+defines current behavior.
 See the [Ecosystem](../ecosystem) for current editor support and bindings. These
 notes present no results from the proposed user testing.
 
 ---
 
 *This case study is a historical record of early design notes. The normative
-definition of the language is the [formal grammar](../grammar) and the
-conformance corpus.*
+definition of the current language is the [Carve 0.2 specification](../grammar)
+and its conformance corpus.*
 
 *Feedback and contributions welcome at <https://github.com/markup-carve>.*
 

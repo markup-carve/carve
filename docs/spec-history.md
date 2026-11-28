@@ -7,7 +7,7 @@ description: Retired readings and compatibility evidence kept outside the curren
 
 ## Carve 0.2 freeze candidate
 
-Carve 0.2 starts a new specification on `next2`. Its [status page](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) records freeze candidates 1 through 14 and their content commits. Candidate 14 is the current candidate at this page's update; it is not a release. The ten documents replace the 0.1 `CARVE-P` clause namespace with distinct identifiers:
+Carve 0.2 is a new specification, developed on `main`. Its [status page](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) records the freeze candidates and their content commits, and identifies freeze candidate 18; a candidate is not a release. The ten documents replace the 0.1 `CARVE-P` clause namespace with distinct identifiers:
 
 | Document | Clause prefix | Subject |
 |---|---|---|
@@ -28,9 +28,10 @@ Tooling became the tenth document in candidate 7. Later candidates recorded revi
 
 The sections below record decisions for the 0.1 specification. Their `CARVE-P` ids and `resources/spec/` references are historical and do not define 0.2 behavior.
 
-The normative grammar states the current language. This page keeps the history
-needed to understand source-compatibility changes without making readers walk
-through retired rules before finding the active one.
+The ten `spec/0.2` documents define current behavior; `resources/grammar.ebnf`
+and the 0.1 corpus describe the historical 0.1 line. For current rules, read the
+[Carve 0.2 specification index](./grammar). This page keeps the 0.1 history
+needed to understand source-compatibility changes.
 
 ## Colon fences
 
