@@ -336,12 +336,12 @@ The diagram extensions claim a fence by its language and write the source for a 
 ::: compare
 ````crv
 ```mermaid
-graph LR
+flowchart LR
   A --> B
 ```
 ````
 ```html
-<pre><code class="language-mermaid">graph LR
+<pre><code class="language-mermaid">flowchart LR
   A --&gt; B
 </code></pre>
 ```
@@ -352,7 +352,7 @@ npx carve render --extensions '["carve.fencedRender.mermaid"]' mermaid.crv
 ```
 
 ```html
-<pre class="mermaid" role="img" aria-label="mermaid">graph LR
+<pre class="mermaid" role="img" aria-label="mermaid">flowchart LR
   A --> B</pre>
 ```
 
@@ -364,7 +364,7 @@ npx carve render --mode static --extensions '["carve.fencedRender.mermaid"]' mer
 ```
 
 ```html
-<pre><code class="language-mermaid">graph LR
+<pre><code class="language-mermaid">flowchart LR
   A --&gt; B
 </code></pre>
 ```
