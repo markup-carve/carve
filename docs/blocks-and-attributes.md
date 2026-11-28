@@ -1107,7 +1107,6 @@ The `:::` type word that picks an admonition or a div, as in `::: note`, is abou
 
 ## Quick reference
 
-<!-- carve-sample {"skip":"annotated overview, not a document"} -->
 ````text
 {#id .class}          <- block: the line BEFORE the block
 == Heading

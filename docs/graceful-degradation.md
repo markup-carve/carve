@@ -361,7 +361,6 @@ tabs extension could drop the label, leaving panels nobody could tell apart. In
 attribute or a first heading does not name a tab. `carve upgrade` moves a 0.1
 tab label into the quoted title (rewrite `U-412`):
 
-<!-- carve-sample {"skip":"0.1 input to carve upgrade"} -->
 ```text
 :::: tabs
 ::: tab [Installation]
