@@ -17,7 +17,7 @@ unless the row says otherwise.
 
 | Feature | djot-php syntax | Carve syntax | Status in 0.2 |
 | --- | --- | --- | --- |
-| **Captions** | `^ caption` after a block | `^ caption` | Core: image, quote, table, code block and math block captions. |
+| **Captions** | `^ caption` after a block | `^ caption` | Core: image, quote, table, code block, math block and figure group captions. |
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | Core. |
 | **Semantic spans** | `[text]{.kbd}` gives `<kbd>` | `[text]{kbd}` | Core reserves three span keys: `abbr`, `time` and `kbd`. `samp`, `var`, `cite` and `dfn` belong to the `carve.semanticSpan` extension and are ordinary attributes without it. |
 | **Autolinks** | `<url>` / `<email>` | angle-bracket autolinks only | Core. Bare URLs are not linked; the `carve.autolink` extension links them. |

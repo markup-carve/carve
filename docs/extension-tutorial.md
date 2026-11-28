@@ -77,7 +77,7 @@ interface ExtensionRenderer {
 }
 ```
 
-A host passes the definitions as the `extensions` render option and the renderers as `renderers`, a map keyed by qualified name. The standard extensions in `@markup-carve/carve/extensions` use the same shape: each factory returns `{ extensions, renderers }`, which you can spread straight into the render options. Other engines that implement the 0.2 extension interface follow the same claim, transform and render steps under their own function names.
+A host passes the definitions as the `extensions` render option and the renderers as `renderers`, a map keyed by qualified name. The standard extension factories in `@markup-carve/carve/extensions` use the same shape: each returns `{ extensions, renderers }`, which you can spread straight into the render options. Other engines that implement the 0.2 extension interface follow the same claim, transform and render steps under their own function names.
 
 ## Step 1: the payload conventions
 
@@ -508,7 +508,7 @@ The fallback is plain inline content, so a reader without the extension still sh
 
 QR showed the build-time image shape. A `map` block shows the same pure-builder and render-seam split, with three interchangeable render modes behind one source form, the choice most embed extensions face.
 
-The author writes a coordinate, an optional style and an optional caption. A body that is no coordinate stays a code block (`map.crv`):
+The author writes a coordinate, an optional style and an optional caption. A body that is no coordinate stays a code block (`map.crv`). The builder, renderer and wiring snippets below together form `map-extension.mjs`.
 
 ````crv
 ```map
@@ -544,6 +544,12 @@ No network, no API key, no client script: the coordinate becomes a small inline 
 
 ```js
 // Mode A: a self-contained SVG. Only numbers and palette constants reach the markup.
+const PALETTES = {
+  light: { ground: '#eef1f4', road: '#cdd6df', pin: '#e5484d', ring: '#fff', text: '#586069' },
+  dark: { ground: '#0f1922', road: '#2d4a5a', pin: '#f0a020', ring: '#0f1922', text: '#9fb0bd' },
+  blueprint: { ground: '#103a87', road: '#dce8ff', pin: '#fff', ring: '#103a87', text: '#dce8ff' },
+}
+
 export function renderMapSvg(m) {
   const p = PALETTES[m.style] ?? PALETTES.light
   const label = `${m.lat.toFixed(3)}, ${m.lon.toFixed(3)}`

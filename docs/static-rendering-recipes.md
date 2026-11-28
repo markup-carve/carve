@@ -55,7 +55,7 @@ code, line, column and tree path. See [validation](./validation.md).
 ## Build functions
 
 Every diagram fence of the standard catalog (`mermaid`, `dot`, `graphviz`,
-`plantuml`, `d2`, `chart`, `vega-lite`, `wavedrom`, `abc`) and the `math` fence
+`plantuml`, `puml`, `d2`, `chart`, `vega-lite`, `wavedrom`, `abc`) and the `math` fence
 are extensions. In carve-js each is a function in
 `@markup-carve/carve/extensions` that takes an optional `build`:
 

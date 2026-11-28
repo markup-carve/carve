@@ -24,7 +24,7 @@ These are availability groups, not quality levels. "Optional" means that a docum
 
 ## Standard extensions
 
-The JavaScript reference engine ships every standard extension in `@markup-carve/carve/extensions`. The command line registers them by name with `--extensions`.
+The JavaScript reference engine ships the standard extensions in `@markup-carve/carve/extensions`; the tabs definitions (`tabsExtensions`, a plain list rather than a factory) come from the core `@markup-carve/carve` entry. The command line registers them by name with `--extensions`.
 
 | Family | Source form | Names for `--extensions` | Factory | Core output without the extension |
 |---|---|---|---|---|
@@ -369,7 +369,7 @@ npx carve render --mode static --extensions '["carve.fencedRender.mermaid"]' mer
 </code></pre>
 ```
 
-A `math` fence becomes display math in the form KaTeX and MathJax read. Core display math (`$$...$$`) needs no extension; the fence is for authors who prefer a block:
+A `math` fence becomes display math in the form KaTeX and MathJax read. Core display math (``$$`...` ``) needs no extension; the fence is for authors who prefer a block:
 
 ::: compare
 ````crv
