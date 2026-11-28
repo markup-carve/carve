@@ -12,6 +12,8 @@ export async function renderDiagramsIn(root) {
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: 'strict',
+      // A parse error would otherwise leave Mermaid's error drawing at the end of the page.
+      suppressErrorRendering: true,
       theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
     })
     for (const pre of diagrams) {

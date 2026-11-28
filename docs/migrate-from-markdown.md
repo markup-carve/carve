@@ -53,7 +53,7 @@ The table covers the constructs you use most often. Rows marked *same* work as i
 | Headings | `# H1` to `###### H6` | `= H1` to `====== H6` | *changed*: `#` headings still work, but `=` is the canonical marker and `carve fmt` writes it. A trailing `{#id}` is **not** an attribute (see below) |
 | Links | `[text](url)` | same | |
 | Reference links | `[text][ref]` and `[ref]: url` | same | |
-| Shortcut reference links | `[ref]` and `[ref]: url` | `[ref][]` and `[ref]: url` | Carve has no shortcut form, so a bare `[ref]` stays text. The importer writes an inline link |
+| Shortcut reference links | `[ref]` and `[ref]: url` | same | A shortcut never resolves to a heading: link a heading with `[Heading][]`. The importer writes an inline link |
 | Images | `![alt](src)` | same | |
 | Inline code | `` `code` `` | same | |
 | Fenced code | three backticks and a language | same | Write the language directly after the fence. Tilde fences are text |
@@ -497,7 +497,7 @@ When moving a document from Markdown to Carve:
 - [ ] Review all emphasis: `*italic*` becomes `/italic/`, `**bold**` becomes `*bold*`.
 - [ ] Check underscores: `_text_` is not italic in Carve and stays text; underline is `{_text_}`.
 - [ ] Check that GFM separator rows became `|=` header cells. A separator row left in place is a row of dashes.
-- [ ] Check that `~~strike~~` became `{~strike~}`, and that `---` breaks became `***`.
+- [ ] Check strikethrough: the importer writes `~~strike~~` as a deletion, `{-strike-}`. Use `{~strike~}` where a plain strike is meant. Check that `---` breaks became `***`.
 - [ ] Move every heading `{#id}` onto the line above the heading. `carve lint` finds them; left in place they change the heading's anchor.
 - [ ] Review imported raw HTML: block elements become raw `=html` blocks and inline tags become raw spans. They render only when the host allows raw HTML. Replace what Carve can spell natively.
 - [ ] Run `carve lint` and `carve fmt --check` on the result.

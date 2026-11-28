@@ -179,7 +179,7 @@ B.  need two spaces
 - [?] uncertain
 ```
 
-Every task state renders a disabled checkbox; the HTML keeps the state in `data-task-state`.
+Every task state renders a disabled checkbox, checked only for `[x]`. Every state except `[ ]` keeps its character in `data-task-state`.
 
 ### Description lists
 
@@ -369,7 +369,7 @@ A cell that holds only `^` merges upward (rowspan), and one that holds only `<` 
 
 `{<v}` overrides both axes for that cell; `{?v}` moves only the vertical one, so the total keeps the column's right alignment.
 
-Attributes on the line above a table set defaults for a table without header cells, `{aligns="right,center" valigns="top," widths="30,70"}`, and `{header-rows=N footer-rows=N}` sets explicit `thead` and `tfoot` ranges:
+Attributes on the line above a table set defaults for a table without header cells, `{aligns="right,center" valigns="top,bottom" widths="30,70"}`, and `{header-rows=N footer-rows=N}` sets explicit `thead` and `tfoot` ranges:
 
 ::: compare
 ```crv
@@ -446,7 +446,7 @@ Pear,3
 ```
 :::
 
-Fields are literal text: no inline markup, span marks or cell attributes. A short record is padded with empty cells. `carve fmt` keeps the delimited form. A fence stays a code block when the `{table}` flag is missing or the quoting is malformed (an unclosed quote, a quote inside an unquoted field, text after a closing quote); `carve lint` reports the malformed case. The data can also live in its own file: put `{table}` above a code include of the file, as shown in [Include Files](./include-files).
+Fields are literal text: no inline markup, span marks or cell attributes. `carve fmt` keeps the delimited form. Without the `{table}` flag the fence is an ordinary code block. With it, the fence is always a table: a quote that is never closed takes the rest of the body into its cell, and `carve lint` reports `delimited-table-malformed`. A quote inside an unquoted field is ordinary text. The data can also live in its own file: put `{table}` above a code include of the file, as shown in [Include Files](./include-files).
 
 ### Aligned source formatting
 

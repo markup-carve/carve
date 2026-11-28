@@ -114,7 +114,7 @@ A list, laid out as panels. It stays a list, which matters: the same source rend
 
 ## Columns
 
-`data-columns` sets the count, so one class covers every column count instead of multiplying into `.columns-2`, `.columns-3` and whatever comes next. Blocks are kept whole across a column boundary, and the layout collapses to a single column on a narrow screen.
+The layout has two columns by default, and `data-columns` sets 3 or 4, so one class covers every count instead of multiplying into `.columns-2`, `.columns-3` and so on. Blocks are kept whole across a column boundary, and the layout collapses to a single column on a narrow screen.
 
 :::: compare
 ```crv
