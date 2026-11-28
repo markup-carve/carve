@@ -149,7 +149,7 @@ The renderer's other conventions need no carrier and apply to every input: the `
 
 ## API and command line
 
-The library call is `importDocument(input, options)` from `@markup-carve/carve` (also exported from `@markup-carve/carve/import`). The options:
+The library call is `importDocument(input, options)` from `@markup-carve/carve`. It is also exported from `@markup-carve/carve/import`, but that entry does not take `allowLosses` or `maxLosses`. The options of the core entry:
 
 | Option | Default | Effect |
 | --- | --- | --- |
@@ -217,7 +217,7 @@ The importer has seven codes:
 | `import-carrier-ignored` | warning | a `data-carve-*` carrier that was malformed or contradicted |
 | `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changed |
 
-The writer adds `field-unspellable` and `structure-unspellable` for tree facts the source cannot hold, and `image-alt-unknown` for an image whose alt text is unknown. The last one never fails an import on its own.
+The writer adds `field-unspellable` and `structure-unspellable` for tree facts the source cannot hold, and `image-alt-unknown` for an image whose alt text is unknown. The last one never fails an import on its own outside `strictLosses`.
 
 ### Position of an entry
 
@@ -1606,7 +1606,7 @@ These 0.1 subjects have no 0.2 counterpart:
 
 ## Changed in 0.2: legacy fixture index
 
-The directories below are the existing 0.1 HTML import fixtures. The 0.1 migration audit reads this index. They are not a conformance list for the 0.2 importer; the sections above, and the specification linked at the end of this page, give current behavior.
+The directories below were the 0.1 HTML import fixtures; they are removed from the repository. The 0.1 migration audit reads this index. They are not a conformance list for the 0.2 importer; the sections above, and the specification linked at the end of this page, give current behavior.
 
 | fixture | subject |
 | --- | --- |

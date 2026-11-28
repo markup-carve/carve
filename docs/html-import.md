@@ -114,7 +114,7 @@ Each entry has a `code`, a `severity`, a `message`, and a position: a byte range
 | --- | --- | --- |
 | `hint` | whitespace was trimmed; no visible text changed | usually allow it |
 | `warning` | something was dropped, mapped to a plainer node, or cannot be spelled in the source | review it when the affected content matters |
-| `error` | any loss, under `strictLosses` | the import did not produce a source; fix the input or allow the code |
+| `error` | any loss, under `strictLosses` | the command line writes no source (the library still returns the nearest source); fix the input or allow the code |
 
 The codes you will see most:
 

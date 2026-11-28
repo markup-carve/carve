@@ -1070,7 +1070,7 @@ With `--extensions '["carve.tocPlacement"]'`:
 </section>
 ```
 
-The level window is set on the attribute line: `{depth=N}` lists levels 1 to N, `{from=X to=Y}` an explicit range. The library options of `tableOfContents()` are `minLevel`, `maxLevel`, `listType`, `position` (`top` or `bottom`), `collapsible`, `summary` and `open`. A collapsible table renders a `<details>` with a `<summary>` instead of the `<nav>`, so it has no landmark and does not use `tocNav`.
+The level window is set on the attribute line: `{depth=N}` lists levels 1 to N, `{from=X to=Y}` an explicit range. The library options of `tableOfContents()` are `minLevel`, `maxLevel`, `listType`, `position` (`top` or `bottom`), `collapsible`, `summary`, `open` and `cssClass`. A collapsible table renders a `<details>` with a `<summary>` instead of the `<nav>`, so it has no landmark and does not use `tocNav`.
 
 ### 8b.2 Footnote placement
 
@@ -1555,7 +1555,7 @@ With `--extensions '["carve.autolink","carve.externalLinks"]'`:
 
 ### TabNormalize
 
-`carve.tabNormalize` replaces each tab character in a code block or code span with spaces, two by default (`tabNormalize({ width })` in the library).
+`carve.tabNormalize` replaces each tab character in a code block or code span with spaces, two by default (`tabNormalize(width)` in the library, for example `tabNormalize(4)`).
 
 ### SmartQuotes
 

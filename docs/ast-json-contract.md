@@ -258,7 +258,7 @@ The `header-rows`, `footer-rows`, and `body-rows` attributes set the partition w
 
 The rows of each group are elided; every group holds one row, and the table has no `attrs`. `body-header-rows` puts header rows at the start of a body, and `body-header-cols` sets a body's `rowHeadColumns`. HTML renders one `tbody` per body.
 
-**A continuation row leaves no node.** A `+` row is joined into the row above before inline parsing, and the cell holds the nodes of each fragment with one space of ordinary text between them. The 0.1 `cell_wrap` node, the `cellWraps` field, and `table_row.continuationLines` are gone; where the row broke is spelling, recorded as `wraps` and `continuationLines` in the sidecar. A continued row, its cells, and their joined text have no `pos`.
+**A continuation row leaves no node.** Each fragment of a `+` row is parsed as its own inline content and joins the cell of its column in the row above; the cell holds the nodes of its fragments in order, with one space of ordinary text between them. An inline construct never crosses a fragment, so a code span opened in one row and closed in the next is plain text. The 0.1 `cell_wrap` node, the `cellWraps` field, and `table_row.continuationLines` are gone; where the row broke is spelling, recorded as `wraps` and `continuationLines` in the sidecar. A continued row, its cells, and their joined text have no `pos`.
 
 A pipe table and a delimited (CSV or TSV) table with the same cells in the same groups are equal trees. Which form the author used is the sidecar fact `sourceFormat`.
 
