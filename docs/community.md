@@ -17,4 +17,6 @@ The 0.2 text is a freeze candidate on `main`. State whether the finding is again
 
 ## Contribute
 
-The [development page](./development) covers the spec repository and its checks. [Implementing Carve](./implementing-carve) is a starting point for another engine. [Releases](https://github.com/markup-carve/carve/releases) cover published versions; [the 0.2 status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) covers the candidate.
+The [development page](./development) covers the spec repository and its checks. [Implementing Carve](./implementing-carve) is a starting point for another engine. [Releases](https://github.com/markup-carve/carve/releases) cover published versions; the 0.2 status page, linked below, covers the candidate.
+
+**Specification (external):** [0.2 status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md).

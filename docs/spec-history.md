@@ -7,22 +7,22 @@ description: Retired readings and compatibility evidence kept outside the curren
 
 ## Carve 0.2 freeze candidate
 
-Carve 0.2 is a new specification, developed on `main`. Its [status page](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) records the freeze candidates and their content commits, and identifies freeze candidate 18; a candidate is not a release. The ten documents replace the 0.1 `CARVE-P` clause namespace with distinct identifiers:
+Carve 0.2 is a new specification, developed on `main`. Its status page records the freeze candidates and their content commits, and identifies freeze candidate 18; a candidate is not a release. The ten documents, introduced on the [specification map](./grammar#the-ten-documents), replace the 0.1 `CARVE-P` clause namespace with distinct identifiers:
 
 | Document | Clause prefix | Subject |
 |---|---|---|
-| [Syntax blocks](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md) | `C2-B` | Lines, containers and tables |
-| [Syntax inline](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md) | `C2-I` | Inline parsing and resolution |
-| [AST](https://github.com/markup-carve/carve/blob/main/spec/0.2/ast.md) | `C2-A` | Tree contract 2.0 |
-| [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md) | `C2-H` | Rendering |
-| [Writer](https://github.com/markup-carve/carve/blob/main/spec/0.2/writer.md) | `C2-W` | Canonical source, fmt and lint |
-| [Source layout](https://github.com/markup-carve/carve/blob/main/spec/0.2/source-layout.md) | `C2-L` | Layout sidecar |
-| [Includes](https://github.com/markup-carve/carve/blob/main/spec/0.2/includes.md) | `C2-N` | Expansion and dependencies |
-| [Extensions](https://github.com/markup-carve/carve/blob/main/spec/0.2/extensions.md) | `C2-X` | Extension mechanism and tabs |
-| [HTML import](https://github.com/markup-carve/carve/blob/main/spec/0.2/import-html.md) | `C2-M` | Import mapping |
-| [Tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md) | `C2-T` | Library calls and CLI |
+| Syntax blocks | `C2-B` | Lines, containers and tables |
+| Syntax inline | `C2-I` | Inline parsing and resolution |
+| AST | `C2-A` | Tree contract 2.0 |
+| HTML | `C2-H` | Rendering |
+| Writer | `C2-W` | Canonical source, fmt and lint |
+| Source layout | `C2-L` | Layout sidecar |
+| Includes | `C2-N` | Expansion and dependencies |
+| Extensions | `C2-X` | Extension mechanism and tabs |
+| HTML import | `C2-M` | Import mapping |
+| Tooling | `C2-T` | Library calls and CLI |
 
-Tooling became the tenth document in candidate 7. Later candidates recorded review corrections, restored 0.1 behaviors where no change was intended, and added case evidence. Candidate 14 records measured include and table corrections, catalog findings and engine differences. The [upgrade guide](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md) tracks 0.1 to 0.2 changes. The extension mechanism remains provisional; the other documents are frozen subject to recorded rulings. The [conformance corpus](https://github.com/markup-carve/carve/blob/main/spec/0.2/conformance/README.md) holds examples, clause cases and refused trees for these clauses.
+Tooling became the tenth document in candidate 7. Later candidates recorded review corrections, restored 0.1 behaviors where no change was intended, and added case evidence. Candidate 14 records measured include and table corrections, catalog findings and engine differences. The [upgrade guide](./upgrade-0-2) tracks 0.1 to 0.2 changes. The extension mechanism remains provisional; the other documents are frozen subject to recorded rulings. The [conformance corpus](./conformance) holds examples, clause cases and refused trees for these clauses.
 
 ## Earlier 0.1 decisions
 
@@ -534,3 +534,5 @@ is CARVE-P9-013 property 3. L6 (CARVE-P9-034, a collected definition leaves no
 trace) is PART 0 S1 for link definitions, CARVE-P9-013 properties 1 and 2 and
 its container list, and the PART 0 FAMILIES footnote body guard for the fold of a
 footnote definition's own paragraph.
+
+**Specification (external):** [status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md), [syntax blocks](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md), [syntax inline](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md), [AST](https://github.com/markup-carve/carve/blob/main/spec/0.2/ast.md), [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md), [writer](https://github.com/markup-carve/carve/blob/main/spec/0.2/writer.md), [source layout](https://github.com/markup-carve/carve/blob/main/spec/0.2/source-layout.md), [includes](https://github.com/markup-carve/carve/blob/main/spec/0.2/includes.md), [extensions](https://github.com/markup-carve/carve/blob/main/spec/0.2/extensions.md), [HTML import](https://github.com/markup-carve/carve/blob/main/spec/0.2/import-html.md), [tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md), [upgrading](https://github.com/markup-carve/carve/blob/main/spec/0.2/UPGRADING.md), [conformance corpus](https://github.com/markup-carve/carve/blob/main/spec/0.2/conformance/README.md).

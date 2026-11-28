@@ -14,7 +14,7 @@ These examples start with the [0.2 specification cases](https://github.com/marku
 | [Processor options](/examples/processor-options) | Profiles, heading IDs, sections, typography, and raw HTML. |
 | [Edge cases](/examples/edge-cases/) | Literal and incomplete syntax from the 0.2 cases. |
 
-See the [0.2 block](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md), [inline](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md), and [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md) chapters for the rules behind each example.
+The [0.2 specification map](./grammar#the-ten-documents) names the block, inline and HTML chapters behind each example.
 
 Three short source and HTML pairs follow.
 
@@ -78,3 +78,5 @@ The title and body have different roles.
 ```
 
 Run `carve render` to inspect HTML and `carve fmt --check` to check canonical source. The [cheat sheet](./cheatsheet) covers more forms; [Upgrading from 0.1](./upgrade-0-2) covers sources that render differently in 0.2.
+
+**Specification (external):** [block syntax](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md), [inline syntax](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md), [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md).
