@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Lints and fmt-checks every crv/carve fence and component .crv in docs/.
 // A marker comment directly above a sample adjusts the check:
-//   <!-- carve-sample {"skip":"reason"} -->      not checked
 //   <!-- carve-sample {"lint":"reason"} -->      must have a lint finding
 //   <!-- carve-sample {"includes":"name"} -->    include root other than "default"
 // Includes resolve against tests/fixtures/docs-samples-includes/<name>.
+// There is no opt-out: a "skip" key is reported as stale and the sample is still checked.
+// Usage: docs-samples-check.mjs [--docs <dir>]
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,7 +13,8 @@ import { spawnSync } from 'node:child_process'
 import { format, lint as lintSource, render } from '../docs/.vitepress/engine.js'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const docs = join(root, 'docs')
+const docsArg = process.argv.indexOf('--docs')
+const docs = docsArg > 0 ? resolve(process.argv[docsArg + 1]) : join(root, 'docs')
 // Pins from before the 0.2 rename ship the 0.2 CLI as dist/cli2.js beside the 0.1 dist/cli.js.
 const pinned = join(root, 'node_modules/@markup-carve/carve/dist')
 const cli = existsSync(join(pinned, 'cli2.js')) ? join(pinned, 'cli2.js') : join(pinned, 'cli.js')
@@ -20,6 +22,7 @@ if (!existsSync(cli)) throw new Error('Install the pinned carve-js package with 
 const includeRoots = join(root, 'tests/fixtures/docs-samples-includes')
 const failures = []
 const counts = new Map()
+const staleSkips = []
 let checked = 0
 
 function pages(dir) {
@@ -52,10 +55,7 @@ function difference(expected, actual) {
 
 function checkSample(page, line, source, options = {}) {
   checked++
-  if (Object.hasOwn(options, 'skip')) {
-    if (typeof options.skip !== 'string' || !options.skip.trim()) fail(page, line, 'opt-out needs a reason')
-    return
-  }
+  if (Object.hasOwn(options, 'skip')) staleSkips.push(`${relative(root, page)}:${line}`)
   const includeRoot = join(includeRoots, options.includes ?? 'default')
   if (!existsSync(includeRoot)) {
     fail(page, line, `include root missing: ${relative(root, includeRoot)}`)
@@ -190,6 +190,7 @@ for (const page of pages(docs)) {
 }
 
 console.log(`Docs samples: ${checked} checked, ${failures.length} failures across ${counts.size} pages.`)
+for (const at of staleSkips) console.log(`${at}: "skip" is ignored, the sample was checked; remove the key`)
 for (const [page, count] of [...counts].sort()) console.log(`${page}: ${count}`)
 for (const failure of failures) console.error(failure)
 if (failures.length) process.exitCode = 1
