@@ -1,0 +1,475 @@
+{
+  "ref": "origin/0.1",
+  "commit": "abc1808a708b6a45dd4444530084db0712c5dd88",
+  "pages": {
+    "docs/ast-annotation-ranges.md": {
+      "bytes": 4010,
+      "headings": 4,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/ast-json-contract.md": {
+      "bytes": 49812,
+      "headings": 24,
+      "compare": 0,
+      "carveFences": 3,
+      "images": 7
+    },
+    "docs/ast-json.md": {
+      "bytes": 5288,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 1,
+      "images": 0
+    },
+    "docs/ast-node-identity.md": {
+      "bytes": 2776,
+      "headings": 4,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/ast-provenance.md": {
+      "bytes": 3360,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/ast-source-layout.md": {
+      "bytes": 3000,
+      "headings": 0,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/blocks-and-attributes.md": {
+      "bytes": 26901,
+      "headings": 16,
+      "compare": 0,
+      "carveFences": 20,
+      "images": 1
+    },
+    "docs/case-study/appendices.md": {
+      "bytes": 3013,
+      "headings": 3,
+      "compare": 0,
+      "carveFences": 1,
+      "images": 2
+    },
+    "docs/case-study/background.md": {
+      "bytes": 6632,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/case-study/compatibility.md": {
+      "bytes": 6354,
+      "headings": 14,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 3
+    },
+    "docs/case-study/design.md": {
+      "bytes": 1556,
+      "headings": 6,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 1
+    },
+    "docs/case-study/implementation.md": {
+      "bytes": 2765,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/case-study/index.md": {
+      "bytes": 1451,
+      "headings": 2,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/case-study/parsing-ast.md": {
+      "bytes": 3718,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 1
+    },
+    "docs/case-study/syntax.md": {
+      "bytes": 57411,
+      "headings": 25,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 8
+    },
+    "docs/cheatsheet.md": {
+      "bytes": 16023,
+      "headings": 14,
+      "compare": 0,
+      "carveFences": 13,
+      "images": 6
+    },
+    "docs/community.md": {
+      "bytes": 1509,
+      "headings": 4,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/comparison.md": {
+      "bytes": 6046,
+      "headings": 6,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 1
+    },
+    "docs/conformance.md": {
+      "bytes": 2504,
+      "headings": 1,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/decision-trace.md": {
+      "bytes": 8176,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/development.md": {
+      "bytes": 7673,
+      "headings": 7,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/diagrams.md": {
+      "bytes": 5612,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 4,
+      "images": 0
+    },
+    "docs/dismissed-syntax.md": {
+      "bytes": 23624,
+      "headings": 20,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 1
+    },
+    "docs/divergence-from-djot.md": {
+      "bytes": 47528,
+      "headings": 28,
+      "compare": 0,
+      "carveFences": 1,
+      "images": 0
+    },
+    "docs/ecosystem.md": {
+      "bytes": 15054,
+      "headings": 11,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/examples.md": {
+      "bytes": 1221,
+      "headings": 0,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/experiments/comment-classification.md": {
+      "bytes": 2043,
+      "headings": 3,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/experiments/container-ownership.md": {
+      "bytes": 3046,
+      "headings": 3,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/experiments/definition-footnote-authored-bases.md": {
+      "bytes": 3178,
+      "headings": 4,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/extension-contract.md": {
+      "bytes": 98608,
+      "headings": 78,
+      "compare": 3,
+      "carveFences": 4,
+      "images": 0
+    },
+    "docs/extension-tutorial.md": {
+      "bytes": 21322,
+      "headings": 15,
+      "compare": 0,
+      "carveFences": 4,
+      "images": 4
+    },
+    "docs/extensions.md": {
+      "bytes": 5798,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 3,
+      "images": 0
+    },
+    "docs/format-bridges.md": {
+      "bytes": 37078,
+      "headings": 13,
+      "compare": 0,
+      "carveFences": 3,
+      "images": 0
+    },
+    "docs/get-started.md": {
+      "bytes": 5029,
+      "headings": 11,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/graceful-degradation.md": {
+      "bytes": 15485,
+      "headings": 12,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 1
+    },
+    "docs/grammar.md": {
+      "bytes": 5094,
+      "headings": 2,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/html-import-contract.md": {
+      "bytes": 124555,
+      "headings": 52,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 11
+    },
+    "docs/html-import.md": {
+      "bytes": 5289,
+      "headings": 9,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/implementation-comparison-methodology.md": {
+      "bytes": 66195,
+      "headings": 20,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/implementation-comparison.md": {
+      "bytes": 4104,
+      "headings": 6,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/implementing-carve.md": {
+      "bytes": 6292,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/include-files.md": {
+      "bytes": 1436,
+      "headings": 0,
+      "compare": 0,
+      "carveFences": 2,
+      "images": 0
+    },
+    "docs/includes.md": {
+      "bytes": 61415,
+      "headings": 34,
+      "compare": 0,
+      "carveFences": 17,
+      "images": 1
+    },
+    "docs/index.md": {
+      "bytes": 3776,
+      "headings": 6,
+      "compare": 0,
+      "carveFences": 1,
+      "images": 1
+    },
+    "docs/markup-languages.md": {
+      "bytes": 8515,
+      "headings": 21,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 1
+    },
+    "docs/migrate-from-markdown.md": {
+      "bytes": 24349,
+      "headings": 18,
+      "compare": 0,
+      "carveFences": 14,
+      "images": 1
+    },
+    "docs/native-features-analysis.md": {
+      "bytes": 5927,
+      "headings": 10,
+      "compare": 0,
+      "carveFences": 6,
+      "images": 1
+    },
+    "docs/nested-braced-emphasis.md": {
+      "bytes": 8728,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 4,
+      "images": 0
+    },
+    "docs/ownership-procedure.md": {
+      "bytes": 6052,
+      "headings": 9,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/parsing-ambiguities.md": {
+      "bytes": 24840,
+      "headings": 19,
+      "compare": 0,
+      "carveFences": 20,
+      "images": 8
+    },
+    "docs/performance.md": {
+      "bytes": 5355,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/playground.md": {
+      "bytes": 2487,
+      "headings": 3,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/portable-whitespace.md": {
+      "bytes": 4020,
+      "headings": 3,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/profiles.md": {
+      "bytes": 17965,
+      "headings": 14,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/recipes.md": {
+      "bytes": 8178,
+      "headings": 10,
+      "compare": 11,
+      "carveFences": 12,
+      "images": 0
+    },
+    "docs/rule-coverage.md": {
+      "bytes": 4139,
+      "headings": 4,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/security.md": {
+      "bytes": 28239,
+      "headings": 15,
+      "compare": 0,
+      "carveFences": 3,
+      "images": 3
+    },
+    "docs/source-patches.md": {
+      "bytes": 4382,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/spec-history.md": {
+      "bytes": 27612,
+      "headings": 34,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/static-rendering-recipes.md": {
+      "bytes": 6661,
+      "headings": 8,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 3
+    },
+    "docs/supported-path-matrix.md": {
+      "bytes": 8653,
+      "headings": 11,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/svg-images.md": {
+      "bytes": 3827,
+      "headings": 5,
+      "compare": 0,
+      "carveFences": 3,
+      "images": 4
+    },
+    "docs/technical-rationale.md": {
+      "bytes": 33158,
+      "headings": 49,
+      "compare": 0,
+      "carveFences": 14,
+      "images": 2
+    },
+    "docs/terms.md": {
+      "bytes": 3224,
+      "headings": 4,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    },
+    "docs/validation.md": {
+      "bytes": 64472,
+      "headings": 22,
+      "compare": 0,
+      "carveFences": 12,
+      "images": 2
+    },
+    "docs/versioning.md": {
+      "bytes": 10127,
+      "headings": 7,
+      "compare": 0,
+      "carveFences": 4,
+      "images": 0
+    },
+    "docs/writer-escaping-strategy.md": {
+      "bytes": 2524,
+      "headings": 1,
+      "compare": 0,
+      "carveFences": 0,
+      "images": 0
+    }
+  }
+}

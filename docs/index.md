@@ -92,9 +92,9 @@ Carve 0.2 is a source break: some 0.1 documents render differently. [What's new 
 
 ## Scope
 
-Carve 0.2 is a development version. Its [freeze status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) identifies the current candidate. The [block](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md) and [inline](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md) chapters define source syntax. The [HTML chapter](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md) defines output.
+Carve 0.2 is a development version. Its freeze status identifies the current candidate. The block and inline chapters define source syntax, and the HTML chapter defines output; the [specification map](./grammar) introduces all ten documents.
 
-A `.crv` file is Carve source. The 0.2 output contract is HTML. Every engine also exports Markdown, plain text, and ANSI, but that output is engine behavior outside the specification. See [security](./security) and [tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md).
+A `.crv` file is Carve source. The 0.2 output contract is HTML. Every engine also exports Markdown, plain text, and ANSI, but that output is engine behavior outside the specification. See [security](./security) and the [specification map](./grammar#the-ten-documents) for the tooling chapter.
 
 ## Influences
 
@@ -112,3 +112,5 @@ A `.crv` file is Carve source. The 0.2 output contract is HTML. Every engine als
 - [Implementation comparison](./implementation-comparison)
 - [Ecosystem](./ecosystem)
 - [Terms used in this documentation](./terms)
+
+**Specification (external):** [freeze status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md), [block syntax](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-blocks.md), [inline syntax](https://github.com/markup-carve/carve/blob/main/spec/0.2/syntax-inline.md), [HTML](https://github.com/markup-carve/carve/blob/main/spec/0.2/html.md), [tooling](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md).

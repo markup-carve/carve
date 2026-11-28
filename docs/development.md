@@ -4,7 +4,7 @@ description: Work with the Carve 0.2 specification and documentation.
 
 # Development
 
-The `main` branch contains the 0.2 specification in [`spec/0.2/`](https://github.com/markup-carve/carve/tree/main/spec/0.2) and this documentation source. The [status page](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md) identifies the freeze candidate and its open points.
+The `main` branch contains the 0.2 specification in [`spec/0.2/`](https://github.com/markup-carve/carve/tree/main/spec/0.2) and this documentation source. Its status page, linked at the end of this page, identifies the freeze candidate and its open points.
 
 ## Set up the repository
 
@@ -12,9 +12,9 @@ Use the Node version in `.nvmrc`, install dependencies with `npm ci`, and run `n
 
 ## Check the 0.2 spec
 
-Run `npm run spec2:data` after changing a 0.2 document, data row, example or conformance case. It checks schemas, clause references, generated examples and tree fixtures. See [Conformance](./conformance) for what an engine must run. When changing a clause, add or adjust the case that demonstrates it and update the [upgrade map](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/upgrade-map.json) when 0.1 source changes meaning.
+Run `npm run spec2:data` after changing a 0.2 document, data row, example or conformance case. It checks schemas, clause references, generated examples and tree fixtures. See [Conformance](./conformance) for what an engine must run. When changing a clause, add or adjust the case that demonstrates it and update the upgrade map (`spec/0.2/data/upgrade-map.json`) when 0.1 source changes meaning.
 
-The reference implementation lives in [`carve-js` on `main`](https://github.com/markup-carve/carve-js/tree/main). Its `carve` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the [tooling specification](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#commands); its `upgrade` command is specific to the JavaScript reference engine.
+The reference implementation lives in [`carve-js` on `main`](https://github.com/markup-carve/carve-js/tree/main). Its `carve` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the commands section of the tooling chapter (linked below); its `upgrade` command is specific to the JavaScript reference engine.
 
 ## Investigate a mismatch
 
@@ -69,3 +69,5 @@ node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz.json --repo=markup-carve/ca
 ```
 
 The seed defaults to the UTC date, and the same seed gives the same inputs.
+
+**Specification (external):** [status](https://github.com/markup-carve/carve/blob/main/spec/0.2/STATUS.md), [tooling commands](https://github.com/markup-carve/carve/blob/main/spec/0.2/tooling.md#commands), [upgrade map](https://github.com/markup-carve/carve/blob/main/spec/0.2/data/upgrade-map.json).
