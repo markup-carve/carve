@@ -40,6 +40,6 @@ existing documents, and implementations may adopt it at different times.
 
 Djot gives Carve a parsing model and attributes. Carve changes some surface
 choices, including emphasis, subscript, and superscript delimiters, to meet different
-readability goals. The [formal grammar](../grammar) defines the current language.
+readability goals. The [Carve 0.2 specification](../grammar) defines the current language.
 
 ---
